@@ -1,14 +1,15 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { UtensilsCrossed } from 'lucide-react';
+import { UtensilsCrossed, Star } from 'lucide-react';
 import type { MenuItem, Language } from '@/lib/types';
 
 interface MenuItemCardProps {
   item: MenuItem;
   language: Language;
   onClick?: () => void;
+  isSuggested?: boolean;
 }
 
-export default function MenuItemCard({ item, language, onClick }: MenuItemCardProps) {
+export default function MenuItemCard({ item, language, onClick, isSuggested }: MenuItemCardProps) {
   const getName = () => {
     return item.name[language] || item.name.en || Object.values(item.name)[0] || '';
   };
@@ -21,12 +22,12 @@ export default function MenuItemCard({ item, language, onClick }: MenuItemCardPr
 
   return (
     <Card
-      className="hover-elevate active-elevate-2 cursor-pointer"
+      className={`hover-elevate active-elevate-2 cursor-pointer ${isSuggested ? 'ring-2 ring-amber-500/30' : ''}`}
       onClick={onClick}
       data-testid={`card-menu-item-${item.id}`}
     >
       <CardContent className={`p-3 flex gap-3 ${isRtl ? 'flex-row-reverse' : ''}`}>
-        <div className="w-20 h-20 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
+        <div className="w-20 h-20 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden relative">
           {item.image ? (
             <img
               src={item.image}
@@ -36,6 +37,11 @@ export default function MenuItemCard({ item, language, onClick }: MenuItemCardPr
             />
           ) : (
             <UtensilsCrossed className="h-8 w-8 text-muted-foreground" />
+          )}
+          {isSuggested && (
+            <div className="absolute top-1 right-1 bg-amber-500 rounded-full p-0.5">
+              <Star className="h-3 w-3 text-white fill-white" />
+            </div>
           )}
         </div>
         <div className={`flex-1 min-w-0 flex flex-col justify-between ${isRtl ? 'text-right' : ''}`}>

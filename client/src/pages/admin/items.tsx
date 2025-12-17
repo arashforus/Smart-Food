@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -49,7 +50,7 @@ import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
-import { mockMenuItems, mockCategories, mockLanguages } from '@/lib/mockData';
+import { mockMenuItems, mockCategories, mockLanguages, mockMaterials } from '@/lib/mockData';
 import type { MenuItem } from '@/lib/types';
 
 const itemSchema = z.object({
@@ -74,6 +75,8 @@ const itemSchema = z.object({
   categoryId: z.string().min(1, 'Category is required'),
   image: z.string().optional(),
   available: z.boolean(),
+  suggested: z.boolean(),
+  materials: z.array(z.string()),
 });
 
 type ItemFormData = z.infer<typeof itemSchema>;
@@ -87,13 +90,15 @@ export default function ItemsPage() {
   const [deleteItem, setDeleteItem] = useState<MenuItem | null>(null);
   const activeLanguages = mockLanguages.filter((l) => l.isActive);
 
+  const materials = mockMaterials;
+
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
       shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
       longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
-      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true
+      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true, suggested: false, materials: []
     },
   });
 
@@ -102,7 +107,7 @@ export default function ItemsPage() {
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
       shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
       longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
-      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true
+      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true, suggested: false, materials: []
     });
     setFormOpen(true);
   };
@@ -130,6 +135,8 @@ export default function ItemsPage() {
       categoryId: item.categoryId,
       image: item.image || '',
       available: item.available,
+      suggested: item.suggested,
+      materials: item.materials || [],
     });
     setEditingItem(item);
   };
@@ -146,7 +153,8 @@ export default function ItemsPage() {
       categoryId: data.categoryId,
       image: data.image,
       available: data.available,
-      materials: [],
+      suggested: data.suggested,
+      materials: data.materials,
       types: [],
     };
     setItems([...items, newItem]);
@@ -170,6 +178,8 @@ export default function ItemsPage() {
           categoryId: data.categoryId,
           image: data.image,
           available: data.available,
+          suggested: data.suggested,
+          materials: data.materials,
         };
       }
       return i;
@@ -192,9 +202,10 @@ export default function ItemsPage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="basic">Basic</TabsTrigger>
             <TabsTrigger value="descriptions">Descriptions</TabsTrigger>
+            <TabsTrigger value="materials">Materials</TabsTrigger>
             <TabsTrigger value="translations">Translations</TabsTrigger>
           </TabsList>
           
@@ -290,12 +301,73 @@ export default function ItemsPage() {
               )} />
             </div>
             
-            <FormField control={form.control} name="available" render={({ field }) => (
-              <FormItem className="flex items-center gap-3">
-                <FormLabel className="mt-0">Available</FormLabel>
-                <FormControl>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
-                </FormControl>
+            <div className="flex items-center gap-6">
+              <FormField control={form.control} name="available" render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormLabel className="mt-0">Available</FormLabel>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
+                  </FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="suggested" render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormLabel className="mt-0 flex items-center gap-1">
+                    <Star className="h-4 w-4 text-amber-500" />
+                    Suggested
+                  </FormLabel>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-suggested${isEdit ? '-edit' : ''}`} />
+                  </FormControl>
+                </FormItem>
+              )} />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="materials" className="space-y-4 pt-4">
+            <FormField control={form.control} name="materials" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select Materials / Ingredients</FormLabel>
+                <FormDescription>Choose the ingredients used in this dish</FormDescription>
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  {materials.map((material) => (
+                    <div
+                      key={material.id}
+                      className="flex items-center gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
+                      onClick={() => {
+                        const current = field.value || [];
+                        const newValue = current.includes(material.id)
+                          ? current.filter((id) => id !== material.id)
+                          : [...current, material.id];
+                        field.onChange(newValue);
+                      }}
+                      data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
+                    >
+                      <Checkbox
+                        checked={(field.value || []).includes(material.id)}
+                        onCheckedChange={(checked) => {
+                          const current = field.value || [];
+                          const newValue = checked
+                            ? [...current, material.id]
+                            : current.filter((id) => id !== material.id);
+                          field.onChange(newValue);
+                        }}
+                      />
+                      {material.image ? (
+                        <img src={material.image} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
+                      ) : (
+                        <div
+                          className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
+                          style={{ backgroundColor: material.backgroundColor }}
+                        >
+                          {material.name.en?.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-sm">{material.name.en}</span>
+                    </div>
+                  ))}
+                </div>
+                <FormMessage />
               </FormItem>
             )} />
           </TabsContent>
@@ -403,9 +475,17 @@ export default function ItemsPage() {
             key: 'available',
             header: 'Status',
             render: (item) => (
-              <Badge variant={item.available ? 'default' : 'secondary'} className="no-default-active-elevate">
-                {item.available ? 'Available' : 'Unavailable'}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant={item.available ? 'default' : 'secondary'} className="no-default-active-elevate">
+                  {item.available ? 'Available' : 'Unavailable'}
+                </Badge>
+                {item.suggested && (
+                  <Badge variant="outline" className="no-default-active-elevate text-amber-600 border-amber-500/50">
+                    <Star className="h-3 w-3 mr-1 fill-amber-500" />
+                    Suggested
+                  </Badge>
+                )}
+              </div>
             ),
           },
         ]}

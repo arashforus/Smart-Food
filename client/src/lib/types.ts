@@ -63,6 +63,7 @@ export interface MenuItem {
   categoryId: string;
   image?: string;
   available: boolean;
+  suggested: boolean;
   materials: string[];
   types: string[];
 }
@@ -180,6 +181,7 @@ export const translations: Record<Language, Record<string, string>> = {
     welcome: 'Welcome',
     chooseLanguage: 'Choose Your Language',
     viewMenu: 'View Menu',
+    suggested: 'Chef\'s Recommendations',
   },
   es: {
     menu: 'Menú',
@@ -218,6 +220,7 @@ export const translations: Record<Language, Record<string, string>> = {
     welcome: 'Bienvenido',
     chooseLanguage: 'Elige tu Idioma',
     viewMenu: 'Ver Menú',
+    suggested: 'Recomendaciones del Chef',
   },
   fr: {
     menu: 'Menu',
@@ -256,6 +259,7 @@ export const translations: Record<Language, Record<string, string>> = {
     welcome: 'Bienvenue',
     chooseLanguage: 'Choisissez votre Langue',
     viewMenu: 'Voir le Menu',
+    suggested: 'Recommandations du Chef',
   },
   fa: {
     menu: 'منو',
@@ -294,6 +298,7 @@ export const translations: Record<Language, Record<string, string>> = {
     welcome: 'خوش آمدید',
     chooseLanguage: 'زبان خود را انتخاب کنید',
     viewMenu: 'مشاهده منو',
+    suggested: 'پیشنهادات سرآشپز',
   },
   tr: {
     menu: 'Menü',
@@ -332,6 +337,7 @@ export const translations: Record<Language, Record<string, string>> = {
     welcome: 'Hoş Geldiniz',
     chooseLanguage: 'Dilinizi Seçin',
     viewMenu: 'Menüyü Görüntüle',
+    suggested: 'Şefin Tavsiyeleri',
   },
 };
 
