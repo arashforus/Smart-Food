@@ -74,10 +74,10 @@ export const mockSettings: Settings = {
 };
 
 export const mockCategories: Category[] = [
-  { id: '1', name: { en: 'Appetizers', es: 'Aperitivos', fr: 'Entrées', fa: 'پیش‌غذا', tr: 'Başlangıçlar' }, order: 1 },
-  { id: '2', name: { en: 'Main Courses', es: 'Platos Principales', fr: 'Plats Principaux', fa: 'غذای اصلی', tr: 'Ana Yemekler' }, order: 2 },
-  { id: '3', name: { en: 'Desserts', es: 'Postres', fr: 'Desserts', fa: 'دسر', tr: 'Tatlılar' }, order: 3 },
-  { id: '4', name: { en: 'Beverages', es: 'Bebidas', fr: 'Boissons', fa: 'نوشیدنی', tr: 'İçecekler' }, order: 4 },
+  { id: '1', name: { en: 'Appetizers', es: 'Aperitivos', fr: 'Entrées', fa: 'پیش‌غذا', tr: 'Başlangıçlar' }, image: 'https://images.unsplash.com/photo-1541014741259-de529411b96a?w=200&h=200&fit=crop', order: 1 },
+  { id: '2', name: { en: 'Main Courses', es: 'Platos Principales', fr: 'Plats Principaux', fa: 'غذای اصلی', tr: 'Ana Yemekler' }, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=200&h=200&fit=crop', order: 2 },
+  { id: '3', name: { en: 'Desserts', es: 'Postres', fr: 'Desserts', fa: 'دسر', tr: 'Tatlılar' }, image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&h=200&fit=crop', order: 3 },
+  { id: '4', name: { en: 'Beverages', es: 'Bebidas', fr: 'Boissons', fa: 'نوشیدنی', tr: 'İçecekler' }, image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=200&h=200&fit=crop', order: 4 },
 ];
 
 export const mockMenuItems: MenuItem[] = [

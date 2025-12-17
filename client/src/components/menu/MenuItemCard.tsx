@@ -7,9 +7,10 @@ interface MenuItemCardProps {
   language: Language;
   onClick?: () => void;
   isSuggested?: boolean;
+  viewMode?: 'grid' | 'list';
 }
 
-export default function MenuItemCard({ item, language, onClick, isSuggested }: MenuItemCardProps) {
+export default function MenuItemCard({ item, language, onClick, isSuggested, viewMode = 'list' }: MenuItemCardProps) {
   const getName = () => {
     return item.name[language] || item.name.en || Object.values(item.name)[0] || '';
   };
@@ -19,6 +20,60 @@ export default function MenuItemCard({ item, language, onClick, isSuggested }: M
   };
 
   const isRtl = language === 'fa';
+
+  if (viewMode === 'grid') {
+    return (
+      <Card
+        className={`hover-elevate active-elevate-2 cursor-pointer ${isSuggested ? 'ring-2 ring-amber-500/30' : ''}`}
+        onClick={onClick}
+        data-testid={`card-menu-item-${item.id}`}
+      >
+        <CardContent className="p-0">
+          <div className="aspect-square w-full rounded-t-md bg-muted flex items-center justify-center overflow-hidden relative">
+            {item.image ? (
+              <img
+                src={item.image}
+                alt={getName()}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <UtensilsCrossed className="h-10 w-10 text-muted-foreground" />
+            )}
+            {isSuggested && (
+              <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
+                <Star className="h-3 w-3 text-white fill-white" />
+              </div>
+            )}
+          </div>
+          <div className={`p-3 ${isRtl ? 'text-right' : ''}`}>
+            <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
+              {getName()}
+            </h3>
+            <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
+              {getDescription()}
+            </p>
+            <div className="flex items-center gap-2 mt-2">
+              {item.discountedPrice ? (
+                <>
+                  <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                    ${item.discountedPrice.toFixed(2)}
+                  </span>
+                  <span className="text-xs text-muted-foreground line-through">
+                    ${item.price.toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                  ${item.price.toFixed(2)}
+                </span>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card
