@@ -1,11 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Bell, Globe } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { mockLanguages, mockRestaurant, mockSettings } from '@/lib/mockData';
 import { translations, type Language } from '@/lib/types';
 import { apiRequest } from '@/lib/queryClient';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const welcomeMessages = [
+  { text: 'Welcome', lang: 'English' },
+  { text: 'خوش آمدید', lang: 'Persian' },
+  { text: 'Hoş geldiniz', lang: 'Turkish' },
+  { text: 'أهلاً وسهلاً', lang: 'Arabic' },
+];
+
+function AnimatedWelcome() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % welcomeMessages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="h-16 flex items-center justify-center overflow-hidden mb-8">
+      <AnimatePresence mode="wait">
+        <motion.h2
+          key={currentIndex}
+          initial={{ opacity: 0, y: 40, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.8 }}
+          transition={{
+            duration: 0.6,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="text-4xl md:text-5xl font-semibold text-white tracking-tight"
+          style={{
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif',
+          }}
+          data-testid={`text-welcome-${welcomeMessages[currentIndex].lang.toLowerCase()}`}
+        >
+          {welcomeMessages[currentIndex].text}
+        </motion.h2>
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function QRLandingPage() {
   const [, setLocation] = useLocation();
@@ -79,18 +122,13 @@ export default function QRLandingPage() {
         <h1 className="text-4xl font-bold text-white mb-2" data-testid="text-restaurant-name">
           {mockRestaurant.name}
         </h1>
-        <p className="text-white/70 mb-10" data-testid="text-restaurant-description">
+        <p className="text-white/70 mb-6" data-testid="text-restaurant-description">
           {mockRestaurant.description}
         </p>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-center gap-2 text-white/80 mb-4">
-            <Globe className="h-5 w-5" />
-            <span className="text-lg font-medium">
-              {translations.en.chooseLanguage}
-            </span>
-          </div>
+        <AnimatedWelcome />
 
+        <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             {activeLanguages.map((lang) => (
               <Button
