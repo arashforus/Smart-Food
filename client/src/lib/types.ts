@@ -7,8 +7,11 @@ export interface Restaurant {
   email: string;
   hours: string;
   logo?: string;
+  backgroundImage?: string;
   currency: string;
   currencySymbol: string;
+  mapLat?: number;
+  mapLng?: number;
 }
 
 export interface Branch {
@@ -52,8 +55,11 @@ export interface FoodType {
 export interface MenuItem {
   id: string;
   name: Record<string, string>;
-  description: Record<string, string>;
+  shortDescription: Record<string, string>;
+  longDescription: Record<string, string>;
   price: number;
+  discountedPrice?: number;
+  maxSelect?: number;
   categoryId: string;
   image?: string;
   available: boolean;
@@ -67,8 +73,10 @@ export interface AppLanguage {
   name: string;
   nativeName: string;
   direction: 'ltr' | 'rtl';
+  flagImage?: string;
   isActive: boolean;
   isDefault: boolean;
+  textOverrides?: Record<string, string>;
 }
 
 export type Role = 'admin' | 'manager' | 'chef' | 'accountant';
@@ -83,16 +91,53 @@ export interface User {
   isActive: boolean;
 }
 
+export interface AdminUser {
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  role: Role;
+}
+
 export interface Settings {
   id: string;
   primaryColor: string;
   logoUrl?: string;
+  backgroundImage?: string;
+  backgroundVideo?: string;
   menuTitle: string;
   showPrices: boolean;
   showImages: boolean;
   showMaterials: boolean;
   showTypes: boolean;
   defaultLanguage: string;
+}
+
+export interface DashboardMetrics {
+  totalItems: number;
+  totalCategories: number;
+  availableItems: number;
+  qrScans: number;
+  salesDay: number;
+  salesWeek: number;
+  salesMonth: number;
+  customersDay: number;
+  customersWeek: number;
+  customersMonth: number;
+  menuViewsDay: number;
+  menuViewsWeek: number;
+  menuViewsMonth: number;
+  bestSellers: { itemId: string; name: string; count: number }[];
+  salesChart: { date: string; amount: number }[];
+  viewsChart: { date: string; views: number }[];
+}
+
+export interface WaiterRequest {
+  id: string;
+  tableId?: string;
+  branchId?: string;
+  timestamp: Date;
+  status: 'pending' | 'acknowledged' | 'completed';
 }
 
 export type Language = 'en' | 'es' | 'fr' | 'fa' | 'tr';
@@ -127,6 +172,14 @@ export const translations: Record<Language, Record<string, string>> = {
     restaurant: 'Restaurant Info',
     menuItems: 'Menu Items',
     qrCode: 'QR Codes',
+    login: 'Login',
+    username: 'Username',
+    password: 'Password',
+    forgotPassword: 'Forgot Password?',
+    callWaiter: 'Call Waiter',
+    welcome: 'Welcome',
+    chooseLanguage: 'Choose Your Language',
+    viewMenu: 'View Menu',
   },
   es: {
     menu: 'Menú',
@@ -157,6 +210,14 @@ export const translations: Record<Language, Record<string, string>> = {
     restaurant: 'Info del Restaurante',
     menuItems: 'Elementos del Menú',
     qrCode: 'Códigos QR',
+    login: 'Iniciar Sesión',
+    username: 'Usuario',
+    password: 'Contraseña',
+    forgotPassword: '¿Olvidaste tu contraseña?',
+    callWaiter: 'Llamar al Mesero',
+    welcome: 'Bienvenido',
+    chooseLanguage: 'Elige tu Idioma',
+    viewMenu: 'Ver Menú',
   },
   fr: {
     menu: 'Menu',
@@ -187,6 +248,14 @@ export const translations: Record<Language, Record<string, string>> = {
     restaurant: 'Info Restaurant',
     menuItems: 'Éléments du Menu',
     qrCode: 'Codes QR',
+    login: 'Connexion',
+    username: 'Nom d\'utilisateur',
+    password: 'Mot de passe',
+    forgotPassword: 'Mot de passe oublié?',
+    callWaiter: 'Appeler le Serveur',
+    welcome: 'Bienvenue',
+    chooseLanguage: 'Choisissez votre Langue',
+    viewMenu: 'Voir le Menu',
   },
   fa: {
     menu: 'منو',
@@ -217,6 +286,14 @@ export const translations: Record<Language, Record<string, string>> = {
     restaurant: 'اطلاعات رستوران',
     menuItems: 'آیتم‌های منو',
     qrCode: 'کدهای QR',
+    login: 'ورود',
+    username: 'نام کاربری',
+    password: 'رمز عبور',
+    forgotPassword: 'رمز عبور را فراموش کرده‌اید؟',
+    callWaiter: 'صدا زدن گارسون',
+    welcome: 'خوش آمدید',
+    chooseLanguage: 'زبان خود را انتخاب کنید',
+    viewMenu: 'مشاهده منو',
   },
   tr: {
     menu: 'Menü',
@@ -247,6 +324,14 @@ export const translations: Record<Language, Record<string, string>> = {
     restaurant: 'Restoran Bilgisi',
     menuItems: 'Menü Öğeleri',
     qrCode: 'QR Kodları',
+    login: 'Giriş Yap',
+    username: 'Kullanıcı Adı',
+    password: 'Şifre',
+    forgotPassword: 'Şifremi Unuttum?',
+    callWaiter: 'Garson Çağır',
+    welcome: 'Hoş Geldiniz',
+    chooseLanguage: 'Dilinizi Seçin',
+    viewMenu: 'Menüyü Görüntüle',
   },
 };
 

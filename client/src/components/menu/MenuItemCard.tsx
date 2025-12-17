@@ -14,7 +14,7 @@ export default function MenuItemCard({ item, language, onClick }: MenuItemCardPr
   };
 
   const getDescription = () => {
-    return item.description[language] || item.description.en || Object.values(item.description)[0] || '';
+    return item.shortDescription[language] || item.shortDescription.en || Object.values(item.shortDescription)[0] || '';
   };
 
   const isRtl = language === 'fa';
@@ -47,9 +47,22 @@ export default function MenuItemCard({ item, language, onClick }: MenuItemCardPr
               {getDescription()}
             </p>
           </div>
-          <p className="text-base font-semibold text-primary mt-1" data-testid={`text-item-price-${item.id}`}>
-            ${item.price.toFixed(2)}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            {item.discountedPrice ? (
+              <>
+                <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                  ${item.discountedPrice.toFixed(2)}
+                </span>
+                <span className="text-sm text-muted-foreground line-through">
+                  ${item.price.toFixed(2)}
+                </span>
+              </>
+            ) : (
+              <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                ${item.price.toFixed(2)}
+              </span>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

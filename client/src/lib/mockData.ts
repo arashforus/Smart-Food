@@ -1,4 +1,4 @@
-import type { Restaurant, Category, MenuItem, Branch, RestaurantTable, User, AppLanguage, Material, FoodType, Settings } from './types';
+import type { Restaurant, Category, MenuItem, Branch, RestaurantTable, User, AppLanguage, Material, FoodType, Settings, DashboardMetrics } from './types';
 
 export const mockRestaurant: Restaurant = {
   id: '1',
@@ -10,6 +10,8 @@ export const mockRestaurant: Restaurant = {
   hours: 'Mon-Thu: 11am-10pm | Fri-Sat: 11am-11pm | Sun: 12pm-9pm',
   currency: 'USD',
   currencySymbol: '$',
+  mapLat: 40.7128,
+  mapLng: -74.0060,
 };
 
 export const mockBranches: Branch[] = [
@@ -82,14 +84,23 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '1',
     name: { en: 'Bruschetta', es: 'Bruschetta', fr: 'Bruschetta', fa: 'بروسکتا', tr: 'Bruschetta' },
-    description: { 
-      en: 'Toasted bread topped with fresh tomatoes, basil, and garlic',
-      es: 'Pan tostado con tomates frescos, albahaca y ajo',
-      fr: 'Pain grillé garni de tomates fraîches, basilic et ail',
-      fa: 'نان تست شده با گوجه فرنگی تازه، ریحان و سیر',
-      tr: 'Taze domates, fesleğen ve sarımsakla kaplanmış kızarmış ekmek'
+    shortDescription: { 
+      en: 'Toasted bread with fresh tomatoes',
+      es: 'Pan tostado con tomates frescos',
+      fr: 'Pain grillé avec tomates fraîches',
+      fa: 'نان تست با گوجه تازه',
+      tr: 'Taze domatesli kızarmış ekmek'
+    },
+    longDescription: { 
+      en: 'Toasted bread topped with fresh tomatoes, basil, and garlic, drizzled with extra virgin olive oil and balsamic glaze',
+      es: 'Pan tostado con tomates frescos, albahaca y ajo, rociado con aceite de oliva virgen extra y glaseado balsámico',
+      fr: 'Pain grillé garni de tomates fraîches, basilic et ail, arrosé d\'huile d\'olive extra vierge et de glaçage balsamique',
+      fa: 'نان تست شده با گوجه فرنگی تازه، ریحان و سیر، با روغن زیتون و سس بالزامیک',
+      tr: 'Taze domates, fesleğen ve sarımsakla kaplanmış, sızma zeytinyağı ve balzamik glazür ile süslenmiş kızarmış ekmek'
     },
     price: 9.99,
+    discountedPrice: 7.99,
+    maxSelect: 5,
     categoryId: '1',
     available: true,
     materials: ['1', '3', '4'],
@@ -98,12 +109,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '2',
     name: { en: 'Calamari Fritti', es: 'Calamares Fritos', fr: 'Calamars Frits', fa: 'کالاماری سرخ شده', tr: 'Kalamar Tava' },
-    description: { 
-      en: 'Crispy fried squid served with marinara sauce',
-      es: 'Calamares crujientes servidos con salsa marinara',
-      fr: 'Calamars croustillants servis avec sauce marinara',
-      fa: 'ماهی مرکب سرخ شده ترد با سس مارینارا',
-      tr: 'Marinara sosu ile servis edilen çıtır kalamar'
+    shortDescription: { 
+      en: 'Crispy fried squid',
+      es: 'Calamares crujientes',
+      fr: 'Calamars croustillants',
+      fa: 'ماهی مرکب سرخ شده',
+      tr: 'Çıtır kalamar'
+    },
+    longDescription: { 
+      en: 'Crispy fried squid served with marinara sauce and lemon wedges, perfectly seasoned with our secret blend of herbs',
+      es: 'Calamares crujientes servidos con salsa marinara y rodajas de limón, perfectamente sazonados con nuestra mezcla secreta de hierbas',
+      fr: 'Calamars croustillants servis avec sauce marinara et quartiers de citron, parfaitement assaisonnés avec notre mélange secret d\'herbes',
+      fa: 'ماهی مرکب سرخ شده ترد با سس مارینارا و لیمو، با ترکیب مخصوص ادویه‌جات',
+      tr: 'Marinara sosu ve limon dilimleri ile servis edilen, gizli baharat karışımımızla mükemmel tatlandırılmış çıtır kalamar'
     },
     price: 14.99,
     categoryId: '1',
@@ -114,12 +132,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '3',
     name: { en: 'Spaghetti Carbonara', es: 'Espagueti Carbonara', fr: 'Spaghetti Carbonara', fa: 'اسپاگتی کاربونارا', tr: 'Spaghetti Carbonara' },
-    description: { 
-      en: 'Classic pasta with pancetta, egg, parmesan, and black pepper',
-      es: 'Pasta clásica con panceta, huevo, parmesano y pimienta negra',
-      fr: 'Pâtes classiques avec pancetta, œuf, parmesan et poivre noir',
-      fa: 'پاستا کلاسیک با پنچتا، تخم مرغ، پارمزان و فلفل سیاه',
-      tr: 'Pancetta, yumurta, parmesan ve karabiberli klasik makarna'
+    shortDescription: { 
+      en: 'Classic pasta with pancetta',
+      es: 'Pasta clásica con panceta',
+      fr: 'Pâtes classiques avec pancetta',
+      fa: 'پاستا کلاسیک با پنچتا',
+      tr: 'Pancettalı klasik makarna'
+    },
+    longDescription: { 
+      en: 'Classic pasta with pancetta, egg, parmesan, and black pepper, prepared in the traditional Roman style',
+      es: 'Pasta clásica con panceta, huevo, parmesano y pimienta negra, preparada al estilo romano tradicional',
+      fr: 'Pâtes classiques avec pancetta, œuf, parmesan et poivre noir, préparées dans le style romain traditionnel',
+      fa: 'پاستا کلاسیک با پنچتا، تخم مرغ، پارمزان و فلفل سیاه، به سبک سنتی رومی',
+      tr: 'Pancetta, yumurta, parmesan ve karabiberli, geleneksel Roma tarzında hazırlanmış klasik makarna'
     },
     price: 18.99,
     categoryId: '2',
@@ -130,14 +155,23 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '4',
     name: { en: 'Margherita Pizza', es: 'Pizza Margherita', fr: 'Pizza Margherita', fa: 'پیتزا مارگاریتا', tr: 'Margherita Pizza' },
-    description: { 
-      en: 'Traditional pizza with fresh mozzarella, tomatoes, and basil',
-      es: 'Pizza tradicional con mozzarella fresca, tomates y albahaca',
-      fr: 'Pizza traditionnelle avec mozzarella fraîche, tomates et basilic',
-      fa: 'پیتزا سنتی با موزارلا تازه، گوجه و ریحان',
-      tr: 'Taze mozzarella, domates ve fesleğenli geleneksel pizza'
+    shortDescription: { 
+      en: 'Traditional pizza with mozzarella',
+      es: 'Pizza tradicional con mozzarella',
+      fr: 'Pizza traditionnelle avec mozzarella',
+      fa: 'پیتزا سنتی با موزارلا',
+      tr: 'Mozzarellalı geleneksel pizza'
+    },
+    longDescription: { 
+      en: 'Traditional pizza with fresh mozzarella, tomatoes, and basil on our hand-tossed dough baked in a wood-fired oven',
+      es: 'Pizza tradicional con mozzarella fresca, tomates y albahaca en nuestra masa artesanal horneada en horno de leña',
+      fr: 'Pizza traditionnelle avec mozzarella fraîche, tomates et basilic sur notre pâte artisanale cuite au four à bois',
+      fa: 'پیتزا سنتی با موزارلا تازه، گوجه و ریحان روی خمیر دست‌ساز پخته در تنور هیزمی',
+      tr: 'Taze mozzarella, domates ve fesleğenli, odun ateşinde pişirilmiş el yapımı hamurlu geleneksel pizza'
     },
     price: 16.99,
+    discountedPrice: 14.99,
+    maxSelect: 3,
     categoryId: '2',
     available: true,
     materials: ['1', '2', '3'],
@@ -146,12 +180,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '5',
     name: { en: 'Grilled Salmon', es: 'Salmón a la Parrilla', fr: 'Saumon Grillé', fa: 'سالمون کبابی', tr: 'Izgara Somon' },
-    description: { 
-      en: 'Fresh Atlantic salmon with lemon herb butter and vegetables',
-      es: 'Salmón del Atlántico con mantequilla de hierbas y limón',
-      fr: 'Saumon de l\'Atlantique avec beurre aux herbes et citron',
-      fa: 'سالمون آتلانتیک تازه با کره لیمو و سبزیجات',
-      tr: 'Limonlu otlu tereyağı ve sebzelerle taze Atlantik somonu'
+    shortDescription: { 
+      en: 'Fresh Atlantic salmon',
+      es: 'Salmón del Atlántico fresco',
+      fr: 'Saumon de l\'Atlantique frais',
+      fa: 'سالمون آتلانتیک تازه',
+      tr: 'Taze Atlantik somonu'
+    },
+    longDescription: { 
+      en: 'Fresh Atlantic salmon with lemon herb butter and seasonal vegetables, grilled to perfection',
+      es: 'Salmón del Atlántico fresco con mantequilla de hierbas y limón y verduras de temporada, a la parrilla a la perfección',
+      fr: 'Saumon de l\'Atlantique frais avec beurre aux herbes et citron et légumes de saison, grillé à la perfection',
+      fa: 'سالمون آتلانتیک تازه با کره لیمو و سبزیجات فصلی، کباب شده به بهترین شکل',
+      tr: 'Limonlu otlu tereyağı ve mevsim sebzeleri ile mükemmel şekilde ızgara edilmiş taze Atlantik somonu'
     },
     price: 24.99,
     categoryId: '2',
@@ -162,12 +203,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '6',
     name: { en: 'Tiramisu', es: 'Tiramisú', fr: 'Tiramisu', fa: 'تیرامیسو', tr: 'Tiramisu' },
-    description: { 
-      en: 'Classic Italian dessert with espresso-soaked ladyfingers',
-      es: 'Postre italiano clásico con bizcochos empapados en espresso',
-      fr: 'Dessert italien classique avec biscuits imbibés d\'espresso',
-      fa: 'دسر کلاسیک ایتالیایی با بیسکویت آغشته به اسپرسو',
-      tr: 'Espresso emdirilmiş bisküvili klasik İtalyan tatlısı'
+    shortDescription: { 
+      en: 'Classic Italian dessert',
+      es: 'Postre italiano clásico',
+      fr: 'Dessert italien classique',
+      fa: 'دسر کلاسیک ایتالیایی',
+      tr: 'Klasik İtalyan tatlısı'
+    },
+    longDescription: { 
+      en: 'Classic Italian dessert with espresso-soaked ladyfingers layered with mascarpone cream and dusted with cocoa',
+      es: 'Postre italiano clásico con bizcochos empapados en espresso, capas de crema de mascarpone y espolvoreado con cacao',
+      fr: 'Dessert italien classique avec biscuits imbibés d\'espresso, couches de crème au mascarpone et saupoudré de cacao',
+      fa: 'دسر کلاسیک ایتالیایی با بیسکویت آغشته به اسپرسو، لایه‌های کرم ماسکارپونه و پودر کاکائو',
+      tr: 'Espresso emdirilmiş bisküvi, mascarpone kreması katmanları ve kakao tozu serpilmiş klasik İtalyan tatlısı'
     },
     price: 8.99,
     categoryId: '3',
@@ -178,12 +226,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '7',
     name: { en: 'Panna Cotta', es: 'Panna Cotta', fr: 'Panna Cotta', fa: 'پاناکوتا', tr: 'Panna Cotta' },
-    description: { 
-      en: 'Creamy vanilla custard with berry compote',
-      es: 'Crema de vainilla con compota de frutos rojos',
-      fr: 'Crème vanille avec compote de fruits rouges',
-      fa: 'کاستارد وانیلی خامه‌ای با کمپوت توت',
-      tr: 'Meyveli komposto ile kremalı vanilya muhallebisi'
+    shortDescription: { 
+      en: 'Creamy vanilla custard',
+      es: 'Crema de vainilla',
+      fr: 'Crème vanille',
+      fa: 'کاستارد وانیلی',
+      tr: 'Kremalı vanilya muhallebisi'
+    },
+    longDescription: { 
+      en: 'Creamy vanilla custard with berry compote, a silky smooth Italian classic',
+      es: 'Crema de vainilla con compota de frutos rojos, un clásico italiano sedoso',
+      fr: 'Crème vanille avec compote de fruits rouges, un classique italien soyeux',
+      fa: 'کاستارد وانیلی خامه‌ای با کمپوت توت، یک دسر کلاسیک ایتالیایی نرم',
+      tr: 'Meyveli komposto ile ipeksi pürüzsüz İtalyan klasiği kremalı vanilya muhallebisi'
     },
     price: 7.99,
     categoryId: '3',
@@ -194,12 +249,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '8',
     name: { en: 'Italian Soda', es: 'Soda Italiana', fr: 'Soda Italien', fa: 'نوشابه ایتالیایی', tr: 'İtalyan Soda' },
-    description: { 
-      en: 'Refreshing sparkling water with your choice of syrup',
-      es: 'Agua con gas refrescante con jarabe a elección',
-      fr: 'Eau pétillante rafraîchissante avec sirop au choix',
-      fa: 'آب گازدار تازه با شربت دلخواه شما',
-      tr: 'Seçtiğiniz şurupla ferahlatıcı maden suyu'
+    shortDescription: { 
+      en: 'Refreshing sparkling water',
+      es: 'Agua con gas refrescante',
+      fr: 'Eau pétillante rafraîchissante',
+      fa: 'آب گازدار تازه',
+      tr: 'Ferahlatıcı maden suyu'
+    },
+    longDescription: { 
+      en: 'Refreshing sparkling water with your choice of syrup - strawberry, raspberry, or lemon',
+      es: 'Agua con gas refrescante con jarabe a elección - fresa, frambuesa o limón',
+      fr: 'Eau pétillante rafraîchissante avec sirop au choix - fraise, framboise ou citron',
+      fa: 'آب گازدار تازه با شربت دلخواه شما - توت فرنگی، تمشک یا لیمو',
+      tr: 'Seçtiğiniz şurupla ferahlatıcı maden suyu - çilek, ahududu veya limon'
     },
     price: 4.99,
     categoryId: '4',
@@ -210,12 +272,19 @@ export const mockMenuItems: MenuItem[] = [
   {
     id: '9',
     name: { en: 'Espresso', es: 'Espresso', fr: 'Espresso', fa: 'اسپرسو', tr: 'Espresso' },
-    description: { 
-      en: 'Rich Italian espresso, single or double shot',
-      es: 'Espresso italiano rico, simple o doble',
-      fr: 'Espresso italien riche, simple ou double',
-      fa: 'اسپرسو ایتالیایی غنی، تک یا دوبل',
-      tr: 'Zengin İtalyan espresso, tek veya çift shot'
+    shortDescription: { 
+      en: 'Rich Italian espresso',
+      es: 'Espresso italiano rico',
+      fr: 'Espresso italien riche',
+      fa: 'اسپرسو ایتالیایی غنی',
+      tr: 'Zengin İtalyan espresso'
+    },
+    longDescription: { 
+      en: 'Rich Italian espresso, single or double shot, made from our premium roasted coffee beans',
+      es: 'Espresso italiano rico, simple o doble, hecho con nuestros granos de café premium',
+      fr: 'Espresso italien riche, simple ou double, fait avec nos grains de café premium',
+      fa: 'اسپرسو ایتالیایی غنی، تک یا دوبل، از دانه‌های قهوه برشته ممتاز ما',
+      tr: 'Premium kavrulmuş kahve çekirdeklerimizden yapılan zengin İtalyan espresso, tek veya çift shot'
     },
     price: 3.99,
     categoryId: '4',
@@ -224,3 +293,44 @@ export const mockMenuItems: MenuItem[] = [
     types: ['1'],
   },
 ];
+
+export const mockDashboardMetrics: DashboardMetrics = {
+  totalItems: mockMenuItems.length,
+  totalCategories: mockCategories.length,
+  availableItems: mockMenuItems.filter(i => i.available).length,
+  qrScans: 156,
+  salesDay: 1250.50,
+  salesWeek: 8750.25,
+  salesMonth: 35420.80,
+  customersDay: 45,
+  customersWeek: 312,
+  customersMonth: 1245,
+  menuViewsDay: 234,
+  menuViewsWeek: 1567,
+  menuViewsMonth: 6234,
+  bestSellers: [
+    { itemId: '4', name: 'Margherita Pizza', count: 89 },
+    { itemId: '3', name: 'Spaghetti Carbonara', count: 76 },
+    { itemId: '1', name: 'Bruschetta', count: 65 },
+    { itemId: '5', name: 'Grilled Salmon', count: 54 },
+    { itemId: '6', name: 'Tiramisu', count: 48 },
+  ],
+  salesChart: [
+    { date: 'Mon', amount: 1200 },
+    { date: 'Tue', amount: 1450 },
+    { date: 'Wed', amount: 1100 },
+    { date: 'Thu', amount: 1680 },
+    { date: 'Fri', amount: 2100 },
+    { date: 'Sat', amount: 2450 },
+    { date: 'Sun', amount: 1870 },
+  ],
+  viewsChart: [
+    { date: 'Mon', views: 180 },
+    { date: 'Tue', views: 220 },
+    { date: 'Wed', views: 195 },
+    { date: 'Thu', views: 240 },
+    { date: 'Fri', views: 310 },
+    { date: 'Sat', views: 380 },
+    { date: 'Sun', views: 290 },
+  ],
+};
