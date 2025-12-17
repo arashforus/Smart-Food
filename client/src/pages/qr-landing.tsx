@@ -26,18 +26,30 @@ function AnimatedWelcome() {
   }, []);
 
   return (
-    <div className="h-16 flex items-center justify-center overflow-hidden mb-8">
+    <div className="h-20 flex items-center justify-center mb-8">
       <AnimatePresence mode="wait">
         <motion.h2
           key={currentIndex}
-          initial={{ opacity: 0, y: 40, scale: 0.8 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -40, scale: 0.8 }}
-          transition={{
-            duration: 0.6,
-            ease: [0.22, 1, 0.36, 1],
+          initial={{ 
+            opacity: 0, 
+            filter: 'blur(12px)',
+            scale: 0.95,
           }}
-          className="text-4xl md:text-5xl font-semibold text-white tracking-tight"
+          animate={{ 
+            opacity: 1, 
+            filter: 'blur(0px)',
+            scale: 1,
+          }}
+          exit={{ 
+            opacity: 0, 
+            filter: 'blur(12px)',
+            scale: 1.05,
+          }}
+          transition={{
+            duration: 0.8,
+            ease: [0.25, 0.1, 0.25, 1],
+          }}
+          className="text-4xl md:text-5xl font-semibold text-white tracking-tight absolute"
           style={{
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif',
           }}
@@ -81,7 +93,7 @@ export default function QRLandingPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center">
+    <div className="min-h-screen relative flex flex-col">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
@@ -104,7 +116,7 @@ export default function QRLandingPage() {
         </video>
       )}
 
-      <div className="relative z-10 w-full max-w-lg mx-auto px-6 py-12 text-center">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center w-full max-w-lg mx-auto px-6 py-12 text-center">
         {mockRestaurant.logo ? (
           <img 
             src={mockRestaurant.logo} 
@@ -128,7 +140,7 @@ export default function QRLandingPage() {
 
         <AnimatedWelcome />
 
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           <div className="grid grid-cols-2 gap-3">
             {activeLanguages.map((lang) => (
               <Button
@@ -151,22 +163,22 @@ export default function QRLandingPage() {
             ))}
           </div>
         </div>
+      </div>
 
-        <div className="mt-12">
-          <Button
-            variant="default"
-            size="lg"
-            onClick={handleCallWaiter}
-            disabled={isCallingWaiter}
-            className="gap-2"
-            data-testid="button-call-waiter"
-          >
-            <Bell className="h-5 w-5" />
-            {translations.en.callWaiter}
-          </Button>
-        </div>
+      <div className="relative z-10 w-full max-w-lg mx-auto px-6 pb-8 text-center">
+        <Button
+          variant="default"
+          size="lg"
+          onClick={handleCallWaiter}
+          disabled={isCallingWaiter}
+          className="gap-2 mb-6"
+          data-testid="button-call-waiter"
+        >
+          <Bell className="h-5 w-5" />
+          {translations.en.callWaiter}
+        </Button>
 
-        <div className="mt-8 text-white/50 text-sm">
+        <div className="text-white/50 text-sm">
           <p>{mockRestaurant.address}</p>
           <p>{mockRestaurant.phone}</p>
         </div>
