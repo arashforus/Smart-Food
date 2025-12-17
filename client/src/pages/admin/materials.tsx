@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   AlertDialog,
@@ -30,6 +31,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { mockMaterials, mockLanguages } from '@/lib/mockData';
 import type { Material } from '@/lib/types';
@@ -41,6 +43,7 @@ const materialSchema = z.object({
   nameFa: z.string().optional(),
   nameTr: z.string().optional(),
   backgroundColor: z.string().min(1, 'Background color is required'),
+  image: z.string().optional(),
 });
 
 type MaterialFormData = z.infer<typeof materialSchema>;
@@ -55,11 +58,11 @@ export default function MaterialsPage() {
 
   const form = useForm<MaterialFormData>({
     resolver: zodResolver(materialSchema),
-    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B' },
+    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B', image: '' },
   });
 
   const openCreate = () => {
-    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B' });
+    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B', image: '' });
     setFormOpen(true);
   };
 
@@ -71,6 +74,7 @@ export default function MaterialsPage() {
       nameFa: material.name.fa || '',
       nameTr: material.name.tr || '',
       backgroundColor: material.backgroundColor,
+      image: material.image || '',
     });
     setEditingMaterial(material);
   };
@@ -80,6 +84,7 @@ export default function MaterialsPage() {
       id: String(Date.now()),
       name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
       backgroundColor: data.backgroundColor,
+      image: data.image,
     };
     setMaterials([...materials, newMaterial]);
     setFormOpen(false);
@@ -95,6 +100,7 @@ export default function MaterialsPage() {
           ...m,
           name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
           backgroundColor: data.backgroundColor,
+          image: data.image,
         };
       }
       return m;
@@ -131,12 +137,16 @@ export default function MaterialsPage() {
             key: 'preview',
             header: 'Preview',
             render: (item) => (
-              <div
-                className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
-                style={{ backgroundColor: item.backgroundColor }}
-              >
-                {item.name.en?.charAt(0).toUpperCase()}
-              </div>
+              item.image ? (
+                <img src={item.image} alt={item.name.en} className="w-8 h-8 rounded-md object-cover" />
+              ) : (
+                <div
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
+                  style={{ backgroundColor: item.backgroundColor }}
+                >
+                  {item.name.en?.charAt(0).toUpperCase()}
+                </div>
+              )
             ),
           },
           { key: 'name', header: 'Name (English)', render: (item) => item.name.en },
@@ -175,6 +185,21 @@ export default function MaterialsPage() {
                   </FormItem>
                 )} />
               ))}
+              <FormField control={form.control} name="image" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image (Optional)</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Upload image or enter URL"
+                      testId="input-material-image"
+                    />
+                  </FormControl>
+                  <FormDescription>If no image, the color will be used as background</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
               <FormField control={form.control} name="backgroundColor" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Background Color</FormLabel>
@@ -184,6 +209,7 @@ export default function MaterialsPage() {
                       <Input {...field} placeholder="#FF6B6B" className="flex-1" />
                     </div>
                   </FormControl>
+                  <FormDescription>Used when no image is set</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -219,6 +245,20 @@ export default function MaterialsPage() {
                   </FormItem>
                 )} />
               ))}
+              <FormField control={form.control} name="image" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image (Optional)</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Upload image or enter URL"
+                      testId="input-material-image-edit"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
               <FormField control={form.control} name="backgroundColor" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Background Color</FormLabel>

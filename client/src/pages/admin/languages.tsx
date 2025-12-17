@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Star } from 'lucide-react';
+import { Plus, Star, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -35,19 +37,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { mockLanguages } from '@/lib/mockData';
 import type { AppLanguage } from '@/lib/types';
+import { translations } from '@/lib/types';
 
 const languageSchema = z.object({
   code: z.string().min(2, 'Language code is required').max(5),
   name: z.string().min(1, 'Name is required'),
   nativeName: z.string().min(1, 'Native name is required'),
   direction: z.enum(['ltr', 'rtl']),
+  flagImage: z.string().optional(),
   isActive: z.boolean(),
   isDefault: z.boolean(),
 });
@@ -60,20 +71,45 @@ export default function LanguagesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingLanguage, setEditingLanguage] = useState<AppLanguage | null>(null);
   const [deleteLanguage, setDeleteLanguage] = useState<AppLanguage | null>(null);
+  const [textEditorOpen, setTextEditorOpen] = useState(false);
+  const [editingTexts, setEditingTexts] = useState<AppLanguage | null>(null);
+  const [textOverrides, setTextOverrides] = useState<Record<string, string>>({});
 
   const form = useForm<LanguageFormData>({
     resolver: zodResolver(languageSchema),
-    defaultValues: { code: '', name: '', nativeName: '', direction: 'ltr', isActive: true, isDefault: false },
+    defaultValues: { code: '', name: '', nativeName: '', direction: 'ltr', flagImage: '', isActive: true, isDefault: false },
   });
 
   const openCreate = () => {
-    form.reset({ code: '', name: '', nativeName: '', direction: 'ltr', isActive: true, isDefault: false });
+    form.reset({ code: '', name: '', nativeName: '', direction: 'ltr', flagImage: '', isActive: true, isDefault: false });
     setFormOpen(true);
   };
 
   const openEdit = (lang: AppLanguage) => {
-    form.reset({ code: lang.code, name: lang.name, nativeName: lang.nativeName, direction: lang.direction, isActive: lang.isActive, isDefault: lang.isDefault });
+    form.reset({ 
+      code: lang.code, 
+      name: lang.name, 
+      nativeName: lang.nativeName, 
+      direction: lang.direction, 
+      flagImage: lang.flagImage || '',
+      isActive: lang.isActive, 
+      isDefault: lang.isDefault 
+    });
     setEditingLanguage(lang);
+  };
+
+  const openTextEditor = (lang: AppLanguage) => {
+    setEditingTexts(lang);
+    const englishTexts = translations.en;
+    const langTexts = translations[lang.code as keyof typeof translations] || {};
+    const overrides: Record<string, string> = {};
+    
+    Object.keys(englishTexts).forEach(key => {
+      overrides[key] = lang.textOverrides?.[key] || langTexts[key] || englishTexts[key];
+    });
+    
+    setTextOverrides(overrides);
+    setTextEditorOpen(true);
   };
 
   const handleCreate = (data: LanguageFormData) => {
@@ -99,6 +135,19 @@ export default function LanguagesPage() {
     setEditingLanguage(null);
     form.reset();
     toast({ title: 'Language Updated' });
+  };
+
+  const handleSaveTexts = () => {
+    if (!editingTexts) return;
+    setLanguages(languages.map((l) => {
+      if (l.id === editingTexts.id) {
+        return { ...l, textOverrides };
+      }
+      return l;
+    }));
+    setTextEditorOpen(false);
+    setEditingTexts(null);
+    toast({ title: 'Text translations saved' });
   };
 
   const handleDelete = () => {
@@ -129,6 +178,15 @@ export default function LanguagesPage() {
       <DataTable
         data={languages}
         columns={[
+          { 
+            key: 'flag', 
+            header: 'Flag', 
+            render: (item) => item.flagImage ? (
+              <img src={item.flagImage} alt={item.name} className="w-8 h-5 object-cover rounded-sm" />
+            ) : (
+              <div className="w-8 h-5 rounded-sm bg-muted flex items-center justify-center text-xs">{item.code.toUpperCase()}</div>
+            )
+          },
           { key: 'code', header: 'Code' },
           { key: 'name', header: 'Name' },
           { key: 'nativeName', header: 'Native Name' },
@@ -151,6 +209,17 @@ export default function LanguagesPage() {
         onEdit={openEdit}
         onDelete={(item) => setDeleteLanguage(item)}
         testIdPrefix="language"
+        customActions={(item) => (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => openTextEditor(item)}
+            title="Edit Texts"
+            data-testid={`button-edit-texts-${item.id}`}
+          >
+            <FileText className="h-4 w-4" />
+          </Button>
+        )}
       />
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
@@ -167,17 +236,34 @@ export default function LanguagesPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="name" render={({ field }) => (
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (English)</FormLabel>
+                    <FormControl><Input {...field} placeholder="e.g., Spanish" data-testid="input-language-name" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="nativeName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Native Name</FormLabel>
+                    <FormControl><Input {...field} placeholder="e.g., Español" data-testid="input-language-native" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <FormField control={form.control} name="flagImage" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name (English)</FormLabel>
-                  <FormControl><Input {...field} placeholder="e.g., Spanish" data-testid="input-language-name" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="nativeName" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Native Name</FormLabel>
-                  <FormControl><Input {...field} placeholder="e.g., Español" data-testid="input-language-native" /></FormControl>
+                  <FormLabel>Flag Image</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Upload flag or enter URL"
+                      testId="input-language-flag"
+                    />
+                  </FormControl>
+                  <FormDescription>Country flag for language selection</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -239,17 +325,33 @@ export default function LanguagesPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="name" render={({ field }) => (
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="name" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (English)</FormLabel>
+                    <FormControl><Input {...field} data-testid="input-language-name-edit" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="nativeName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Native Name</FormLabel>
+                    <FormControl><Input {...field} data-testid="input-language-native-edit" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <FormField control={form.control} name="flagImage" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name (English)</FormLabel>
-                  <FormControl><Input {...field} data-testid="input-language-name-edit" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="nativeName" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Native Name</FormLabel>
-                  <FormControl><Input {...field} data-testid="input-language-native-edit" /></FormControl>
+                  <FormLabel>Flag Image</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Upload flag or enter URL"
+                      testId="input-language-flag-edit"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -294,6 +396,39 @@ export default function LanguagesPage() {
               </div>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={textEditorOpen} onOpenChange={setTextEditorOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="modal-text-editor">
+          <DialogHeader>
+            <DialogTitle>Edit Texts - {editingTexts?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Customize the UI text for this language. Leave empty to use the default translation.
+            </p>
+            <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              {Object.entries(translations.en).map(([key, englishValue]) => (
+                <div key={key} className="grid grid-cols-2 gap-3 items-start">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground">{key}</label>
+                    <p className="text-sm text-muted-foreground">{englishValue}</p>
+                  </div>
+                  <Input
+                    value={textOverrides[key] || ''}
+                    onChange={(e) => setTextOverrides({ ...textOverrides, [key]: e.target.value })}
+                    placeholder={englishValue}
+                    data-testid={`input-text-${key}`}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button type="button" variant="ghost" onClick={() => setTextEditorOpen(false)}>Cancel</Button>
+              <Button onClick={handleSaveTexts} data-testid="button-save-texts">Save Texts</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

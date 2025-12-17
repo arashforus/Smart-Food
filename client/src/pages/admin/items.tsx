@@ -18,6 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -36,10 +37,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { mockMenuItems, mockCategories, mockLanguages } from '@/lib/mockData';
 import type { MenuItem } from '@/lib/types';
@@ -50,12 +58,19 @@ const itemSchema = z.object({
   nameFr: z.string().optional(),
   nameFa: z.string().optional(),
   nameTr: z.string().optional(),
-  descriptionEn: z.string().min(1, 'English description is required'),
-  descriptionEs: z.string().optional(),
-  descriptionFr: z.string().optional(),
-  descriptionFa: z.string().optional(),
-  descriptionTr: z.string().optional(),
+  shortDescriptionEn: z.string().min(1, 'Short description is required'),
+  shortDescriptionEs: z.string().optional(),
+  shortDescriptionFr: z.string().optional(),
+  shortDescriptionFa: z.string().optional(),
+  shortDescriptionTr: z.string().optional(),
+  longDescriptionEn: z.string().optional(),
+  longDescriptionEs: z.string().optional(),
+  longDescriptionFr: z.string().optional(),
+  longDescriptionFa: z.string().optional(),
+  longDescriptionTr: z.string().optional(),
   price: z.number().min(0.01, 'Price must be greater than 0'),
+  discountedPrice: z.number().optional(),
+  maxSelect: z.number().optional(),
   categoryId: z.string().min(1, 'Category is required'),
   image: z.string().optional(),
   available: z.boolean(),
@@ -76,16 +91,18 @@ export default function ItemsPage() {
     resolver: zodResolver(itemSchema),
     defaultValues: {
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
-      descriptionEn: '', descriptionEs: '', descriptionFr: '', descriptionFa: '', descriptionTr: '',
-      price: 0, categoryId: '', image: '', available: true
+      shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
+      longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
+      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true
     },
   });
 
   const openCreate = () => {
     form.reset({
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
-      descriptionEn: '', descriptionEs: '', descriptionFr: '', descriptionFa: '', descriptionTr: '',
-      price: 0, categoryId: categories[0]?.id || '', image: '', available: true
+      shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
+      longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
+      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true
     });
     setFormOpen(true);
   };
@@ -97,12 +114,19 @@ export default function ItemsPage() {
       nameFr: item.name.fr || '',
       nameFa: item.name.fa || '',
       nameTr: item.name.tr || '',
-      descriptionEn: item.description.en || '',
-      descriptionEs: item.description.es || '',
-      descriptionFr: item.description.fr || '',
-      descriptionFa: item.description.fa || '',
-      descriptionTr: item.description.tr || '',
+      shortDescriptionEn: item.shortDescription.en || '',
+      shortDescriptionEs: item.shortDescription.es || '',
+      shortDescriptionFr: item.shortDescription.fr || '',
+      shortDescriptionFa: item.shortDescription.fa || '',
+      shortDescriptionTr: item.shortDescription.tr || '',
+      longDescriptionEn: item.longDescription.en || '',
+      longDescriptionEs: item.longDescription.es || '',
+      longDescriptionFr: item.longDescription.fr || '',
+      longDescriptionFa: item.longDescription.fa || '',
+      longDescriptionTr: item.longDescription.tr || '',
       price: item.price,
+      discountedPrice: item.discountedPrice,
+      maxSelect: item.maxSelect,
       categoryId: item.categoryId,
       image: item.image || '',
       available: item.available,
@@ -114,8 +138,11 @@ export default function ItemsPage() {
     const newItem: MenuItem = {
       id: String(Date.now()),
       name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-      description: { en: data.descriptionEn, es: data.descriptionEs || '', fr: data.descriptionFr || '', fa: data.descriptionFa || '', tr: data.descriptionTr || '' },
+      shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
+      longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
       price: data.price,
+      discountedPrice: data.discountedPrice,
+      maxSelect: data.maxSelect,
       categoryId: data.categoryId,
       image: data.image,
       available: data.available,
@@ -135,8 +162,11 @@ export default function ItemsPage() {
         return {
           ...i,
           name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-          description: { en: data.descriptionEn, es: data.descriptionEs || '', fr: data.descriptionFr || '', fa: data.descriptionFa || '', tr: data.descriptionTr || '' },
+          shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
+          longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
           price: data.price,
+          discountedPrice: data.discountedPrice,
+          maxSelect: data.maxSelect,
           categoryId: data.categoryId,
           image: data.image,
           available: data.available,
@@ -161,82 +191,161 @@ export default function ItemsPage() {
   const FormContent = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField control={form.control} name="nameEn" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Name (English)</FormLabel>
-            <FormControl><Input {...field} data-testid={`input-item-name${isEdit ? '-edit' : ''}`} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-          <FormField key={`name-${lang.code}`} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name ({lang.name})</FormLabel>
-              <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
-        ))}
-        <FormField control={form.control} name="descriptionEn" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Description (English)</FormLabel>
-            <FormControl><Textarea {...field} data-testid={`input-item-description${isEdit ? '-edit' : ''}`} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-          <FormField key={`desc-${lang.code}`} control={form.control} name={`description${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description ({lang.name})</FormLabel>
-              <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-description-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
-        ))}
-        <div className="grid grid-cols-2 gap-4">
-          <FormField control={form.control} name="price" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price ($)</FormLabel>
-              <FormControl>
-                <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
-          <FormField control={form.control} name="categoryId" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+        <Tabs defaultValue="basic" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="basic">Basic</TabsTrigger>
+            <TabsTrigger value="descriptions">Descriptions</TabsTrigger>
+            <TabsTrigger value="translations">Translations</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="basic" className="space-y-4 pt-4">
+            <FormField control={form.control} name="nameEn" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name (English)</FormLabel>
+                <FormControl><Input {...field} data-testid={`input-item-name${isEdit ? '-edit' : ''}`} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            
+            <FormField control={form.control} name="image" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Item Image</FormLabel>
                 <FormControl>
-                  <SelectTrigger data-testid={`select-item-category${isEdit ? '-edit' : ''}`}>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
+                  <ImageUpload
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Upload image or enter URL"
+                    testId={`input-item-image${isEdit ? '-edit' : ''}`}
+                  />
                 </FormControl>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>{cat.name.en}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )} />
-        </div>
-        <FormField control={form.control} name="image" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Image URL (optional)</FormLabel>
-            <FormControl><Input {...field} placeholder="https://..." data-testid={`input-item-image${isEdit ? '-edit' : ''}`} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="available" render={({ field }) => (
-          <FormItem className="flex items-center gap-3">
-            <FormLabel className="mt-0">Available</FormLabel>
-            <FormControl>
-              <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
-            </FormControl>
-          </FormItem>
-        )} />
+                <FormMessage />
+              </FormItem>
+            )} />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="price" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price ($)</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="discountedPrice" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Discounted Price ($)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      step="0.01" 
+                      {...field} 
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
+                      placeholder="Optional"
+                      data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
+                    />
+                  </FormControl>
+                  <FormDescription>Leave empty for no discount</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="categoryId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger data-testid={`select-item-category${isEdit ? '-edit' : ''}`}>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>{cat.name.en}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="maxSelect" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Selection</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      {...field} 
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
+                      placeholder="Unlimited"
+                      data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`} 
+                    />
+                  </FormControl>
+                  <FormDescription>Max quantity per order</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+            
+            <FormField control={form.control} name="available" render={({ field }) => (
+              <FormItem className="flex items-center gap-3">
+                <FormLabel className="mt-0">Available</FormLabel>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
+                </FormControl>
+              </FormItem>
+            )} />
+          </TabsContent>
+          
+          <TabsContent value="descriptions" className="space-y-4 pt-4">
+            <FormField control={form.control} name="shortDescriptionEn" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Short Description (English)</FormLabel>
+                <FormControl><Input {...field} placeholder="Brief description for menu cards" data-testid={`input-item-short-desc${isEdit ? '-edit' : ''}`} /></FormControl>
+                <FormDescription>Shown on menu cards</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="longDescriptionEn" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Long Description (English)</FormLabel>
+                <FormControl><Textarea {...field} placeholder="Detailed description for item modal" data-testid={`input-item-long-desc${isEdit ? '-edit' : ''}`} /></FormControl>
+                <FormDescription>Shown in detailed view</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </TabsContent>
+          
+          <TabsContent value="translations" className="space-y-4 pt-4 max-h-[300px] overflow-y-auto">
+            {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
+              <div key={lang.code} className="space-y-3 p-3 rounded-md bg-muted/50">
+                <h4 className="font-medium text-sm">{lang.name} ({lang.nativeName})</h4>
+                <FormField control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Name</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name={`shortDescription${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Short Description</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name={`longDescription${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Long Description</FormLabel>
+                    <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                  </FormItem>
+                )} />
+              </div>
+            ))}
+          </TabsContent>
+        </Tabs>
+        
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
           <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`}>
@@ -263,9 +372,33 @@ export default function ItemsPage() {
       <DataTable
         data={items}
         columns={[
+          { 
+            key: 'image', 
+            header: 'Image', 
+            render: (item) => item.image ? (
+              <img src={item.image} alt={item.name.en} className="w-10 h-10 rounded object-cover" />
+            ) : (
+              <div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">No img</div>
+            )
+          },
           { key: 'name', header: 'Name', render: (item) => item.name.en },
           { key: 'categoryId', header: 'Category', render: (item) => getCategoryName(item.categoryId) },
-          { key: 'price', header: 'Price', render: (item) => `$${item.price.toFixed(2)}` },
+          { 
+            key: 'price', 
+            header: 'Price', 
+            render: (item) => (
+              <div className="flex items-center gap-2">
+                {item.discountedPrice ? (
+                  <>
+                    <span className="text-muted-foreground line-through">${item.price.toFixed(2)}</span>
+                    <span className="text-green-600 font-medium">${item.discountedPrice.toFixed(2)}</span>
+                  </>
+                ) : (
+                  <span>${item.price.toFixed(2)}</span>
+                )}
+              </div>
+            )
+          },
           {
             key: 'available',
             header: 'Status',
