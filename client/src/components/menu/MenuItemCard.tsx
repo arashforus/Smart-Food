@@ -10,16 +10,14 @@ interface MenuItemCardProps {
 
 export default function MenuItemCard({ item, language, onClick }: MenuItemCardProps) {
   const getName = () => {
-    if (language === 'es') return item.nameEs;
-    if (language === 'fr') return item.nameFr;
-    return item.name;
+    return item.name[language] || item.name.en || Object.values(item.name)[0] || '';
   };
 
   const getDescription = () => {
-    if (language === 'es') return item.descriptionEs;
-    if (language === 'fr') return item.descriptionFr;
-    return item.description;
+    return item.description[language] || item.description.en || Object.values(item.description)[0] || '';
   };
+
+  const isRtl = language === 'fa';
 
   return (
     <Card
@@ -27,7 +25,7 @@ export default function MenuItemCard({ item, language, onClick }: MenuItemCardPr
       onClick={onClick}
       data-testid={`card-menu-item-${item.id}`}
     >
-      <CardContent className="p-3 flex gap-3">
+      <CardContent className={`p-3 flex gap-3 ${isRtl ? 'flex-row-reverse' : ''}`}>
         <div className="w-20 h-20 flex-shrink-0 rounded-md bg-muted flex items-center justify-center overflow-hidden">
           {item.image ? (
             <img
@@ -40,7 +38,7 @@ export default function MenuItemCard({ item, language, onClick }: MenuItemCardPr
             <UtensilsCrossed className="h-8 w-8 text-muted-foreground" />
           )}
         </div>
-        <div className="flex-1 min-w-0 flex flex-col justify-between">
+        <div className={`flex-1 min-w-0 flex flex-col justify-between ${isRtl ? 'text-right' : ''}`}>
           <div>
             <h3 className="font-medium text-base truncate" data-testid={`text-item-name-${item.id}`}>
               {getName()}

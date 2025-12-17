@@ -21,14 +21,14 @@ export default function MenuList({
     : items.filter((item) => item.available);
 
   const getCategoryName = (category: Category) => {
-    if (language === 'es') return category.nameEs;
-    if (language === 'fr') return category.nameFr;
-    return category.name;
+    return category.name[language] || category.name.en || Object.values(category.name)[0] || '';
   };
+
+  const isRtl = language === 'fa';
 
   if (selectedCategory) {
     return (
-      <div className="p-4 space-y-3">
+      <div className={`p-4 space-y-3 ${isRtl ? 'dir-rtl' : ''}`} dir={isRtl ? 'rtl' : 'ltr'}>
         {filteredItems.map((item) => (
           <MenuItemCard
             key={item.id}
@@ -42,7 +42,7 @@ export default function MenuList({
   }
 
   return (
-    <div className="p-4 space-y-6">
+    <div className={`p-4 space-y-6 ${isRtl ? 'dir-rtl' : ''}`} dir={isRtl ? 'rtl' : 'ltr'}>
       {categories.map((category) => {
         const categoryItems = items.filter(
           (item) => item.categoryId === category.id && item.available
@@ -52,7 +52,7 @@ export default function MenuList({
         return (
           <div key={category.id}>
             <h2
-              className="text-lg font-semibold mb-3 sticky top-12 bg-background py-2 z-40"
+              className={`text-lg font-semibold mb-3 sticky top-12 bg-background py-2 z-40 ${isRtl ? 'text-right' : ''}`}
               data-testid={`text-category-heading-${category.id}`}
             >
               {getCategoryName(category)}

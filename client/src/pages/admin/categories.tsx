@@ -1,8 +1,21 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import DataTable from '@/components/admin/DataTable';
-import CategoryForm from '@/components/admin/CategoryForm';
+import { Plus, Image as ImageIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,40 +26,90 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
-// todo: remove mock functionality
-import { mockCategories } from '@/lib/mockData';
+import { mockCategories, mockLanguages } from '@/lib/mockData';
 import type { Category } from '@/lib/types';
+
+const categorySchema = z.object({
+  nameEn: z.string().min(1, 'English name is required'),
+  nameEs: z.string().optional(),
+  nameFr: z.string().optional(),
+  nameFa: z.string().optional(),
+  nameTr: z.string().optional(),
+  image: z.string().optional(),
+  order: z.number().min(1, 'Order must be at least 1'),
+});
+
+type CategoryFormData = z.infer<typeof categorySchema>;
 
 export default function CategoriesPage() {
   const { toast } = useToast();
-  // todo: remove mock functionality - replace with API calls
   const [categories, setCategories] = useState<Category[]>(mockCategories);
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
+  const activeLanguages = mockLanguages.filter((l) => l.isActive);
 
-  const handleCreate = (data: Omit<Category, 'id'>) => {
-    // todo: replace with API call
+  const form = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: 1 },
+  });
+
+  const openCreate = () => {
+    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: categories.length + 1 });
+    setFormOpen(true);
+  };
+
+  const openEdit = (category: Category) => {
+    form.reset({
+      nameEn: category.name.en || '',
+      nameEs: category.name.es || '',
+      nameFr: category.name.fr || '',
+      nameFa: category.name.fa || '',
+      nameTr: category.name.tr || '',
+      image: category.image || '',
+      order: category.order,
+    });
+    setEditingCategory(category);
+  };
+
+  const handleCreate = (data: CategoryFormData) => {
     const newCategory: Category = {
       id: String(Date.now()),
-      ...data,
+      name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+      image: data.image,
+      order: data.order,
     };
     setCategories([...categories, newCategory]);
+    setFormOpen(false);
+    form.reset();
     toast({ title: 'Category Created' });
   };
 
-  const handleEdit = (data: Omit<Category, 'id'>) => {
+  const handleEdit = (data: CategoryFormData) => {
     if (!editingCategory) return;
-    // todo: replace with API call
-    setCategories(categories.map((c) => (c.id === editingCategory.id ? { ...c, ...data } : c)));
+    setCategories(categories.map((c) => {
+      if (c.id === editingCategory.id) {
+        return {
+          ...c,
+          name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+          image: data.image,
+          order: data.order,
+        };
+      }
+      return c;
+    }));
     setEditingCategory(null);
+    form.reset();
     toast({ title: 'Category Updated' });
   };
 
   const handleDelete = () => {
     if (!deleteCategory) return;
-    // todo: replace with API call
     setCategories(categories.filter((c) => c.id !== deleteCategory.id));
     setDeleteCategory(null);
     toast({ title: 'Category Deleted' });
@@ -59,7 +122,7 @@ export default function CategoriesPage() {
           <h1 className="text-2xl font-semibold">Categories</h1>
           <p className="text-muted-foreground">Organize your menu items</p>
         </div>
-        <Button onClick={() => setFormOpen(true)} data-testid="button-add-category">
+        <Button onClick={openCreate} data-testid="button-add-category">
           <Plus className="h-4 w-4 mr-2" />
           Add Category
         </Button>
@@ -68,42 +131,136 @@ export default function CategoriesPage() {
       <DataTable
         data={categories.sort((a, b) => a.order - b.order)}
         columns={[
-          { key: 'name', header: 'Name (English)' },
-          { key: 'nameEs', header: 'Spanish' },
-          { key: 'nameFr', header: 'French' },
+          {
+            key: 'image',
+            header: 'Image',
+            render: (item) => item.image ? (
+              <img src={item.image} alt={item.name.en} className="w-10 h-10 rounded-md object-cover" />
+            ) : (
+              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
+                <ImageIcon className="w-5 h-5 text-muted-foreground" />
+              </div>
+            ),
+          },
+          { key: 'name', header: 'Name (English)', render: (item) => item.name.en },
+          { key: 'translations', header: 'Translations', render: (item) => {
+            const count = Object.values(item.name).filter(v => v && v.length > 0).length;
+            return `${count} language(s)`;
+          }},
           { key: 'order', header: 'Order' },
         ]}
-        onEdit={(item) => setEditingCategory(item)}
+        onEdit={openEdit}
         onDelete={(item) => setDeleteCategory(item)}
         testIdPrefix="category"
       />
 
-      <CategoryForm
-        open={formOpen}
-        onClose={() => setFormOpen(false)}
-        onSubmit={handleCreate}
-      />
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-form">
+          <DialogHeader>
+            <DialogTitle>Add Category</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
+              <FormField control={form.control} name="nameEn" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (English)</FormLabel>
+                  <FormControl><Input {...field} data-testid="input-category-name" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
+                <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof CategoryFormData} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name ({lang.name})</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}`} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              ))}
+              <FormField control={form.control} name="image" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image URL (optional)</FormLabel>
+                  <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="order" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Order</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
+                <Button type="submit" data-testid="button-save-category">Create</Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
-      <CategoryForm
-        category={editingCategory}
-        open={!!editingCategory}
-        onClose={() => setEditingCategory(null)}
-        onSubmit={handleEdit}
-      />
+      <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-edit">
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
+              <FormField control={form.control} name="nameEn" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (English)</FormLabel>
+                  <FormControl><Input {...field} data-testid="input-category-name-edit" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
+                <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof CategoryFormData} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name ({lang.name})</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-edit`} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              ))}
+              <FormField control={form.control} name="image" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image URL (optional)</FormLabel>
+                  <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image-edit" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="order" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Order</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order-edit" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="ghost" onClick={() => setEditingCategory(null)}>Cancel</Button>
+                <Button type="submit" data-testid="button-update-category">Update</Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!deleteCategory} onOpenChange={() => setDeleteCategory(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Category</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteCategory?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{deleteCategory?.name.en}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete">
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -18,22 +18,22 @@ export default function ItemDetailModal({ item, open, onClose, language }: ItemD
   if (!item) return null;
 
   const getName = () => {
-    if (language === 'es') return item.nameEs;
-    if (language === 'fr') return item.nameFr;
-    return item.name;
+    return item.name[language] || item.name.en || Object.values(item.name)[0] || '';
   };
 
   const getDescription = () => {
-    if (language === 'es') return item.descriptionEs;
-    if (language === 'fr') return item.descriptionFr;
-    return item.description;
+    return item.description[language] || item.description.en || Object.values(item.description)[0] || '';
   };
+
+  const isRtl = language === 'fa';
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-sm" data-testid="modal-item-detail">
+      <DialogContent className="max-w-sm" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader>
-          <DialogTitle data-testid="text-modal-item-name">{getName()}</DialogTitle>
+          <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
+            {getName()}
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="w-full aspect-square rounded-md bg-muted flex items-center justify-center overflow-hidden">
@@ -47,8 +47,8 @@ export default function ItemDetailModal({ item, open, onClose, language }: ItemD
               <UtensilsCrossed className="h-16 w-16 text-muted-foreground" />
             )}
           </div>
-          <p className="text-muted-foreground">{getDescription()}</p>
-          <p className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
+          <p className={`text-muted-foreground ${isRtl ? 'text-right' : ''}`}>{getDescription()}</p>
+          <p className={`text-xl font-semibold text-primary ${isRtl ? 'text-right' : ''}`} data-testid="text-modal-item-price">
             ${item.price.toFixed(2)}
           </p>
         </div>

@@ -19,9 +19,7 @@ export default function CategoryTabs({
   const t = translations[language];
 
   const getCategoryName = (category: Category) => {
-    if (language === 'es') return category.nameEs;
-    if (language === 'fr') return category.nameFr;
-    return category.name;
+    return category.name[language] || category.name.en || Object.values(category.name)[0] || '';
   };
 
   return (

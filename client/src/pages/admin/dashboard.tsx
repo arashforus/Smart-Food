@@ -1,10 +1,8 @@
 import DashboardStats from '@/components/admin/DashboardStats';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-// todo: remove mock functionality
 import { mockMenuItems, mockCategories } from '@/lib/mockData';
 
 export default function DashboardPage() {
-  // todo: remove mock functionality - replace with API calls
   const items = mockMenuItems;
   const categories = mockCategories;
 
@@ -30,7 +28,7 @@ export default function DashboardPage() {
             <div className="space-y-2">
               {items.slice(0, 5).map((item) => (
                 <div key={item.id} className="flex justify-between text-sm">
-                  <span>{item.name}</span>
+                  <span>{item.name.en || Object.values(item.name)[0]}</span>
                   <span className="text-muted-foreground">${item.price.toFixed(2)}</span>
                 </div>
               ))}
@@ -48,7 +46,7 @@ export default function DashboardPage() {
                 const count = items.filter((i) => i.categoryId === category.id).length;
                 return (
                   <div key={category.id} className="flex justify-between text-sm">
-                    <span>{category.name}</span>
+                    <span>{category.name.en || Object.values(category.name)[0]}</span>
                     <span className="text-muted-foreground">{count} items</span>
                   </div>
                 );

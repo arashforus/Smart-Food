@@ -5,7 +5,6 @@ import MenuList from '@/components/menu/MenuList';
 import ItemDetailModal from '@/components/menu/ItemDetailModal';
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
-// todo: remove mock functionality
 import { mockRestaurant, mockCategories, mockMenuItems } from '@/lib/mockData';
 import type { MenuItem, Language } from '@/lib/types';
 
@@ -21,15 +20,16 @@ export default function MenuPage() {
     localStorage.setItem('menuLanguage', language);
   }, [language]);
 
-  // todo: remove mock functionality - replace with API calls
   const restaurant = mockRestaurant;
   const categories = mockCategories;
   const menuItems = mockMenuItems;
 
+  const isRtl = language === 'fa';
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="sticky top-0 z-50 bg-background border-b">
-        <div className="flex items-center justify-between p-2">
+        <div className={`flex items-center justify-between p-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
           <ThemeToggle />
           <LanguageSelector language={language} onLanguageChange={setLanguage} />
         </div>
