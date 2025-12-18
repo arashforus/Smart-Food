@@ -23,6 +23,7 @@ import TypesPage from './types';
 import SettingsPage from './settings';
 import OrdersPage from './orders';
 import KitchenPage from './kitchen';
+import OrderStatusScreen from './order-status-screen';
 
 export default function AdminLayout() {
   const { toast } = useToast();
@@ -93,6 +94,7 @@ export default function AdminLayout() {
                 <Route path="/admin/settings" component={SettingsPage} />
                 <Route path="/admin/orders" component={OrdersPage} />
                 <Route path="/admin/kitchen" component={KitchenPage} />
+                <Route path="/admin/order-status-screen" component={OrderStatusScreen} />
               </Switch>
             </main>
             <AdminFooter />

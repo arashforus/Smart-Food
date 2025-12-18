@@ -25,7 +25,8 @@ import {
   Salad,
   Tags,
   ShoppingCart,
-  ChefHat
+  ChefHat,
+  Monitor
 } from 'lucide-react';
 
 const menuItems = [
@@ -39,6 +40,7 @@ const menuItems = [
 const operationsItems = [
   { title: 'New Order', url: '/admin/orders', icon: ShoppingCart },
   { title: 'Kitchen Display', url: '/admin/kitchen', icon: ChefHat },
+  { title: 'Order Status Screen', url: '/admin/order-status-screen', icon: Monitor },
 ];
 
 const managementItems = [
