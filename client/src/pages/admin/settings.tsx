@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Upload, X } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -42,6 +43,11 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [settings, setSettings] = useState<Settings>(mockSettings);
   const [isPending, setIsPending] = useState(false);
+  const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>(() => {
+    return localStorage.getItem('loginBackgroundImage') || '';
+  });
+  const [loginBackgroundPreview, setLoginBackgroundPreview] = useState<string>(loginBackgroundImage);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
 
   const form = useForm<SettingsFormData>({
@@ -60,10 +66,35 @@ export default function SettingsPage() {
   const handleSubmit = (data: SettingsFormData) => {
     setIsPending(true);
     setTimeout(() => {
+      if (loginBackgroundImage) {
+        localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
+      }
       setSettings({ ...settings, ...data });
       setIsPending(false);
       toast({ title: 'Settings Saved', description: 'Your settings have been updated.' });
     }, 500);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        setLoginBackgroundImage(imageData);
+        setLoginBackgroundPreview(imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearImage = () => {
+    setLoginBackgroundImage('');
+    setLoginBackgroundPreview('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    localStorage.removeItem('loginBackgroundImage');
   };
 
   return (
@@ -102,6 +133,56 @@ export default function SettingsPage() {
                   <FormMessage />
                 </FormItem>
               )} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Login Page</CardTitle>
+              <CardDescription>Customize the login page background</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <FormLabel>Background Image</FormLabel>
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {loginBackgroundPreview ? (
+                    <div className="space-y-2">
+                      <img src={loginBackgroundPreview} alt="Preview" className="max-h-32 mx-auto rounded" />
+                      <p className="text-sm text-muted-foreground">Click to change or scroll down to clear</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 py-4">
+                      <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    data-testid="input-login-background"
+                  />
+                </div>
+                {loginBackgroundImage && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearImage}
+                    className="w-full"
+                    data-testid="button-clear-background"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Clear Image
+                  </Button>
+                )}
+                <FormDescription>Recommended size: 1920x1080px or larger</FormDescription>
+              </div>
             </CardContent>
           </Card>
 
