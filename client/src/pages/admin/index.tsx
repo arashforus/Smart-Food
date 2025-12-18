@@ -20,6 +20,8 @@ import LanguagesPage from './languages';
 import MaterialsPage from './materials';
 import TypesPage from './types';
 import SettingsPage from './settings';
+import OrdersPage from './orders';
+import KitchenPage from './kitchen';
 
 export default function AdminLayout() {
   const { toast } = useToast();
@@ -87,6 +89,8 @@ export default function AdminLayout() {
               <Route path="/admin/materials" component={MaterialsPage} />
               <Route path="/admin/types" component={TypesPage} />
               <Route path="/admin/settings" component={SettingsPage} />
+              <Route path="/admin/orders" component={OrdersPage} />
+              <Route path="/admin/kitchen" component={KitchenPage} />
             </Switch>
           </main>
           <AdminFooter />

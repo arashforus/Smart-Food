@@ -75,6 +75,31 @@ export interface CartItem {
   notes?: string;
 }
 
+export type OrderStatus = 'pending' | 'preparing' | 'ready' | 'served' | 'cancelled';
+
+export interface OrderItem {
+  id: string;
+  menuItemId: string;
+  menuItemName: Record<string, string>;
+  quantity: number;
+  price: number;
+  notes?: string;
+  status: 'pending' | 'preparing' | 'ready';
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  tableNumber?: string;
+  branchId: string;
+  items: OrderItem[];
+  status: OrderStatus;
+  totalAmount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  notes?: string;
+}
+
 export interface AppLanguage {
   id: string;
   code: string;

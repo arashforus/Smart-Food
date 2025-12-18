@@ -23,7 +23,9 @@ import {
   Settings,
   Globe,
   Salad,
-  Tags
+  Tags,
+  ShoppingCart,
+  ChefHat
 } from 'lucide-react';
 
 const menuItems = [
@@ -32,6 +34,11 @@ const menuItems = [
   { title: 'Categories', url: '/admin/categories', icon: List },
   { title: 'Menu Items', url: '/admin/items', icon: UtensilsCrossed },
   { title: 'QR Codes', url: '/admin/qrcode', icon: QrCode },
+];
+
+const operationsItems = [
+  { title: 'New Order', url: '/admin/orders', icon: ShoppingCart },
+  { title: 'Kitchen Display', url: '/admin/kitchen', icon: ChefHat },
 ];
 
 const managementItems = [
@@ -66,6 +73,24 @@ export default function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <Link href={item.url} data-testid={`link-admin-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Operations</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {operationsItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <Link href={item.url} data-testid={`link-admin-${item.title.toLowerCase().replace(/\s+/g, '-')}`}>

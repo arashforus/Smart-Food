@@ -1,4 +1,4 @@
-import type { Restaurant, Category, MenuItem, Branch, RestaurantTable, User, AppLanguage, Material, FoodType, Settings, DashboardMetrics } from './types';
+import type { Restaurant, Category, MenuItem, Branch, RestaurantTable, User, AppLanguage, Material, FoodType, Settings, DashboardMetrics, Order } from './types';
 
 export const mockRestaurant: Restaurant = {
   id: '1',
@@ -343,3 +343,47 @@ export const mockDashboardMetrics: DashboardMetrics = {
     { date: 'Sun', views: 290 },
   ],
 };
+
+export const mockOrders: Order[] = [
+  {
+    id: '1',
+    orderNumber: 'ORD-001',
+    tableNumber: 'T1',
+    branchId: '1',
+    items: [
+      { id: '1-1', menuItemId: '1', menuItemName: { en: 'Bruschetta', es: 'Bruschetta', fr: 'Bruschetta', fa: 'بروسکتا', tr: 'Bruschetta' }, quantity: 2, price: 8.99, status: 'pending' },
+      { id: '1-2', menuItemId: '4', menuItemName: { en: 'Margherita Pizza', es: 'Pizza Margherita', fr: 'Pizza Margherita', fa: 'پیتزا مارگاریتا', tr: 'Margherita Pizza' }, quantity: 1, price: 14.99, status: 'preparing' },
+    ],
+    status: 'preparing',
+    totalAmount: 32.97,
+    createdAt: new Date(Date.now() - 15 * 60000),
+    updatedAt: new Date(Date.now() - 10 * 60000),
+  },
+  {
+    id: '2',
+    orderNumber: 'ORD-002',
+    tableNumber: 'T3',
+    branchId: '1',
+    items: [
+      { id: '2-1', menuItemId: '3', menuItemName: { en: 'Spaghetti Carbonara', es: 'Espaguetis Carbonara', fr: 'Spaghetti Carbonara', fa: 'اسپاگتی کاربونارا', tr: 'Spaghetti Carbonara' }, quantity: 2, price: 16.99, notes: 'Extra cheese', status: 'ready' },
+    ],
+    status: 'ready',
+    totalAmount: 33.98,
+    createdAt: new Date(Date.now() - 25 * 60000),
+    updatedAt: new Date(Date.now() - 5 * 60000),
+  },
+  {
+    id: '3',
+    orderNumber: 'ORD-003',
+    tableNumber: 'T2',
+    branchId: '1',
+    items: [
+      { id: '3-1', menuItemId: '5', menuItemName: { en: 'Grilled Salmon', es: 'Salmón a la Parrilla', fr: 'Saumon Grillé', fa: 'سالمون کبابی', tr: 'Izgara Somon' }, quantity: 1, price: 24.99, status: 'pending' },
+      { id: '3-2', menuItemId: '6', menuItemName: { en: 'Tiramisu', es: 'Tiramisú', fr: 'Tiramisu', fa: 'تیرامیسو', tr: 'Tiramisu' }, quantity: 2, price: 7.99, status: 'pending' },
+    ],
+    status: 'pending',
+    totalAmount: 40.97,
+    createdAt: new Date(Date.now() - 5 * 60000),
+    updatedAt: new Date(Date.now() - 5 * 60000),
+  },
+];
