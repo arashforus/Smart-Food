@@ -7,6 +7,7 @@ import RestaurantHeader from '@/components/menu/RestaurantHeader';
 import CategoryTabs from '@/components/menu/CategoryTabs';
 import MenuList from '@/components/menu/MenuList';
 import ItemDetailModal from '@/components/menu/ItemDetailModal';
+import CartView from '@/components/menu/CartView';
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
 import { mockRestaurant, mockCategories, mockMenuItems, mockFoodTypes } from '@/lib/mockData';
@@ -26,6 +27,7 @@ export default function MenuPage() {
   const [showSuggested, setShowSuggested] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [showCartView, setShowCartView] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('menuLanguage', language);
@@ -48,18 +50,32 @@ export default function MenuPage() {
     );
   };
 
-  const handleAddToCart = (item: MenuItem, quantity: number) => {
+  const handleAddToCart = (item: MenuItem, quantity: number, notes: string = '') => {
     setCartItems((prev) => {
-      const existingItem = prev.find((ci) => ci.item.id === item.id);
+      const existingItem = prev.find((ci) => ci.item.id === item.id && ci.notes === notes);
       if (existingItem) {
         return prev.map((ci) =>
-          ci.item.id === item.id
+          ci === existingItem
             ? { ...ci, quantity: ci.quantity + quantity }
             : ci
         );
       }
-      return [...prev, { id: `${item.id}-${Date.now()}`, item, quantity }];
+      return [...prev, { id: `${item.id}-${Date.now()}`, item, quantity, notes }];
     });
+  };
+
+  const handleAddToCartFromCard = (item: MenuItem) => {
+    setSelectedItem(item);
+  };
+
+  const handleRemoveFromCart = (cartItemId: string) => {
+    setCartItems((prev) => prev.filter((ci) => ci.id !== cartItemId));
+  };
+
+  const handlePlaceOrder = () => {
+    alert(`Order placed with ${cartItems.length} items for $${cartTotal.toFixed(2)}`);
+    setCartItems([]);
+    setShowCartView(false);
   };
 
   const cartTotal = cartItems.reduce(
@@ -136,6 +152,7 @@ export default function MenuPage() {
         selectedCategory={selectedCategory}
         language={language}
         onItemClick={setSelectedItem}
+        onAddToCart={handleAddToCartFromCard}
         selectedTypes={selectedTypes}
         viewMode={viewMode}
         showSuggested={showSuggested}
@@ -150,12 +167,21 @@ export default function MenuPage() {
         onAddToCart={handleAddToCart}
       />
 
+      <CartView
+        open={showCartView}
+        onClose={() => setShowCartView(false)}
+        cartItems={cartItems}
+        language={language}
+        onRemoveItem={handleRemoveFromCart}
+        onPlaceOrder={handlePlaceOrder}
+      />
+
       {cartItems.length > 0 && (
         <div className="fixed bottom-6 right-6 z-40" dir={isRtl ? 'rtl' : 'ltr'}>
           <Button
             size="lg"
             className="rounded-full gap-3 shadow-lg"
-            onClick={() => {}}
+            onClick={() => setShowCartView(true)}
             data-testid="button-cart"
           >
             <ShoppingCart className="h-5 w-5" />

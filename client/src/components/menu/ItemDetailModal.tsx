@@ -8,6 +8,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { UtensilsCrossed, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import type { MenuItem, Language } from '@/lib/types';
 import { translations } from '@/lib/types';
 import { mockMaterials, mockFoodTypes } from '@/lib/mockData';
@@ -17,11 +18,12 @@ interface ItemDetailModalProps {
   open: boolean;
   onClose: () => void;
   language: Language;
-  onAddToCart?: (item: MenuItem, quantity: number) => void;
+  onAddToCart?: (item: MenuItem, quantity: number, notes: string) => void;
 }
 
 export default function ItemDetailModal({ item, open, onClose, language, onAddToCart }: ItemDetailModalProps) {
   const [quantity, setQuantity] = useState(1);
+  const [notes, setNotes] = useState('');
 
   if (!item) return null;
 
@@ -51,8 +53,9 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
   const isRtl = language === 'fa';
 
   const handleAddToCart = () => {
-    onAddToCart?.(item, quantity);
+    onAddToCart?.(item, quantity, notes);
     setQuantity(1);
+    setNotes('');
     onClose();
   };
 
@@ -67,13 +70,13 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md rounded-2xl" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DialogContent className="max-w-md rounded-2xl px-6" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader>
           <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
             {getName()}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
           <div className="w-full aspect-video rounded-xl bg-muted flex items-center justify-center overflow-hidden">
             {item.image ? (
               <img
@@ -156,6 +159,20 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+
+          <div className={isRtl ? 'text-right' : ''}>
+            <label className="text-sm font-medium block mb-2" htmlFor="order-notes">
+              {t.notes || 'Special requests'}
+            </label>
+            <Textarea
+              id="order-notes"
+              placeholder={t.notesPlaceholder || 'Add any special requests or notes...'}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className={`resize-none rounded-lg ${isRtl ? 'text-right' : ''}`}
+              data-testid="textarea-order-notes"
+            />
           </div>
           
           <Button

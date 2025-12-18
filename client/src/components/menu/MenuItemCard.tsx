@@ -1,16 +1,19 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { UtensilsCrossed, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { UtensilsCrossed, Star, ShoppingCart } from 'lucide-react';
+import { translations } from '@/lib/types';
 import type { MenuItem, Language } from '@/lib/types';
 
 interface MenuItemCardProps {
   item: MenuItem;
   language: Language;
   onClick?: () => void;
+  onAddToCart?: (item: MenuItem) => void;
   isSuggested?: boolean;
   viewMode?: 'grid' | 'list';
 }
 
-export default function MenuItemCard({ item, language, onClick, isSuggested, viewMode = 'list' }: MenuItemCardProps) {
+export default function MenuItemCard({ item, language, onClick, onAddToCart, isSuggested, viewMode = 'list' }: MenuItemCardProps) {
   const getName = () => {
     return item.name[language] || item.name.en || Object.values(item.name)[0] || '';
   };
@@ -19,7 +22,13 @@ export default function MenuItemCard({ item, language, onClick, isSuggested, vie
     return item.shortDescription[language] || item.shortDescription.en || Object.values(item.shortDescription)[0] || '';
   };
 
+  const t = translations[language] || translations.en;
   const isRtl = language === 'fa';
+
+  const handleAddClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAddToCart?.(item);
+  };
 
   if (viewMode === 'grid') {
     return (
@@ -53,21 +62,33 @@ export default function MenuItemCard({ item, language, onClick, isSuggested, vie
             <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
               {getDescription()}
             </p>
-            <div className="flex items-center gap-2 mt-2">
-              {item.discountedPrice ? (
-                <>
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center gap-2">
+                {item.discountedPrice ? (
+                  <>
+                    <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                      ${item.discountedPrice.toFixed(2)}
+                    </span>
+                    <span className="text-xs text-muted-foreground line-through">
+                      ${item.price.toFixed(2)}
+                    </span>
+                  </>
+                ) : (
                   <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
-                    ${item.discountedPrice.toFixed(2)}
-                  </span>
-                  <span className="text-xs text-muted-foreground line-through">
                     ${item.price.toFixed(2)}
                   </span>
-                </>
-              ) : (
-                <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
-                  ${item.price.toFixed(2)}
-                </span>
-              )}
+                )}
+              </div>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={handleAddClick}
+                data-testid={`button-add-to-cart-card-${item.id}`}
+                title={t.addToCart}
+              >
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -108,21 +129,33 @@ export default function MenuItemCard({ item, language, onClick, isSuggested, vie
               {getDescription()}
             </p>
           </div>
-          <div className="flex items-center gap-2 mt-1">
-            {item.discountedPrice ? (
-              <>
+          <div className="flex items-center justify-between mt-1">
+            <div className="flex items-center gap-2">
+              {item.discountedPrice ? (
+                <>
+                  <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                    ${item.discountedPrice.toFixed(2)}
+                  </span>
+                  <span className="text-sm text-muted-foreground line-through">
+                    ${item.price.toFixed(2)}
+                  </span>
+                </>
+              ) : (
                 <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
-                  ${item.discountedPrice.toFixed(2)}
-                </span>
-                <span className="text-sm text-muted-foreground line-through">
                   ${item.price.toFixed(2)}
                 </span>
-              </>
-            ) : (
-              <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
-                ${item.price.toFixed(2)}
-              </span>
-            )}
+              )}
+            </div>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={handleAddClick}
+              data-testid={`button-add-to-cart-card-${item.id}`}
+              title={t.addToCart}
+            >
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </CardContent>

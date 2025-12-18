@@ -72,6 +72,7 @@ export interface CartItem {
   id: string;
   item: MenuItem;
   quantity: number;
+  notes?: string;
 }
 
 export interface AppLanguage {
@@ -191,6 +192,12 @@ export const translations: Record<Language, Record<string, string>> = {
     addToCart: 'Add to Cart',
     quantity: 'Quantity',
     cart: 'Cart',
+    notes: 'Special Requests',
+    notesPlaceholder: 'Add any special requests or notes...',
+    total: 'Total',
+    placeOrder: 'Place Order',
+    continueMenu: 'Continue Shopping',
+    emptyCart: 'Your cart is empty',
   },
   es: {
     menu: 'Menú',
@@ -233,6 +240,12 @@ export const translations: Record<Language, Record<string, string>> = {
     addToCart: 'Agregar al Carrito',
     quantity: 'Cantidad',
     cart: 'Carrito',
+    notes: 'Solicitudes Especiales',
+    notesPlaceholder: 'Agrega solicitudes especiales o notas...',
+    total: 'Total',
+    placeOrder: 'Hacer Pedido',
+    continueMenu: 'Seguir Comprando',
+    emptyCart: 'Tu carrito está vacío',
   },
   fr: {
     menu: 'Menu',
@@ -275,6 +288,12 @@ export const translations: Record<Language, Record<string, string>> = {
     addToCart: 'Ajouter au Panier',
     quantity: 'Quantité',
     cart: 'Panier',
+    notes: 'Demandes Spéciales',
+    notesPlaceholder: 'Ajouter des demandes spéciales ou notes...',
+    total: 'Total',
+    placeOrder: 'Passer la Commande',
+    continueMenu: 'Continuer les Achats',
+    emptyCart: 'Votre panier est vide',
   },
   fa: {
     menu: 'منو',
@@ -317,6 +336,12 @@ export const translations: Record<Language, Record<string, string>> = {
     addToCart: 'افزودن به سبد',
     quantity: 'تعداد',
     cart: 'سبد خریدی',
+    notes: 'درخواست‌های خاص',
+    notesPlaceholder: 'درخواست‌های خاص یا یادداشت‌ها را اضافه کنید...',
+    total: 'مجموع',
+    placeOrder: 'ثبت سفارش',
+    continueMenu: 'ادامه خرید',
+    emptyCart: 'سبد خریدی شما خالی است',
   },
   tr: {
     menu: 'Menü',
@@ -359,6 +384,12 @@ export const translations: Record<Language, Record<string, string>> = {
     addToCart: 'Sepete Ekle',
     quantity: 'Miktar',
     cart: 'Sepet',
+    notes: 'Özel İstekler',
+    notesPlaceholder: 'Özel istekler veya notlar ekleyin...',
+    total: 'Toplam',
+    placeOrder: 'Sipariş Ver',
+    continueMenu: 'Alışverişe Devam Et',
+    emptyCart: 'Sepetiniz boş',
   },
 };
 

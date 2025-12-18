@@ -9,6 +9,7 @@ interface MenuListProps {
   selectedCategory: string | null;
   language: Language;
   onItemClick?: (item: MenuItem) => void;
+  onAddToCart?: (item: MenuItem) => void;
   selectedTypes?: string[];
   viewMode?: 'grid' | 'list';
   showSuggested?: boolean;
@@ -21,6 +22,7 @@ export default function MenuList({
   selectedCategory,
   language,
   onItemClick,
+  onAddToCart,
   selectedTypes = [],
   viewMode = 'list',
   showSuggested = false,
@@ -76,6 +78,7 @@ export default function MenuList({
                 item={item}
                 language={language}
                 onClick={() => onItemClick?.(item)}
+                onAddToCart={onAddToCart}
                 isSuggested
                 viewMode={viewMode}
               />
@@ -126,6 +129,7 @@ export default function MenuList({
               item={item}
               language={language}
               onClick={() => onItemClick?.(item)}
+              onAddToCart={onAddToCart}
               viewMode={viewMode}
             />
           ))}
@@ -152,6 +156,7 @@ export default function MenuList({
                 item={item}
                 language={language}
                 onClick={() => onItemClick?.(item)}
+                onAddToCart={onAddToCart}
                 isSuggested
                 viewMode={viewMode}
               />
@@ -182,6 +187,7 @@ export default function MenuList({
                   item={item}
                   language={language}
                   onClick={() => onItemClick?.(item)}
+                  onAddToCart={onAddToCart}
                   viewMode={viewMode}
                 />
               ))}
