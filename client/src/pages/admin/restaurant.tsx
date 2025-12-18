@@ -80,14 +80,14 @@ export default function RestaurantPage() {
         <p className="text-muted-foreground">Manage your restaurant details</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Basic Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Restaurant Name</FormLabel>
@@ -148,127 +148,128 @@ export default function RestaurantPage() {
                     </FormItem>
                   )} />
                 </div>
-                <div className="flex justify-end">
-                  <Button type="submit" disabled={isPending} data-testid="button-save-restaurant">
-                    {isPending ? 'Saving...' : 'Save Changes'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Logo & Images</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField control={form.control} name="logo" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Restaurant Logo</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Upload logo or enter URL"
-                      testId="input-restaurant-logo"
-                    />
-                  </FormControl>
-                  <FormDescription>Your restaurant logo will appear on the menu</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="backgroundImage" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Background Image</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Upload background or enter URL"
-                      testId="input-restaurant-background"
-                    />
-                  </FormControl>
-                  <FormDescription>Background image for the QR menu landing page</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </CardContent>
-          </Card>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Logo & Images</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField control={form.control} name="logo" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Restaurant Logo</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Upload logo or enter URL"
+                          testId="input-restaurant-logo"
+                        />
+                      </FormControl>
+                      <FormDescription>Your restaurant logo will appear on the menu</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="backgroundImage" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Background Image</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Upload background or enter URL"
+                          testId="input-restaurant-background"
+                        />
+                      </FormControl>
+                      <FormDescription>Background image for the QR menu landing page</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Google Maps Location
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="mapLat" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Latitude</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="any"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        placeholder="40.7128"
-                        data-testid="input-restaurant-lat"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="mapLng" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Longitude</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="any"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                        placeholder="-74.0060"
-                        data-testid="input-restaurant-lng"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-              <FormDescription>
-                Enter coordinates for Google Maps integration. 
-                <a 
-                  href="https://www.google.com/maps" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary ml-1 underline"
-                >
-                  Find coordinates on Google Maps
-                </a>
-              </FormDescription>
-              {form.watch('mapLat') && form.watch('mapLng') && (
-                <div className="rounded-md overflow-hidden h-40 bg-muted flex items-center justify-center border">
-                  <a
-                    href={`https://www.google.com/maps?q=${form.watch('mapLat')},${form.watch('mapLng')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline text-sm"
-                    data-testid="link-view-map"
-                  >
-                    View on Google Maps
-                  </a>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Google Maps Location
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField control={form.control} name="mapLat" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Latitude</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="any"
+                            {...field}
+                            value={field.value ?? ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            placeholder="40.7128"
+                            data-testid="input-restaurant-lat"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="mapLng" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Longitude</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="any"
+                            {...field}
+                            value={field.value ?? ''}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            placeholder="-74.0060"
+                            data-testid="input-restaurant-lng"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  <FormDescription>
+                    Enter coordinates for Google Maps integration. 
+                    <a 
+                      href="https://www.google.com/maps" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary ml-1 underline"
+                    >
+                      Find coordinates on Google Maps
+                    </a>
+                  </FormDescription>
+                  {form.watch('mapLat') && form.watch('mapLng') && (
+                    <div className="rounded-md overflow-hidden h-40 bg-muted flex items-center justify-center border">
+                      <a
+                        href={`https://www.google.com/maps?q=${form.watch('mapLat')},${form.watch('mapLng')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline text-sm"
+                        data-testid="link-view-map"
+                      >
+                        View on Google Maps
+                      </a>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button type="submit" disabled={isPending} data-testid="button-save-restaurant">
+              {isPending ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
