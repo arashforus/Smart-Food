@@ -1,7 +1,8 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, LayoutGrid, LayoutList, Leaf, Salad, WheatOff, Flame, Heart } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Star, LayoutGrid, LayoutList, Leaf, Salad, WheatOff, Flame, Heart, Search, X } from 'lucide-react';
 import type { Category, FoodType, Language } from '@/lib/types';
 import { translations } from '@/lib/types';
 
@@ -17,6 +18,8 @@ interface CategoryTabsProps {
   onViewModeChange: (mode: 'grid' | 'list') => void;
   showSuggested: boolean;
   onShowSuggestedChange: (show: boolean) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
 const iconMap: Record<string, typeof Leaf> = {
@@ -39,8 +42,11 @@ export default function CategoryTabs({
   onViewModeChange,
   showSuggested,
   onShowSuggestedChange,
+  searchQuery,
+  onSearchChange,
 }: CategoryTabsProps) {
   const t = translations[language];
+  const isRtl = language === 'fa';
 
   const getCategoryName = (category: Category) => {
     return category.name[language] || category.name.en || Object.values(category.name)[0] || '';
@@ -182,7 +188,7 @@ export default function CategoryTabs({
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        <div className="flex gap-1 flex-shrink-0 border-l pl-2 ml-2">
+        <div className={`flex gap-1 flex-shrink-0 border-l pl-2 ml-2 ${isRtl ? 'border-r pr-2 mr-2 border-l-0 pl-0 ml-0' : ''}`}>
           <Button
             size="icon"
             variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -199,6 +205,31 @@ export default function CategoryTabs({
           >
             <LayoutGrid className="w-4 h-4" />
           </Button>
+        </div>
+      </div>
+
+      <div className="px-3 pb-3">
+        <div className="relative">
+          <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground ${isRtl ? 'right-3' : 'left-3'}`} />
+          <Input
+            type="text"
+            placeholder={t.search}
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className={`${isRtl ? 'pr-9 pl-9' : 'pl-9 pr-9'}`}
+            data-testid="input-search"
+          />
+          {searchQuery && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className={`absolute top-1/2 -translate-y-1/2 h-7 w-7 ${isRtl ? 'left-1' : 'right-1'}`}
+              onClick={() => onSearchChange('')}
+              data-testid="button-clear-search"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ interface MenuListProps {
   selectedTypes?: string[];
   viewMode?: 'grid' | 'list';
   showSuggested?: boolean;
+  searchQuery?: string;
 }
 
 export default function MenuList({
@@ -23,6 +24,7 @@ export default function MenuList({
   selectedTypes = [],
   viewMode = 'list',
   showSuggested = false,
+  searchQuery = '',
 }: MenuListProps) {
   const filterByTypes = (itemList: MenuItem[]) => {
     if (selectedTypes.length === 0) return itemList;
@@ -31,11 +33,21 @@ export default function MenuList({
     );
   };
 
-  const filteredItems = selectedCategory
-    ? filterByTypes(items.filter((item) => item.categoryId === selectedCategory && item.available))
-    : filterByTypes(items.filter((item) => item.available));
+  const filterBySearch = (itemList: MenuItem[]) => {
+    if (!searchQuery.trim()) return itemList;
+    const query = searchQuery.toLowerCase().trim();
+    return itemList.filter((item) => {
+      const name = (item.name[language] || item.name.en || '').toLowerCase();
+      const desc = (item.shortDescription[language] || item.shortDescription.en || '').toLowerCase();
+      return name.includes(query) || desc.includes(query);
+    });
+  };
 
-  const suggestedItems = filterByTypes(items.filter((item) => item.suggested && item.available));
+  const filteredItems = selectedCategory
+    ? filterBySearch(filterByTypes(items.filter((item) => item.categoryId === selectedCategory && item.available)))
+    : filterBySearch(filterByTypes(items.filter((item) => item.available)));
+
+  const suggestedItems = filterBySearch(filterByTypes(items.filter((item) => item.suggested && item.available)));
 
   const getCategoryName = (category: Category) => {
     return category.name[language] || category.name.en || Object.values(category.name)[0] || '';
@@ -148,11 +160,11 @@ export default function MenuList({
         </div>
       )}
       {categories.map((category) => {
-        const categoryItems = filterByTypes(
+        const categoryItems = filterBySearch(filterByTypes(
           items.filter(
             (item) => item.categoryId === category.id && item.available && !item.suggested
           )
-        );
+        ));
         if (categoryItems.length === 0) return null;
 
         return (
