@@ -144,6 +144,8 @@ export interface Settings {
   showMaterials: boolean;
   showTypes: boolean;
   defaultLanguage: string;
+  currency?: string;
+  currencySymbol?: string;
 }
 
 export interface DashboardMetrics {
