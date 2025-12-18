@@ -42,6 +42,12 @@ const settingsSchema = z.object({
   paymentMethod: z.enum(['cash', 'card', 'both']),
   licenseKey: z.string().optional(),
   licenseExpiry: z.string().optional(),
+  restaurantName: z.string().optional(),
+  restaurantDescription: z.string().optional(),
+  restaurantAddress: z.string().optional(),
+  restaurantPhone: z.string().optional(),
+  restaurantEmail: z.string().optional(),
+  restaurantHours: z.string().optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -70,6 +76,8 @@ const currencies = [
   { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
   { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham' },
   { code: 'SAR', symbol: '﷼', name: 'Saudi Riyal' },
+  { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
+  { code: 'IRR', symbol: '﷼', name: 'Iranian Rial' },
 ];
 
 export default function SettingsPage() {
@@ -95,6 +103,12 @@ export default function SettingsPage() {
       accountant: ['Reports', 'Analytics'],
     };
   });
+  const [restaurantName, setRestaurantName] = useState(() => localStorage.getItem('restaurantName') || '');
+  const [restaurantDescription, setRestaurantDescription] = useState(() => localStorage.getItem('restaurantDescription') || '');
+  const [restaurantAddress, setRestaurantAddress] = useState(() => localStorage.getItem('restaurantAddress') || '');
+  const [restaurantPhone, setRestaurantPhone] = useState(() => localStorage.getItem('restaurantPhone') || '');
+  const [restaurantEmail, setRestaurantEmail] = useState(() => localStorage.getItem('restaurantEmail') || '');
+  const [restaurantHours, setRestaurantHours] = useState(() => localStorage.getItem('restaurantHours') || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
 
@@ -113,6 +127,12 @@ export default function SettingsPage() {
       paymentMethod: settings.paymentSettings?.paymentMethod || 'both',
       licenseKey: settings.licenseKey || '',
       licenseExpiry: settings.licenseExpiry || '',
+      restaurantName,
+      restaurantDescription,
+      restaurantAddress,
+      restaurantPhone,
+      restaurantEmail,
+      restaurantHours,
     },
   });
 
@@ -133,6 +153,12 @@ export default function SettingsPage() {
       localStorage.setItem('qrPageDescription', qrPageDescription);
       localStorage.setItem('menuPageTitle', menuPageTitle);
       localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
+      localStorage.setItem('restaurantName', restaurantName);
+      localStorage.setItem('restaurantDescription', restaurantDescription);
+      localStorage.setItem('restaurantAddress', restaurantAddress);
+      localStorage.setItem('restaurantPhone', restaurantPhone);
+      localStorage.setItem('restaurantEmail', restaurantEmail);
+      localStorage.setItem('restaurantHours', restaurantHours);
       setSettings(updatedSettings);
       setIsPending(false);
       toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
@@ -188,8 +214,9 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1">
               <TabsTrigger value="general" className="text-xs md:text-sm">General</TabsTrigger>
+              <TabsTrigger value="restaurant" className="text-xs md:text-sm">Restaurant</TabsTrigger>
               <TabsTrigger value="login" className="text-xs md:text-sm">Login</TabsTrigger>
               <TabsTrigger value="qr" className="text-xs md:text-sm">QR Page</TabsTrigger>
               <TabsTrigger value="menu" className="text-xs md:text-sm">Menu</TabsTrigger>
@@ -303,6 +330,79 @@ export default function SettingsPage() {
                       <FormMessage />
                     </FormItem>
                   )} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Restaurant Tab */}
+            <TabsContent value="restaurant" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Restaurant Information</CardTitle>
+                  <CardDescription>Manage your restaurant details and contact information</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-name">Restaurant Name</FormLabel>
+                    <Input
+                      id="rest-name"
+                      value={restaurantName}
+                      onChange={(e) => setRestaurantName(e.target.value)}
+                      placeholder="Enter restaurant name"
+                      data-testid="input-restaurant-name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-desc">Description</FormLabel>
+                    <Input
+                      id="rest-desc"
+                      value={restaurantDescription}
+                      onChange={(e) => setRestaurantDescription(e.target.value)}
+                      placeholder="Describe your restaurant"
+                      data-testid="input-restaurant-description"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-address">Address</FormLabel>
+                    <Input
+                      id="rest-address"
+                      value={restaurantAddress}
+                      onChange={(e) => setRestaurantAddress(e.target.value)}
+                      placeholder="Street address"
+                      data-testid="input-restaurant-address"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-phone">Phone</FormLabel>
+                    <Input
+                      id="rest-phone"
+                      value={restaurantPhone}
+                      onChange={(e) => setRestaurantPhone(e.target.value)}
+                      placeholder="Contact phone number"
+                      data-testid="input-restaurant-phone"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-email">Email</FormLabel>
+                    <Input
+                      id="rest-email"
+                      type="email"
+                      value={restaurantEmail}
+                      onChange={(e) => setRestaurantEmail(e.target.value)}
+                      placeholder="Contact email"
+                      data-testid="input-restaurant-email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-hours">Operating Hours</FormLabel>
+                    <Input
+                      id="rest-hours"
+                      value={restaurantHours}
+                      onChange={(e) => setRestaurantHours(e.target.value)}
+                      placeholder="e.g., 9:00 AM - 10:00 PM"
+                      data-testid="input-restaurant-hours"
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
