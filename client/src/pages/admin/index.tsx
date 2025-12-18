@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Switch, Route } from 'wouter';
+import { Switch, Route, useLocation } from 'wouter';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -27,6 +27,7 @@ import OrderStatusScreen from './order-status-screen';
 
 export default function AdminLayout() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [adminLanguage, setAdminLanguage] = useState<Language>(() => {
     const stored = localStorage.getItem('adminLanguage') as Language;
     return stored || 'en';
@@ -45,11 +46,11 @@ export default function AdminLayout() {
   }, [selectedBranch]);
 
   const handleProfileClick = () => {
-    toast({ title: 'Profile', description: 'Profile settings coming soon' });
+    setLocation('/admin/settings?tab=profile');
   };
 
   const handlePasswordClick = () => {
-    toast({ title: 'Change Password', description: 'Password change coming soon' });
+    setLocation('/admin/settings?tab=profile&action=changePassword');
   };
 
   const handleSignOut = () => {

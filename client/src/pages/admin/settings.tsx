@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff } from 'lucide-react';
+import { useLocation } from 'wouter';
 import {
   Form,
   FormControl,
@@ -82,6 +83,7 @@ const currencies = [
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const [location] = useLocation();
   const [settings, setSettings] = useState<Settings>(() => {
     const stored = localStorage.getItem('appSettings');
     return stored ? JSON.parse(stored) : mockSettings;
@@ -109,8 +111,27 @@ export default function SettingsPage() {
   const [restaurantPhone, setRestaurantPhone] = useState(() => localStorage.getItem('restaurantPhone') || '');
   const [restaurantEmail, setRestaurantEmail] = useState(() => localStorage.getItem('restaurantEmail') || '');
   const [restaurantHours, setRestaurantHours] = useState(() => localStorage.getItem('restaurantHours') || '');
+
+  // Profile State
+  const [profileName, setProfileName] = useState(() => localStorage.getItem('profileName') || 'John Admin');
+  const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('profileEmail') || 'admin@restaurant.com');
+  const [profilePhone, setProfilePhone] = useState(() => localStorage.getItem('profilePhone') || '+1 (555) 123-4567');
+  const [profileAvatar, setProfileAvatar] = useState(() => localStorage.getItem('profileAvatar') || '');
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(() => location.includes('action=changePassword'));
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
+
+  useEffect(() => {
+    setShowChangePassword(location.includes('action=changePassword'));
+  }, [location]);
 
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -213,8 +234,9 @@ export default function SettingsPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1">
+          <Tabs defaultValue={location.includes('tab=profile') ? 'profile' : 'general'} className="w-full">
+            <TabsList className="grid w-full grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-1">
+              <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
               <TabsTrigger value="general" className="text-xs md:text-sm">General</TabsTrigger>
               <TabsTrigger value="restaurant" className="text-xs md:text-sm">Restaurant</TabsTrigger>
               <TabsTrigger value="login" className="text-xs md:text-sm">Login</TabsTrigger>
@@ -225,6 +247,219 @@ export default function SettingsPage() {
               <TabsTrigger value="roles" className="text-xs md:text-sm">Roles</TabsTrigger>
               <TabsTrigger value="license" className="text-xs md:text-sm">License</TabsTrigger>
             </TabsList>
+
+            {/* Profile Tab */}
+            <TabsContent value="profile" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg">Your Profile</CardTitle>
+                      <CardDescription>Manage your account information</CardDescription>
+                    </div>
+                    {!isEditingProfile && (
+                      <Button variant="outline" size="sm" onClick={() => setIsEditingProfile(true)} data-testid="button-edit-profile">
+                        Edit Profile
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {isEditingProfile ? (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="profile-name">Full Name</FormLabel>
+                        <Input
+                          id="profile-name"
+                          value={profileName}
+                          onChange={(e) => setProfileName(e.target.value)}
+                          placeholder="Your full name"
+                          data-testid="input-profile-name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="profile-email">Email</FormLabel>
+                        <Input
+                          id="profile-email"
+                          type="email"
+                          value={profileEmail}
+                          onChange={(e) => setProfileEmail(e.target.value)}
+                          placeholder="your.email@example.com"
+                          data-testid="input-profile-email"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="profile-phone">Phone</FormLabel>
+                        <Input
+                          id="profile-phone"
+                          value={profilePhone}
+                          onChange={(e) => setProfilePhone(e.target.value)}
+                          placeholder="+1 (555) 123-4567"
+                          data-testid="input-profile-phone"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="profile-avatar">Avatar URL</FormLabel>
+                        <Input
+                          id="profile-avatar"
+                          value={profileAvatar}
+                          onChange={(e) => setProfileAvatar(e.target.value)}
+                          placeholder="https://example.com/avatar.jpg"
+                          data-testid="input-profile-avatar"
+                        />
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          onClick={() => {
+                            localStorage.setItem('profileName', profileName);
+                            localStorage.setItem('profileEmail', profileEmail);
+                            localStorage.setItem('profilePhone', profilePhone);
+                            localStorage.setItem('profileAvatar', profileAvatar);
+                            setIsEditingProfile(false);
+                            toast({ title: 'Profile Updated', description: 'Your profile has been saved.' });
+                          }}
+                          data-testid="button-save-profile"
+                        >
+                          Save Changes
+                        </Button>
+                        <Button variant="outline" onClick={() => setIsEditingProfile(false)} data-testid="button-cancel-profile">
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Name</p>
+                        <p className="text-base font-medium">{profileName}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Email</p>
+                        <p className="text-base font-medium">{profileEmail}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Phone</p>
+                        <p className="text-base font-medium">{profilePhone}</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" />Change Password</CardTitle>
+                      <CardDescription>Update your account password</CardDescription>
+                    </div>
+                    {!showChangePassword && (
+                      <Button variant="outline" size="sm" onClick={() => setShowChangePassword(true)} data-testid="button-change-password-trigger">
+                        Change Password
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                {showChangePassword && (
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="current-pwd">Current Password</FormLabel>
+                      <div className="relative">
+                        <Input
+                          id="current-pwd"
+                          type={showCurrentPassword ? 'text' : 'password'}
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          placeholder="Enter current password"
+                          data-testid="input-current-password"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          data-testid="button-toggle-current-password"
+                        >
+                          {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="new-pwd">New Password</FormLabel>
+                      <div className="relative">
+                        <Input
+                          id="new-pwd"
+                          type={showNewPassword ? 'text' : 'password'}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password"
+                          data-testid="input-new-password"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          data-testid="button-toggle-new-password"
+                        >
+                          {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="confirm-pwd">Confirm Password</FormLabel>
+                      <div className="relative">
+                        <Input
+                          id="confirm-pwd"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirm new password"
+                          data-testid="input-confirm-password"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          data-testid="button-toggle-confirm-password"
+                        >
+                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        onClick={() => {
+                          if (newPassword !== confirmPassword) {
+                            toast({ title: 'Error', description: 'Passwords do not match', variant: 'destructive' });
+                            return;
+                          }
+                          if (newPassword.length < 6) {
+                            toast({ title: 'Error', description: 'Password must be at least 6 characters', variant: 'destructive' });
+                            return;
+                          }
+                          setCurrentPassword('');
+                          setNewPassword('');
+                          setConfirmPassword('');
+                          setShowChangePassword(false);
+                          toast({ title: 'Success', description: 'Password has been changed.' });
+                        }}
+                        data-testid="button-save-password"
+                      >
+                        Update Password
+                      </Button>
+                      <Button variant="outline" onClick={() => { setShowChangePassword(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); }} data-testid="button-cancel-password">
+                        Cancel
+                      </Button>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            </TabsContent>
 
             {/* General Tab */}
             <TabsContent value="general" className="space-y-6">
