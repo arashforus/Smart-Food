@@ -2,8 +2,9 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -38,9 +39,24 @@ const settingsSchema = z.object({
   defaultLanguage: z.string().min(1, 'Default language is required'),
   currency: z.string().min(1, 'Currency is required'),
   currencySymbol: z.string().min(1, 'Currency symbol is required'),
+  paymentMethod: z.enum(['cash', 'card', 'both']),
+  licenseKey: z.string().optional(),
+  licenseExpiry: z.string().optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
+
+const adminSections = [
+  'Dashboard',
+  'Menu Management',
+  'Orders',
+  'Kitchen Display',
+  'Settings',
+  'Reports',
+  'Users',
+  'Branches',
+  'Analytics',
+];
 
 const currencies = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
@@ -70,6 +86,15 @@ export default function SettingsPage() {
   const [qrPageTitle, setQrPageTitle] = useState(() => localStorage.getItem('qrPageTitle') || 'Scan to Order');
   const [qrPageDescription, setQrPageDescription] = useState(() => localStorage.getItem('qrPageDescription') || '');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
+  const [rolePermissions, setRolePermissions] = useState(() => {
+    const stored = localStorage.getItem('rolePermissions');
+    return stored ? JSON.parse(stored) : {
+      admin: adminSections,
+      manager: ['Menu Management', 'Orders', 'Kitchen Display', 'Reports'],
+      chef: ['Kitchen Display', 'Orders'],
+      accountant: ['Reports', 'Analytics'],
+    };
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
 
@@ -85,13 +110,21 @@ export default function SettingsPage() {
       defaultLanguage: settings.defaultLanguage,
       currency: settings.currency || 'USD',
       currencySymbol: settings.currencySymbol || '$',
+      paymentMethod: settings.paymentSettings?.paymentMethod || 'both',
+      licenseKey: settings.licenseKey || '',
+      licenseExpiry: settings.licenseExpiry || '',
     },
   });
 
   const handleSubmit = (data: SettingsFormData) => {
     setIsPending(true);
     setTimeout(() => {
-      const updatedSettings = { ...settings, ...data };
+      const updatedSettings = {
+        ...settings,
+        ...data,
+        paymentSettings: { paymentMethod: data.paymentMethod },
+        rolePermissions,
+      };
       localStorage.setItem('appSettings', JSON.stringify(updatedSettings));
       if (loginBackgroundImage) {
         localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
@@ -99,10 +132,20 @@ export default function SettingsPage() {
       localStorage.setItem('qrPageTitle', qrPageTitle);
       localStorage.setItem('qrPageDescription', qrPageDescription);
       localStorage.setItem('menuPageTitle', menuPageTitle);
+      localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
       setSettings(updatedSettings);
       setIsPending(false);
       toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
     }, 500);
+  };
+
+  const toggleRoleSection = (role: 'admin' | 'manager' | 'chef' | 'accountant', section: string) => {
+    setRolePermissions((prev: Record<string, string[]>) => ({
+      ...prev,
+      [role]: prev[role].includes(section)
+        ? prev[role].filter((s: string) => s !== section)
+        : [...prev[role], section],
+    }));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,12 +188,15 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <Tabs defaultValue="general" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-2">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="login">Login Screen</TabsTrigger>
-              <TabsTrigger value="qr">QR Page</TabsTrigger>
-              <TabsTrigger value="menu">Menu Page</TabsTrigger>
-              <TabsTrigger value="currency">Currency</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1">
+              <TabsTrigger value="general" className="text-xs md:text-sm">General</TabsTrigger>
+              <TabsTrigger value="login" className="text-xs md:text-sm">Login</TabsTrigger>
+              <TabsTrigger value="qr" className="text-xs md:text-sm">QR Page</TabsTrigger>
+              <TabsTrigger value="menu" className="text-xs md:text-sm">Menu</TabsTrigger>
+              <TabsTrigger value="currency" className="text-xs md:text-sm">Currency</TabsTrigger>
+              <TabsTrigger value="payment" className="text-xs md:text-sm">Payment</TabsTrigger>
+              <TabsTrigger value="roles" className="text-xs md:text-sm">Roles</TabsTrigger>
+              <TabsTrigger value="license" className="text-xs md:text-sm">License</TabsTrigger>
             </TabsList>
 
             {/* General Tab */}
@@ -418,6 +464,109 @@ export default function SettingsPage() {
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">All prices will be displayed with this currency symbol throughout your site.</p>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Payment Tab */}
+            <TabsContent value="payment" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" />Payment Methods</CardTitle>
+                  <CardDescription>Configure payment options for your customers</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField control={form.control} name="paymentMethod" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Payment Method</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-payment-method">
+                            <SelectValue placeholder="Select payment method" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="cash">Cash Only</SelectItem>
+                          <SelectItem value="card">Card Only</SelectItem>
+                          <SelectItem value="both">Cash & Card</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Choose which payment methods customers can use</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Roles Tab */}
+            <TabsContent value="roles" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" />Role-Based Access Control</CardTitle>
+                  <CardDescription>Define which admin sections each role can access</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {(['admin', 'manager', 'chef', 'accountant'] as const).map((role) => (
+                    <div key={role} className="space-y-3 pb-6 border-b last:border-0">
+                      <h3 className="font-semibold capitalize text-sm">{role} Permissions</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {adminSections.map((section) => (
+                          <div key={section} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`${role}-${section}`}
+                              checked={rolePermissions[role].includes(section)}
+                              onCheckedChange={() => toggleRoleSection(role, section)}
+                              data-testid={`checkbox-role-${role}-${section}`}
+                            />
+                            <label htmlFor={`${role}-${section}`} className="text-sm cursor-pointer">
+                              {section}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* License Tab */}
+            <TabsContent value="license" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" />License Information</CardTitle>
+                  <CardDescription>Manage your restaurant management system license</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField control={form.control} name="licenseKey" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>License Key</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter your license key" data-testid="input-license-key" />
+                      </FormControl>
+                      <FormDescription>Your unique license key for this installation</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  <FormField control={form.control} name="licenseExpiry" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>License Expiry Date</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="date" data-testid="input-license-expiry" />
+                      </FormControl>
+                      <FormDescription>When your license will expire</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  {form.watch('licenseExpiry') && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="text-sm font-medium">License Expiry: {new Date(form.watch('licenseExpiry')!).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Keep your license active to continue using all premium features.</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

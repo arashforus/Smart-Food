@@ -132,6 +132,20 @@ export interface AdminUser {
   role: Role;
 }
 
+export interface RolePermissions {
+  admin: string[];
+  manager: string[];
+  chef: string[];
+  accountant: string[];
+}
+
+export interface PaymentSettings {
+  paymentMethod: 'cash' | 'card' | 'both';
+  stripeEnabled?: boolean;
+  paypalEnabled?: boolean;
+  applePayEnabled?: boolean;
+}
+
 export interface Settings {
   id: string;
   primaryColor: string;
@@ -146,6 +160,10 @@ export interface Settings {
   defaultLanguage: string;
   currency?: string;
   currencySymbol?: string;
+  licenseKey?: string;
+  licenseExpiry?: string;
+  paymentSettings?: PaymentSettings;
+  rolePermissions?: RolePermissions;
 }
 
 export interface DashboardMetrics {
