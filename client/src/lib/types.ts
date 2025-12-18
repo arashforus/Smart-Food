@@ -68,6 +68,12 @@ export interface MenuItem {
   types: string[];
 }
 
+export interface CartItem {
+  id: string;
+  item: MenuItem;
+  quantity: number;
+}
+
 export interface AppLanguage {
   id: string;
   code: string;
@@ -182,6 +188,9 @@ export const translations: Record<Language, Record<string, string>> = {
     chooseLanguage: 'Choose Your Language',
     viewMenu: 'View Menu',
     suggested: 'Chef\'s Recommendations',
+    addToCart: 'Add to Cart',
+    quantity: 'Quantity',
+    cart: 'Cart',
   },
   es: {
     menu: 'Menú',
@@ -221,6 +230,9 @@ export const translations: Record<Language, Record<string, string>> = {
     chooseLanguage: 'Elige tu Idioma',
     viewMenu: 'Ver Menú',
     suggested: 'Recomendaciones del Chef',
+    addToCart: 'Agregar al Carrito',
+    quantity: 'Cantidad',
+    cart: 'Carrito',
   },
   fr: {
     menu: 'Menu',
@@ -260,6 +272,9 @@ export const translations: Record<Language, Record<string, string>> = {
     chooseLanguage: 'Choisissez votre Langue',
     viewMenu: 'Voir le Menu',
     suggested: 'Recommandations du Chef',
+    addToCart: 'Ajouter au Panier',
+    quantity: 'Quantité',
+    cart: 'Panier',
   },
   fa: {
     menu: 'منو',
@@ -299,6 +314,9 @@ export const translations: Record<Language, Record<string, string>> = {
     chooseLanguage: 'زبان خود را انتخاب کنید',
     viewMenu: 'مشاهده منو',
     suggested: 'پیشنهادات سرآشپز',
+    addToCart: 'افزودن به سبد',
+    quantity: 'تعداد',
+    cart: 'سبد خریدی',
   },
   tr: {
     menu: 'Menü',
@@ -338,6 +356,9 @@ export const translations: Record<Language, Record<string, string>> = {
     chooseLanguage: 'Dilinizi Seçin',
     viewMenu: 'Menüyü Görüntüle',
     suggested: 'Şefin Tavsiyeleri',
+    addToCart: 'Sepete Ekle',
+    quantity: 'Miktar',
+    cart: 'Sepet',
   },
 };
 

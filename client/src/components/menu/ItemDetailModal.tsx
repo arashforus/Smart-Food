@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -5,8 +6,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { UtensilsCrossed } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { UtensilsCrossed, Plus, Minus, ShoppingCart } from 'lucide-react';
 import type { MenuItem, Language } from '@/lib/types';
+import { translations } from '@/lib/types';
 import { mockMaterials, mockFoodTypes } from '@/lib/mockData';
 
 interface ItemDetailModalProps {
@@ -14,9 +17,12 @@ interface ItemDetailModalProps {
   open: boolean;
   onClose: () => void;
   language: Language;
+  onAddToCart?: (item: MenuItem, quantity: number) => void;
 }
 
-export default function ItemDetailModal({ item, open, onClose, language }: ItemDetailModalProps) {
+export default function ItemDetailModal({ item, open, onClose, language, onAddToCart }: ItemDetailModalProps) {
+  const [quantity, setQuantity] = useState(1);
+
   if (!item) return null;
 
   const getName = () => {
@@ -41,18 +47,34 @@ export default function ItemDetailModal({ item, open, onClose, language }: ItemD
     }).filter(Boolean);
   };
 
+  const t = translations[language] || translations.en;
   const isRtl = language === 'fa';
+
+  const handleAddToCart = () => {
+    onAddToCart?.(item, quantity);
+    setQuantity(1);
+    onClose();
+  };
+
+  const handleQuantityChange = (delta: number) => {
+    const newQty = Math.max(1, quantity + delta);
+    if (item.maxSelect) {
+      setQuantity(Math.min(newQty, item.maxSelect));
+    } else {
+      setQuantity(newQty);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DialogContent className="max-w-md rounded-2xl" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader>
           <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
             {getName()}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="w-full aspect-video rounded-md bg-muted flex items-center justify-center overflow-hidden">
+          <div className="w-full aspect-video rounded-xl bg-muted flex items-center justify-center overflow-hidden">
             {item.image ? (
               <img
                 src={item.image}
@@ -64,10 +86,10 @@ export default function ItemDetailModal({ item, open, onClose, language }: ItemD
             )}
           </div>
           
-          <p className={`text-muted-foreground ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
+          <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
           
           {getTypes().length > 0 && (
-            <div className={`flex flex-wrap gap-1 ${isRtl ? 'justify-end' : ''}`}>
+            <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
               {getTypes().map((type, idx) => (
                 <Badge 
                   key={idx} 
@@ -83,6 +105,7 @@ export default function ItemDetailModal({ item, open, onClose, language }: ItemD
           
           {getMaterials().length > 0 && (
             <div className={isRtl ? 'text-right' : ''}>
+              <p className="text-xs text-muted-foreground font-medium mb-1">{t.materials}:</p>
               <p className="text-sm text-muted-foreground">
                 {getMaterials().join(', ')}
               </p>
@@ -106,11 +129,44 @@ export default function ItemDetailModal({ item, open, onClose, language }: ItemD
             )}
           </div>
           
-          {item.maxSelect && (
-            <p className={`text-xs text-muted-foreground ${isRtl ? 'text-right' : ''}`}>
-              Max order: {item.maxSelect}
-            </p>
-          )}
+          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <span className="text-sm font-medium">{t.quantity}:</span>
+            <div className={`flex items-center gap-2 bg-muted rounded-lg p-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={quantity <= 1}
+                data-testid="button-quantity-decrease"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="w-8 text-center font-semibold" data-testid="text-quantity-display">
+                {quantity}
+              </span>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => handleQuantityChange(1)}
+                disabled={item.maxSelect ? quantity >= item.maxSelect : false}
+                data-testid="button-quantity-increase"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          
+          <Button
+            onClick={handleAddToCart}
+            className="w-full gap-2 rounded-lg"
+            size="lg"
+            data-testid="button-add-to-cart"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {t.addToCart}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
