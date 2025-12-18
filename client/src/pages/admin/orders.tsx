@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -18,9 +17,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Minus, ShoppingCart, Trash2, Send, X, Search } from 'lucide-react';
-import { mockMenuItems, mockCategories, mockTables, mockOrders } from '@/lib/mockData';
-import type { MenuItem, Order, OrderItem } from '@/lib/types';
+import { Plus, Minus, ShoppingCart, Trash2, Send, Search } from 'lucide-react';
+import { mockMenuItems, mockCategories, mockTables } from '@/lib/mockData';
+import { useOrders } from '@/lib/orderContext';
+import type { MenuItem, OrderItem } from '@/lib/types';
 
 interface CartOrderItem {
   menuItem: MenuItem;
@@ -30,7 +30,7 @@ interface CartOrderItem {
 
 export default function OrdersPage() {
   const { toast } = useToast();
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const { addOrder } = useOrders();
   const [cart, setCart] = useState<CartOrderItem[]>([]);
   const [selectedTable, setSelectedTable] = useState<string>('');
   const [orderNotes, setOrderNotes] = useState('');
@@ -99,9 +99,8 @@ export default function OrdersPage() {
       return;
     }
 
-    const orderNumber = `ORD-${String(orders.length + 1).padStart(3, '0')}`;
     const orderItems: OrderItem[] = cart.map((ci, idx) => ({
-      id: `${orders.length + 1}-${idx + 1}`,
+      id: `item-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 9)}`,
       menuItemId: ci.menuItem.id,
       menuItemName: ci.menuItem.name,
       quantity: ci.quantity,
@@ -110,30 +109,20 @@ export default function OrdersPage() {
       status: 'pending' as const,
     }));
 
-    const newOrder: Order = {
-      id: String(orders.length + 1),
-      orderNumber,
+    const newOrder = addOrder({
       tableNumber: selectedTable || undefined,
       branchId: '1',
       items: orderItems,
       status: 'pending',
       totalAmount: cartTotal,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       notes: orderNotes || undefined,
-    };
+    });
 
-    setOrders((prev) => [newOrder, ...prev]);
     setCart([]);
     setSelectedTable('');
     setOrderNotes('');
     setShowCart(false);
-    toast({ title: 'Order Created', description: `${orderNumber} has been sent to kitchen` });
-  };
-
-  const getCategoryName = (categoryId: string) => {
-    const cat = mockCategories.find((c) => c.id === categoryId);
-    return cat?.name.en || 'Unknown';
+    toast({ title: 'Order Created', description: `${newOrder.orderNumber} has been sent to kitchen` });
   };
 
   return (

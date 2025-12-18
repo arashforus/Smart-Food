@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Clock, CheckCircle, ChefHat, AlertCircle } from 'lucide-react';
-import { mockOrders } from '@/lib/mockData';
-import type { Order, OrderItem } from '@/lib/types';
+import { useOrders } from '@/lib/orderContext';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400',
@@ -23,7 +22,7 @@ const itemStatusColors: Record<string, string> = {
 
 export default function KitchenPage() {
   const { toast } = useToast();
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const { orders, updateOrderStatus, updateItemStatus, getActiveOrders } = useOrders();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -31,9 +30,7 @@ export default function KitchenPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const activeOrders = orders.filter(
-    (o) => o.status === 'pending' || o.status === 'preparing'
-  );
+  const activeOrders = getActiveOrders();
 
   const getTimeSince = (date: Date) => {
     const diff = Math.floor((currentTime.getTime() - new Date(date).getTime()) / 1000);
@@ -42,70 +39,31 @@ export default function KitchenPage() {
     return `${mins}:${String(secs).padStart(2, '0')}`;
   };
 
-  const updateItemStatus = (orderId: string, itemId: string, newStatus: 'pending' | 'preparing' | 'ready') => {
-    setOrders((prev) =>
-      prev.map((order) => {
-        if (order.id !== orderId) return order;
-        
-        const updatedItems = order.items.map((item) =>
-          item.id === itemId ? { ...item, status: newStatus } : item
-        );
-        
-        const allReady = updatedItems.every((item) => item.status === 'ready');
-        const anyPreparing = updatedItems.some((item) => item.status === 'preparing');
-        
-        let orderStatus = order.status;
-        if (allReady) {
-          orderStatus = 'ready';
-        } else if (anyPreparing) {
-          orderStatus = 'preparing';
-        }
-        
-        return {
-          ...order,
-          items: updatedItems,
-          status: orderStatus,
-          updatedAt: new Date(),
-        };
-      })
-    );
+  const handleItemClick = (orderId: string, itemId: string, currentStatus: 'pending' | 'preparing' | 'ready') => {
+    const nextStatus = currentStatus === 'pending' ? 'preparing' : currentStatus === 'preparing' ? 'ready' : 'pending';
+    updateItemStatus(orderId, itemId, nextStatus);
   };
 
   const markOrderReady = (orderId: string) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId
-          ? {
-              ...order,
-              status: 'ready',
-              items: order.items.map((item) => ({ ...item, status: 'ready' as const })),
-              updatedAt: new Date(),
-            }
-          : order
-      )
-    );
+    const order = orders.find((o) => o.id === orderId);
+    if (order) {
+      order.items.forEach((item) => {
+        if (item.status !== 'ready') {
+          updateItemStatus(orderId, item.id, 'ready');
+        }
+      });
+    }
+    updateOrderStatus(orderId, 'ready');
     toast({ title: 'Order Ready', description: 'Order marked as ready for serving' });
   };
 
   const markOrderServed = (orderId: string) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId
-          ? { ...order, status: 'served', updatedAt: new Date() }
-          : order
-      )
-    );
+    updateOrderStatus(orderId, 'served');
     toast({ title: 'Order Served', description: 'Order has been served' });
   };
 
   const startPreparing = (orderId: string) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId
-          ? { ...order, status: 'preparing', updatedAt: new Date() }
-          : order
-      )
-    );
+    updateOrderStatus(orderId, 'preparing');
   };
 
   return (
@@ -141,7 +99,7 @@ export default function KitchenPage() {
           {activeOrders.map((order) => (
             <Card
               key={order.id}
-              className={`overflow-hidden ${
+              className={`overflow-visible ${
                 order.status === 'pending' ? 'border-yellow-500/50' : 'border-blue-500/50'
               }`}
               data-testid={`card-order-${order.id}`}
@@ -169,10 +127,7 @@ export default function KitchenPage() {
                     <div
                       key={item.id}
                       className={`p-2 rounded-md border ${itemStatusColors[item.status]} cursor-pointer transition-all`}
-                      onClick={() => {
-                        const nextStatus = item.status === 'pending' ? 'preparing' : item.status === 'preparing' ? 'ready' : 'pending';
-                        updateItemStatus(order.id, item.id, nextStatus);
-                      }}
+                      onClick={() => handleItemClick(order.id, item.id, item.status)}
                       data-testid={`item-${item.id}`}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -221,16 +176,6 @@ export default function KitchenPage() {
                       Mark Ready
                     </Button>
                   )}
-                  {order.status === 'ready' && (
-                    <Button
-                      onClick={() => markOrderServed(order.id)}
-                      className="flex-1"
-                      variant="secondary"
-                      data-testid={`button-served-${order.id}`}
-                    >
-                      Mark Served
-                    </Button>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -249,13 +194,24 @@ export default function KitchenPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="font-medium">{order.orderNumber}</span>
-                    <Badge className={statusColors[order.status]} size="sm">
+                    <Badge className={statusColors[order.status]}>
                       {order.status}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     {order.items.length} items - ${order.totalAmount.toFixed(2)}
                   </p>
+                  {order.status === 'ready' && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="w-full mt-2"
+                      onClick={() => markOrderServed(order.id)}
+                      data-testid={`button-served-${order.id}`}
+                    >
+                      Mark Served
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}

@@ -6,6 +6,7 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import AdminFooter from '@/components/admin/AdminFooter';
 import { useToast } from '@/hooks/use-toast';
 import { mockCurrentUser, mockBranches } from '@/lib/mockData';
+import { OrderProvider } from '@/lib/orderContext';
 import type { Language } from '@/lib/types';
 
 import DashboardPage from './dashboard';
@@ -60,42 +61,44 @@ export default function AdminLayout() {
   };
 
   return (
-    <SidebarProvider style={style as React.CSSProperties}>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <SidebarInset className="flex flex-col flex-1">
-          <AdminHeader
-            user={mockCurrentUser}
-            branches={mockBranches}
-            selectedBranch={selectedBranch}
-            onBranchChange={setSelectedBranch}
-            language={adminLanguage}
-            onLanguageChange={setAdminLanguage}
-            onProfileClick={handleProfileClick}
-            onPasswordClick={handlePasswordClick}
-            onSignOut={handleSignOut}
-          />
-          <main className="flex-1 p-4 md:p-6 overflow-auto">
-            <Switch>
-              <Route path="/admin" component={DashboardPage} />
-              <Route path="/admin/restaurant" component={RestaurantPage} />
-              <Route path="/admin/categories" component={CategoriesPage} />
-              <Route path="/admin/items" component={ItemsPage} />
-              <Route path="/admin/qrcode" component={QRCodePage} />
-              <Route path="/admin/branches" component={BranchesPage} />
-              <Route path="/admin/tables" component={TablesPage} />
-              <Route path="/admin/roles" component={RolesPage} />
-              <Route path="/admin/languages" component={LanguagesPage} />
-              <Route path="/admin/materials" component={MaterialsPage} />
-              <Route path="/admin/types" component={TypesPage} />
-              <Route path="/admin/settings" component={SettingsPage} />
-              <Route path="/admin/orders" component={OrdersPage} />
-              <Route path="/admin/kitchen" component={KitchenPage} />
-            </Switch>
-          </main>
-          <AdminFooter />
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <OrderProvider>
+      <SidebarProvider style={style as React.CSSProperties}>
+        <div className="flex min-h-screen w-full">
+          <AdminSidebar />
+          <SidebarInset className="flex flex-col flex-1">
+            <AdminHeader
+              user={mockCurrentUser}
+              branches={mockBranches}
+              selectedBranch={selectedBranch}
+              onBranchChange={setSelectedBranch}
+              language={adminLanguage}
+              onLanguageChange={setAdminLanguage}
+              onProfileClick={handleProfileClick}
+              onPasswordClick={handlePasswordClick}
+              onSignOut={handleSignOut}
+            />
+            <main className="flex-1 p-4 md:p-6 overflow-auto">
+              <Switch>
+                <Route path="/admin" component={DashboardPage} />
+                <Route path="/admin/restaurant" component={RestaurantPage} />
+                <Route path="/admin/categories" component={CategoriesPage} />
+                <Route path="/admin/items" component={ItemsPage} />
+                <Route path="/admin/qrcode" component={QRCodePage} />
+                <Route path="/admin/branches" component={BranchesPage} />
+                <Route path="/admin/tables" component={TablesPage} />
+                <Route path="/admin/roles" component={RolesPage} />
+                <Route path="/admin/languages" component={LanguagesPage} />
+                <Route path="/admin/materials" component={MaterialsPage} />
+                <Route path="/admin/types" component={TypesPage} />
+                <Route path="/admin/settings" component={SettingsPage} />
+                <Route path="/admin/orders" component={OrdersPage} />
+                <Route path="/admin/kitchen" component={KitchenPage} />
+              </Switch>
+            </main>
+            <AdminFooter />
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </OrderProvider>
   );
 }
