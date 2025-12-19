@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock } from 'lucide-react';
+import { SiInstagram, SiTelegram } from 'react-icons/si';
 import { useLocation } from 'wouter';
 import {
   Form,
@@ -115,6 +117,29 @@ export default function SettingsPage() {
   const [restaurantPhone, setRestaurantPhone] = useState(() => localStorage.getItem('restaurantPhone') || '');
   const [restaurantEmail, setRestaurantEmail] = useState(() => localStorage.getItem('restaurantEmail') || '');
   const [restaurantHours, setRestaurantHours] = useState(() => localStorage.getItem('restaurantHours') || '');
+  const [restaurantLogo, setRestaurantLogo] = useState(() => localStorage.getItem('restaurantLogo') || '');
+  const [restaurantLogoPreview, setRestaurantLogoPreview] = useState(() => localStorage.getItem('restaurantLogo') || '');
+  const [operatingHours, setOperatingHours] = useState(() => {
+    const stored = localStorage.getItem('operatingHours');
+    return stored ? JSON.parse(stored) : {
+      Monday: { start: '09:00', end: '22:00', closed: false },
+      Tuesday: { start: '09:00', end: '22:00', closed: false },
+      Wednesday: { start: '09:00', end: '22:00', closed: false },
+      Thursday: { start: '09:00', end: '22:00', closed: false },
+      Friday: { start: '09:00', end: '23:00', closed: false },
+      Saturday: { start: '10:00', end: '23:00', closed: false },
+      Sunday: { start: '10:00', end: '21:00', closed: false },
+    };
+  });
+  const [socialMedia, setSocialMedia] = useState(() => {
+    const stored = localStorage.getItem('socialMedia');
+    return stored ? JSON.parse(stored) : {
+      instagram: '',
+      whatsapp: '',
+      telegram: '',
+    };
+  });
+  const [googleMapsUrl, setGoogleMapsUrl] = useState(() => localStorage.getItem('googleMapsUrl') || '');
 
   // Profile State
   const [profileName, setProfileName] = useState(() => localStorage.getItem('profileName') || 'John Admin');
@@ -141,6 +166,7 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const profileAvatarInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
 
   const timezones = [
@@ -242,6 +268,12 @@ export default function SettingsPage() {
       localStorage.setItem('restaurantPhone', restaurantPhone);
       localStorage.setItem('restaurantEmail', restaurantEmail);
       localStorage.setItem('restaurantHours', restaurantHours);
+      if (restaurantLogo) {
+        localStorage.setItem('restaurantLogo', restaurantLogo);
+      }
+      localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
+      localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
+      localStorage.setItem('googleMapsUrl', googleMapsUrl);
       localStorage.setItem('appTimezone', timezone);
       localStorage.setItem('copyrightText', copyrightText);
       if (favicon) {
@@ -295,6 +327,35 @@ export default function SettingsPage() {
     }
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        setRestaurantLogo(imageData);
+        setRestaurantLogoPreview(imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearLogo = () => {
+    setRestaurantLogo('');
+    setRestaurantLogoPreview('');
+    if (logoInputRef.current) {
+      logoInputRef.current.value = '';
+    }
+  };
+
+  const handleClearImage = () => {
+    setLoginBackgroundImage('');
+    setLoginBackgroundPreview('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const toggleRoleSection = (role: 'admin' | 'manager' | 'chef' | 'accountant', section: string) => {
     setRolePermissions((prev: Record<string, string[]>) => ({
       ...prev,
@@ -315,15 +376,6 @@ export default function SettingsPage() {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handleClearImage = () => {
-    setLoginBackgroundImage('');
-    setLoginBackgroundPreview('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    localStorage.removeItem('loginBackgroundImage');
   };
 
   const handleCurrencyChange = (code: string) => {
@@ -796,6 +848,39 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
+                    <FormLabel htmlFor="rest-logo">Restaurant Logo</FormLabel>
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                      onClick={() => logoInputRef.current?.click()}
+                    >
+                      {restaurantLogoPreview ? (
+                        <div className="space-y-2">
+                          <img src={restaurantLogoPreview} alt="Logo" className="max-h-24 mx-auto rounded-lg object-cover" />
+                          <p className="text-sm text-muted-foreground">Click to change</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 py-4">
+                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">Click to upload logo</p>
+                          <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                        </div>
+                      )}
+                      <input
+                        ref={logoInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        data-testid="input-restaurant-logo"
+                      />
+                    </div>
+                    {restaurantLogo && (
+                      <Button type="button" variant="outline" size="sm" onClick={handleClearLogo} className="w-full" data-testid="button-clear-logo">
+                        <X className="h-4 w-4 mr-2" />
+                        Clear Logo
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-2">
                     <FormLabel htmlFor="rest-name">Restaurant Name</FormLabel>
                     <Input
                       id="rest-name"
@@ -807,12 +892,13 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <FormLabel htmlFor="rest-desc">Description</FormLabel>
-                    <Input
+                    <Textarea
                       id="rest-desc"
                       value={restaurantDescription}
                       onChange={(e) => setRestaurantDescription(e.target.value)}
                       placeholder="Describe your restaurant"
-                      data-testid="input-restaurant-description"
+                      className="resize-none"
+                      data-testid="textarea-restaurant-description"
                     />
                   </div>
                   <div className="space-y-2">
@@ -846,15 +932,112 @@ export default function SettingsPage() {
                       data-testid="input-restaurant-email"
                     />
                   </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5" />Operating Hours</CardTitle>
+                  <CardDescription>Set your restaurant hours for each day</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {Object.entries(operatingHours).map(([day, hoursData]: [string, any]) => (
+                    <div key={day} className="flex items-end gap-3">
+                      <div className="flex-1 min-w-24">
+                        <FormLabel className="text-sm">{day}</FormLabel>
+                      </div>
+                      <div className="flex gap-2 items-end">
+                        <div>
+                          <FormLabel className="text-xs text-muted-foreground">Start</FormLabel>
+                          <Input
+                            type="time"
+                            value={hoursData.start}
+                            onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: e.target.value } })}
+                            className="w-20"
+                            disabled={hoursData.closed}
+                            data-testid={`input-hours-start-${day.toLowerCase()}`}
+                          />
+                        </div>
+                        <div>
+                          <FormLabel className="text-xs text-muted-foreground">End</FormLabel>
+                          <Input
+                            type="time"
+                            value={hoursData.end}
+                            onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: e.target.value } })}
+                            className="w-20"
+                            disabled={hoursData.closed}
+                            data-testid={`input-hours-end-${day.toLowerCase()}`}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            checked={hoursData.closed}
+                            onCheckedChange={(checked) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, closed: checked as boolean } })}
+                            data-testid={`checkbox-closed-${day.toLowerCase()}`}
+                          />
+                          <FormLabel className="text-xs text-muted-foreground">Closed</FormLabel>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Social Media</CardTitle>
+                  <CardDescription>Add your social media links</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <FormLabel htmlFor="rest-hours">Operating Hours</FormLabel>
+                    <FormLabel htmlFor="social-instagram">Instagram</FormLabel>
                     <Input
-                      id="rest-hours"
-                      value={restaurantHours}
-                      onChange={(e) => setRestaurantHours(e.target.value)}
-                      placeholder="e.g., 9:00 AM - 10:00 PM"
-                      data-testid="input-restaurant-hours"
+                      id="social-instagram"
+                      value={socialMedia.instagram}
+                      onChange={(e) => setSocialMedia({ ...socialMedia, instagram: e.target.value })}
+                      placeholder="https://instagram.com/yourprofile"
+                      data-testid="input-social-instagram"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="social-whatsapp">WhatsApp</FormLabel>
+                    <Input
+                      id="social-whatsapp"
+                      value={socialMedia.whatsapp}
+                      onChange={(e) => setSocialMedia({ ...socialMedia, whatsapp: e.target.value })}
+                      placeholder="+1 (555) 123-4567"
+                      data-testid="input-social-whatsapp"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="social-telegram">Telegram</FormLabel>
+                    <Input
+                      id="social-telegram"
+                      value={socialMedia.telegram}
+                      onChange={(e) => setSocialMedia({ ...socialMedia, telegram: e.target.value })}
+                      placeholder="@yourprofile"
+                      data-testid="input-social-telegram"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Google Maps</CardTitle>
+                  <CardDescription>Add your Google Maps location link</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="google-maps">Google Maps URL</FormLabel>
+                    <Input
+                      id="google-maps"
+                      value={googleMapsUrl}
+                      onChange={(e) => setGoogleMapsUrl(e.target.value)}
+                      placeholder="https://maps.google.com/maps?q=..."
+                      data-testid="input-google-maps-url"
+                    />
+                    <FormDescription>Paste your Google Maps embed or share link</FormDescription>
                   </div>
                 </CardContent>
               </Card>
