@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useOrders } from '@/lib/orderContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, CheckCircle2, AlertCircle, Flame } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, CheckCircle2, AlertCircle, Flame, Maximize2, Minimize2 } from 'lucide-react';
 import type { Order, OrderStatus } from '@/lib/types';
 
 const statusConfig: Record<OrderStatus, { label: string; icon: React.ReactNode; bgColor: string; textColor: string }> = {
@@ -41,6 +42,7 @@ const statusConfig: Record<OrderStatus, { label: string; icon: React.ReactNode; 
 export default function OrderStatusScreen() {
   const { orders } = useOrders();
   const [displayOrders, setDisplayOrders] = useState<Order[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const sortedOrders = [...orders]
@@ -56,19 +58,48 @@ export default function OrderStatusScreen() {
     setDisplayOrders(sortedOrders);
   }, [orders]);
 
+  const handleFullscreen = async () => {
+    try {
+      if (!isFullscreen) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        }
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.error('Fullscreen error:', err);
+    }
+  };
+
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8 overflow-auto">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-2">Order Status</h1>
-          <p className="text-xl text-slate-300">
-            {displayOrders.length} active order{displayOrders.length !== 1 ? 's' : ''}
-          </p>
+    <div className="w-full h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8 overflow-auto flex flex-col">
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-8">
+          <div className="text-center flex-1">
+            <h1 className="text-5xl font-bold text-white mb-2">Order Status</h1>
+            <p className="text-xl text-slate-300">
+              {displayOrders.length} active order{displayOrders.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+          <Button
+            onClick={handleFullscreen}
+            size="icon"
+            className="h-12 w-12"
+            data-testid="button-fullscreen-toggle"
+          >
+            {isFullscreen ? (
+              <Minimize2 className="h-6 w-6" />
+            ) : (
+              <Maximize2 className="h-6 w-6" />
+            )}
+          </Button>
         </div>
 
         {displayOrders.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <Clock className="w-24 h-24 mx-auto text-slate-400 mb-4 opacity-50" />
               <p className="text-3xl text-slate-300">No active orders</p>
@@ -76,73 +107,45 @@ export default function OrderStatusScreen() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-max">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 auto-rows-max flex-1 overflow-auto">
             {displayOrders.map((order) => {
               const config = statusConfig[order.status];
               return (
                 <Card
                   key={order.id}
-                  className={`${config.bgColor} border-2 ${config.textColor} overflow-hidden transform hover:scale-105 transition-transform duration-300`}
+                  className={`${config.bgColor} border-4 ${config.textColor} overflow-hidden transform hover:scale-105 transition-transform duration-300 min-h-64`}
                   data-testid={`card-order-status-${order.orderNumber}`}
                 >
-                  <CardContent className="p-6 space-y-4">
-                    {/* Order Number and Status */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {config.icon}
-                          <h2 className="text-4xl font-bold">{order.orderNumber}</h2>
-                        </div>
-                      </div>
-                      <Badge className={`text-lg py-2 px-4 ${config.bgColor} ${config.textColor}`}>
-                        {config.label}
-                      </Badge>
+                  <CardContent className="p-8 h-full flex flex-col items-center justify-center text-center space-y-6">
+                    {/* Status Icon */}
+                    <div className="flex justify-center">
+                      {config.icon}
+                    </div>
+
+                    {/* Order Number */}
+                    <div>
+                      <p className="text-lg opacity-75 mb-2">Order #</p>
+                      <h2 className="text-6xl font-bold">{order.orderNumber}</h2>
                     </div>
 
                     {/* Table Number */}
                     {order.tableNumber && (
-                      <div className="text-2xl font-semibold">
-                        Table {order.tableNumber}
+                      <div>
+                        <p className="text-lg opacity-75 mb-2">Table</p>
+                        <p className="text-4xl font-bold">{order.tableNumber}</p>
                       </div>
                     )}
 
-                    {/* Items Count */}
-                    <div className="border-t-2 border-current opacity-30 pt-4">
-                      <p className="text-xl font-semibold mb-3">
-                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                      </p>
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="text-sm md:text-base flex justify-between items-start gap-2">
-                            <span className="flex-1">
-                              • {item.menuItemName.en}
-                              {item.quantity > 1 && <span className="font-semibold"> ×{item.quantity}</span>}
-                            </span>
-                            {item.status === 'ready' && (
-                              <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Time */}
-                    <div className="border-t-2 border-current opacity-30 pt-4 text-sm md:text-base">
-                      <p className="opacity-75">
-                        {new Date(order.createdAt).toLocaleTimeString()}
-                      </p>
-                    </div>
+                    {/* Status Badge */}
+                    <Badge className={`text-2xl py-3 px-6 ${config.bgColor} ${config.textColor}`}>
+                      {config.label}
+                    </Badge>
                   </CardContent>
                 </Card>
               );
             })}
           </div>
         )}
-      </div>
-
-      {/* Auto-refresh indicator */}
-      <div className="fixed bottom-4 right-4 text-slate-400 text-sm">
-        <p>Updates in real-time</p>
       </div>
     </div>
   );
