@@ -148,20 +148,23 @@ export default function OrdersPage() {
         <Button
           variant={selectedCategory === null ? 'default' : 'outline'}
           onClick={() => setSelectedCategory(null)}
-          className="shrink-0"
+          className="shrink-0 flex-col h-auto py-2"
           data-testid="button-category-all"
         >
-          All
+          <span>All</span>
         </Button>
         {mockCategories.map((cat) => (
           <Button
             key={cat.id}
             variant={selectedCategory === cat.id ? 'default' : 'outline'}
             onClick={() => setSelectedCategory(cat.id)}
-            className="shrink-0"
+            className="shrink-0 flex-col h-auto py-2 gap-1"
             data-testid={`button-category-${cat.id}`}
           >
-            {cat.name.en}
+            {cat.image && (
+              <img src={cat.image} alt={cat.name.en} className="w-8 h-8 rounded object-cover" />
+            )}
+            <span className="text-xs">{cat.name.en}</span>
           </Button>
         ))}
       </div>

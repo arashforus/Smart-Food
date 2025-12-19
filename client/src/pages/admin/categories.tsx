@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Image as ImageIcon } from 'lucide-react';
+import { Plus, Image as ImageIcon, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -61,6 +61,8 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
   const activeLanguages = mockLanguages.filter((l) => l.isActive);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRefEdit = useRef<HTMLInputElement>(null);
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
@@ -237,8 +239,26 @@ export default function CategoriesPage() {
                   
                   <FormField control={form.control} name="image" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Image URL (optional)</FormLabel>
-                      <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image-edit" /></FormControl>
+                      <FormLabel>Image</FormLabel>
+                      <FormControl>
+                        <div className="space-y-2">
+                          <input type="file" ref={fileInputRefEdit} onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => field.onChange(event.target?.result as string);
+                              reader.readAsDataURL(file);
+                            }
+                          }} accept="image/*" className="hidden" data-testid="input-file-category-image-edit" />
+                          <Button type="button" variant="outline" className="w-full" onClick={() => fileInputRefEdit.current?.click()} data-testid="button-upload-image-edit">
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload Image
+                          </Button>
+                          {field.value && typeof field.value === 'string' && (
+                            <img src={field.value} alt="Category preview" className="h-16 w-16 rounded object-cover" />
+                          )}
+                        </div>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
