@@ -2,12 +2,24 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import { mockOrders } from './mockData';
 import type { Order, OrderItem } from './types';
 
+export interface OSSSettings {
+  pendingColor: string;
+  preparingColor: string;
+  readyColor: string;
+  numberLabel: string;
+  tableLabel: string;
+  showTableInfo: boolean;
+  showIcon: boolean;
+}
+
 interface OrderContextType {
   orders: Order[];
   addOrder: (order: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>) => Order;
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
   updateItemStatus: (orderId: string, itemId: string, status: OrderItem['status']) => void;
   getActiveOrders: () => Order[];
+  ossSettings: OSSSettings;
+  updateOSSSettings: (settings: OSSSettings) => void;
 }
 
 const OrderContext = createContext<OrderContextType | null>(null);
@@ -23,6 +35,16 @@ function generateOrderNumber(): string {
   return `ORD-${String(orderCounter).padStart(3, '0')}`;
 }
 
+const defaultOSSSettings: OSSSettings = {
+  pendingColor: 'bg-yellow-100 dark:bg-yellow-900',
+  preparingColor: 'bg-orange-100 dark:bg-orange-900',
+  readyColor: 'bg-green-100 dark:bg-green-900',
+  numberLabel: 'Number',
+  tableLabel: 'Table',
+  showTableInfo: true,
+  showIcon: true,
+};
+
 export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [orders, setOrders] = useState<Order[]>(() => {
     return mockOrders.map((order) => ({
@@ -30,6 +52,11 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       createdAt: new Date(order.createdAt),
       updatedAt: new Date(order.updatedAt),
     }));
+  });
+
+  const [ossSettings, setOSSSettings] = useState<OSSSettings>(() => {
+    const stored = localStorage.getItem('ossSettings');
+    return stored ? JSON.parse(stored) : defaultOSSSettings;
   });
 
   const addOrder = useCallback((orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'updatedAt'>): Order => {
@@ -88,6 +115,11 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     return orders.filter((o) => o.status === 'pending' || o.status === 'preparing');
   }, [orders]);
 
+  const updateOSSSettings = useCallback((settings: OSSSettings) => {
+    setOSSSettings(settings);
+    localStorage.setItem('ossSettings', JSON.stringify(settings));
+  }, []);
+
   return (
     <OrderContext.Provider
       value={{
@@ -96,6 +128,8 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
         updateOrderStatus,
         updateItemStatus,
         getActiveOrders,
+        ossSettings,
+        updateOSSSettings,
       }}
     >
       {children}

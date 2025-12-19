@@ -30,6 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { mockSettings, mockLanguages } from '@/lib/mockData';
 import type { Settings } from '@/lib/types';
 import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
+import { useOrders, type OSSSettings } from '@/lib/orderContext';
 
 const settingsSchema = z.object({
   primaryColor: z.string().min(1, 'Primary color is required'),
@@ -85,10 +86,12 @@ const currencies = [
 export default function SettingsPage() {
   const { toast } = useToast();
   const [location] = useLocation();
+  const { ossSettings, updateOSSSettings } = useOrders();
   const [settings, setSettings] = useState<Settings>(() => {
     const stored = localStorage.getItem('appSettings');
     return stored ? JSON.parse(stored) : mockSettings;
   });
+  const [ossForm, setOSSForm] = useState<OSSSettings>(ossSettings);
   const [isPending, setIsPending] = useState(false);
   const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>(() => {
     return localStorage.getItem('loginBackgroundImage') || '';
@@ -248,6 +251,7 @@ export default function SettingsPage() {
               <TabsTrigger value="payment" className="text-xs md:text-sm">Payment</TabsTrigger>
               <TabsTrigger value="roles" className="text-xs md:text-sm">Roles</TabsTrigger>
               <TabsTrigger value="license" className="text-xs md:text-sm">License</TabsTrigger>
+              <TabsTrigger value="oss" className="text-xs md:text-sm">OSS</TabsTrigger>
             </TabsList>
 
             {/* Profile Tab */}
@@ -911,6 +915,137 @@ export default function SettingsPage() {
             {/* QR Code Tab */}
             <TabsContent value="qrcode" className="space-y-6">
               <QRCodeDesigner />
+            </TabsContent>
+
+            {/* Order Status Screen Tab */}
+            <TabsContent value="oss" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order Status Screen Settings</CardTitle>
+                  <CardDescription>Customize the appearance and display of the order status screen</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="pending-color">Pending Order Color</FormLabel>
+                      <div className="flex gap-2">
+                        <Input
+                          id="pending-color"
+                          type="color"
+                          value={ossForm.pendingColor === 'bg-yellow-100 dark:bg-yellow-900' ? '#fef3c7' : '#865e00'}
+                          onChange={(e) => setOSSForm({ ...ossForm, pendingColor: 'bg-yellow-100 dark:bg-yellow-900' })}
+                          className="w-16"
+                        />
+                        <Select value={ossForm.pendingColor} onValueChange={(value) => setOSSForm({ ...ossForm, pendingColor: value })}>
+                          <SelectTrigger className="flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bg-yellow-100 dark:bg-yellow-900">Yellow</SelectItem>
+                            <SelectItem value="bg-blue-100 dark:bg-blue-900">Blue</SelectItem>
+                            <SelectItem value="bg-red-100 dark:bg-red-900">Red</SelectItem>
+                            <SelectItem value="bg-purple-100 dark:bg-purple-900">Purple</SelectItem>
+                            <SelectItem value="bg-pink-100 dark:bg-pink-900">Pink</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="preparing-color">Preparing Order Color</FormLabel>
+                      <Select value={ossForm.preparingColor} onValueChange={(value) => setOSSForm({ ...ossForm, preparingColor: value })}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bg-orange-100 dark:bg-orange-900">Orange</SelectItem>
+                          <SelectItem value="bg-yellow-100 dark:bg-yellow-900">Yellow</SelectItem>
+                          <SelectItem value="bg-red-100 dark:bg-red-900">Red</SelectItem>
+                          <SelectItem value="bg-purple-100 dark:bg-purple-900">Purple</SelectItem>
+                          <SelectItem value="bg-pink-100 dark:bg-pink-900">Pink</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="ready-color">Ready Order Color</FormLabel>
+                      <Select value={ossForm.readyColor} onValueChange={(value) => setOSSForm({ ...ossForm, readyColor: value })}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bg-green-100 dark:bg-green-900">Green</SelectItem>
+                          <SelectItem value="bg-blue-100 dark:bg-blue-900">Blue</SelectItem>
+                          <SelectItem value="bg-yellow-100 dark:bg-yellow-900">Yellow</SelectItem>
+                          <SelectItem value="bg-purple-100 dark:bg-purple-900">Purple</SelectItem>
+                          <SelectItem value="bg-pink-100 dark:bg-pink-900">Pink</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="number-label">Number Label</FormLabel>
+                        <Input
+                          id="number-label"
+                          value={ossForm.numberLabel}
+                          onChange={(e) => setOSSForm({ ...ossForm, numberLabel: e.target.value })}
+                          placeholder="e.g., Number, Order #"
+                          data-testid="input-number-label"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="table-label">Table Label</FormLabel>
+                        <Input
+                          id="table-label"
+                          value={ossForm.tableLabel}
+                          onChange={(e) => setOSSForm({ ...ossForm, tableLabel: e.target.value })}
+                          placeholder="e.g., Table, Seat"
+                          data-testid="input-table-label"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Table Information</FormLabel>
+                          <FormDescription>Display table number on order cards</FormDescription>
+                        </div>
+                        <Switch
+                          checked={ossForm.showTableInfo}
+                          onCheckedChange={(checked) => setOSSForm({ ...ossForm, showTableInfo: checked })}
+                          data-testid="switch-show-table-info"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Status Icon</FormLabel>
+                          <FormDescription>Display status icon (clock, flame, checkmark)</FormDescription>
+                        </div>
+                        <Switch
+                          checked={ossForm.showIcon}
+                          onCheckedChange={(checked) => setOSSForm({ ...ossForm, showIcon: checked })}
+                          data-testid="switch-show-icon"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => {
+                      updateOSSSettings(ossForm);
+                      toast({ title: 'Settings Saved', description: 'Order Status Screen settings have been updated.' });
+                    }}
+                    data-testid="button-save-oss-settings"
+                  >
+                    Save OSS Settings
+                  </Button>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
 
