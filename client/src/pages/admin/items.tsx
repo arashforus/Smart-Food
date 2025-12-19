@@ -76,6 +76,7 @@ const itemSchema = z.object({
   image: z.string().optional(),
   available: z.boolean(),
   suggested: z.boolean(),
+  isNew: z.boolean(),
   materials: z.array(z.string()),
 });
 
@@ -98,7 +99,7 @@ export default function ItemsPage() {
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
       shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
       longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
-      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true, suggested: false, materials: []
+      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true, suggested: false, isNew: false, materials: []
     },
   });
 
@@ -107,7 +108,7 @@ export default function ItemsPage() {
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
       shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
       longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
-      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true, suggested: false, materials: []
+      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true, suggested: false, isNew: false, materials: []
     });
     setFormOpen(true);
   };
@@ -136,13 +137,14 @@ export default function ItemsPage() {
       image: item.image || '',
       available: item.available,
       suggested: item.suggested,
+      isNew: (item as any).isNew || false,
       materials: item.materials || [],
     });
     setEditingItem(item);
   };
 
   const handleCreate = (data: ItemFormData) => {
-    const newItem: MenuItem = {
+    const newItem: any = {
       id: String(Date.now()),
       name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
       shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
@@ -154,6 +156,7 @@ export default function ItemsPage() {
       image: data.image,
       available: data.available,
       suggested: data.suggested,
+      isNew: data.isNew,
       materials: data.materials,
       types: [],
     };
@@ -179,6 +182,7 @@ export default function ItemsPage() {
           image: data.image,
           available: data.available,
           suggested: data.suggested,
+          isNew: data.isNew,
           materials: data.materials,
         };
       }
@@ -301,7 +305,7 @@ export default function ItemsPage() {
               )} />
             </div>
             
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 flex-wrap">
               <FormField control={form.control} name="available" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
                   <FormLabel className="mt-0">Available</FormLabel>
@@ -318,6 +322,14 @@ export default function ItemsPage() {
                   </FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-suggested${isEdit ? '-edit' : ''}`} />
+                  </FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="isNew" render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormLabel className="mt-0">New</FormLabel>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-new${isEdit ? '-edit' : ''}`} />
                   </FormControl>
                 </FormItem>
               )} />
@@ -475,7 +487,7 @@ export default function ItemsPage() {
             key: 'available',
             header: 'Status',
             render: (item) => (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant={item.available ? 'default' : 'secondary'} className="no-default-active-elevate">
                   {item.available ? 'Available' : 'Unavailable'}
                 </Badge>
@@ -483,6 +495,11 @@ export default function ItemsPage() {
                   <Badge variant="outline" className="no-default-active-elevate text-amber-600 border-amber-500/50">
                     <Star className="h-3 w-3 mr-1 fill-amber-500" />
                     Suggested
+                  </Badge>
+                )}
+                {(item as any).isNew && (
+                  <Badge variant="outline" className="no-default-active-elevate text-emerald-600 border-emerald-500/50">
+                    New
                   </Badge>
                 )}
               </div>

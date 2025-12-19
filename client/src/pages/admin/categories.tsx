@@ -17,6 +17,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -42,6 +49,7 @@ const categorySchema = z.object({
   nameTr: z.string().optional(),
   image: z.string().optional(),
   order: z.number().min(1, 'Order must be at least 1'),
+  active: z.boolean().default(true),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -56,11 +64,11 @@ export default function CategoriesPage() {
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: 1 },
+    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: 1, active: true },
   });
 
   const openCreate = () => {
-    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: categories.length + 1 });
+    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: categories.length + 1, active: true });
     setFormOpen(true);
   };
 
@@ -73,16 +81,18 @@ export default function CategoriesPage() {
       nameTr: category.name.tr || '',
       image: category.image || '',
       order: category.order,
+      active: (category as any).active !== undefined ? (category as any).active : true,
     });
     setEditingCategory(category);
   };
 
   const handleCreate = (data: CategoryFormData) => {
-    const newCategory: Category = {
+    const newCategory: any = {
       id: String(Date.now()),
       name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
       image: data.image,
       order: data.order,
+      active: data.active,
     };
     setCategories([...categories, newCategory]);
     setFormOpen(false);
@@ -99,6 +109,7 @@ export default function CategoriesPage() {
           name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
           image: data.image,
           order: data.order,
+          active: data.active,
         };
       }
       return c;
@@ -203,45 +214,69 @@ export default function CategoriesPage() {
       </Dialog>
 
       <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-edit">
+        <DialogContent className="max-h-[90vh] overflow-y-auto max-w-md" data-testid="modal-category-edit">
           <DialogHeader>
             <DialogTitle>Edit Category</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
-              <FormField control={form.control} name="nameEn" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (English)</FormLabel>
-                  <FormControl><Input {...field} data-testid="input-category-name-edit" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-                <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof CategoryFormData} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name ({lang.name})</FormLabel>
-                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-edit`} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              ))}
-              <FormField control={form.control} name="image" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
-                  <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image-edit" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="order" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Display Order</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order-edit" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="flex justify-end gap-2">
+              <Tabs defaultValue="info" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="info">Info</TabsTrigger>
+                  <TabsTrigger value="translations">Translations</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="info" className="space-y-4 pt-4">
+                  <FormField control={form.control} name="nameEn" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name (English)</FormLabel>
+                      <FormControl><Input {...field} data-testid="input-category-name-edit" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  
+                  <FormField control={form.control} name="image" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image URL (optional)</FormLabel>
+                      <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image-edit" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  
+                  <FormField control={form.control} name="order" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Display Order</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order-edit" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  
+                  <FormField control={form.control} name="active" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <FormLabel>Active</FormLabel>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-category-active-edit" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                </TabsContent>
+                
+                <TabsContent value="translations" className="space-y-4 pt-4">
+                  {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
+                    <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof CategoryFormData} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name ({lang.name})</FormLabel>
+                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-edit`} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  ))}
+                </TabsContent>
+              </Tabs>
+              
+              <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingCategory(null)}>Cancel</Button>
                 <Button type="submit" data-testid="button-update-category">Update</Button>
               </div>
