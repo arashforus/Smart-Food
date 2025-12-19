@@ -13,6 +13,11 @@ export interface OSSSettings {
   backgroundType: 'solid' | 'image';
   backgroundColor: string;
   backgroundImage: string;
+  textColor: string;
+  borderColor: string;
+  headerText: string;
+  limitTo3Orders: boolean;
+  boxStyle: 'rounded' | 'glass' | 'neon';
 }
 
 interface OrderContextType {
@@ -49,6 +54,11 @@ const defaultOSSSettings: OSSSettings = {
   backgroundType: 'solid',
   backgroundColor: '#ffffff',
   backgroundImage: '',
+  textColor: '#000000',
+  borderColor: '#666666',
+  headerText: 'Order Status',
+  limitTo3Orders: false,
+  boxStyle: 'rounded',
 };
 
 export function OrderProvider({ children }: { children: React.ReactNode }) {

@@ -1064,10 +1064,70 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
+                  {/* Text and Border Colors */}
+                  <div className="border-t pt-6 space-y-4">
+                    <h3 className="font-semibold text-sm">Card Styling</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="text-color">Text Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="text-color"
+                            type="color"
+                            value={ossForm.textColor}
+                            onChange={(e) => setOSSForm({ ...ossForm, textColor: e.target.value })}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-text-color"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{ossForm.textColor}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="border-color">Border Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="border-color"
+                            type="color"
+                            value={ossForm.borderColor}
+                            onChange={(e) => setOSSForm({ ...ossForm, borderColor: e.target.value })}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-border-color"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{ossForm.borderColor}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="box-style">Box Style</FormLabel>
+                        <Select value={ossForm.boxStyle} onValueChange={(value) => setOSSForm({ ...ossForm, boxStyle: value as any })}>
+                          <SelectTrigger data-testid="select-box-style">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="rounded">Rounded Rectangle</SelectItem>
+                            <SelectItem value="glass">Glass Rectangle</SelectItem>
+                            <SelectItem value="neon">Neon Rectangle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Labels and Toggles */}
                   <div className="border-t pt-6 space-y-4">
                     <h3 className="font-semibold text-sm">Labels and Display</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="header-text">Header Text</FormLabel>
+                        <Input
+                          id="header-text"
+                          value={ossForm.headerText}
+                          onChange={(e) => setOSSForm({ ...ossForm, headerText: e.target.value })}
+                          placeholder="e.g., Order Status, Kitchen Display"
+                          data-testid="input-header-text"
+                        />
+                      </div>
                       <div className="space-y-2">
                         <FormLabel htmlFor="number-label">Number Label</FormLabel>
                         <Input
@@ -1112,6 +1172,18 @@ export default function SettingsPage() {
                           checked={ossForm.showIcon}
                           onCheckedChange={(checked) => setOSSForm({ ...ossForm, showIcon: checked })}
                           data-testid="switch-show-icon"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Limit to 3 Active Orders</FormLabel>
+                          <FormDescription>Show only the 3 most recent active orders</FormDescription>
+                        </div>
+                        <Switch
+                          checked={ossForm.limitTo3Orders}
+                          onCheckedChange={(checked) => setOSSForm({ ...ossForm, limitTo3Orders: checked })}
+                          data-testid="switch-limit-3-orders"
                         />
                       </div>
                     </div>

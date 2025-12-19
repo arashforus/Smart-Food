@@ -56,7 +56,7 @@ export default function OrderStatusScreen() {
   };
 
   useEffect(() => {
-    const sortedOrders = [...orders]
+    let sortedOrders = [...orders]
       .filter((o) => o.status !== 'served' && o.status !== 'cancelled')
       .sort((a, b) => {
         const statusOrder = { pending: 0, preparing: 1, ready: 2 };
@@ -66,8 +66,12 @@ export default function OrderStatusScreen() {
         return a.createdAt.getTime() - b.createdAt.getTime();
       });
 
+    if (ossSettings.limitTo3Orders) {
+      sortedOrders = sortedOrders.slice(0, 3);
+    }
+
     setDisplayOrders(sortedOrders);
-  }, [orders]);
+  }, [orders, ossSettings.limitTo3Orders]);
 
   const handleFullscreen = async () => {
     try {
@@ -89,13 +93,22 @@ export default function OrderStatusScreen() {
     ? { backgroundImage: `url(${ossSettings.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { backgroundColor: ossSettings.backgroundColor };
 
+  const getBoxStyle = () => {
+    if (ossSettings.boxStyle === 'glass') {
+      return 'backdrop-blur-md bg-white/30 border';
+    } else if (ossSettings.boxStyle === 'neon') {
+      return 'border-2 shadow-lg';
+    }
+    return 'rounded-lg';
+  };
+
   return (
     <div className="w-full h-screen p-8 overflow-auto flex flex-col" style={screenBackgroundStyle}>
       <div className="flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-8">
           <div className="text-center flex-1">
-            <h1 className="text-5xl font-bold text-white mb-2">Order Status</h1>
-            <p className="text-xl text-slate-300">
+            <h1 className="text-5xl font-bold mb-2" style={{ color: ossSettings.textColor }}>{ossSettings.headerText}</h1>
+            <p className="text-xl" style={{ color: ossSettings.textColor }}>
               {displayOrders.length} active order{displayOrders.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -116,9 +129,9 @@ export default function OrderStatusScreen() {
         {displayOrders.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <Clock className="w-24 h-24 mx-auto text-slate-400 mb-4 opacity-50" />
-              <p className="text-3xl text-slate-300">No active orders</p>
-              <p className="text-xl text-slate-400 mt-2">Waiting for new orders...</p>
+              <Clock className="w-24 h-24 mx-auto mb-4 opacity-50" style={{ color: ossSettings.textColor }} />
+              <p className="text-3xl" style={{ color: ossSettings.textColor }}>No active orders</p>
+              <p className="text-xl mt-2" style={{ color: ossSettings.textColor }}>Waiting for new orders...</p>
             </div>
           </div>
         ) : (
@@ -129,8 +142,12 @@ export default function OrderStatusScreen() {
               return (
                 <Card
                   key={order.id}
-                  className={`border-4 ${textColor} overflow-hidden transform hover:scale-105 transition-transform duration-300 min-h-64`}
-                  style={{ backgroundColor: bgColor }}
+                  className={`${getBoxStyle()} overflow-hidden transform hover:scale-105 transition-transform duration-300 min-h-64`}
+                  style={{
+                    backgroundColor: bgColor,
+                    borderColor: ossSettings.borderColor,
+                    borderWidth: '4px',
+                  }}
                   data-testid={`card-order-status-${order.orderNumber}`}
                 >
                   <CardContent className="p-8 h-full flex flex-col items-center justify-center text-center space-y-6">
@@ -143,20 +160,28 @@ export default function OrderStatusScreen() {
 
                     {/* Order Number */}
                     <div>
-                      <p className="text-lg opacity-75 mb-2">{ossSettings.numberLabel}</p>
-                      <h2 className="text-6xl font-bold">{order.orderNumber.replace(/^ORD-/, '')}</h2>
+                      <p className="text-lg opacity-75 mb-2" style={{ color: ossSettings.textColor }}>{ossSettings.numberLabel}</p>
+                      <h2 className="text-6xl font-bold" style={{ color: ossSettings.textColor }}>{order.orderNumber.replace(/^ORD-/, '')}</h2>
                     </div>
 
                     {/* Table Number */}
                     {ossSettings.showTableInfo && order.tableNumber && (
                       <div>
-                        <p className="text-lg opacity-75 mb-2">{ossSettings.tableLabel}</p>
-                        <p className="text-4xl font-bold">{order.tableNumber}</p>
+                        <p className="text-lg opacity-75 mb-2" style={{ color: ossSettings.textColor }}>{ossSettings.tableLabel}</p>
+                        <p className="text-4xl font-bold" style={{ color: ossSettings.textColor }}>{order.tableNumber}</p>
                       </div>
                     )}
 
                     {/* Status Badge */}
-                    <Badge className={`text-2xl py-3 px-6 ${textColor}`} style={{ backgroundColor: bgColor }}>
+                    <Badge
+                      className="text-2xl py-3 px-6"
+                      style={{
+                        backgroundColor: bgColor,
+                        color: ossSettings.textColor,
+                        borderColor: ossSettings.borderColor,
+                        borderWidth: '2px',
+                      }}
+                    >
                       {config.label}
                     </Badge>
                   </CardContent>
