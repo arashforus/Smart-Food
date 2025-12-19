@@ -33,6 +33,7 @@ export default function OrdersPage() {
   const { addOrder } = useOrders();
   const [cart, setCart] = useState<CartOrderItem[]>([]);
   const [selectedTable, setSelectedTable] = useState<string>('');
+  const [orderType, setOrderType] = useState<'table' | 'takeaway' | ''>('');
   const [orderNotes, setOrderNotes] = useState('');
   const [showCart, setShowCart] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -110,7 +111,7 @@ export default function OrdersPage() {
     }));
 
     const newOrder = addOrder({
-      tableNumber: selectedTable || undefined,
+      tableNumber: orderType === 'table' ? selectedTable || undefined : undefined,
       branchId: '1',
       items: orderItems,
       status: 'pending',
@@ -120,6 +121,7 @@ export default function OrdersPage() {
 
     setCart([]);
     setSelectedTable('');
+    setOrderType('');
     setOrderNotes('');
     setShowCart(false);
     toast({ title: 'Order Created', description: `${newOrder.orderNumber} has been sent to kitchen` });
@@ -221,18 +223,42 @@ export default function OrdersPage() {
           </DialogHeader>
           
           <div className="space-y-4">
-            <Select value={selectedTable} onValueChange={setSelectedTable}>
-              <SelectTrigger data-testid="select-table">
-                <SelectValue placeholder="Select Table (Optional)" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockTables.filter((t) => t.isActive).map((table) => (
-                  <SelectItem key={table.id} value={table.number}>
-                    Table {table.number} ({table.seats} seats)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Button
+                variant={orderType === 'table' ? 'default' : 'outline'}
+                onClick={() => {
+                  setOrderType('table');
+                  setSelectedTable('');
+                }}
+                className="flex-1"
+                data-testid="button-order-type-table"
+              >
+                Table
+              </Button>
+              <Button
+                variant={orderType === 'takeaway' ? 'default' : 'outline'}
+                onClick={() => setOrderType('takeaway')}
+                className="flex-1"
+                data-testid="button-order-type-takeaway"
+              >
+                Takeaway
+              </Button>
+            </div>
+
+            {orderType === 'table' && (
+              <Select value={selectedTable} onValueChange={setSelectedTable}>
+                <SelectTrigger data-testid="select-table">
+                  <SelectValue placeholder="Select Table" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockTables.filter((t) => t.isActive).map((table) => (
+                    <SelectItem key={table.id} value={table.number}>
+                      Table {table.number} ({table.seats} seats)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
             {cart.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
@@ -244,13 +270,24 @@ export default function OrdersPage() {
                 {cart.map((ci) => (
                   <Card key={ci.menuItem.id}>
                     <CardContent className="p-3">
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-3 mb-2">
+                        {ci.menuItem.image && (
+                          <div className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                            <img
+                              src={ci.menuItem.image}
+                              alt={ci.menuItem.name.en}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
                         <div className="flex-1">
                           <h4 className="font-medium text-sm">{ci.menuItem.name.en}</h4>
                           <p className="text-sm text-muted-foreground">
                             ${(ci.menuItem.discountedPrice || ci.menuItem.price).toFixed(2)} each
                           </p>
                         </div>
+                      </div>
+                      <div className="flex items-center justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2">
                           <Button
                             size="icon"
@@ -269,24 +306,24 @@ export default function OrdersPage() {
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => removeFromCart(ci.menuItem.id)}
-                            data-testid={`button-remove-${ci.menuItem.id}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
                         </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => removeFromCart(ci.menuItem.id)}
+                          data-testid={`button-remove-${ci.menuItem.id}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                       <Input
                         placeholder="Notes (e.g., no onions)"
                         value={ci.notes}
                         onChange={(e) => updateItemNotes(ci.menuItem.id, e.target.value)}
-                        className="mt-2 text-sm"
+                        className="mt-2 text-sm mb-2"
                         data-testid={`input-notes-${ci.menuItem.id}`}
                       />
-                      <p className="text-right font-semibold mt-2">
+                      <p className="text-right font-semibold">
                         ${((ci.menuItem.discountedPrice || ci.menuItem.price) * ci.quantity).toFixed(2)}
                       </p>
                     </CardContent>

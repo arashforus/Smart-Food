@@ -78,6 +78,15 @@ export default function CartView({
             <Card key={cartItem.id} className="overflow-hidden">
               <CardContent className="p-3">
                 <div className={`flex gap-3 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  {cartItem.item.image && (
+                    <div className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0">
+                      <img
+                        src={cartItem.item.image}
+                        alt={getName(cartItem)}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
                   <div className="flex-1">
                     <h4 className={`font-medium text-sm ${isRtl ? 'text-right' : ''}`}>
                       {getName(cartItem)}
