@@ -29,6 +29,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { mockSettings, mockLanguages } from '@/lib/mockData';
 import type { Settings } from '@/lib/types';
+import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 
 const settingsSchema = z.object({
   primaryColor: z.string().min(1, 'Primary color is required'),
@@ -235,12 +236,13 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <Tabs defaultValue={location.includes('tab=profile') ? 'profile' : 'general'} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-1">
+            <TabsList className="grid w-full grid-cols-5 md:grid-cols-6 lg:grid-cols-12 gap-1">
               <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
               <TabsTrigger value="general" className="text-xs md:text-sm">General</TabsTrigger>
               <TabsTrigger value="restaurant" className="text-xs md:text-sm">Restaurant</TabsTrigger>
               <TabsTrigger value="login" className="text-xs md:text-sm">Login</TabsTrigger>
               <TabsTrigger value="qr" className="text-xs md:text-sm">QR Page</TabsTrigger>
+              <TabsTrigger value="qrcode" className="text-xs md:text-sm">QR Design</TabsTrigger>
               <TabsTrigger value="menu" className="text-xs md:text-sm">Menu</TabsTrigger>
               <TabsTrigger value="currency" className="text-xs md:text-sm">Currency</TabsTrigger>
               <TabsTrigger value="payment" className="text-xs md:text-sm">Payment</TabsTrigger>
@@ -904,6 +906,11 @@ export default function SettingsPage() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* QR Code Tab */}
+            <TabsContent value="qrcode" className="space-y-6">
+              <QRCodeDesigner />
             </TabsContent>
           </Tabs>
 
