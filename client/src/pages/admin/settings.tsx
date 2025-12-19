@@ -169,21 +169,6 @@ export default function SettingsPage() {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
 
-  // Helper functions for 24-hour to 12-hour conversion
-  const convertTo12Hour = (time24: string) => {
-    const [hours, minutes] = time24.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hours12 = hours % 12 || 12;
-    return { hours: hours12, minutes, period };
-  };
-
-  const convertTo24Hour = (hours12: number, minutes: number, period: string) => {
-    let hours24 = hours12;
-    if (period === 'PM' && hours12 !== 12) hours24 += 12;
-    if (period === 'AM' && hours12 === 12) hours24 = 0;
-    return `${String(hours24).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  };
-
   const timezones = [
     { value: 'UTC-12', label: 'UTC-12:00 (Baker Island)' },
     { value: 'UTC-11', label: 'UTC-11:00 (Samoa, Midway Island)' },
@@ -956,101 +941,45 @@ export default function SettingsPage() {
                   <CardDescription>Set your restaurant hours for each day</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {Object.entries(operatingHours).map(([day, hoursData]: [string, any]) => {
-                    const startTime = convertTo12Hour(hoursData.start);
-                    const endTime = convertTo12Hour(hoursData.end);
-                    return (
-                      <div key={day} className="flex items-end gap-3">
-                        <div className="flex-1 min-w-20">
-                          <FormLabel className="text-sm">{day}</FormLabel>
+                  {Object.entries(operatingHours).map(([day, hoursData]: [string, any]) => (
+                    <div key={day} className="flex items-end gap-3">
+                      <div className="flex-1 min-w-24">
+                        <FormLabel className="text-sm">{day}</FormLabel>
+                      </div>
+                      <div className="flex gap-2 items-end">
+                        <div>
+                          <FormLabel className="text-xs text-muted-foreground">Start</FormLabel>
+                          <Input
+                            type="time"
+                            value={hoursData.start}
+                            onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: e.target.value } })}
+                            className="w-24"
+                            disabled={hoursData.closed}
+                            data-testid={`input-hours-start-${day.toLowerCase()}`}
+                          />
                         </div>
-                        <div className="flex gap-2 items-end flex-wrap">
-                          <div>
-                            <FormLabel className="text-xs text-muted-foreground">Start</FormLabel>
-                            <div className="flex gap-1">
-                              <select
-                                value={startTime.hours}
-                                onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: convertTo24Hour(Number(e.target.value), startTime.minutes, startTime.period) } })}
-                                disabled={hoursData.closed}
-                                className="border border-input rounded-md px-2 py-1 h-9 text-sm"
-                                data-testid={`select-hours-start-${day.toLowerCase()}`}
-                              >
-                                {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                                  <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
-                                ))}
-                              </select>
-                              <select
-                                value={startTime.minutes}
-                                onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: convertTo24Hour(startTime.hours, Number(e.target.value), startTime.period) } })}
-                                disabled={hoursData.closed}
-                                className="border border-input rounded-md px-2 py-1 h-9 text-sm"
-                                data-testid={`select-minutes-start-${day.toLowerCase()}`}
-                              >
-                                {[0, 15, 30, 45].map((m) => (
-                                  <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
-                                ))}
-                              </select>
-                              <select
-                                value={startTime.period}
-                                onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: convertTo24Hour(startTime.hours, startTime.minutes, e.target.value) } })}
-                                disabled={hoursData.closed}
-                                className="border border-input rounded-md px-2 py-1 h-9 text-sm"
-                                data-testid={`select-period-start-${day.toLowerCase()}`}
-                              >
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div>
-                            <FormLabel className="text-xs text-muted-foreground">End</FormLabel>
-                            <div className="flex gap-1">
-                              <select
-                                value={endTime.hours}
-                                onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: convertTo24Hour(Number(e.target.value), endTime.minutes, endTime.period) } })}
-                                disabled={hoursData.closed}
-                                className="border border-input rounded-md px-2 py-1 h-9 text-sm"
-                                data-testid={`select-hours-end-${day.toLowerCase()}`}
-                              >
-                                {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                                  <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
-                                ))}
-                              </select>
-                              <select
-                                value={endTime.minutes}
-                                onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: convertTo24Hour(endTime.hours, Number(e.target.value), endTime.period) } })}
-                                disabled={hoursData.closed}
-                                className="border border-input rounded-md px-2 py-1 h-9 text-sm"
-                                data-testid={`select-minutes-end-${day.toLowerCase()}`}
-                              >
-                                {[0, 15, 30, 45].map((m) => (
-                                  <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
-                                ))}
-                              </select>
-                              <select
-                                value={endTime.period}
-                                onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: convertTo24Hour(endTime.hours, endTime.minutes, e.target.value) } })}
-                                disabled={hoursData.closed}
-                                className="border border-input rounded-md px-2 py-1 h-9 text-sm"
-                                data-testid={`select-period-end-${day.toLowerCase()}`}
-                              >
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              checked={hoursData.closed}
-                              onCheckedChange={(checked) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, closed: checked as boolean } })}
-                              data-testid={`checkbox-closed-${day.toLowerCase()}`}
-                            />
-                            <FormLabel className="text-xs text-muted-foreground">Closed</FormLabel>
-                          </div>
+                        <div>
+                          <FormLabel className="text-xs text-muted-foreground">End</FormLabel>
+                          <Input
+                            type="time"
+                            value={hoursData.end}
+                            onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: e.target.value } })}
+                            className="w-24"
+                            disabled={hoursData.closed}
+                            data-testid={`input-hours-end-${day.toLowerCase()}`}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            checked={hoursData.closed}
+                            onCheckedChange={(checked) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, closed: checked as boolean } })}
+                            data-testid={`checkbox-closed-${day.toLowerCase()}`}
+                          />
+                          <FormLabel className="text-xs text-muted-foreground">Closed</FormLabel>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
 
