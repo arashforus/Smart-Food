@@ -241,7 +241,12 @@ export default function CategoriesPage() {
                     <FormItem>
                       <FormLabel>Image</FormLabel>
                       <FormControl>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
+                          {field.value && typeof field.value === 'string' && (
+                            <div className="flex justify-center">
+                              <img src={field.value} alt="Category preview" className="h-48 w-48 rounded-lg object-cover border" />
+                            </div>
+                          )}
                           <input type="file" ref={fileInputRefEdit} onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
@@ -252,11 +257,8 @@ export default function CategoriesPage() {
                           }} accept="image/*" className="hidden" data-testid="input-file-category-image-edit" />
                           <Button type="button" variant="outline" className="w-full" onClick={() => fileInputRefEdit.current?.click()} data-testid="button-upload-image-edit">
                             <Upload className="w-4 h-4 mr-2" />
-                            Upload Image
+                            {field.value ? 'Change Image' : 'Upload Image'}
                           </Button>
-                          {field.value && typeof field.value === 'string' && (
-                            <img src={field.value} alt="Category preview" className="h-16 w-16 rounded object-cover" />
-                          )}
                         </div>
                       </FormControl>
                       <FormMessage />
