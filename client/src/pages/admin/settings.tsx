@@ -925,66 +925,148 @@ export default function SettingsPage() {
                   <CardDescription>Customize the appearance and display of the order status screen</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <FormLabel htmlFor="pending-color">Pending Order Color</FormLabel>
-                      <div className="flex gap-2">
-                        <Input
-                          id="pending-color"
-                          type="color"
-                          value={ossForm.pendingColor === 'bg-yellow-100 dark:bg-yellow-900' ? '#fef3c7' : '#865e00'}
-                          onChange={(e) => setOSSForm({ ...ossForm, pendingColor: 'bg-yellow-100 dark:bg-yellow-900' })}
-                          className="w-16"
-                        />
-                        <Select value={ossForm.pendingColor} onValueChange={(value) => setOSSForm({ ...ossForm, pendingColor: value })}>
-                          <SelectTrigger className="flex-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="bg-yellow-100 dark:bg-yellow-900">Yellow</SelectItem>
-                            <SelectItem value="bg-blue-100 dark:bg-blue-900">Blue</SelectItem>
-                            <SelectItem value="bg-red-100 dark:bg-red-900">Red</SelectItem>
-                            <SelectItem value="bg-purple-100 dark:bg-purple-900">Purple</SelectItem>
-                            <SelectItem value="bg-pink-100 dark:bg-pink-900">Pink</SelectItem>
-                          </SelectContent>
-                        </Select>
+                  {/* Order Status Colors */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-sm">Order Status Colors</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="pending-color">Pending Order Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="pending-color"
+                            type="color"
+                            value={ossForm.pendingColor}
+                            onChange={(e) => setOSSForm({ ...ossForm, pendingColor: e.target.value })}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-pending-color"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{ossForm.pendingColor}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <FormLabel htmlFor="preparing-color">Preparing Order Color</FormLabel>
-                      <Select value={ossForm.preparingColor} onValueChange={(value) => setOSSForm({ ...ossForm, preparingColor: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="bg-orange-100 dark:bg-orange-900">Orange</SelectItem>
-                          <SelectItem value="bg-yellow-100 dark:bg-yellow-900">Yellow</SelectItem>
-                          <SelectItem value="bg-red-100 dark:bg-red-900">Red</SelectItem>
-                          <SelectItem value="bg-purple-100 dark:bg-purple-900">Purple</SelectItem>
-                          <SelectItem value="bg-pink-100 dark:bg-pink-900">Pink</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="preparing-color">Preparing Order Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="preparing-color"
+                            type="color"
+                            value={ossForm.preparingColor}
+                            onChange={(e) => setOSSForm({ ...ossForm, preparingColor: e.target.value })}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-preparing-color"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{ossForm.preparingColor}</span>
+                        </div>
+                      </div>
 
-                    <div className="space-y-2">
-                      <FormLabel htmlFor="ready-color">Ready Order Color</FormLabel>
-                      <Select value={ossForm.readyColor} onValueChange={(value) => setOSSForm({ ...ossForm, readyColor: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="bg-green-100 dark:bg-green-900">Green</SelectItem>
-                          <SelectItem value="bg-blue-100 dark:bg-blue-900">Blue</SelectItem>
-                          <SelectItem value="bg-yellow-100 dark:bg-yellow-900">Yellow</SelectItem>
-                          <SelectItem value="bg-purple-100 dark:bg-purple-900">Purple</SelectItem>
-                          <SelectItem value="bg-pink-100 dark:bg-pink-900">Pink</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="ready-color">Ready Order Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="ready-color"
+                            type="color"
+                            value={ossForm.readyColor}
+                            onChange={(e) => setOSSForm({ ...ossForm, readyColor: e.target.value })}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-ready-color"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{ossForm.readyColor}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
+                  {/* Background Settings */}
                   <div className="border-t pt-6 space-y-4">
+                    <h3 className="font-semibold text-sm">Background</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            id="bg-solid"
+                            name="background-type"
+                            value="solid"
+                            checked={ossForm.backgroundType === 'solid'}
+                            onChange={(e) => setOSSForm({ ...ossForm, backgroundType: 'solid' as const })}
+                            className="cursor-pointer"
+                            data-testid="radio-bg-solid"
+                          />
+                          <label htmlFor="bg-solid" className="cursor-pointer text-sm">
+                            Solid Color
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            id="bg-image"
+                            name="background-type"
+                            value="image"
+                            checked={ossForm.backgroundType === 'image'}
+                            onChange={(e) => setOSSForm({ ...ossForm, backgroundType: 'image' as const })}
+                            className="cursor-pointer"
+                            data-testid="radio-bg-image"
+                          />
+                          <label htmlFor="bg-image" className="cursor-pointer text-sm">
+                            Image
+                          </label>
+                        </div>
+                      </div>
+
+                      {ossForm.backgroundType === 'solid' && (
+                        <div className="space-y-2 p-3 bg-muted rounded-lg">
+                          <FormLabel htmlFor="bg-color">Background Color</FormLabel>
+                          <div className="flex gap-2 items-center">
+                            <Input
+                              id="bg-color"
+                              type="color"
+                              value={ossForm.backgroundColor}
+                              onChange={(e) => setOSSForm({ ...ossForm, backgroundColor: e.target.value })}
+                              className="w-16 h-10 cursor-pointer"
+                              data-testid="input-bg-color"
+                            />
+                            <span className="text-sm text-muted-foreground font-mono">{ossForm.backgroundColor}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {ossForm.backgroundType === 'image' && (
+                        <div className="space-y-2 p-3 bg-muted rounded-lg">
+                          <FormLabel htmlFor="bg-image">Upload Image</FormLabel>
+                          <Input
+                            id="bg-image"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  const imageData = event.target?.result as string;
+                                  setOSSForm({ ...ossForm, backgroundImage: imageData });
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            data-testid="input-bg-image"
+                          />
+                          {ossForm.backgroundImage && (
+                            <div className="mt-2">
+                              <img
+                                src={ossForm.backgroundImage}
+                                alt="Background preview"
+                                className="w-32 h-32 object-cover rounded-lg"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Labels and Toggles */}
+                  <div className="border-t pt-6 space-y-4">
+                    <h3 className="font-semibold text-sm">Labels and Display</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <FormLabel htmlFor="number-label">Number Label</FormLabel>

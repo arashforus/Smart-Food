@@ -10,6 +10,9 @@ export interface OSSSettings {
   tableLabel: string;
   showTableInfo: boolean;
   showIcon: boolean;
+  backgroundType: 'solid' | 'image';
+  backgroundColor: string;
+  backgroundImage: string;
 }
 
 interface OrderContextType {
@@ -36,13 +39,16 @@ function generateOrderNumber(): string {
 }
 
 const defaultOSSSettings: OSSSettings = {
-  pendingColor: 'bg-yellow-100 dark:bg-yellow-900',
-  preparingColor: 'bg-orange-100 dark:bg-orange-900',
-  readyColor: 'bg-green-100 dark:bg-green-900',
+  pendingColor: '#fef3c7',
+  preparingColor: '#fed7aa',
+  readyColor: '#dcfce7',
   numberLabel: 'Number',
   tableLabel: 'Table',
   showTableInfo: true,
   showIcon: true,
+  backgroundType: 'solid',
+  backgroundColor: '#ffffff',
+  backgroundImage: '',
 };
 
 export function OrderProvider({ children }: { children: React.ReactNode }) {

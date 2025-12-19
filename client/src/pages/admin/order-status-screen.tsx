@@ -35,23 +35,24 @@ export default function OrderStatusScreen() {
   const [displayOrders, setDisplayOrders] = useState<Order[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? `rgb(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)})` : 'rgb(255, 255, 255)';
+  };
+
   const getBackgroundColorForStatus = (status: OrderStatus) => {
-    const textColorMap: Record<OrderStatus, string> = {
-      pending: 'text-yellow-900 dark:text-yellow-100',
-      preparing: 'text-orange-900 dark:text-orange-100',
-      ready: 'text-green-900 dark:text-green-100',
-      served: 'text-blue-900 dark:text-blue-100',
-      cancelled: 'text-red-900 dark:text-red-100',
-    };
+    let hexColor = '#ffffff';
+    if (status === 'pending') hexColor = ossSettings.pendingColor;
+    else if (status === 'preparing') hexColor = ossSettings.preparingColor;
+    else if (status === 'ready') hexColor = ossSettings.readyColor;
+    else if (status === 'served') hexColor = '#dbeafe';
+    else if (status === 'cancelled') hexColor = '#fee2e2';
 
-    let bgColor = '';
-    if (status === 'pending') bgColor = ossSettings.pendingColor;
-    else if (status === 'preparing') bgColor = ossSettings.preparingColor;
-    else if (status === 'ready') bgColor = ossSettings.readyColor;
-    else if (status === 'served') bgColor = 'bg-blue-100 dark:bg-blue-900';
-    else if (status === 'cancelled') bgColor = 'bg-red-100 dark:bg-red-900';
+    const rgbColor = hexToRgb(hexColor);
+    const isDark = parseInt(hexColor.slice(1), 16) < 0xffffff / 2;
+    const textColor = isDark ? 'text-white' : 'text-gray-900';
 
-    return { bgColor, textColor: textColorMap[status] };
+    return { bgColor: rgbColor, textColor };
   };
 
   useEffect(() => {
@@ -84,8 +85,12 @@ export default function OrderStatusScreen() {
     }
   };
 
+  const screenBackgroundStyle = ossSettings.backgroundType === 'image' && ossSettings.backgroundImage
+    ? { backgroundImage: `url(${ossSettings.backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { backgroundColor: ossSettings.backgroundColor };
+
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-8 overflow-auto flex flex-col">
+    <div className="w-full h-screen p-8 overflow-auto flex flex-col" style={screenBackgroundStyle}>
       <div className="flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-8">
           <div className="text-center flex-1">
@@ -124,7 +129,8 @@ export default function OrderStatusScreen() {
               return (
                 <Card
                   key={order.id}
-                  className={`${bgColor} border-4 ${textColor} overflow-hidden transform hover:scale-105 transition-transform duration-300 min-h-64`}
+                  className={`border-4 ${textColor} overflow-hidden transform hover:scale-105 transition-transform duration-300 min-h-64`}
+                  style={{ backgroundColor: bgColor }}
                   data-testid={`card-order-status-${order.orderNumber}`}
                 >
                   <CardContent className="p-8 h-full flex flex-col items-center justify-center text-center space-y-6">
@@ -150,7 +156,7 @@ export default function OrderStatusScreen() {
                     )}
 
                     {/* Status Badge */}
-                    <Badge className={`text-2xl py-3 px-6 ${bgColor} ${textColor}`}>
+                    <Badge className={`text-2xl py-3 px-6 ${textColor}`} style={{ backgroundColor: bgColor }}>
                       {config.label}
                     </Badge>
                   </CardContent>
