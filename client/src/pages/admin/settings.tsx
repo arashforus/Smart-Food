@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import {
   Form,
@@ -121,7 +121,15 @@ export default function SettingsPage() {
   const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('profileEmail') || 'admin@restaurant.com');
   const [profilePhone, setProfilePhone] = useState(() => localStorage.getItem('profilePhone') || '+1 (555) 123-4567');
   const [profileAvatar, setProfileAvatar] = useState(() => localStorage.getItem('profileAvatar') || '');
+  const [profileAvatarPreview, setProfileAvatarPreview] = useState(() => localStorage.getItem('profileAvatar') || '');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  
+  // General Settings State
+  const [timezone, setTimezone] = useState(() => localStorage.getItem('appTimezone') || 'UTC');
+  const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
+  const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
+  const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
+  
   const [showChangePassword, setShowChangePassword] = useState(() => location.includes('action=changePassword'));
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -131,7 +139,14 @@ export default function SettingsPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const profileAvatarInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
   const languages = mockLanguages.filter((l) => l.isActive);
+
+  const timezones = [
+    'UTC', 'GMT', 'EST', 'CST', 'MST', 'PST', 
+    'CET', 'IST', 'JST', 'AEST', 'NZDT'
+  ];
 
   useEffect(() => {
     setShowChangePassword(location.includes('action=changePassword'));
@@ -184,10 +199,57 @@ export default function SettingsPage() {
       localStorage.setItem('restaurantPhone', restaurantPhone);
       localStorage.setItem('restaurantEmail', restaurantEmail);
       localStorage.setItem('restaurantHours', restaurantHours);
+      localStorage.setItem('appTimezone', timezone);
+      localStorage.setItem('copyrightText', copyrightText);
+      if (favicon) {
+        localStorage.setItem('favicon', favicon);
+      }
       setSettings(updatedSettings);
       setIsPending(false);
       toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
     }, 500);
+  };
+
+  const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        setProfileAvatar(imageData);
+        setProfileAvatarPreview(imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearProfileAvatar = () => {
+    setProfileAvatar('');
+    setProfileAvatarPreview('');
+    if (profileAvatarInputRef.current) {
+      profileAvatarInputRef.current.value = '';
+    }
+  };
+
+  const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        setFavicon(imageData);
+        setFaviconPreview(imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearFavicon = () => {
+    setFavicon('');
+    setFaviconPreview('');
+    if (faviconInputRef.current) {
+      faviconInputRef.current.value = '';
+    }
   };
 
   const toggleRoleSection = (role: 'admin' | 'manager' | 'chef' | 'accountant', section: string) => {
@@ -289,10 +351,11 @@ export default function SettingsPage() {
                           id="profile-email"
                           type="email"
                           value={profileEmail}
-                          onChange={(e) => setProfileEmail(e.target.value)}
+                          disabled
                           placeholder="your.email@example.com"
                           data-testid="input-profile-email"
                         />
+                        <FormDescription>Email cannot be changed. Contact support to update your email.</FormDescription>
                       </div>
                       <div className="space-y-2">
                         <FormLabel htmlFor="profile-phone">Phone</FormLabel>
@@ -305,14 +368,44 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <FormLabel htmlFor="profile-avatar">Avatar URL</FormLabel>
-                        <Input
-                          id="profile-avatar"
-                          value={profileAvatar}
-                          onChange={(e) => setProfileAvatar(e.target.value)}
-                          placeholder="https://example.com/avatar.jpg"
-                          data-testid="input-profile-avatar"
-                        />
+                        <FormLabel>Profile Picture</FormLabel>
+                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                          onClick={() => profileAvatarInputRef.current?.click()}
+                        >
+                          {profileAvatarPreview ? (
+                            <div className="space-y-2">
+                              <img src={profileAvatarPreview} alt="Profile Preview" className="max-h-32 mx-auto rounded-lg object-cover" />
+                              <p className="text-sm text-muted-foreground">Click to change</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 py-4">
+                              <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                              <p className="text-sm text-muted-foreground">Click to upload profile picture</p>
+                              <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                            </div>
+                          )}
+                          <input
+                            ref={profileAvatarInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleProfileAvatarUpload}
+                            className="hidden"
+                            data-testid="input-profile-avatar"
+                          />
+                        </div>
+                        {profileAvatar && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleClearProfileAvatar}
+                            className="w-full"
+                            data-testid="button-clear-profile-avatar"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Clear Picture
+                          </Button>
+                        )}
                       </div>
                       <div className="flex gap-2 pt-2">
                         <Button
@@ -484,10 +577,80 @@ export default function SettingsPage() {
                           <Input {...field} placeholder="#0079F2" className="flex-1" />
                         </div>
                       </FormControl>
-                      <FormDescription>Used for buttons, links, and accents throughout the site</FormDescription>
+                      <FormDescription>Used for buttons, links, and accents throughout the admin panel (e.g., orange will change all primary colored elements)</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
+
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="timezone">Timezone</FormLabel>
+                    <Select value={timezone} onValueChange={setTimezone}>
+                      <SelectTrigger id="timezone" data-testid="select-timezone">
+                        <SelectValue placeholder="Select timezone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timezones.map((tz) => (
+                          <SelectItem key={tz} value={tz}>
+                            {tz}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>All times in the panels will be displayed in this timezone</FormDescription>
+                  </div>
+
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="favicon">Favicon</FormLabel>
+                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                      onClick={() => faviconInputRef.current?.click()}
+                    >
+                      {faviconPreview ? (
+                        <div className="space-y-2">
+                          <img src={faviconPreview} alt="Favicon Preview" className="h-16 w-16 mx-auto rounded" />
+                          <p className="text-sm text-muted-foreground">Click to change</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2 py-4">
+                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">Click to upload favicon</p>
+                          <p className="text-xs text-muted-foreground">PNG, ICO up to 1MB (preferred size: 32x32 or 64x64)</p>
+                        </div>
+                      )}
+                      <input
+                        ref={faviconInputRef}
+                        type="file"
+                        accept="image/png,image/x-icon,.ico"
+                        onChange={handleFaviconUpload}
+                        className="hidden"
+                        data-testid="input-favicon"
+                      />
+                    </div>
+                    {favicon && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleClearFavicon}
+                        className="w-full"
+                        data-testid="button-clear-favicon"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Clear Favicon
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="copyright">Copyright Text</FormLabel>
+                    <Input
+                      id="copyright"
+                      value={copyrightText}
+                      onChange={(e) => setCopyrightText(e.target.value)}
+                      placeholder="© 2024 Your Restaurant. All rights reserved."
+                      data-testid="input-copyright-text"
+                    />
+                    <FormDescription>This text will appear at the bottom of all pages</FormDescription>
+                  </div>
                 </CardContent>
               </Card>
 
