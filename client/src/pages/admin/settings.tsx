@@ -144,8 +144,43 @@ export default function SettingsPage() {
   const languages = mockLanguages.filter((l) => l.isActive);
 
   const timezones = [
-    'UTC', 'GMT', 'EST', 'CST', 'MST', 'PST', 
-    'CET', 'IST', 'JST', 'AEST', 'NZDT'
+    { value: 'UTC-12', label: 'UTC-12:00 (Baker Island)' },
+    { value: 'UTC-11', label: 'UTC-11:00 (Samoa, Midway Island)' },
+    { value: 'UTC-10', label: 'UTC-10:00 (Hawaii, Aleutian Islands)' },
+    { value: 'UTC-9', label: 'UTC-09:00 (Alaska)' },
+    { value: 'UTC-8', label: 'UTC-08:00 (Pacific Time: US & Canada, Mexico)' },
+    { value: 'UTC-7', label: 'UTC-07:00 (Mountain Time: US & Canada, Arizona)' },
+    { value: 'UTC-6', label: 'UTC-06:00 (Central Time: US & Canada, Mexico)' },
+    { value: 'UTC-5', label: 'UTC-05:00 (Eastern Time: US & Canada, Colombia)' },
+    { value: 'UTC-4', label: 'UTC-04:00 (Atlantic Time, Venezuela, Bolivia)' },
+    { value: 'UTC-3:30', label: 'UTC-03:30 (Newfoundland)' },
+    { value: 'UTC-3', label: 'UTC-03:00 (Buenos Aires, Brazil, Greenland)' },
+    { value: 'UTC-2', label: 'UTC-02:00 (Mid-Atlantic)' },
+    { value: 'UTC-1', label: 'UTC-01:00 (Azores)' },
+    { value: 'UTC+0', label: 'UTC+00:00 (London, Dublin, Lisbon, GMT)' },
+    { value: 'UTC+1', label: 'UTC+01:00 (Paris, Berlin, Amsterdam, Cairo)' },
+    { value: 'UTC+2', label: 'UTC+02:00 (Cairo, Istanbul, Athens, Helsinki)' },
+    { value: 'UTC+3', label: 'UTC+03:00 (Moscow, Dubai, Baghdad, Istanbul)' },
+    { value: 'UTC+3:30', label: 'UTC+03:30 (Iran)' },
+    { value: 'UTC+4', label: 'UTC+04:00 (Dubai, Mauritius, Armenia)' },
+    { value: 'UTC+4:30', label: 'UTC+04:30 (Afghanistan)' },
+    { value: 'UTC+5', label: 'UTC+05:00 (Pakistan, Kazakhstan)' },
+    { value: 'UTC+5:30', label: 'UTC+05:30 (India, Sri Lanka)' },
+    { value: 'UTC+5:45', label: 'UTC+05:45 (Nepal)' },
+    { value: 'UTC+6', label: 'UTC+06:00 (Bangladesh, Bhutan)' },
+    { value: 'UTC+6:30', label: 'UTC+06:30 (Myanmar)' },
+    { value: 'UTC+7', label: 'UTC+07:00 (Bangkok, Jakarta, Hanoi, Manila)' },
+    { value: 'UTC+8', label: 'UTC+08:00 (Singapore, Hong Kong, Beijing, Shanghai)' },
+    { value: 'UTC+8:45', label: 'UTC+08:45 (Eucla, Australia)' },
+    { value: 'UTC+9', label: 'UTC+09:00 (Tokyo, Seoul, Manila)' },
+    { value: 'UTC+9:30', label: 'UTC+09:30 (Adelaide, Darwin)' },
+    { value: 'UTC+10', label: 'UTC+10:00 (Sydney, Brisbane, Melbourne)' },
+    { value: 'UTC+10:30', label: 'UTC+10:30 (Lord Howe Island)' },
+    { value: 'UTC+11', label: 'UTC+11:00 (Solomon Islands, Vanuatu)' },
+    { value: 'UTC+12', label: 'UTC+12:00 (Fiji, New Zealand, Apia)' },
+    { value: 'UTC+12:45', label: 'UTC+12:45 (Chatham Islands)' },
+    { value: 'UTC+13', label: 'UTC+13:00 (Samoa, Tonga, Kiribati)' },
+    { value: 'UTC+14', label: 'UTC+14:00 (Line Islands)' },
   ];
 
   useEffect(() => {
@@ -175,6 +210,14 @@ export default function SettingsPage() {
       restaurantHours,
     },
   });
+
+  useEffect(() => {
+    const primaryColor = form.watch('primaryColor');
+    if (primaryColor) {
+      document.documentElement.style.setProperty('--primary', primaryColor);
+      document.documentElement.style.setProperty('--primary-foreground', '#ffffff');
+    }
+  }, [form.watch('primaryColor')]);
 
   const handleSubmit = (data: SettingsFormData) => {
     setIsPending(true);
@@ -427,7 +470,13 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                      {profileAvatarPreview && (
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">Profile Picture</p>
+                          <img src={profileAvatarPreview} alt="Profile" className="h-24 w-24 rounded-lg object-cover" />
+                        </div>
+                      )}
                       <div>
                         <p className="text-sm text-muted-foreground">Name</p>
                         <p className="text-base font-medium">{profileName}</p>
@@ -590,8 +639,8 @@ export default function SettingsPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {timezones.map((tz) => (
-                          <SelectItem key={tz} value={tz}>
-                            {tz}
+                          <SelectItem key={tz.value} value={tz.value}>
+                            {tz.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -710,7 +759,7 @@ export default function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Language</CardTitle>
-                  <CardDescription>Set default language for the menu</CardDescription>
+                  <CardDescription>Set admin panel default language</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField control={form.control} name="defaultLanguage" render={({ field }) => (
@@ -730,7 +779,7 @@ export default function SettingsPage() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormDescription>Language shown to customers by default</FormDescription>
+                      <FormDescription>Interface language for the admin panel</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
