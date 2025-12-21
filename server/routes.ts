@@ -63,12 +63,16 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  app.set("trust proxy", 1);
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   app.use(
     session({
+      name: "sid",
       store: SessionStore.store,
       secret: process.env.SESSION_SECRET || "restaurant-menu-secret-key",
-      resave: true,
-      saveUninitialized: true,
+      resave: false,
+      saveUninitialized: false,
       cookie: {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
@@ -126,6 +130,7 @@ export async function registerRoutes(
       console.log("Auth check - session:", req.session);
       console.log("Auth check - userId:", req.session.userId);
       console.log("Auth check - id:", req.session.id);
+      console.log("Auth check - user.id:", req.session.user.id);
       
       if (!req.session.id) {
         return res.status(401).json({ message: "Not authenticated" });
@@ -155,8 +160,7 @@ export async function registerRoutes(
       if (err) {
         return res.status(500).json({ message: "Logout failed" });
       }
-      res.clearCookie("connect.sid");
-      res.clearCookie("connect.sid", { path: "/" });
+      res.clearCookie("sid"); // ✅ correct cookie
       res.json({ message: "Logged out successfully" });
     });
   });
