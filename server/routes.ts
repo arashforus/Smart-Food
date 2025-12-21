@@ -124,7 +124,7 @@ export async function registerRoutes(
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
       console.log("Auth check - session:", req.session);
-      console.log("Auth check - userId:", req.session.userId);
+      console.log("Auth check - userId:", req.session.id);
       
       if (!req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
