@@ -137,4 +137,22 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use DrizzleStorage in production (when DATABASE_URL is set)
+// Use MemStorage as fallback for development
+export let storage: IStorage;
+
+async function initializeStorage() {
+  if (process.env.DATABASE_URL) {
+    try {
+      const { drizzleStorage } = await import("./drizzle-storage");
+      storage = drizzleStorage;
+    } catch (error) {
+      console.warn("Failed to initialize DrizzleStorage, falling back to MemStorage", error);
+      storage = new MemStorage();
+    }
+  } else {
+    storage = new MemStorage();
+  }
+}
+
+initializeStorage();
