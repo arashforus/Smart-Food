@@ -67,8 +67,8 @@ export async function registerRoutes(
     session({
       store: SessionStore.store,
       secret: process.env.SESSION_SECRET || "restaurant-menu-secret-key",
-      resave: false,
-      saveUninitialized: false,
+      resave: true,
+      saveUninitialized: true,
       cookie: {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
@@ -100,6 +100,14 @@ export async function registerRoutes(
 
       req.session.userId = user.id;
       
+      // Save session to database/store before sending response
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+      
       res.json({
         id: user.id,
         username: user.username,
@@ -115,6 +123,9 @@ export async function registerRoutes(
 
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
+      console.log("Auth check - session:", req.session);
+      console.log("Auth check - userId:", req.session.userId);
+      
       if (!req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -144,6 +155,7 @@ export async function registerRoutes(
         return res.status(500).json({ message: "Logout failed" });
       }
       res.clearCookie("connect.sid");
+      res.clearCookie("connect.sid", { path: "/" });
       res.json({ message: "Logged out successfully" });
     });
   });

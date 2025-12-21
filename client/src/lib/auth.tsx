@@ -35,8 +35,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = (userData: AdminUser) => {
+  const login = async (userData: AdminUser) => {
     setUser(userData);
+    // Verify session was saved by checking auth endpoint
+    try {
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const verifiedUser = await response.json();
+        setUser(verifiedUser);
+      } else {
+        console.error('Session verification failed after login');
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Session verification error:', error);
+      setUser(null);
+    }
   };
 
   const logout = async () => {
