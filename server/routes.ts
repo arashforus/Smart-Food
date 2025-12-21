@@ -109,7 +109,7 @@ export async function registerRoutes(
       });
       
       res.json({
-        id: user.id,
+        userId: user.id,
         username: user.username,
         name: user.name,
         email: user.email,
@@ -124,7 +124,7 @@ export async function registerRoutes(
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
       console.log("Auth check - session:", req.session);
-      console.log("Auth check - userId:", req.session.id);
+      console.log("Auth check - userId:", req.session.userId);
       
       if (!req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
@@ -137,7 +137,7 @@ export async function registerRoutes(
       }
 
       res.json({
-        id: user.id,
+        userId: user.id,
         username: user.username,
         name: user.name,
         email: user.email,
