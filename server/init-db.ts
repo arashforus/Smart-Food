@@ -61,6 +61,20 @@ export async function initializeDatabase() {
       );
     `);
 
+    // Create session table for express-session
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "session" (
+        "sid" varchar NOT NULL COLLATE "default" PRIMARY KEY,
+        "sess" json NOT NULL,
+        "expire" timestamp(6) NOT NULL
+      ) WITH (OIDS=FALSE);
+    `);
+
+    // Create index on expire column for cleanup
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS "IDX_session_expire" on "session" ("expire");
+    `);
+
     // Insert admin user if not exists
     await pool.query(`
       INSERT INTO users (username, password, name, email, role) 

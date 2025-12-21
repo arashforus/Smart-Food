@@ -4,11 +4,24 @@ import { type Server } from "http";
 import { storage } from "./storage";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import { Pool } from "pg";
+import pgSession from "connect-pg-simple";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const SessionStore = MemoryStore(session);
+// Determine which session store to use
+let SessionStore: any;
+if (process.env.DATABASE_URL) {
+  const PgSession = pgSession(session);
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+  SessionStore = { store: new PgSession({ pool }), pool };
+} else {
+  const MemSessionStore = MemoryStore(session);
+  SessionStore = { store: new MemSessionStore({ checkPeriod: 86400000 }), pool: null };
+}
 
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -52,15 +65,14 @@ export async function registerRoutes(
 ): Promise<Server> {
   app.use(
     session({
-      store: new SessionStore({
-        checkPeriod: 86400000,
-      }),
+      store: SessionStore.store,
       secret: process.env.SESSION_SECRET || "restaurant-menu-secret-key",
       resave: false,
       saveUninitialized: false,
       cookie: {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
+        sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000,
       },
     })
