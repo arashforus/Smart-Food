@@ -9,6 +9,15 @@ export interface StorageUser {
   role: 'admin' | 'manager' | 'chef' | 'accountant';
   avatar?: string;
   phone?: string;
+  branchId?: string;
+}
+
+export interface StorageBranch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  isActive: boolean;
 }
 
 export interface WaiterRequest {
@@ -43,17 +52,30 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<StorageUser | undefined>;
   createUser(user: Omit<StorageUser, 'id'>): Promise<StorageUser>;
   updateUser(id: string, data: Partial<Omit<StorageUser, 'id' | 'username'>>): Promise<StorageUser | undefined>;
+  getAllUsers(): Promise<StorageUser[]>;
+  getBranch(id: string): Promise<StorageBranch | undefined>;
+  getAllBranches(): Promise<StorageBranch[]>;
+  createBranch(branch: Omit<StorageBranch, 'id'>): Promise<StorageBranch>;
+  updateBranch(id: string, data: Partial<Omit<StorageBranch, 'id'>>): Promise<StorageBranch | undefined>;
+  deleteBranch(id: string): Promise<boolean>;
   createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest>;
   getDashboardMetrics(): Promise<DashboardMetrics>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, StorageUser>;
+  private branches: Map<string, StorageBranch>;
   private waiterRequests: Map<string, WaiterRequest>;
 
   constructor() {
     this.users = new Map();
+    this.branches = new Map();
     this.waiterRequests = new Map();
+    
+    const branch1: StorageBranch = { id: '1', name: 'Downtown Branch', address: '123 Main Street', phone: '+1 (555) 123-4567', isActive: true };
+    const branch2: StorageBranch = { id: '2', name: 'Uptown Branch', address: '456 Oak Avenue', phone: '+1 (555) 234-5678', isActive: true };
+    this.branches.set(branch1.id, branch1);
+    this.branches.set(branch2.id, branch2);
     
     const adminUser: StorageUser = {
       id: randomUUID(),
@@ -89,6 +111,37 @@ export class MemStorage implements IStorage {
     const updated = { ...user, ...data };
     this.users.set(id, updated);
     return updated;
+  }
+
+  async getAllUsers(): Promise<StorageUser[]> {
+    return Array.from(this.users.values());
+  }
+
+  async getBranch(id: string): Promise<StorageBranch | undefined> {
+    return this.branches.get(id);
+  }
+
+  async getAllBranches(): Promise<StorageBranch[]> {
+    return Array.from(this.branches.values());
+  }
+
+  async createBranch(branch: Omit<StorageBranch, 'id'>): Promise<StorageBranch> {
+    const id = randomUUID();
+    const newBranch: StorageBranch = { ...branch, id };
+    this.branches.set(id, newBranch);
+    return newBranch;
+  }
+
+  async updateBranch(id: string, data: Partial<Omit<StorageBranch, 'id'>>): Promise<StorageBranch | undefined> {
+    const branch = this.branches.get(id);
+    if (!branch) return undefined;
+    const updated = { ...branch, ...data };
+    this.branches.set(id, updated);
+    return updated;
+  }
+
+  async deleteBranch(id: string): Promise<boolean> {
+    return this.branches.delete(id);
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {

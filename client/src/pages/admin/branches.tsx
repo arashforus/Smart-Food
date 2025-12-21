@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
@@ -52,6 +53,18 @@ export default function BranchesPage() {
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
   const [deleteBranch, setDeleteBranch] = useState<Branch | null>(null);
 
+  React.useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const res = await fetch('/api/branches');
+        if (res.ok) setBranches(await res.json());
+      } catch (error) {
+        console.error('Failed to fetch branches:', error);
+      }
+    };
+    fetchBranches();
+  }, []);
+
   const form = useForm<BranchFormData>({
     resolver: zodResolver(branchSchema),
     defaultValues: { name: '', address: '', phone: '', isActive: true },
@@ -67,27 +80,57 @@ export default function BranchesPage() {
     setEditingBranch(branch);
   };
 
-  const handleCreate = (data: BranchFormData) => {
-    const newBranch: Branch = { id: String(Date.now()), ...data };
-    setBranches([...branches, newBranch]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'Branch Created' });
+  const handleCreate = async (data: BranchFormData) => {
+    try {
+      const res = await fetch('/api/branches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const newBranch = await res.json();
+        setBranches([...branches, newBranch]);
+        setFormOpen(false);
+        form.reset();
+        toast({ title: 'Branch Created' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create branch' });
+    }
   };
 
-  const handleEdit = (data: BranchFormData) => {
+  const handleEdit = async (data: BranchFormData) => {
     if (!editingBranch) return;
-    setBranches(branches.map((b) => (b.id === editingBranch.id ? { ...b, ...data } : b)));
-    setEditingBranch(null);
-    form.reset();
-    toast({ title: 'Branch Updated' });
+    try {
+      const res = await fetch(`/api/branches/${editingBranch.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setBranches(branches.map((b) => (b.id === editingBranch.id ? updated : b)));
+        setEditingBranch(null);
+        form.reset();
+        toast({ title: 'Branch Updated' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update branch' });
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteBranch) return;
-    setBranches(branches.filter((b) => b.id !== deleteBranch.id));
-    setDeleteBranch(null);
-    toast({ title: 'Branch Deleted' });
+    try {
+      const res = await fetch(`/api/branches/${deleteBranch.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setBranches(branches.filter((b) => b.id !== deleteBranch.id));
+        setDeleteBranch(null);
+        toast({ title: 'Branch Deleted' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete branch' });
+    }
   };
 
   return (

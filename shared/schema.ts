@@ -1,7 +1,16 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const branches = pgTable("branches", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  address: text("address").notNull(),
+  phone: text("phone").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -12,6 +21,7 @@ export const users = pgTable("users", {
   role: text("role").notNull().default("chef").default("chef"),
   avatar: text("avatar"),
   phone: text("phone"),
+  branchId: varchar("branch_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -33,4 +43,5 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type Branch = typeof branches.$inferSelect;
 export type WaiterRequest = typeof waiterRequests.$inferSelect;

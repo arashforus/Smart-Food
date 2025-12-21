@@ -190,6 +190,67 @@ export async function registerRoutes(
     });
   });
 
+  app.get("/api/users", async (_req: Request, res: Response) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      res.json(allUsers.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        branchId: u.branchId,
+        isActive: true,
+      })));
+    } catch (error) {
+      console.error("Get users error:", error);
+      res.status(500).json({ message: "Failed to get users" });
+    }
+  });
+
+  app.get("/api/branches", async (_req: Request, res: Response) => {
+    try {
+      const allBranches = await storage.getAllBranches();
+      res.json(allBranches);
+    } catch (error) {
+      console.error("Get branches error:", error);
+      res.status(500).json({ message: "Failed to get branches" });
+    }
+  });
+
+  app.post("/api/branches", async (req: Request, res: Response) => {
+    try {
+      const { name, address, phone, isActive } = req.body;
+      const branch = await storage.createBranch({ name, address, phone, isActive });
+      res.json(branch);
+    } catch (error) {
+      console.error("Create branch error:", error);
+      res.status(500).json({ message: "Failed to create branch" });
+    }
+  });
+
+  app.patch("/api/branches/:id", async (req: Request, res: Response) => {
+    try {
+      const { name, address, phone, isActive } = req.body;
+      const branch = await storage.updateBranch(req.params.id, { name, address, phone, isActive });
+      if (!branch) return res.status(404).json({ message: "Branch not found" });
+      res.json(branch);
+    } catch (error) {
+      console.error("Update branch error:", error);
+      res.status(500).json({ message: "Failed to update branch" });
+    }
+  });
+
+  app.delete("/api/branches/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteBranch(req.params.id);
+      if (!success) return res.status(404).json({ message: "Branch not found" });
+      res.json({ message: "Branch deleted" });
+    } catch (error) {
+      console.error("Delete branch error:", error);
+      res.status(500).json({ message: "Failed to delete branch" });
+    }
+  });
+
   app.post("/api/upload", upload.single("file"), (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });

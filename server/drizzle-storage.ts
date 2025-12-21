@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { users, waiterRequests } from "@shared/schema";
+import { users, branches, waiterRequests } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
-import type { StorageUser, WaiterRequest, IStorage, DashboardMetrics } from "./storage";
+import type { StorageUser, StorageBranch, WaiterRequest, IStorage, DashboardMetrics } from "./storage";
 
 let db: ReturnType<typeof drizzle> | null = null;
 
@@ -46,6 +46,44 @@ export class DrizzleStorage implements IStorage {
     const result = await db.update(users).set(data).where(eq(users.id, id)).returning();
     if (result.length === 0) return undefined;
     return this.mapToStorageUser(result[0]);
+  }
+
+  async getAllUsers(): Promise<StorageUser[]> {
+    const db = getDb();
+    const allUsers = await db.select().from(users);
+    return allUsers.map(u => this.mapToStorageUser(u));
+  }
+
+  async getBranch(id: string): Promise<StorageBranch | undefined> {
+    const db = getDb();
+    const result = await db.select().from(branches).where(eq(branches.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async getAllBranches(): Promise<StorageBranch[]> {
+    const db = getDb();
+    return await db.select().from(branches);
+  }
+
+  async createBranch(branch: Omit<StorageBranch, "id">): Promise<StorageBranch> {
+    const db = getDb();
+    const result = await db.insert(branches).values(branch).returning();
+    if (result.length === 0) throw new Error("Failed to create branch");
+    return result[0];
+  }
+
+  async updateBranch(id: string, data: Partial<Omit<StorageBranch, "id">>): Promise<StorageBranch | undefined> {
+    const db = getDb();
+    const result = await db.update(branches).set(data).where(eq(branches.id, id)).returning();
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async deleteBranch(id: string): Promise<boolean> {
+    const db = getDb();
+    const result = await db.delete(branches).where(eq(branches.id, id)).returning();
+    return result.length > 0;
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {
@@ -127,6 +165,7 @@ export class DrizzleStorage implements IStorage {
       role: (user.role as "admin" | "manager" | "chef" | "accountant") || "chef",
       avatar: user.avatar || undefined,
       phone: user.phone || undefined,
+      branchId: user.branchId || undefined,
     };
   }
 }

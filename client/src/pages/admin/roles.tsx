@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
@@ -58,10 +59,26 @@ type UserFormData = z.infer<typeof userSchema>;
 export default function RolesPage() {
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>(mockUsers);
+  const [branches, setBranches] = useState(mockBranches);
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
-  const branches = mockBranches;
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [usersRes, branchesRes] = await Promise.all([
+          fetch('/api/users'),
+          fetch('/api/branches'),
+        ]);
+        if (usersRes.ok) setUsers(await usersRes.json());
+        if (branchesRes.ok) setBranches(await branchesRes.json());
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
