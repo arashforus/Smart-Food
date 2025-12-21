@@ -86,17 +86,17 @@ export default function RolesPage() {
   });
 
   const openCreate = () => {
-    form.reset({ name: '', email: '', role: 'manager', branchId: '', isActive: true });
+    form.reset({ name: '', email: '', role: 'manager', branchId: 'all', isActive: true });
     setFormOpen(true);
   };
 
   const openEdit = (user: User) => {
-    form.reset({ name: user.name, email: user.email, role: user.role, branchId: user.branchId || '', isActive: user.isActive });
+    form.reset({ name: user.name, email: user.email, role: user.role, branchId: user.branchId || 'all', isActive: user.isActive });
     setEditingUser(user);
   };
 
   const handleCreate = (data: UserFormData) => {
-    const newUser: User = { id: String(Date.now()), ...data, branchId: data.branchId || undefined };
+    const newUser: User = { id: String(Date.now()), ...data, branchId: data.branchId === 'all' ? undefined : data.branchId };
     setUsers([...users, newUser]);
     setFormOpen(false);
     form.reset();
@@ -105,7 +105,7 @@ export default function RolesPage() {
 
   const handleEdit = (data: UserFormData) => {
     if (!editingUser) return;
-    setUsers(users.map((u) => (u.id === editingUser.id ? { ...u, ...data, branchId: data.branchId || undefined } : u)));
+    setUsers(users.map((u) => (u.id === editingUser.id ? { ...u, ...data, branchId: data.branchId === 'all' ? undefined : data.branchId } : u)));
     setEditingUser(null);
     form.reset();
     toast({ title: 'User Updated' });
@@ -237,7 +237,7 @@ export default function RolesPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">All Branches</SelectItem>
+                      <SelectItem value="all">All Branches</SelectItem>
                       {branches.filter(b => b.isActive).map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
@@ -312,7 +312,7 @@ export default function RolesPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">All Branches</SelectItem>
+                      <SelectItem value="all">All Branches</SelectItem>
                       {branches.filter(b => b.isActive).map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
