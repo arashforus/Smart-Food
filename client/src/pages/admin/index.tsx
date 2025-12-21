@@ -28,6 +28,8 @@ import OrderStatusScreen from './order-status-screen';
 export default function AdminLayout() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [currentUser, setCurrentUser] = useState(mockCurrentUser);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [adminLanguage, setAdminLanguage] = useState<Language>(() => {
     const stored = localStorage.getItem('adminLanguage') as Language;
     return stored || 'en';
@@ -36,6 +38,30 @@ export default function AdminLayout() {
     const stored = localStorage.getItem('selectedBranch');
     return stored || mockBranches[0]?.id || '';
   });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentUser((prev) => ({
+            ...prev,
+            id: data.userId,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            avatar: data.avatar || prev.avatar,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('adminLanguage', adminLanguage);
@@ -69,7 +95,7 @@ export default function AdminLayout() {
           <AdminSidebar />
           <SidebarInset className="flex flex-col flex-1">
             <AdminHeader
-              user={mockCurrentUser}
+              user={currentUser}
               branches={mockBranches}
               selectedBranch={selectedBranch}
               onBranchChange={setSelectedBranch}

@@ -127,10 +127,6 @@ export async function registerRoutes(
 
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
-      console.log("Auth check - session:", req.session);
-      console.log("Auth check - userId:", req.session.userId);
-      console.log("Auth check - id:", req.session.id);
-      
       if (!req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -147,10 +143,40 @@ export async function registerRoutes(
         name: user.name,
         email: user.email,
         role: user.role,
+        avatar: user.avatar,
+        phone: user.phone,
       });
     } catch (error) {
       console.error("Auth check error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.patch("/api/auth/me", async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { name, avatar, phone } = req.body;
+      const user = await storage.updateUser(req.session.userId, { name, avatar, phone });
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        userId: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        phone: user.phone,
+      });
+    } catch (error) {
+      console.error("Profile update error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
     }
   });
 

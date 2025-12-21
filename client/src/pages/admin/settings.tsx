@@ -504,13 +504,30 @@ export default function SettingsPage() {
                       </div>
                       <div className="flex gap-2 pt-2">
                         <Button
-                          onClick={() => {
-                            localStorage.setItem('profileName', profileName);
-                            localStorage.setItem('profileEmail', profileEmail);
-                            localStorage.setItem('profilePhone', profilePhone);
-                            localStorage.setItem('profileAvatar', profileAvatar);
-                            setIsEditingProfile(false);
-                            toast({ title: 'Profile Updated', description: 'Your profile has been saved.' });
+                          onClick={async () => {
+                            try {
+                              const response = await fetch('/api/auth/me', {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  name: profileName,
+                                  phone: profilePhone,
+                                  avatar: profileAvatar,
+                                }),
+                              });
+                              if (response.ok) {
+                                localStorage.setItem('profileName', profileName);
+                                localStorage.setItem('profilePhone', profilePhone);
+                                localStorage.setItem('profileAvatar', profileAvatar);
+                                setIsEditingProfile(false);
+                                toast({ title: 'Profile Updated', description: 'Your profile has been saved successfully.' });
+                                window.location.reload();
+                              } else {
+                                toast({ title: 'Error', description: 'Failed to update profile' });
+                              }
+                            } catch (error) {
+                              toast({ title: 'Error', description: 'Failed to update profile' });
+                            }
                           }}
                           data-testid="button-save-profile"
                         >

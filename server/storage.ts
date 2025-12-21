@@ -7,6 +7,8 @@ export interface StorageUser {
   name: string;
   email: string;
   role: 'admin' | 'manager' | 'chef' | 'accountant';
+  avatar?: string;
+  phone?: string;
 }
 
 export interface WaiterRequest {
@@ -40,6 +42,7 @@ export interface IStorage {
   getUser(id: string): Promise<StorageUser | undefined>;
   getUserByUsername(username: string): Promise<StorageUser | undefined>;
   createUser(user: Omit<StorageUser, 'id'>): Promise<StorageUser>;
+  updateUser(id: string, data: Partial<Omit<StorageUser, 'id' | 'username'>>): Promise<StorageUser | undefined>;
   createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest>;
   getDashboardMetrics(): Promise<DashboardMetrics>;
 }
@@ -78,6 +81,14 @@ export class MemStorage implements IStorage {
     const user: StorageUser = { ...userData, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUser(id: string, data: Partial<Omit<StorageUser, 'id' | 'username'>>): Promise<StorageUser | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    const updated = { ...user, ...data };
+    this.users.set(id, updated);
+    return updated;
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {

@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { users, waiterRequests } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { StorageUser, WaiterRequest, IStorage, DashboardMetrics } from "./storage";
 
 let db: ReturnType<typeof drizzle> | null = null;
@@ -38,6 +38,13 @@ export class DrizzleStorage implements IStorage {
     const db = getDb();
     const result = await db.insert(users).values(userData).returning();
     if (result.length === 0) throw new Error("Failed to create user");
+    return this.mapToStorageUser(result[0]);
+  }
+
+  async updateUser(id: string, data: Partial<Omit<StorageUser, "id" | "username">>): Promise<StorageUser | undefined> {
+    const db = getDb();
+    const result = await db.update(users).set(data).where(eq(users.id, id)).returning();
+    if (result.length === 0) return undefined;
     return this.mapToStorageUser(result[0]);
   }
 
@@ -118,6 +125,8 @@ export class DrizzleStorage implements IStorage {
       name: user.name || "",
       email: user.email || "",
       role: (user.role as "admin" | "manager" | "chef" | "accountant") || "chef",
+      avatar: user.avatar || undefined,
+      phone: user.phone || undefined,
     };
   }
 }
