@@ -130,13 +130,12 @@ export async function registerRoutes(
       console.log("Auth check - session:", req.session);
       console.log("Auth check - userId:", req.session.userId);
       console.log("Auth check - id:", req.session.id);
-      console.log("Auth check - user.id:", req.session.user.id);
       
-      if (!req.session.id) {
+      if (!req.session.userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const user = await storage.getUser(req.session.id);
+      const user = await storage.getUser(req.session.userId);
       
       if (!user) {
         return res.status(401).json({ message: "User not found" });
