@@ -42,6 +42,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/lib/auth';
 import { mockUsers, mockBranches } from '@/lib/mockData';
 import { roleLabels, rolePermissions } from '@/lib/types';
 import type { User, Role } from '@/lib/types';
@@ -58,6 +59,7 @@ type UserFormData = z.infer<typeof userSchema>;
 
 export default function RolesPage() {
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [branches, setBranches] = useState(mockBranches);
   const [formOpen, setFormOpen] = useState(false);
@@ -95,7 +97,7 @@ export default function RolesPage() {
     setEditingUser(user);
   };
 
-  const handleCreate = (data: UserFormData) => {
+  const handleCreate = async (data: UserFormData) => {
     const newUser: User = { id: String(Date.now()), ...data, branchId: data.branchId === 'all' ? undefined : data.branchId };
     setUsers([...users, newUser]);
     setFormOpen(false);
@@ -103,12 +105,41 @@ export default function RolesPage() {
     toast({ title: 'User Created' });
   };
 
-  const handleEdit = (data: UserFormData) => {
+  const handleEdit = async (data: UserFormData) => {
     if (!editingUser) return;
-    setUsers(users.map((u) => (u.id === editingUser.id ? { ...u, ...data, branchId: data.branchId === 'all' ? undefined : data.branchId } : u)));
-    setEditingUser(null);
-    form.reset();
-    toast({ title: 'User Updated' });
+    try {
+      const response = await fetch(`/api/users/${editingUser.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          branchId: data.branchId,
+        }),
+      });
+
+      if (!response.ok) {
+        toast({ title: 'Error', description: 'Failed to update user' });
+        return;
+      }
+
+      const updatedUser = await response.json();
+      setUsers(users.map((u) => (u.id === editingUser.id ? updatedUser : u)));
+      
+      if (currentUser?.userId === editingUser.id) {
+        await fetch('/api/auth/me', {
+          credentials: 'include',
+        }).then((res) => res.ok && window.location.reload());
+      }
+      
+      setEditingUser(null);
+      form.reset();
+      toast({ title: 'User Updated' });
+    } catch (error) {
+      console.error('Update user error:', error);
+      toast({ title: 'Error', description: 'Failed to update user' });
+    }
   };
 
   const handleDelete = () => {

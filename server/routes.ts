@@ -207,6 +207,34 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/users/:id", async (req: Request, res: Response) => {
+    try {
+      const { name, email, role, branchId } = req.body;
+      const user = await storage.updateUser(req.params.id, { 
+        name, 
+        email, 
+        role,
+        branchId: branchId === 'all' ? undefined : branchId,
+      });
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        branchId: user.branchId,
+        isActive: true,
+      });
+    } catch (error) {
+      console.error("Update user error:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
   app.get("/api/branches", async (_req: Request, res: Response) => {
     try {
       const allBranches = await storage.getAllBranches();
