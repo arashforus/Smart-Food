@@ -107,7 +107,6 @@ export default function LoginPage() {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Menu Manager</h1>
-            <p className="text-white/70">Sign in to your admin account</p>
           </div>
 
           <Form {...form}>
@@ -123,7 +122,6 @@ export default function LoginPage() {
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
                         <Input
                           {...field}
-                          placeholder="Enter your username"
                           className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
                           data-testid="input-username"
                         />
@@ -146,7 +144,6 @@ export default function LoginPage() {
                         <Input
                           {...field}
                           type={showPassword ? 'text' : 'password'}
-                          placeholder="Enter your password"
                           className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
                           data-testid="input-password"
                         />
