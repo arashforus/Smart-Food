@@ -10,6 +10,7 @@ export interface StorageUser {
   avatar?: string;
   phone?: string;
   branchId?: string;
+  createdAt?: Date;
 }
 
 export interface StorageBranch {

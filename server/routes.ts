@@ -113,11 +113,14 @@ export async function registerRoutes(
       });
       
       res.json({
-        userId: user.id,
+        id: user.id,
         username: user.username,
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
+        avatar: user.avatar,
+        createdAt: user.createdAt,
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -138,13 +141,14 @@ export async function registerRoutes(
       }
 
       res.json({
-        userId: user.id,
+        id: user.id,
         username: user.username,
         name: user.name,
         email: user.email,
         role: user.role,
         avatar: user.avatar,
         phone: user.phone,
+        createdAt: user.createdAt,
       });
     } catch (error) {
       console.error("Auth check error:", error);
@@ -166,13 +170,14 @@ export async function registerRoutes(
       }
 
       res.json({
-        userId: user.id,
+        id: user.id,
         username: user.username,
         name: user.name,
         email: user.email,
         role: user.role,
         avatar: user.avatar,
         phone: user.phone,
+        createdAt: user.createdAt,
       });
     } catch (error) {
       console.error("Profile update error:", error);

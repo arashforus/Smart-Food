@@ -130,6 +130,9 @@ export interface AdminUser {
   name: string;
   email: string;
   role: Role;
+  phone?: string;
+  avatar?: string;
+  createdAt?: string | Date;
 }
 
 export interface RolePermissions {
