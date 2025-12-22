@@ -399,6 +399,7 @@ export class DrizzleStorage implements IStorage {
       avatar: user.avatar || undefined,
       phone: user.phone || undefined,
       branchId: user.branchId || undefined,
+      createdAt: user.createdAt || undefined,
     };
   }
 }
