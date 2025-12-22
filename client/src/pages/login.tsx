@@ -191,10 +191,6 @@ export default function LoginPage() {
             </form>
           </Form>
         </div>
-
-        <p className="text-center text-white/50 text-sm mt-6">
-          Demo credentials: admin / admin123
-        </p>
       </div>
 
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
