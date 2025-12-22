@@ -400,6 +400,7 @@ export class DrizzleStorage implements IStorage {
       phone: user.phone || undefined,
       branchId: user.branchId || undefined,
       createdAt: user.createdAt || undefined,
+      language: user.language || "en",
     };
   }
 }

@@ -121,6 +121,7 @@ export async function registerRoutes(
         phone: user.phone,
         avatar: user.avatar,
         createdAt: user.createdAt,
+        language: user.language || "en",
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -149,6 +150,7 @@ export async function registerRoutes(
         avatar: user.avatar,
         phone: user.phone,
         createdAt: user.createdAt,
+        language: user.language || "en",
       });
     } catch (error) {
       console.error("Auth check error:", error);
@@ -178,10 +180,45 @@ export async function registerRoutes(
         avatar: user.avatar,
         phone: user.phone,
         createdAt: user.createdAt,
+        language: user.language || "en",
       });
     } catch (error) {
       console.error("Profile update error:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.patch("/api/auth/update-language", async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { language } = req.body;
+      if (!language || !['en', 'fa', 'tr', 'ar'].includes(language)) {
+        return res.status(400).json({ message: "Invalid language" });
+      }
+
+      const user = await storage.updateUser(req.session.userId, { language });
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        phone: user.phone,
+        createdAt: user.createdAt,
+        language: user.language || "en",
+      });
+    } catch (error) {
+      console.error("Language update error:", error);
+      res.status(500).json({ message: "Failed to update language" });
     }
   });
 

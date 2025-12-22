@@ -11,6 +11,7 @@ export interface StorageUser {
   phone?: string;
   branchId?: string;
   createdAt?: Date;
+  language?: string;
 }
 
 export interface StorageBranch {
