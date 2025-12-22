@@ -75,6 +75,41 @@ export interface WaiterRequest {
   status: 'pending' | 'acknowledged' | 'completed';
 }
 
+export interface StorageTable {
+  id: string;
+  tableNumber: string;
+  branchId: string;
+  capacity: number;
+  location?: string;
+  status: string;
+  isActive: boolean;
+}
+
+export interface StorageLanguage {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+  order: number;
+}
+
+export interface StorageFoodType {
+  id: string;
+  name: Record<string, string>;
+  description: Record<string, string>;
+  isActive: boolean;
+  order: number;
+}
+
+export interface StorageMaterial {
+  id: string;
+  name: Record<string, string>;
+  icon?: string;
+  color?: string;
+  isActive: boolean;
+  order: number;
+}
+
 export interface DashboardMetrics {
   totalItems: number;
   totalCategories: number;
@@ -121,6 +156,27 @@ export interface IStorage {
   getOrdersByBranch(branchId: string): Promise<StorageOrder[]>;
   createOrder(data: Omit<StorageOrder, 'id' | 'createdAt' | 'updatedAt'>): Promise<StorageOrder>;
   updateOrder(id: string, data: Partial<Omit<StorageOrder, 'id' | 'createdAt' | 'updatedAt'>>): Promise<StorageOrder | undefined>;
+  getTable(id: string): Promise<StorageTable | undefined>;
+  getAllTables(): Promise<StorageTable[]>;
+  getTablesByBranch(branchId: string): Promise<StorageTable[]>;
+  createTable(data: Omit<StorageTable, 'id'>): Promise<StorageTable>;
+  updateTable(id: string, data: Partial<Omit<StorageTable, 'id'>>): Promise<StorageTable | undefined>;
+  deleteTable(id: string): Promise<boolean>;
+  getLanguage(id: string): Promise<StorageLanguage | undefined>;
+  getAllLanguages(): Promise<StorageLanguage[]>;
+  createLanguage(data: Omit<StorageLanguage, 'id'>): Promise<StorageLanguage>;
+  updateLanguage(id: string, data: Partial<Omit<StorageLanguage, 'id'>>): Promise<StorageLanguage | undefined>;
+  deleteLanguage(id: string): Promise<boolean>;
+  getFoodType(id: string): Promise<StorageFoodType | undefined>;
+  getAllFoodTypes(): Promise<StorageFoodType[]>;
+  createFoodType(data: Omit<StorageFoodType, 'id'>): Promise<StorageFoodType>;
+  updateFoodType(id: string, data: Partial<Omit<StorageFoodType, 'id'>>): Promise<StorageFoodType | undefined>;
+  deleteFoodType(id: string): Promise<boolean>;
+  getMaterial(id: string): Promise<StorageMaterial | undefined>;
+  getAllMaterials(): Promise<StorageMaterial[]>;
+  createMaterial(data: Omit<StorageMaterial, 'id'>): Promise<StorageMaterial>;
+  updateMaterial(id: string, data: Partial<Omit<StorageMaterial, 'id'>>): Promise<StorageMaterial | undefined>;
+  deleteMaterial(id: string): Promise<boolean>;
   createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest>;
   getDashboardMetrics(): Promise<DashboardMetrics>;
 }
@@ -132,6 +188,10 @@ export class MemStorage implements IStorage {
   private items: Map<string, StorageItem>;
   private orders: Map<string, StorageOrder>;
   private waiterRequests: Map<string, WaiterRequest>;
+  private tables: Map<string, StorageTable>;
+  private languages: Map<string, StorageLanguage>;
+  private foodTypes: Map<string, StorageFoodType>;
+  private materials: Map<string, StorageMaterial>;
 
   constructor() {
     this.users = new Map();
@@ -140,6 +200,10 @@ export class MemStorage implements IStorage {
     this.items = new Map();
     this.orders = new Map();
     this.waiterRequests = new Map();
+    this.tables = new Map();
+    this.languages = new Map();
+    this.foodTypes = new Map();
+    this.materials = new Map();
     
     const branch1: StorageBranch = { id: '1', name: 'Downtown Branch', address: '123 Main Street', phone: '+1 (555) 123-4567', isActive: true };
     const branch2: StorageBranch = { id: '2', name: 'Uptown Branch', address: '456 Oak Avenue', phone: '+1 (555) 234-5678', isActive: true };
@@ -297,6 +361,118 @@ export class MemStorage implements IStorage {
     const updated = { ...order, ...data, updatedAt: new Date() };
     this.orders.set(id, updated);
     return updated;
+  }
+
+  async getTable(id: string): Promise<StorageTable | undefined> {
+    return this.tables.get(id);
+  }
+
+  async getAllTables(): Promise<StorageTable[]> {
+    return Array.from(this.tables.values());
+  }
+
+  async getTablesByBranch(branchId: string): Promise<StorageTable[]> {
+    return Array.from(this.tables.values()).filter(t => t.branchId === branchId);
+  }
+
+  async createTable(data: Omit<StorageTable, 'id'>): Promise<StorageTable> {
+    const id = randomUUID();
+    const table: StorageTable = { ...data, id };
+    this.tables.set(id, table);
+    return table;
+  }
+
+  async updateTable(id: string, data: Partial<Omit<StorageTable, 'id'>>): Promise<StorageTable | undefined> {
+    const table = this.tables.get(id);
+    if (!table) return undefined;
+    const updated = { ...table, ...data };
+    this.tables.set(id, updated);
+    return updated;
+  }
+
+  async deleteTable(id: string): Promise<boolean> {
+    return this.tables.delete(id);
+  }
+
+  async getLanguage(id: string): Promise<StorageLanguage | undefined> {
+    return this.languages.get(id);
+  }
+
+  async getAllLanguages(): Promise<StorageLanguage[]> {
+    return Array.from(this.languages.values());
+  }
+
+  async createLanguage(data: Omit<StorageLanguage, 'id'>): Promise<StorageLanguage> {
+    const id = randomUUID();
+    const language: StorageLanguage = { ...data, id };
+    this.languages.set(id, language);
+    return language;
+  }
+
+  async updateLanguage(id: string, data: Partial<Omit<StorageLanguage, 'id'>>): Promise<StorageLanguage | undefined> {
+    const language = this.languages.get(id);
+    if (!language) return undefined;
+    const updated = { ...language, ...data };
+    this.languages.set(id, updated);
+    return updated;
+  }
+
+  async deleteLanguage(id: string): Promise<boolean> {
+    return this.languages.delete(id);
+  }
+
+  async getFoodType(id: string): Promise<StorageFoodType | undefined> {
+    return this.foodTypes.get(id);
+  }
+
+  async getAllFoodTypes(): Promise<StorageFoodType[]> {
+    return Array.from(this.foodTypes.values());
+  }
+
+  async createFoodType(data: Omit<StorageFoodType, 'id'>): Promise<StorageFoodType> {
+    const id = randomUUID();
+    const foodType: StorageFoodType = { ...data, id };
+    this.foodTypes.set(id, foodType);
+    return foodType;
+  }
+
+  async updateFoodType(id: string, data: Partial<Omit<StorageFoodType, 'id'>>): Promise<StorageFoodType | undefined> {
+    const foodType = this.foodTypes.get(id);
+    if (!foodType) return undefined;
+    const updated = { ...foodType, ...data };
+    this.foodTypes.set(id, updated);
+    return updated;
+  }
+
+  async deleteFoodType(id: string): Promise<boolean> {
+    return this.foodTypes.delete(id);
+  }
+
+  async getMaterial(id: string): Promise<StorageMaterial | undefined> {
+    return this.materials.get(id);
+  }
+
+  async getAllMaterials(): Promise<StorageMaterial[]> {
+    return Array.from(this.materials.values());
+  }
+
+  async createMaterial(data: Omit<StorageMaterial, 'id'>): Promise<StorageMaterial> {
+    const id = randomUUID();
+    const material: StorageMaterial = { ...data, id };
+    this.materials.set(id, material);
+    return material;
+  }
+
+  async updateMaterial(id: string, data: Partial<Omit<StorageMaterial, 'id'>>): Promise<StorageMaterial | undefined> {
+    const material = this.materials.get(id);
+    if (!material) return undefined;
+    const updated = { ...material, ...data };
+    this.materials.set(id, updated);
+    return updated;
+  }
+
+  async deleteMaterial(id: string): Promise<boolean> {
+    return this.materials.delete(id);
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {

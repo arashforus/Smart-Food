@@ -72,6 +72,45 @@ export const waiterRequests = pgTable("waiter_requests", {
   timestamp: timestamp("timestamp").defaultNow(),
 });
 
+export const tables = pgTable("tables", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tableNumber: text("table_number").notNull(),
+  branchId: varchar("branch_id").notNull(),
+  capacity: numeric("capacity").notNull(),
+  location: text("location"),
+  status: text("status").notNull().default("available"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const languages = pgTable("languages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull().unique(),
+  name: text("name").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  order: numeric("order").notNull().default("1"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const foodTypes = pgTable("food_types", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: jsonb("name").notNull(),
+  description: jsonb("description").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  order: numeric("order").notNull().default("1"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const materials = pgTable("materials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: jsonb("name").notNull(),
+  icon: text("icon"),
+  color: text("color"),
+  isActive: boolean("is_active").notNull().default(true),
+  order: numeric("order").notNull().default("1"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -87,3 +126,7 @@ export type Category = typeof categories.$inferSelect;
 export type Item = typeof items.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type WaiterRequest = typeof waiterRequests.$inferSelect;
+export type Table = typeof tables.$inferSelect;
+export type Language = typeof languages.$inferSelect;
+export type FoodType = typeof foodTypes.$inferSelect;
+export type Material = typeof materials.$inferSelect;
