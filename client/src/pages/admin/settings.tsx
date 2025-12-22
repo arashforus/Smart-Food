@@ -101,6 +101,11 @@ export default function SettingsPage() {
   const [loginBackgroundPreview, setLoginBackgroundPreview] = useState<string>(loginBackgroundImage);
   const [qrPageTitle, setQrPageTitle] = useState(() => localStorage.getItem('qrPageTitle') || 'Scan to Order');
   const [qrPageDescription, setQrPageDescription] = useState(() => localStorage.getItem('qrPageDescription') || '');
+  const [showQrTitle, setShowQrTitle] = useState(() => localStorage.getItem('showQrTitle') !== 'false');
+  const [showQrDescription, setShowQrDescription] = useState(() => localStorage.getItem('showQrDescription') !== 'false');
+  const [showCallWaiter, setShowCallWaiter] = useState(() => localStorage.getItem('showCallWaiter') !== 'false');
+  const [showAddressPhone, setShowAddressPhone] = useState(() => localStorage.getItem('showAddressPhone') !== 'false');
+  const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
   const [rolePermissions, setRolePermissions] = useState(() => {
     const stored = localStorage.getItem('rolePermissions');
@@ -260,6 +265,11 @@ export default function SettingsPage() {
       }
       localStorage.setItem('qrPageTitle', qrPageTitle);
       localStorage.setItem('qrPageDescription', qrPageDescription);
+      localStorage.setItem('showQrTitle', showQrTitle.toString());
+      localStorage.setItem('showQrDescription', showQrDescription.toString());
+      localStorage.setItem('showCallWaiter', showCallWaiter.toString());
+      localStorage.setItem('showAddressPhone', showAddressPhone.toString());
+      localStorage.setItem('qrTextColor', qrTextColor);
       localStorage.setItem('menuPageTitle', menuPageTitle);
       localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
       localStorage.setItem('restaurantName', restaurantName);
@@ -1120,28 +1130,108 @@ export default function SettingsPage() {
                   <CardTitle className="text-lg">QR Landing Page</CardTitle>
                   <CardDescription>Customize what customers see when they scan a QR code</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="qr-title">Page Title</FormLabel>
-                    <Input
-                      id="qr-title"
-                      value={qrPageTitle}
-                      onChange={(e) => setQrPageTitle(e.target.value)}
-                      placeholder="Scan to Order"
-                      data-testid="input-qr-page-title"
-                    />
-                    <FormDescription>Main heading displayed on the QR landing page</FormDescription>
+                <CardContent className="space-y-6">
+                  {/* Content Settings */}
+                  <div className="space-y-4 pb-6 border-b">
+                    <h3 className="font-semibold text-sm">Page Content</h3>
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="qr-title">Page Title</FormLabel>
+                      <Input
+                        id="qr-title"
+                        value={qrPageTitle}
+                        onChange={(e) => setQrPageTitle(e.target.value)}
+                        placeholder="Scan to Order"
+                        disabled={!showQrTitle}
+                        data-testid="input-qr-page-title"
+                      />
+                      <FormDescription>Main heading displayed on the QR landing page</FormDescription>
+                    </div>
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="qr-description">Page Description</FormLabel>
+                      <Input
+                        id="qr-description"
+                        value={qrPageDescription}
+                        onChange={(e) => setQrPageDescription(e.target.value)}
+                        placeholder="Welcome to our restaurant. Browse our menu and place your order."
+                        disabled={!showQrDescription}
+                        data-testid="input-qr-page-description"
+                      />
+                      <FormDescription>Subtitle or description shown below the title (optional)</FormDescription>
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="qr-description">Page Description</FormLabel>
-                    <Input
-                      id="qr-description"
-                      value={qrPageDescription}
-                      onChange={(e) => setQrPageDescription(e.target.value)}
-                      placeholder="Welcome to our restaurant. Browse our menu and place your order."
-                      data-testid="input-qr-page-description"
-                    />
-                    <FormDescription>Subtitle or description shown below the title (optional)</FormDescription>
+
+                  {/* Display Toggles */}
+                  <div className="space-y-4 pb-6 border-b">
+                    <h3 className="font-semibold text-sm">Display Options</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Title</FormLabel>
+                          <FormDescription>Display the page title</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showQrTitle}
+                          onCheckedChange={setShowQrTitle}
+                          data-testid="switch-show-qr-title"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Description</FormLabel>
+                          <FormDescription>Display the page description</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showQrDescription}
+                          onCheckedChange={setShowQrDescription}
+                          data-testid="switch-show-qr-description"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Call Waiter Button</FormLabel>
+                          <FormDescription>Display the call waiter button</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showCallWaiter}
+                          onCheckedChange={setShowCallWaiter}
+                          data-testid="switch-show-call-waiter"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Address & Phone</FormLabel>
+                          <FormDescription>Display restaurant address and phone number</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showAddressPhone}
+                          onCheckedChange={setShowAddressPhone}
+                          data-testid="switch-show-address-phone"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Text Color */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-sm">Styling</h3>
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="qr-text-color">Text Color</FormLabel>
+                      <div className="flex gap-2 items-center">
+                        <Input
+                          id="qr-text-color"
+                          type="color"
+                          value={qrTextColor}
+                          onChange={(e) => setQrTextColor(e.target.value)}
+                          className="w-16 h-10 cursor-pointer"
+                          data-testid="input-qr-text-color"
+                        />
+                        <span className="text-sm text-muted-foreground font-mono">{qrTextColor}</span>
+                      </div>
+                      <FormDescription>Color for all text on the QR landing page</FormDescription>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
