@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean, numeric, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -25,6 +25,45 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const categories = pgTable("categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: jsonb("name").notNull(),
+  image: text("image"),
+  order: numeric("order").notNull().default("1"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const items = pgTable("items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  categoryId: varchar("category_id").notNull(),
+  name: jsonb("name").notNull(),
+  shortDescription: jsonb("short_description").notNull(),
+  longDescription: jsonb("long_description").notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  discountedPrice: numeric("discounted_price", { precision: 10, scale: 2 }),
+  maxSelect: numeric("max_select"),
+  image: text("image"),
+  available: boolean("available").notNull().default(true),
+  suggested: boolean("suggested").notNull().default(false),
+  materials: text("materials").array(),
+  types: text("types").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const orders = pgTable("orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderNumber: text("order_number").notNull().unique(),
+  tableNumber: varchar("table_number"),
+  branchId: varchar("branch_id").notNull(),
+  items: jsonb("items").notNull(),
+  status: text("status").notNull().default("pending"),
+  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const waiterRequests = pgTable("waiter_requests", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   tableId: varchar("table_id"),
@@ -44,4 +83,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Branch = typeof branches.$inferSelect;
+export type Category = typeof categories.$inferSelect;
+export type Item = typeof items.$inferSelect;
+export type Order = typeof orders.$inferSelect;
 export type WaiterRequest = typeof waiterRequests.$inferSelect;

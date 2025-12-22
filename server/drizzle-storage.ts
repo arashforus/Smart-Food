@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { users, branches, waiterRequests } from "@shared/schema";
+import { users, branches, categories, items, orders, waiterRequests } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
-import type { StorageUser, StorageBranch, WaiterRequest, IStorage, DashboardMetrics } from "./storage";
+import type { StorageUser, StorageBranch, StorageCategory, StorageItem, StorageOrder, WaiterRequest, IStorage, DashboardMetrics } from "./storage";
 
 let db: ReturnType<typeof drizzle> | null = null;
 
@@ -84,6 +84,106 @@ export class DrizzleStorage implements IStorage {
     const db = getDb();
     const result = await db.delete(branches).where(eq(branches.id, id)).returning();
     return result.length > 0;
+  }
+
+  async getCategory(id: string): Promise<StorageCategory | undefined> {
+    const db = getDb();
+    const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async getAllCategories(): Promise<StorageCategory[]> {
+    const db = getDb();
+    return await db.select().from(categories);
+  }
+
+  async createCategory(category: Omit<StorageCategory, "id">): Promise<StorageCategory> {
+    const db = getDb();
+    const result = await db.insert(categories).values(category).returning();
+    if (result.length === 0) throw new Error("Failed to create category");
+    return result[0];
+  }
+
+  async updateCategory(id: string, data: Partial<Omit<StorageCategory, "id">>): Promise<StorageCategory | undefined> {
+    const db = getDb();
+    const result = await db.update(categories).set(data).where(eq(categories.id, id)).returning();
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async deleteCategory(id: string): Promise<boolean> {
+    const db = getDb();
+    const result = await db.delete(categories).where(eq(categories.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getItem(id: string): Promise<StorageItem | undefined> {
+    const db = getDb();
+    const result = await db.select().from(items).where(eq(items.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async getAllItems(): Promise<StorageItem[]> {
+    const db = getDb();
+    return await db.select().from(items);
+  }
+
+  async getItemsByCategory(categoryId: string): Promise<StorageItem[]> {
+    const db = getDb();
+    return await db.select().from(items).where(eq(items.categoryId, categoryId));
+  }
+
+  async createItem(item: Omit<StorageItem, "id">): Promise<StorageItem> {
+    const db = getDb();
+    const result = await db.insert(items).values(item).returning();
+    if (result.length === 0) throw new Error("Failed to create item");
+    return result[0];
+  }
+
+  async updateItem(id: string, data: Partial<Omit<StorageItem, "id">>): Promise<StorageItem | undefined> {
+    const db = getDb();
+    const result = await db.update(items).set(data).where(eq(items.id, id)).returning();
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async deleteItem(id: string): Promise<boolean> {
+    const db = getDb();
+    const result = await db.delete(items).where(eq(items.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getOrder(id: string): Promise<StorageOrder | undefined> {
+    const db = getDb();
+    const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    return result[0];
+  }
+
+  async getAllOrders(): Promise<StorageOrder[]> {
+    const db = getDb();
+    return await db.select().from(orders);
+  }
+
+  async getOrdersByBranch(branchId: string): Promise<StorageOrder[]> {
+    const db = getDb();
+    return await db.select().from(orders).where(eq(orders.branchId, branchId));
+  }
+
+  async createOrder(order: Omit<StorageOrder, "id">): Promise<StorageOrder> {
+    const db = getDb();
+    const result = await db.insert(orders).values(order).returning();
+    if (result.length === 0) throw new Error("Failed to create order");
+    return result[0];
+  }
+
+  async updateOrder(id: string, data: Partial<Omit<StorageOrder, "id">>): Promise<StorageOrder | undefined> {
+    const db = getDb();
+    const result = await db.update(orders).set(data).where(eq(orders.id, id)).returning();
+    if (result.length === 0) return undefined;
+    return result[0];
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {
