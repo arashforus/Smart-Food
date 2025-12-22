@@ -1,7 +1,14 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean, numeric, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean, numeric, jsonb, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const schemaVersions = pgTable("schema_versions", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  version: text("version").notNull().unique(),
+  appliedAt: timestamp("applied_at").defaultNow().notNull(),
+  description: text("description"),
+});
 
 export const branches = pgTable("branches", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -130,3 +137,4 @@ export type Table = typeof tables.$inferSelect;
 export type Language = typeof languages.$inferSelect;
 export type FoodType = typeof foodTypes.$inferSelect;
 export type Material = typeof materials.$inferSelect;
+export type SchemaVersion = typeof schemaVersions.$inferSelect;
