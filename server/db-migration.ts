@@ -10,6 +10,7 @@ interface MigrationVersion {
 const MIGRATIONS: MigrationVersion[] = [
   { version: "001-initial-schema", description: "Initial database schema with all tables" },
   { version: "002-add-user-fields", description: "Add avatar and branch_id fields to users table" },
+  { version: "003-add-phone-to-users", description: "Add phone field to users table" },
 ];
 
 export async function runDatabaseMigrations() {
