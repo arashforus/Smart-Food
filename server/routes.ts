@@ -616,5 +616,85 @@ export async function registerRoutes(
     }
   });
 
+  // Orders routes
+  app.get("/api/orders", async (req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.json([]);
+      }
+
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "SELECT id, order_number, table_number, branch_id, items, status, total_amount, notes, created_at, updated_at FROM orders ORDER BY created_at DESC"
+      );
+
+      await pool.end();
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get orders error:", error);
+      res.status(500).json({ message: "Failed to get orders" });
+    }
+  });
+
+  app.get("/api/orders/:id", async (req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "SELECT id, order_number, table_number, branch_id, items, status, total_amount, notes, created_at, updated_at FROM orders WHERE id = $1",
+        [req.params.id]
+      );
+
+      await pool.end();
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Get order error:", error);
+      res.status(500).json({ message: "Failed to get order" });
+    }
+  });
+
+  app.patch("/api/orders/:id", async (req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.status(400).json({ message: "Database not configured" });
+      }
+
+      const { status, notes } = req.body;
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "UPDATE orders SET status = $1, notes = $2, updated_at = NOW() WHERE id = $3 RETURNING *",
+        [status || "pending", notes || "", req.params.id]
+      );
+
+      await pool.end();
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Update order error:", error);
+      res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+
   return httpServer;
 }
