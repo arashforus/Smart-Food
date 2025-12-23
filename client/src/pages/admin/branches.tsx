@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import React from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -34,8 +34,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
-import { mockBranches } from '@/lib/mockData';
-import type { Branch } from '@/lib/types';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const branchSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -46,28 +45,72 @@ const branchSchema = z.object({
 
 type BranchFormData = z.infer<typeof branchSchema>;
 
+interface StorageBranch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  isActive: boolean;
+}
+
 export default function BranchesPage() {
   const { toast } = useToast();
-  const [branches, setBranches] = useState<Branch[]>(mockBranches);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
-  const [deleteBranch, setDeleteBranch] = useState<Branch | null>(null);
-
-  React.useEffect(() => {
-    const fetchBranches = async () => {
-      try {
-        const res = await fetch('/api/branches');
-        if (res.ok) setBranches(await res.json());
-      } catch (error) {
-        console.error('Failed to fetch branches:', error);
-      }
-    };
-    fetchBranches();
-  }, []);
+  const [editingBranch, setEditingBranch] = useState<StorageBranch | null>(null);
+  const [deleteBranch, setDeleteBranch] = useState<StorageBranch | null>(null);
 
   const form = useForm<BranchFormData>({
     resolver: zodResolver(branchSchema),
     defaultValues: { name: '', address: '', phone: '', isActive: true },
+  });
+
+  const { data: branches = [], isLoading } = useQuery<StorageBranch[]>({
+    queryKey: ['/api/branches'],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: BranchFormData) => {
+      return apiRequest('POST', '/api/branches', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'Branch Created' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to create branch', variant: 'destructive' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: BranchFormData) => {
+      if (!editingBranch) throw new Error('No branch selected');
+      return apiRequest('PATCH', `/api/branches/${editingBranch.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
+      setEditingBranch(null);
+      form.reset();
+      toast({ title: 'Branch Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update branch', variant: 'destructive' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest('DELETE', `/api/branches/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
+      setDeleteBranch(null);
+      toast({ title: 'Branch Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete branch', variant: 'destructive' });
+    },
   });
 
   const openCreate = () => {
@@ -75,63 +118,31 @@ export default function BranchesPage() {
     setFormOpen(true);
   };
 
-  const openEdit = (branch: Branch) => {
+  const openEdit = (branch: StorageBranch) => {
     form.reset({ name: branch.name, address: branch.address, phone: branch.phone, isActive: branch.isActive });
     setEditingBranch(branch);
   };
 
-  const handleCreate = async (data: BranchFormData) => {
-    try {
-      const res = await fetch('/api/branches', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const newBranch = await res.json();
-        setBranches([...branches, newBranch]);
-        setFormOpen(false);
-        form.reset();
-        toast({ title: 'Branch Created' });
-      }
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to create branch' });
-    }
+  const handleCreate = (data: BranchFormData) => {
+    createMutation.mutate(data);
   };
 
-  const handleEdit = async (data: BranchFormData) => {
-    if (!editingBranch) return;
-    try {
-      const res = await fetch(`/api/branches/${editingBranch.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setBranches(branches.map((b) => (b.id === editingBranch.id ? updated : b)));
-        setEditingBranch(null);
-        form.reset();
-        toast({ title: 'Branch Updated' });
-      }
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to update branch' });
-    }
+  const handleEdit = (data: BranchFormData) => {
+    updateMutation.mutate(data);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!deleteBranch) return;
-    try {
-      const res = await fetch(`/api/branches/${deleteBranch.id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setBranches(branches.filter((b) => b.id !== deleteBranch.id));
-        setDeleteBranch(null);
-        toast({ title: 'Branch Deleted' });
-      }
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete branch' });
-    }
+    deleteMutation.mutate(deleteBranch.id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -140,7 +151,7 @@ export default function BranchesPage() {
           <h1 className="text-2xl font-semibold">Branches</h1>
           <p className="text-muted-foreground">Manage your restaurant locations</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-branch">
+        <Button onClick={openCreate} data-testid="button-add-branch" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
           Add Branch
         </Button>
@@ -205,7 +216,10 @@ export default function BranchesPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-branch">Create</Button>
+                <Button type="submit" data-testid="button-save-branch" disabled={createMutation.isPending}>
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Create
+                </Button>
               </div>
             </form>
           </Form>
@@ -250,7 +264,10 @@ export default function BranchesPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingBranch(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-branch">Update</Button>
+                <Button type="submit" data-testid="button-update-branch" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update
+                </Button>
               </div>
             </form>
           </Form>
@@ -267,7 +284,10 @@ export default function BranchesPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-branch">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-branch" disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
