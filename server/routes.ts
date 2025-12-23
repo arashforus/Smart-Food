@@ -696,5 +696,120 @@ export async function registerRoutes(
     }
   });
 
+  // Food Types routes
+  app.get("/api/food-types", async (_req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.json([]);
+      }
+
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "SELECT id, name, description, icon, color, is_active, \"order\" FROM food_types ORDER BY \"order\" ASC"
+      );
+
+      await pool.end();
+      res.json(result.rows);
+    } catch (error) {
+      console.error("Get food types error:", error);
+      res.status(500).json({ message: "Failed to get food types" });
+    }
+  });
+
+  app.post("/api/food-types", async (req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.status(400).json({ message: "Database not configured" });
+      }
+
+      const { name, description, icon, color } = req.body;
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "INSERT INTO food_types (name, description, icon, color, is_active, \"order\") VALUES ($1, $2, $3, $4, true, 1) RETURNING *",
+        [
+          JSON.stringify(name),
+          JSON.stringify(description || {}),
+          icon || "leaf",
+          color || "#4CAF50",
+        ]
+      );
+
+      await pool.end();
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Create food type error:", error);
+      res.status(500).json({ message: "Failed to create food type" });
+    }
+  });
+
+  app.patch("/api/food-types/:id", async (req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.status(400).json({ message: "Database not configured" });
+      }
+
+      const { name, description, icon, color } = req.body;
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "UPDATE food_types SET name = $1, description = $2, icon = $3, color = $4 WHERE id = $5 RETURNING *",
+        [
+          JSON.stringify(name),
+          JSON.stringify(description || {}),
+          icon || "leaf",
+          color || "#4CAF50",
+          req.params.id,
+        ]
+      );
+
+      await pool.end();
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "Food type not found" });
+      }
+
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Update food type error:", error);
+      res.status(500).json({ message: "Failed to update food type" });
+    }
+  });
+
+  app.delete("/api/food-types/:id", async (req: Request, res: Response) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.status(400).json({ message: "Database not configured" });
+      }
+
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+
+      const result = await pool.query(
+        "DELETE FROM food_types WHERE id = $1 RETURNING id",
+        [req.params.id]
+      );
+
+      await pool.end();
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "Food type not found" });
+      }
+
+      res.json({ message: "Food type deleted" });
+    } catch (error) {
+      console.error("Delete food type error:", error);
+      res.status(500).json({ message: "Failed to delete food type" });
+    }
+  });
+
   return httpServer;
 }
