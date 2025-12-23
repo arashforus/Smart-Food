@@ -532,5 +532,89 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/languages", async (_req: Request, res: Response) => {
+    try {
+      const languages = await storage.getAllLanguages?.();
+      res.json(languages || []);
+    } catch (error) {
+      console.error("Get languages error:", error);
+      res.status(500).json({ message: "Failed to get languages" });
+    }
+  });
+
+  app.post("/api/languages", async (req: Request, res: Response) => {
+    try {
+      const { code, name, nativeName, direction, flagImage, isActive, isDefault } = req.body;
+      const language = await storage.createLanguage?.({ code, name, nativeName, direction, flagImage, isActive, isDefault });
+      res.json(language);
+    } catch (error) {
+      console.error("Create language error:", error);
+      res.status(500).json({ message: "Failed to create language" });
+    }
+  });
+
+  app.patch("/api/languages/:id", async (req: Request, res: Response) => {
+    try {
+      const { code, name, nativeName, direction, flagImage, isActive, isDefault } = req.body;
+      const language = await storage.updateLanguage?.(req.params.id, { code, name, nativeName, direction, flagImage, isActive, isDefault });
+      res.json(language);
+    } catch (error) {
+      console.error("Update language error:", error);
+      res.status(500).json({ message: "Failed to update language" });
+    }
+  });
+
+  app.delete("/api/languages/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteLanguage?.(req.params.id);
+      res.json({ message: success ? "Language deleted" : "Language not found" });
+    } catch (error) {
+      console.error("Delete language error:", error);
+      res.status(500).json({ message: "Failed to delete language" });
+    }
+  });
+
+  app.get("/api/materials", async (_req: Request, res: Response) => {
+    try {
+      const materials = await storage.getAllMaterials?.();
+      res.json(materials || []);
+    } catch (error) {
+      console.error("Get materials error:", error);
+      res.status(500).json({ message: "Failed to get materials" });
+    }
+  });
+
+  app.post("/api/materials", async (req: Request, res: Response) => {
+    try {
+      const { name, backgroundColor, image } = req.body;
+      const material = await storage.createMaterial?.({ name, backgroundColor, image });
+      res.json(material);
+    } catch (error) {
+      console.error("Create material error:", error);
+      res.status(500).json({ message: "Failed to create material" });
+    }
+  });
+
+  app.patch("/api/materials/:id", async (req: Request, res: Response) => {
+    try {
+      const { name, backgroundColor, image } = req.body;
+      const material = await storage.updateMaterial?.(req.params.id, { name, backgroundColor, image });
+      res.json(material);
+    } catch (error) {
+      console.error("Update material error:", error);
+      res.status(500).json({ message: "Failed to update material" });
+    }
+  });
+
+  app.delete("/api/materials/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteMaterial?.(req.params.id);
+      res.json({ message: success ? "Material deleted" : "Material not found" });
+    } catch (error) {
+      console.error("Delete material error:", error);
+      res.status(500).json({ message: "Failed to delete material" });
+    }
+  });
+
   return httpServer;
 }

@@ -40,6 +40,8 @@ const branchSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   address: z.string().min(1, 'Address is required'),
   phone: z.string().min(1, 'Phone is required'),
+  owner: z.string().optional(),
+  ownerPhone: z.string().optional(),
   isActive: z.boolean(),
 });
 
@@ -50,6 +52,8 @@ interface StorageBranch {
   name: string;
   address: string;
   phone: string;
+  owner?: string;
+  ownerPhone?: string;
   isActive: boolean;
 }
 
@@ -114,12 +118,12 @@ export default function BranchesPage() {
   });
 
   const openCreate = () => {
-    form.reset({ name: '', address: '', phone: '', isActive: true });
+    form.reset({ name: '', address: '', phone: '', owner: '', ownerPhone: '', isActive: true });
     setFormOpen(true);
   };
 
   const openEdit = (branch: StorageBranch) => {
-    form.reset({ name: branch.name, address: branch.address, phone: branch.phone, isActive: branch.isActive });
+    form.reset({ name: branch.name, address: branch.address, phone: branch.phone, owner: branch.owner || '', ownerPhone: branch.ownerPhone || '', isActive: branch.isActive });
     setEditingBranch(branch);
   };
 
@@ -163,6 +167,8 @@ export default function BranchesPage() {
           { key: 'name', header: 'Name' },
           { key: 'address', header: 'Address' },
           { key: 'phone', header: 'Phone' },
+          { key: 'owner', header: 'Owner' },
+          { key: 'ownerPhone', header: 'Owner Phone' },
           {
             key: 'isActive',
             header: 'Status',
@@ -203,6 +209,20 @@ export default function BranchesPage() {
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-phone" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="owner" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Owner</FormLabel>
+                  <FormControl><Input {...field} placeholder="Owner name" data-testid="input-branch-owner" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="ownerPhone" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Owner Phone</FormLabel>
+                  <FormControl><Input {...field} placeholder="Owner phone number" data-testid="input-branch-owner-phone" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -251,6 +271,20 @@ export default function BranchesPage() {
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-phone-edit" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="owner" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Owner</FormLabel>
+                  <FormControl><Input {...field} placeholder="Owner name" data-testid="input-branch-owner-edit" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="ownerPhone" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Owner Phone</FormLabel>
+                  <FormControl><Input {...field} placeholder="Owner phone number" data-testid="input-branch-owner-phone-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
