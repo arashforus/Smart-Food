@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Switch, Route, useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminFooter from '@/components/admin/AdminFooter';
 import { useToast } from '@/hooks/use-toast';
-import { mockCurrentUser, mockBranches } from '@/lib/mockData';
+import { mockCurrentUser } from '@/lib/mockData';
 import { OrderProvider } from '@/lib/orderContext';
-import type { Language } from '@/lib/types';
+import type { Language, Branch } from '@/lib/types';
 
 import DashboardPage from './dashboard';
 import RestaurantPage from './restaurant';
@@ -35,10 +36,26 @@ export default function AdminLayout() {
     const stored = localStorage.getItem('adminLanguage') as Language;
     return stored || 'en';
   });
+
+  const { data: branches = [] } = useQuery({
+    queryKey: ['/api/branches'],
+    queryFn: async () => {
+      const response = await fetch('/api/branches');
+      if (!response.ok) throw new Error('Failed to fetch branches');
+      return response.json() as Promise<Branch[]>;
+    },
+  });
+
   const [selectedBranch, setSelectedBranch] = useState<string>(() => {
     const stored = localStorage.getItem('selectedBranch');
-    return stored || mockBranches[0]?.id || '';
+    return stored || '';
   });
+
+  useEffect(() => {
+    if (!selectedBranch && branches.length > 0) {
+      setSelectedBranch(branches[0].id);
+    }
+  }, [branches, selectedBranch]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -97,7 +114,7 @@ export default function AdminLayout() {
           <SidebarInset className="flex flex-col flex-1">
             <AdminHeader
               user={currentUser}
-              branches={mockBranches}
+              branches={branches}
               selectedBranch={selectedBranch}
               onBranchChange={setSelectedBranch}
               language={adminLanguage}
