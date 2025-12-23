@@ -30,11 +30,13 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
-import { mockMaterials, mockLanguages } from '@/lib/mockData';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { Material } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
 const materialSchema = z.object({
   nameEn: z.string().min(1, 'English name is required'),
@@ -50,15 +52,70 @@ type MaterialFormData = z.infer<typeof materialSchema>;
 
 export default function MaterialsPage() {
   const { toast } = useToast();
-  const [materials, setMaterials] = useState<Material[]>(mockMaterials);
   const [formOpen, setFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
-  const activeLanguages = mockLanguages.filter((l) => l.isActive);
 
   const form = useForm<MaterialFormData>({
     resolver: zodResolver(materialSchema),
     defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B', image: '' },
+  });
+
+  const { data: materials = [], isLoading } = useQuery<Material[]>({
+    queryKey: ['/api/materials'],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: MaterialFormData) => {
+      return apiRequest('POST', '/api/materials', {
+        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        backgroundColor: data.backgroundColor,
+        image: data.image,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'Material Added' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to add material', variant: 'destructive' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: MaterialFormData) => {
+      if (!editingMaterial) throw new Error('No material selected');
+      return apiRequest('PATCH', `/api/materials/${editingMaterial.id}`, {
+        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        backgroundColor: data.backgroundColor,
+        image: data.image,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
+      setEditingMaterial(null);
+      form.reset();
+      toast({ title: 'Material Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update material', variant: 'destructive' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest('DELETE', `/api/materials/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
+      setDeleteMaterial(null);
+      toast({ title: 'Material Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete material', variant: 'destructive' });
+    },
   });
 
   const openCreate = () => {
@@ -80,42 +137,25 @@ export default function MaterialsPage() {
   };
 
   const handleCreate = (data: MaterialFormData) => {
-    const newMaterial: Material = {
-      id: String(Date.now()),
-      name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-      backgroundColor: data.backgroundColor,
-      image: data.image,
-    };
-    setMaterials([...materials, newMaterial]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'Material Added' });
+    createMutation.mutate(data);
   };
 
   const handleEdit = (data: MaterialFormData) => {
-    if (!editingMaterial) return;
-    setMaterials(materials.map((m) => {
-      if (m.id === editingMaterial.id) {
-        return {
-          ...m,
-          name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-          backgroundColor: data.backgroundColor,
-          image: data.image,
-        };
-      }
-      return m;
-    }));
-    setEditingMaterial(null);
-    form.reset();
-    toast({ title: 'Material Updated' });
+    updateMutation.mutate(data);
   };
 
   const handleDelete = () => {
     if (!deleteMaterial) return;
-    setMaterials(materials.filter((m) => m.id !== deleteMaterial.id));
-    setDeleteMaterial(null);
-    toast({ title: 'Material Deleted' });
+    deleteMutation.mutate(deleteMaterial.id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

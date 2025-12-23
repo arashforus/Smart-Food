@@ -46,12 +46,14 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
-import { mockLanguages } from '@/lib/mockData';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { AppLanguage } from '@/lib/types';
 import { translations } from '@/lib/types';
+import { Loader2 } from 'lucide-react';
 
 const languageSchema = z.object({
   code: z.string().min(2, 'Language code is required').max(5),
@@ -67,7 +69,6 @@ type LanguageFormData = z.infer<typeof languageSchema>;
 
 export default function LanguagesPage() {
   const { toast } = useToast();
-  const [languages, setLanguages] = useState<AppLanguage[]>(mockLanguages);
   const [formOpen, setFormOpen] = useState(false);
   const [editingLanguage, setEditingLanguage] = useState<AppLanguage | null>(null);
   const [deleteLanguage, setDeleteLanguage] = useState<AppLanguage | null>(null);
@@ -78,6 +79,55 @@ export default function LanguagesPage() {
   const form = useForm<LanguageFormData>({
     resolver: zodResolver(languageSchema),
     defaultValues: { code: '', name: '', nativeName: '', direction: 'ltr', flagImage: '', isActive: true, isDefault: false },
+  });
+
+  const { data: languages = [], isLoading } = useQuery<AppLanguage[]>({
+    queryKey: ['/api/languages'],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: LanguageFormData) => {
+      return apiRequest('POST', '/api/languages', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'Language Added' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to add language', variant: 'destructive' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: LanguageFormData) => {
+      if (!editingLanguage) throw new Error('No language selected');
+      return apiRequest('PATCH', `/api/languages/${editingLanguage.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
+      setEditingLanguage(null);
+      form.reset();
+      toast({ title: 'Language Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update language', variant: 'destructive' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest('DELETE', `/api/languages/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
+      setDeleteLanguage(null);
+      toast({ title: 'Language Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete language', variant: 'destructive' });
+    },
   });
 
   const openCreate = () => {
@@ -113,38 +163,14 @@ export default function LanguagesPage() {
   };
 
   const handleCreate = (data: LanguageFormData) => {
-    let updatedLanguages = [...languages];
-    if (data.isDefault) {
-      updatedLanguages = updatedLanguages.map((l) => ({ ...l, isDefault: false }));
-    }
-    const newLang: AppLanguage = { id: String(Date.now()), ...data };
-    setLanguages([...updatedLanguages, newLang]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'Language Added' });
+    createMutation.mutate(data);
   };
 
   const handleEdit = (data: LanguageFormData) => {
-    if (!editingLanguage) return;
-    let updatedLanguages = languages.map((l) => {
-      if (l.id === editingLanguage.id) return { ...l, ...data };
-      if (data.isDefault) return { ...l, isDefault: false };
-      return l;
-    });
-    setLanguages(updatedLanguages);
-    setEditingLanguage(null);
-    form.reset();
-    toast({ title: 'Language Updated' });
+    updateMutation.mutate(data);
   };
 
   const handleSaveTexts = () => {
-    if (!editingTexts) return;
-    setLanguages(languages.map((l) => {
-      if (l.id === editingTexts.id) {
-        return { ...l, textOverrides };
-      }
-      return l;
-    }));
     setTextEditorOpen(false);
     setEditingTexts(null);
     toast({ title: 'Text translations saved' });
@@ -157,10 +183,16 @@ export default function LanguagesPage() {
       setDeleteLanguage(null);
       return;
     }
-    setLanguages(languages.filter((l) => l.id !== deleteLanguage.id));
-    setDeleteLanguage(null);
-    toast({ title: 'Language Deleted' });
+    deleteMutation.mutate(deleteLanguage.id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -228,7 +260,7 @@ export default function LanguagesPage() {
             <DialogTitle>Add Language</DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4" data-testid="form-language-create">
               <FormField control={form.control} name="code" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Language Code</FormLabel>
@@ -304,7 +336,10 @@ export default function LanguagesPage() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-language">Create</Button>
+                <Button type="submit" data-testid="button-save-language" disabled={createMutation.isPending}>
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Create
+                </Button>
               </div>
             </form>
           </Form>
@@ -392,7 +427,10 @@ export default function LanguagesPage() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingLanguage(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-language">Update</Button>
+                <Button type="submit" data-testid="button-update-language" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update
+                </Button>
               </div>
             </form>
           </Form>
