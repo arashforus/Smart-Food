@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Plus, Image as ImageIcon, Upload } from 'lucide-react';
+import { Plus, Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -38,7 +39,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
-import { mockCategories, mockLanguages } from '@/lib/mockData';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { Category } from '@/lib/types';
 
 const categorySchema = z.object({
@@ -49,32 +50,106 @@ const categorySchema = z.object({
   nameTr: z.string().optional(),
   image: z.string().optional(),
   order: z.number().min(1, 'Order must be at least 1'),
-  active: z.boolean().default(true),
+  isActive: z.boolean().default(true),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
 
+interface StorageCategory {
+  id: string;
+  name: Record<string, string>;
+  image: string | null;
+  order: number;
+  isActive: boolean;
+}
+
 export default function CategoriesPage() {
   const { toast } = useToast();
-  const [categories, setCategories] = useState<Category[]>(mockCategories);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
-  const activeLanguages = mockLanguages.filter((l) => l.isActive);
+  const [editingCategory, setEditingCategory] = useState<StorageCategory | null>(null);
+  const [deleteCategory, setDeleteCategory] = useState<StorageCategory | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputRefEdit = useRef<HTMLInputElement>(null);
 
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: 1, active: true },
+    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: 1, isActive: true },
+  });
+
+  const { data: categories = [], isLoading, refetch } = useQuery<StorageCategory[]>({
+    queryKey: ['/api/categories'],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: CategoryFormData) => {
+      return apiRequest('POST', '/api/categories', {
+        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        image: data.image || null,
+        order: data.order,
+        isActive: data.isActive,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'Category Created' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to create category', variant: 'destructive' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: CategoryFormData) => {
+      if (!editingCategory) throw new Error('No category selected');
+      return apiRequest('PATCH', `/api/categories/${editingCategory.id}`, {
+        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        image: data.image || null,
+        order: data.order,
+        isActive: data.isActive,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      setEditingCategory(null);
+      form.reset();
+      toast({ title: 'Category Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update category', variant: 'destructive' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest('DELETE', `/api/categories/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      setDeleteCategory(null);
+      toast({ title: 'Category Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete category', variant: 'destructive' });
+    },
   });
 
   const openCreate = () => {
-    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: categories.length + 1, active: true });
+    form.reset({ 
+      nameEn: '', 
+      nameEs: '', 
+      nameFr: '', 
+      nameFa: '', 
+      nameTr: '', 
+      image: '', 
+      order: (categories.length || 0) + 1, 
+      isActive: true 
+    });
     setFormOpen(true);
   };
 
-  const openEdit = (category: Category) => {
+  const openEdit = (category: StorageCategory) => {
     form.reset({
       nameEn: category.name.en || '',
       nameEs: category.name.es || '',
@@ -83,50 +158,31 @@ export default function CategoriesPage() {
       nameTr: category.name.tr || '',
       image: category.image || '',
       order: category.order,
-      active: (category as any).active !== undefined ? (category as any).active : true,
+      isActive: category.isActive,
     });
     setEditingCategory(category);
   };
 
   const handleCreate = (data: CategoryFormData) => {
-    const newCategory: any = {
-      id: String(Date.now()),
-      name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-      image: data.image,
-      order: data.order,
-      active: data.active,
-    };
-    setCategories([...categories, newCategory]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'Category Created' });
+    createMutation.mutate(data);
   };
 
   const handleEdit = (data: CategoryFormData) => {
-    if (!editingCategory) return;
-    setCategories(categories.map((c) => {
-      if (c.id === editingCategory.id) {
-        return {
-          ...c,
-          name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-          image: data.image,
-          order: data.order,
-          active: data.active,
-        };
-      }
-      return c;
-    }));
-    setEditingCategory(null);
-    form.reset();
-    toast({ title: 'Category Updated' });
+    updateMutation.mutate(data);
   };
 
   const handleDelete = () => {
     if (!deleteCategory) return;
-    setCategories(categories.filter((c) => c.id !== deleteCategory.id));
-    setDeleteCategory(null);
-    toast({ title: 'Category Deleted' });
+    deleteMutation.mutate(deleteCategory.id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -135,7 +191,7 @@ export default function CategoriesPage() {
           <h1 className="text-2xl font-semibold">Categories</h1>
           <p className="text-muted-foreground">Organize your menu items</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-category">
+        <Button onClick={openCreate} data-testid="button-add-category" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
           Add Category
         </Button>
@@ -181,15 +237,34 @@ export default function CategoriesPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-                <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof CategoryFormData} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name ({lang.name})</FormLabel>
-                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}`} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              ))}
+              <FormField control={form.control} name="nameEs" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (Spanish)</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-es" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="nameFr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (French)</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fr" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="nameFa" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (Farsi)</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fa" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="nameTr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (Turkish)</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-tr" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
               <FormField control={form.control} name="image" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Image URL (optional)</FormLabel>
@@ -208,7 +283,10 @@ export default function CategoriesPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-category">Create</Button>
+                <Button type="submit" data-testid="button-save-category" disabled={createMutation.isPending}>
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Create
+                </Button>
               </div>
             </form>
           </Form>
@@ -275,7 +353,7 @@ export default function CategoriesPage() {
                     </FormItem>
                   )} />
                   
-                  <FormField control={form.control} name="active" render={({ field }) => (
+                  <FormField control={form.control} name="isActive" render={({ field }) => (
                     <FormItem className="flex items-center justify-between">
                       <FormLabel>Active</FormLabel>
                       <FormControl>
@@ -286,21 +364,43 @@ export default function CategoriesPage() {
                 </TabsContent>
                 
                 <TabsContent value="translations" className="space-y-4 pt-4">
-                  {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-                    <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof CategoryFormData} render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name ({lang.name})</FormLabel>
-                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-edit`} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  ))}
+                  <FormField control={form.control} name="nameEs" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name (Spanish)</FormLabel>
+                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-es-edit" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="nameFr" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name (French)</FormLabel>
+                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fr-edit" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="nameFa" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name (Farsi)</FormLabel>
+                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fa-edit" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="nameTr" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name (Turkish)</FormLabel>
+                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-tr-edit" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                 </TabsContent>
               </Tabs>
               
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingCategory(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-category">Update</Button>
+                <Button type="submit" data-testid="button-update-category" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update
+                </Button>
               </div>
             </form>
           </Form>
@@ -317,7 +417,10 @@ export default function CategoriesPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete" disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

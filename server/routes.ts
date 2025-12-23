@@ -321,6 +321,60 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/categories", async (_req: Request, res: Response) => {
+    try {
+      const allCategories = await storage.getAllCategories();
+      res.json(allCategories);
+    } catch (error) {
+      console.error("Get categories error:", error);
+      res.status(500).json({ message: "Failed to get categories" });
+    }
+  });
+
+  app.post("/api/categories", async (req: Request, res: Response) => {
+    try {
+      const { name, image, order, isActive } = req.body;
+      const category = await storage.createCategory({ 
+        name: name || {},
+        image: image || null,
+        isActive: isActive !== undefined ? isActive : true,
+        order: order || 1,
+      });
+      res.json(category);
+    } catch (error) {
+      console.error("Create category error:", error);
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  app.patch("/api/categories/:id", async (req: Request, res: Response) => {
+    try {
+      const { name, image, order, isActive } = req.body;
+      const category = await storage.updateCategory(req.params.id, {
+        name: name || undefined,
+        image: image || undefined,
+        isActive: isActive !== undefined ? isActive : undefined,
+        order: order || undefined,
+      });
+      if (!category) return res.status(404).json({ message: "Category not found" });
+      res.json(category);
+    } catch (error) {
+      console.error("Update category error:", error);
+      res.status(500).json({ message: "Failed to update category" });
+    }
+  });
+
+  app.delete("/api/categories/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteCategory(req.params.id);
+      if (!success) return res.status(404).json({ message: "Category not found" });
+      res.json({ message: "Category deleted" });
+    } catch (error) {
+      console.error("Delete category error:", error);
+      res.status(500).json({ message: "Failed to delete category" });
+    }
+  });
+
   app.post("/api/upload", upload.single("file"), (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
