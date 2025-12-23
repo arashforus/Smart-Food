@@ -216,15 +216,36 @@ export default function MaterialsPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-                <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof MaterialFormData} render={({ field }) => (
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="nameEs" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name ({lang.name})</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} data-testid={`input-material-name-${lang.code}`} /></FormControl>
+                    <FormLabel>Name (Spanish)</FormLabel>
+                    <FormControl><Input {...field} placeholder="Nombre en español" value={field.value || ''} data-testid="input-material-name-es" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
-              ))}
+                <FormField control={form.control} name="nameFr" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (French)</FormLabel>
+                    <FormControl><Input {...field} placeholder="Nom en français" value={field.value || ''} data-testid="input-material-name-fr" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="nameFa" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (Persian)</FormLabel>
+                    <FormControl><Input {...field} placeholder="نام فارسی" value={field.value || ''} data-testid="input-material-name-fa" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="nameTr" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (Turkish)</FormLabel>
+                    <FormControl><Input {...field} placeholder="Türkçe ad" value={field.value || ''} data-testid="input-material-name-tr" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
               <FormField control={form.control} name="image" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Image (Optional)</FormLabel>
@@ -255,7 +276,10 @@ export default function MaterialsPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-material">Create</Button>
+                <Button type="submit" data-testid="button-save-material" disabled={createMutation.isPending}>
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Create
+                </Button>
               </div>
             </form>
           </Form>
@@ -276,15 +300,36 @@ export default function MaterialsPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-                <FormField key={lang.code} control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof MaterialFormData} render={({ field }) => (
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="nameEs" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name ({lang.name})</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} data-testid={`input-material-name-${lang.code}-edit`} /></FormControl>
+                    <FormLabel>Name (Spanish)</FormLabel>
+                    <FormControl><Input {...field} placeholder="Nombre en español" value={field.value || ''} data-testid="input-material-name-es-edit" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
-              ))}
+                <FormField control={form.control} name="nameFr" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (French)</FormLabel>
+                    <FormControl><Input {...field} placeholder="Nom en français" value={field.value || ''} data-testid="input-material-name-fr-edit" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="nameFa" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (Persian)</FormLabel>
+                    <FormControl><Input {...field} placeholder="نام فارسی" value={field.value || ''} data-testid="input-material-name-fa-edit" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="nameTr" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name (Turkish)</FormLabel>
+                    <FormControl><Input {...field} placeholder="Türkçe ad" value={field.value || ''} data-testid="input-material-name-tr-edit" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
               <FormField control={form.control} name="image" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Image (Optional)</FormLabel>
@@ -313,7 +358,10 @@ export default function MaterialsPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingMaterial(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-material">Update</Button>
+                <Button type="submit" data-testid="button-update-material" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update
+                </Button>
               </div>
             </form>
           </Form>
