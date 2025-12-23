@@ -60,7 +60,7 @@ export default function OrdersListPage() {
         (order.table_number && order.table_number.toLowerCase().includes(searchQuery.toLowerCase())) ||
         order.notes?.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesStatus = !statusFilter || order.status === statusFilter;
+      const matchesStatus = statusFilter === 'all' || !statusFilter || order.status === statusFilter;
       
       return matchesSearch && matchesStatus;
     })
@@ -134,7 +134,7 @@ export default function OrdersListPage() {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="in-progress">In Progress</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
