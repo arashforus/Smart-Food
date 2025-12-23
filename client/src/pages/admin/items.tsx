@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Star } from 'lucide-react';
+import { Plus, Star, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -50,8 +51,7 @@ import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
-import { mockMenuItems, mockCategories, mockLanguages, mockMaterials } from '@/lib/mockData';
-import type { MenuItem } from '@/lib/types';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const itemSchema = z.object({
   nameEn: z.string().min(1, 'English name is required'),
@@ -82,16 +82,39 @@ const itemSchema = z.object({
 
 type ItemFormData = z.infer<typeof itemSchema>;
 
+interface StorageItem {
+  id: string;
+  categoryId: string;
+  name: Record<string, string>;
+  shortDescription: Record<string, string>;
+  longDescription: Record<string, string>;
+  price: number;
+  discountedPrice?: number;
+  maxSelect?: number;
+  image?: string;
+  available: boolean;
+  suggested: boolean;
+  materials?: string[];
+  types?: string[];
+}
+
+interface StorageCategory {
+  id: string;
+  name: Record<string, string>;
+}
+
+interface StorageMaterial {
+  id: string;
+  name: Record<string, string>;
+  image?: string;
+  backgroundColor?: string;
+}
+
 export default function ItemsPage() {
   const { toast } = useToast();
-  const [items, setItems] = useState<MenuItem[]>(mockMenuItems);
-  const categories = mockCategories;
   const [formOpen, setFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-  const [deleteItem, setDeleteItem] = useState<MenuItem | null>(null);
-  const activeLanguages = mockLanguages.filter((l) => l.isActive);
-
-  const materials = mockMaterials;
+  const [editingItem, setEditingItem] = useState<StorageItem | null>(null);
+  const [deleteItem, setDeleteItem] = useState<StorageItem | null>(null);
 
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
@@ -100,6 +123,87 @@ export default function ItemsPage() {
       shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
       longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
       price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true, suggested: false, isNew: false, materials: []
+    },
+  });
+
+  const { data: items = [], isLoading: itemsLoading } = useQuery<StorageItem[]>({
+    queryKey: ['/api/items'],
+  });
+
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery<StorageCategory[]>({
+    queryKey: ['/api/categories'],
+  });
+
+  const { data: materials = [], isLoading: materialsLoading } = useQuery<StorageMaterial[]>({
+    queryKey: ['/api/materials'],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: ItemFormData) => {
+      return apiRequest('POST', '/api/items', {
+        categoryId: data.categoryId,
+        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
+        longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
+        price: data.price,
+        discountedPrice: data.discountedPrice,
+        maxSelect: data.maxSelect,
+        image: data.image || null,
+        available: data.available,
+        suggested: data.suggested,
+        materials: data.materials,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/items'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'Menu Item Created' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to create item', variant: 'destructive' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: ItemFormData) => {
+      if (!editingItem) throw new Error('No item selected');
+      return apiRequest('PATCH', `/api/items/${editingItem.id}`, {
+        categoryId: data.categoryId,
+        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
+        longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
+        price: data.price,
+        discountedPrice: data.discountedPrice,
+        maxSelect: data.maxSelect,
+        image: data.image || null,
+        available: data.available,
+        suggested: data.suggested,
+        materials: data.materials,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/items'] });
+      setEditingItem(null);
+      form.reset();
+      toast({ title: 'Menu Item Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update item', variant: 'destructive' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest('DELETE', `/api/items/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/items'] });
+      setDeleteItem(null);
+      toast({ title: 'Menu Item Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete item', variant: 'destructive' });
     },
   });
 
@@ -113,7 +217,7 @@ export default function ItemsPage() {
     setFormOpen(true);
   };
 
-  const openEdit = (item: MenuItem) => {
+  const openEdit = (item: StorageItem) => {
     form.reset({
       nameEn: item.name.en || '',
       nameEs: item.name.es || '',
@@ -137,67 +241,23 @@ export default function ItemsPage() {
       image: item.image || '',
       available: item.available,
       suggested: item.suggested,
-      isNew: (item as any).isNew || false,
+      isNew: false,
       materials: item.materials || [],
     });
     setEditingItem(item);
   };
 
   const handleCreate = (data: ItemFormData) => {
-    const newItem: any = {
-      id: String(Date.now()),
-      name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-      shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
-      longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
-      price: data.price,
-      discountedPrice: data.discountedPrice,
-      maxSelect: data.maxSelect,
-      categoryId: data.categoryId,
-      image: data.image,
-      available: data.available,
-      suggested: data.suggested,
-      isNew: data.isNew,
-      materials: data.materials,
-      types: [],
-    };
-    setItems([...items, newItem]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'Menu Item Created' });
+    createMutation.mutate(data);
   };
 
   const handleEdit = (data: ItemFormData) => {
-    if (!editingItem) return;
-    setItems(items.map((i) => {
-      if (i.id === editingItem.id) {
-        return {
-          ...i,
-          name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-          shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
-          longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
-          price: data.price,
-          discountedPrice: data.discountedPrice,
-          maxSelect: data.maxSelect,
-          categoryId: data.categoryId,
-          image: data.image,
-          available: data.available,
-          suggested: data.suggested,
-          isNew: data.isNew,
-          materials: data.materials,
-        };
-      }
-      return i;
-    }));
-    setEditingItem(null);
-    form.reset();
-    toast({ title: 'Menu Item Updated' });
+    updateMutation.mutate(data);
   };
 
   const handleDelete = () => {
     if (!deleteItem) return;
-    setItems(items.filter((i) => i.id !== deleteItem.id));
-    setDeleteItem(null);
-    toast({ title: 'Menu Item Deleted' });
+    deleteMutation.mutate(deleteItem.id);
   };
 
   const getCategoryName = (categoryId: string) => categories.find((c) => c.id === categoryId)?.name.en || 'Unknown';
@@ -370,7 +430,7 @@ export default function ItemsPage() {
                       ) : (
                         <div
                           className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
-                          style={{ backgroundColor: material.backgroundColor }}
+                          style={{ backgroundColor: material.backgroundColor || '#999' }}
                         >
                           {material.name.en?.charAt(0).toUpperCase()}
                         </div>
@@ -404,41 +464,93 @@ export default function ItemsPage() {
           </TabsContent>
           
           <TabsContent value="translations" className="space-y-4 pt-4 max-h-[300px] overflow-y-auto">
-            {activeLanguages.filter(l => l.code !== 'en').map((lang) => (
-              <div key={lang.code} className="space-y-3 p-3 rounded-md bg-muted/50">
-                <h4 className="font-medium text-sm">{lang.name} ({lang.nativeName})</h4>
-                <FormField control={form.control} name={`name${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Name</FormLabel>
-                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name={`shortDescription${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Short Description</FormLabel>
-                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name={`longDescription${lang.code.charAt(0).toUpperCase() + lang.code.slice(1)}` as keyof ItemFormData} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Long Description</FormLabel>
-                    <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-${lang.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                  </FormItem>
-                )} />
-              </div>
-            ))}
+            <div className="space-y-3 p-3 rounded-md bg-muted/50">
+              <h4 className="font-medium text-sm">Spanish (Español)</h4>
+              <FormField control={form.control} name="nameEs" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Name</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-es${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="shortDescriptionEs" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Short Description</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-es${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="longDescriptionEs" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Long Description</FormLabel>
+                  <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-es${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+            </div>
+            <div className="space-y-3 p-3 rounded-md bg-muted/50">
+              <h4 className="font-medium text-sm">French (Français)</h4>
+              <FormField control={form.control} name="nameFr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Name</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-fr${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="shortDescriptionFr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Short Description</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-fr${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+            </div>
+            <div className="space-y-3 p-3 rounded-md bg-muted/50">
+              <h4 className="font-medium text-sm">Farsi (فارسی)</h4>
+              <FormField control={form.control} name="nameFa" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Name</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-fa${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="shortDescriptionFa" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Short Description</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-fa${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+            </div>
+            <div className="space-y-3 p-3 rounded-md bg-muted/50">
+              <h4 className="font-medium text-sm">Turkish (Türkçe)</h4>
+              <FormField control={form.control} name="nameTr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Name</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-tr${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="shortDescriptionTr" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Short Description</FormLabel>
+                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-tr${isEdit ? '-edit' : ''}`} /></FormControl>
+                </FormItem>
+              )} />
+            </div>
           </TabsContent>
         </Tabs>
         
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-          <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`}>
+          <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`} disabled={createMutation.isPending || updateMutation.isPending}>
+            {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {isEdit ? 'Update' : 'Create'}
           </Button>
         </div>
       </form>
     </Form>
   );
+
+  if (itemsLoading || categoriesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -447,7 +559,7 @@ export default function ItemsPage() {
           <h1 className="text-2xl font-semibold">Menu Items</h1>
           <p className="text-muted-foreground">Manage your menu offerings</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-item">
+        <Button onClick={openCreate} data-testid="button-add-item" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
           Add Item
         </Button>
@@ -497,11 +609,6 @@ export default function ItemsPage() {
                     Suggested
                   </Badge>
                 )}
-                {(item as any).isNew && (
-                  <Badge variant="outline" className="no-default-active-elevate text-emerald-600 border-emerald-500/50">
-                    New
-                  </Badge>
-                )}
               </div>
             ),
           },
@@ -539,7 +646,10 @@ export default function ItemsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-item">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-item" disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -375,6 +375,75 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/items", async (_req: Request, res: Response) => {
+    try {
+      const allItems = await storage.getAllItems();
+      res.json(allItems);
+    } catch (error) {
+      console.error("Get items error:", error);
+      res.status(500).json({ message: "Failed to get items" });
+    }
+  });
+
+  app.post("/api/items", async (req: Request, res: Response) => {
+    try {
+      const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, materials } = req.body;
+      const item = await storage.createItem({
+        categoryId,
+        name: name || {},
+        shortDescription: shortDescription || {},
+        longDescription: longDescription || {},
+        price,
+        discountedPrice,
+        maxSelect,
+        image: image || null,
+        available: available !== undefined ? available : true,
+        suggested: suggested !== undefined ? suggested : false,
+        materials: materials || [],
+        types: [],
+      });
+      res.json(item);
+    } catch (error) {
+      console.error("Create item error:", error);
+      res.status(500).json({ message: "Failed to create item" });
+    }
+  });
+
+  app.patch("/api/items/:id", async (req: Request, res: Response) => {
+    try {
+      const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, materials } = req.body;
+      const item = await storage.updateItem(req.params.id, {
+        categoryId: categoryId || undefined,
+        name: name || undefined,
+        shortDescription: shortDescription || undefined,
+        longDescription: longDescription || undefined,
+        price: price !== undefined ? price : undefined,
+        discountedPrice: discountedPrice !== undefined ? discountedPrice : undefined,
+        maxSelect: maxSelect !== undefined ? maxSelect : undefined,
+        image: image || undefined,
+        available: available !== undefined ? available : undefined,
+        suggested: suggested !== undefined ? suggested : undefined,
+        materials: materials !== undefined ? materials : undefined,
+      });
+      if (!item) return res.status(404).json({ message: "Item not found" });
+      res.json(item);
+    } catch (error) {
+      console.error("Update item error:", error);
+      res.status(500).json({ message: "Failed to update item" });
+    }
+  });
+
+  app.delete("/api/items/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteItem(req.params.id);
+      if (!success) return res.status(404).json({ message: "Item not found" });
+      res.json({ message: "Item deleted" });
+    } catch (error) {
+      console.error("Delete item error:", error);
+      res.status(500).json({ message: "Failed to delete item" });
+    }
+  });
+
   app.post("/api/upload", upload.single("file"), (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
