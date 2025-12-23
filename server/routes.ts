@@ -444,6 +444,63 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/tables", async (_req: Request, res: Response) => {
+    try {
+      const allTables = await storage.getAllTables();
+      res.json(allTables);
+    } catch (error) {
+      console.error("Get tables error:", error);
+      res.status(500).json({ message: "Failed to get tables" });
+    }
+  });
+
+  app.post("/api/tables", async (req: Request, res: Response) => {
+    try {
+      const { branchId, tableNumber, capacity, location, isActive } = req.body;
+      const table = await storage.createTable({
+        tableNumber: tableNumber || '',
+        branchId,
+        capacity: capacity || 4,
+        location: location || '',
+        status: 'available',
+        isActive: isActive !== undefined ? isActive : true,
+      });
+      res.json(table);
+    } catch (error) {
+      console.error("Create table error:", error);
+      res.status(500).json({ message: "Failed to create table" });
+    }
+  });
+
+  app.patch("/api/tables/:id", async (req: Request, res: Response) => {
+    try {
+      const { branchId, tableNumber, capacity, location, isActive } = req.body;
+      const table = await storage.updateTable(req.params.id, {
+        tableNumber: tableNumber || undefined,
+        branchId: branchId || undefined,
+        capacity: capacity !== undefined ? capacity : undefined,
+        location: location || undefined,
+        isActive: isActive !== undefined ? isActive : undefined,
+      });
+      if (!table) return res.status(404).json({ message: "Table not found" });
+      res.json(table);
+    } catch (error) {
+      console.error("Update table error:", error);
+      res.status(500).json({ message: "Failed to update table" });
+    }
+  });
+
+  app.delete("/api/tables/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteTable(req.params.id);
+      if (!success) return res.status(404).json({ message: "Table not found" });
+      res.json({ message: "Table deleted" });
+    } catch (error) {
+      console.error("Delete table error:", error);
+      res.status(500).json({ message: "Failed to delete table" });
+    }
+  });
+
   app.post("/api/upload", upload.single("file"), (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });

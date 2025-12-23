@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -40,65 +41,139 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
-import { mockTables, mockBranches } from '@/lib/mockData';
-import type { RestaurantTable } from '@/lib/types';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const tableSchema = z.object({
   branchId: z.string().min(1, 'Branch is required'),
-  number: z.string().min(1, 'Table number is required'),
-  seats: z.number().min(1, 'At least 1 seat is required'),
+  tableNumber: z.string().min(1, 'Table number is required'),
+  capacity: z.number().min(1, 'At least 1 seat is required'),
   isActive: z.boolean(),
 });
 
 type TableFormData = z.infer<typeof tableSchema>;
 
+interface StorageTable {
+  id: string;
+  tableNumber: string;
+  branchId: string;
+  capacity: number;
+  location?: string;
+  status: string;
+  isActive: boolean;
+}
+
+interface StorageBranch {
+  id: string;
+  name: string;
+  isActive: boolean;
+}
+
 export default function TablesPage() {
   const { toast } = useToast();
-  const [tables, setTables] = useState<RestaurantTable[]>(mockTables);
   const [formOpen, setFormOpen] = useState(false);
-  const [editingTable, setEditingTable] = useState<RestaurantTable | null>(null);
-  const [deleteTable, setDeleteTable] = useState<RestaurantTable | null>(null);
-  const branches = mockBranches;
+  const [editingTable, setEditingTable] = useState<StorageTable | null>(null);
+  const [deleteTable, setDeleteTable] = useState<StorageTable | null>(null);
 
   const form = useForm<TableFormData>({
     resolver: zodResolver(tableSchema),
-    defaultValues: { branchId: '', number: '', seats: 4, isActive: true },
+    defaultValues: { branchId: '', tableNumber: '', capacity: 4, isActive: true },
+  });
+
+  const { data: tables = [], isLoading: tablesLoading } = useQuery<StorageTable[]>({
+    queryKey: ['/api/tables'],
+  });
+
+  const { data: branches = [], isLoading: branchesLoading } = useQuery<StorageBranch[]>({
+    queryKey: ['/api/branches'],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: TableFormData) => {
+      return apiRequest('POST', '/api/tables', {
+        branchId: data.branchId,
+        tableNumber: data.tableNumber,
+        capacity: data.capacity,
+        isActive: data.isActive,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'Table Created' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to create table', variant: 'destructive' });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: TableFormData) => {
+      if (!editingTable) throw new Error('No table selected');
+      return apiRequest('PATCH', `/api/tables/${editingTable.id}`, {
+        branchId: data.branchId,
+        tableNumber: data.tableNumber,
+        capacity: data.capacity,
+        isActive: data.isActive,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      setEditingTable(null);
+      form.reset();
+      toast({ title: 'Table Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update table', variant: 'destructive' });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest('DELETE', `/api/tables/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      setDeleteTable(null);
+      toast({ title: 'Table Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete table', variant: 'destructive' });
+    },
   });
 
   const openCreate = () => {
-    form.reset({ branchId: branches[0]?.id || '', number: '', seats: 4, isActive: true });
+    form.reset({ branchId: branches.find(b => b.isActive)?.id || '', tableNumber: '', capacity: 4, isActive: true });
     setFormOpen(true);
   };
 
-  const openEdit = (table: RestaurantTable) => {
-    form.reset({ branchId: table.branchId, number: table.number, seats: table.seats, isActive: table.isActive });
+  const openEdit = (table: StorageTable) => {
+    form.reset({ branchId: table.branchId, tableNumber: table.tableNumber, capacity: table.capacity, isActive: table.isActive });
     setEditingTable(table);
   };
 
   const handleCreate = (data: TableFormData) => {
-    const newTable: RestaurantTable = { id: String(Date.now()), ...data };
-    setTables([...tables, newTable]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'Table Created' });
+    createMutation.mutate(data);
   };
 
   const handleEdit = (data: TableFormData) => {
-    if (!editingTable) return;
-    setTables(tables.map((t) => (t.id === editingTable.id ? { ...t, ...data } : t)));
-    setEditingTable(null);
-    form.reset();
-    toast({ title: 'Table Updated' });
+    updateMutation.mutate(data);
   };
 
   const handleDelete = () => {
     if (!deleteTable) return;
-    setTables(tables.filter((t) => t.id !== deleteTable.id));
-    setDeleteTable(null);
-    toast({ title: 'Table Deleted' });
+    deleteMutation.mutate(deleteTable.id);
   };
 
   const getBranchName = (branchId: string) => branches.find((b) => b.id === branchId)?.name || 'Unknown';
+
+  if (tablesLoading || branchesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -107,7 +182,7 @@ export default function TablesPage() {
           <h1 className="text-2xl font-semibold">Tables</h1>
           <p className="text-muted-foreground">Manage restaurant tables for QR codes</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-table">
+        <Button onClick={openCreate} data-testid="button-add-table" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
           Add Table
         </Button>
@@ -116,9 +191,9 @@ export default function TablesPage() {
       <DataTable
         data={tables}
         columns={[
-          { key: 'number', header: 'Table #' },
+          { key: 'tableNumber', header: 'Table #' },
           { key: 'branchId', header: 'Branch', render: (item) => getBranchName(item.branchId) },
-          { key: 'seats', header: 'Seats' },
+          { key: 'capacity', header: 'Seats' },
           {
             key: 'isActive',
             header: 'Status',
@@ -159,14 +234,14 @@ export default function TablesPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="number" render={({ field }) => (
+              <FormField control={form.control} name="tableNumber" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Table Number/Name</FormLabel>
                   <FormControl><Input {...field} placeholder="e.g., T1 or Patio-3" data-testid="input-table-number" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="seats" render={({ field }) => (
+              <FormField control={form.control} name="capacity" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Number of Seats</FormLabel>
                   <FormControl>
@@ -185,7 +260,10 @@ export default function TablesPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-table">Create</Button>
+                <Button type="submit" data-testid="button-save-table" disabled={createMutation.isPending}>
+                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Create
+                </Button>
               </div>
             </form>
           </Form>
@@ -217,14 +295,14 @@ export default function TablesPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="number" render={({ field }) => (
+              <FormField control={form.control} name="tableNumber" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Table Number/Name</FormLabel>
                   <FormControl><Input {...field} data-testid="input-table-number-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="seats" render={({ field }) => (
+              <FormField control={form.control} name="capacity" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Number of Seats</FormLabel>
                   <FormControl>
@@ -243,7 +321,10 @@ export default function TablesPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingTable(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-table">Update</Button>
+                <Button type="submit" data-testid="button-update-table" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update
+                </Button>
               </div>
             </form>
           </Form>
@@ -255,12 +336,15 @@ export default function TablesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Table</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete table "{deleteTable?.number}"?
+              Are you sure you want to delete table "{deleteTable?.tableNumber}"?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-table">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-table" disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
