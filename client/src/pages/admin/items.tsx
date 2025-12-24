@@ -81,6 +81,8 @@ const itemSchema = z.object({
 
 type ItemFormData = z.infer<typeof itemSchema>;
 
+import stockImage from '@assets/stock_images/professional_food_pl_953ff621.jpg';
+
 interface StorageItem {
   id: string;
   categoryId: string;
@@ -271,11 +273,25 @@ export default function ItemsPage() {
   };
 
   const handleCreate = (data: ItemFormData) => {
-    createMutation.mutate(data);
+    // Ensure all numeric fields are actual numbers
+    const formattedData = {
+      ...data,
+      price: Number(data.price),
+      discountedPrice: data.discountedPrice ? Number(data.discountedPrice) : undefined,
+      maxSelect: data.maxSelect ? Number(data.maxSelect) : undefined,
+    };
+    createMutation.mutate(formattedData);
   };
 
   const handleEdit = (data: ItemFormData) => {
-    updateMutation.mutate(data);
+    // Ensure all numeric fields are actual numbers
+    const formattedData = {
+      ...data,
+      price: Number(data.price),
+      discountedPrice: data.discountedPrice ? Number(data.discountedPrice) : undefined,
+      maxSelect: data.maxSelect ? Number(data.maxSelect) : undefined,
+    };
+    updateMutation.mutate(formattedData);
   };
 
   const handleDelete = () => {
@@ -287,7 +303,7 @@ export default function ItemsPage() {
   const currencySymbol = settings?.currencySymbol || '$';
 
   const FormContent = useMemo(() => {
-    const Component = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => {
+    return ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => {
       const { toast } = useToast();
       
       const onFormError = (errors: any) => {
@@ -567,10 +583,12 @@ export default function ItemsPage() {
           { 
             key: 'image', 
             header: 'Image', 
-            render: (item) => item.image ? (
-              <img src={item.image} alt={item.name.en} className="w-10 h-10 rounded object-cover" />
-            ) : (
-              <div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">No img</div>
+            render: (item) => (
+              <img 
+                src={item.image || stockImage} 
+                alt={item.name.en} 
+                className="w-10 h-10 rounded object-cover" 
+              />
             )
           },
           { key: 'name', header: 'Name', render: (item) => item.name.en },
