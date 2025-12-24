@@ -1,4 +1,4 @@
-import { Globe, User, LogOut, Settings, Key, ChevronDown, Building2 } from 'lucide-react';
+import { Globe, User, LogOut, Settings, Key, ChevronDown, Building2, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -34,12 +34,26 @@ interface AdminHeaderProps {
   onSignOut: () => void;
 }
 
+const FlagIcon = ({ code }: { code: string }) => {
+  const flagColors: Record<string, { bg: string; colors: string }> = {
+    en: { bg: 'bg-blue-100 dark:bg-blue-950', colors: 'text-blue-600' },
+    tr: { bg: 'bg-red-100 dark:bg-red-950', colors: 'text-red-600' },
+    fa: { bg: 'bg-green-100 dark:bg-green-950', colors: 'text-green-600' },
+    ar: { bg: 'bg-yellow-100 dark:bg-yellow-950', colors: 'text-yellow-600' },
+  };
+  const config = flagColors[code] || flagColors.en;
+  return (
+    <div className={`${config.bg} w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0`}>
+      <Flag className={`h-3.5 w-3.5 ${config.colors}`} />
+    </div>
+  );
+};
+
 const languageOptions: { code: Language; shortCode: string; name: string }[] = [
   { code: 'en', shortCode: 'EN', name: 'English' },
-  { code: 'es', shortCode: 'ES', name: 'Español' },
-  { code: 'fr', shortCode: 'FR', name: 'Français' },
-  { code: 'fa', shortCode: 'FA', name: 'فارسی' },
   { code: 'tr', shortCode: 'TR', name: 'Türkçe' },
+  { code: 'fa', shortCode: 'FA', name: 'فارسی' },
+  { code: 'ar', shortCode: 'AR', name: 'العربية' },
 ];
 
 export default function AdminHeader({
@@ -94,8 +108,10 @@ export default function AdminHeader({
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
                 data-testid={`menu-item-lang-${lang.code}`}
+                className="flex items-center gap-2"
               >
-                <span className="mr-2 text-xs font-medium text-muted-foreground">{lang.shortCode}</span> {lang.name}
+                <FlagIcon code={lang.code} />
+                <span className="text-sm">{lang.name}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
