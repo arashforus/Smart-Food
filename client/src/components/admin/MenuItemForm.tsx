@@ -36,8 +36,10 @@ const menuItemSchema = z.object({
   descriptionEs: z.string().min(1, 'Spanish description is required'),
   descriptionFr: z.string().min(1, 'French description is required'),
   price: z.number().min(0.01, 'Price must be greater than 0'),
+  maxSelect: z.number().min(1, 'Max selection must be at least 1').optional(),
   categoryId: z.string().min(1, 'Category is required'),
   available: z.boolean(),
+  image: z.string().optional(),
 });
 
 type MenuItemFormData = z.infer<typeof menuItemSchema>;
@@ -66,8 +68,10 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       descriptionEs: (item?.shortDescription as any)?.es ?? '',
       descriptionFr: (item?.shortDescription as any)?.fr ?? '',
       price: Number(item?.price) || 0,
+      maxSelect: Number(item?.maxSelect) || 1,
       categoryId: item?.categoryId ?? '',
       available: item?.available ?? true,
+      image: item?.image ?? '',
     },
   });
 
@@ -185,41 +189,26 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                   </FormItem>
                 )}
               />
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => {
-                const categoryImage = getCategoryImage(field.value);
-                return (
+              <FormField
+                control={form.control}
+                name="maxSelect"
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-item-category">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>
-                            <div className="flex items-center gap-2">
-                              {cat.image ? (
-                                <img src={cat.image} alt="" className="w-4 h-4 rounded-sm object-cover" />
-                              ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-3 h-3 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-                              )}
-                              {cat.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Max Selection</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        data-testid="input-item-max-select"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
-                );
-              }}
-            />
+                )}
+              />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="image"

@@ -416,19 +416,21 @@ export async function registerRoutes(
   app.patch("/api/items/:id", async (req: Request, res: Response) => {
     try {
       const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, materials } = req.body;
-      const item = await storage.updateItem(req.params.id, {
-        categoryId: categoryId || undefined,
-        name: name || undefined,
-        shortDescription: shortDescription || undefined,
-        longDescription: longDescription || undefined,
-        price: price !== undefined ? price : undefined,
-        discountedPrice: discountedPrice !== undefined ? discountedPrice : undefined,
-        maxSelect: maxSelect !== undefined ? maxSelect : undefined,
-        image: image || undefined,
-        available: available !== undefined ? available : undefined,
-        suggested: suggested !== undefined ? suggested : undefined,
-        materials: materials !== undefined ? materials : undefined,
-      });
+      
+      const updateData: any = {};
+      if (categoryId !== undefined) updateData.categoryId = categoryId;
+      if (name !== undefined) updateData.name = name;
+      if (shortDescription !== undefined) updateData.shortDescription = shortDescription;
+      if (longDescription !== undefined) updateData.longDescription = longDescription;
+      if (price !== undefined) updateData.price = price;
+      if (discountedPrice !== undefined) updateData.discountedPrice = discountedPrice;
+      if (maxSelect !== undefined) updateData.maxSelect = maxSelect;
+      if (image !== undefined) updateData.image = image;
+      if (available !== undefined) updateData.available = available;
+      if (suggested !== undefined) updateData.suggested = suggested;
+      if (materials !== undefined) updateData.materials = materials;
+
+      const item = await storage.updateItem(req.params.id, updateData);
       if (!item) return res.status(404).json({ message: "Item not found" });
       res.json(item);
     } catch (error) {
