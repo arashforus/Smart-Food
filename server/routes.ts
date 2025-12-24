@@ -333,8 +333,9 @@ export async function registerRoutes(
 
   app.post("/api/categories", async (req: Request, res: Response) => {
     try {
-      const { name, image, order, isActive } = req.body;
+      const { generalName, name, image, order, isActive } = req.body;
       const category = await storage.createCategory({ 
+        generalName: generalName || "",
         name: name || {},
         image: image || null,
         isActive: isActive !== undefined ? isActive : true,
@@ -349,8 +350,9 @@ export async function registerRoutes(
 
   app.patch("/api/categories/:id", async (req: Request, res: Response) => {
     try {
-      const { name, image, order, isActive } = req.body;
+      const { generalName, name, image, order, isActive } = req.body;
       const category = await storage.updateCategory(req.params.id, {
+        generalName: generalName !== undefined ? generalName : undefined,
         name: name || undefined,
         image: image || undefined,
         isActive: isActive !== undefined ? isActive : undefined,

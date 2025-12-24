@@ -13,6 +13,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "003-add-phone-to-users", description: "Add phone field to users table" },
   { version: "004-add-language-to-users", description: "Add language field to users table" },
   { version: "005-add-missing-user-columns", description: "Add missing name, email, role, and language columns to users table" },
+  { version: "006-add-general-name-to-categories", description: "Add general_name field to categories table" },
 ];
 
 export async function runDatabaseMigrations() {

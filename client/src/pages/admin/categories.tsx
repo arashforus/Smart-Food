@@ -51,6 +51,7 @@ interface Language {
 
 interface StorageCategory {
   id: string;
+  generalName: string;
   name: Record<string, string>;
   image: string | null;
   order: number;
@@ -109,10 +110,11 @@ export default function CategoriesPage() {
       languages.forEach((lang) => {
         if (lang.isActive) {
           const langName = (data as any)[`name_${lang.code}`];
-          nameObj[lang.code] = langName || (lang.code === 'en' ? (data as any).name : '');
+          nameObj[lang.code] = langName || '';
         }
       });
       return apiRequest('POST', '/api/categories', {
+        generalName: (data as any).name || '',
         name: nameObj,
         image: data.image || null,
         order: data.order,
@@ -137,10 +139,11 @@ export default function CategoriesPage() {
       languages.forEach((lang) => {
         if (lang.isActive) {
           const langName = (data as any)[`name_${lang.code}`];
-          nameObj[lang.code] = langName || (lang.code === 'en' ? (data as any).name : '');
+          nameObj[lang.code] = langName || '';
         }
       });
       return apiRequest('PATCH', `/api/categories/${editingCategory.id}`, {
+        generalName: (data as any).name || '',
         name: nameObj,
         image: data.image || null,
         order: data.order,
@@ -252,7 +255,7 @@ export default function CategoriesPage() {
               </div>
             ),
           },
-          { key: 'name', header: 'Name (English)', render: (item) => item.name.en },
+          { key: 'name', header: 'General Name (Admin)', render: (item) => item.generalName || item.name.en },
           { key: 'translations', header: 'Translations', render: (item) => {
             const count = Object.values(item.name).filter(v => v && v.length > 0).length;
             return `${count} language(s)`;

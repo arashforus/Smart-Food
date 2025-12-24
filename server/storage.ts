@@ -24,6 +24,7 @@ export interface StorageBranch {
 
 export interface StorageCategory {
   id: string;
+  generalName: string;
   name: Record<string, string>;
   image?: string;
   order: number;
