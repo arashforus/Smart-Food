@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,15 +18,50 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Minus, ShoppingCart, Trash2, Send, Search } from 'lucide-react';
-import { mockMenuItems, mockCategories, mockTables } from '@/lib/mockData';
+import { Plus, Minus, ShoppingCart, Trash2, Send, Search, Loader2 } from 'lucide-react';
 import { useOrders } from '@/lib/orderContext';
-import type { MenuItem, OrderItem } from '@/lib/types';
 
 interface CartOrderItem {
-  menuItem: MenuItem;
+  menuItem: StorageItem;
   quantity: number;
   notes: string;
+}
+
+interface StorageItem {
+  id: string;
+  categoryId: string;
+  name: Record<string, string>;
+  shortDescription: Record<string, string>;
+  longDescription: Record<string, string>;
+  price: number;
+  discountedPrice?: number;
+  maxSelect?: number;
+  image?: string;
+  available: boolean;
+  suggested: boolean;
+  materials?: string[];
+  types?: string[];
+}
+
+interface StorageCategory {
+  id: string;
+  name: Record<string, string>;
+  image?: string;
+  isActive?: boolean;
+}
+
+interface StorageTable {
+  id: string;
+  tableNumber: string;
+  branchId: string;
+  capacity: number;
+  location?: string;
+  status: string;
+  isActive: boolean;
+}
+
+interface StorageSettings {
+  currencySymbol: string;
 }
 
 export default function OrdersPage() {
@@ -39,7 +75,25 @@ export default function OrdersPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const availableItems = mockMenuItems.filter((item) => item.available);
+  const { data: items = [], isLoading: itemsLoading } = useQuery<StorageItem[]>({
+    queryKey: ['/api/items'],
+  });
+
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery<StorageCategory[]>({
+    queryKey: ['/api/categories'],
+  });
+
+  const { data: tables = [], isLoading: tablesLoading } = useQuery<StorageTable[]>({
+    queryKey: ['/api/tables'],
+  });
+
+  const { data: settings } = useQuery<StorageSettings>({
+    queryKey: ['/api/settings'],
+  });
+
+  const currencySymbol = settings?.currencySymbol || '$';
+
+  const availableItems = items.filter((item) => item.available);
   
   const filteredItems = availableItems.filter((item) => {
     const matchesCategory = !selectedCategory || item.categoryId === selectedCategory;
@@ -48,7 +102,7 @@ export default function OrdersPage() {
     return matchesCategory && matchesSearch;
   });
 
-  const addToCart = (item: MenuItem) => {
+  const addToCart = (item: StorageItem) => {
     setCart((prev) => {
       const existing = prev.find((ci) => ci.menuItem.id === item.id);
       if (existing) {
@@ -100,7 +154,7 @@ export default function OrdersPage() {
       return;
     }
 
-    const orderItems: OrderItem[] = cart.map((ci, idx) => ({
+    const orderItems = cart.map((ci, idx) => ({
       id: `item-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 9)}`,
       menuItemId: ci.menuItem.id,
       menuItemName: ci.menuItem.name,
@@ -127,6 +181,14 @@ export default function OrdersPage() {
     toast({ title: 'Order Created', description: `${newOrder.orderNumber} has been sent to kitchen` });
   };
 
+  if (itemsLoading || categoriesLoading || tablesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4 h-full">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -142,7 +204,7 @@ export default function OrdersPage() {
         >
           <ShoppingCart className="h-5 w-5" />
           <span className="font-semibold">{cartItemCount} items</span>
-          <span>${cartTotal.toFixed(2)}</span>
+          <span>{currencySymbol}{cartTotal.toFixed(2)}</span>
         </Button>
       </div>
 
@@ -155,7 +217,7 @@ export default function OrdersPage() {
         >
           <span>All</span>
         </Button>
-        {mockCategories.map((cat) => (
+        {categories.map((cat) => (
           <Button
             key={cat.id}
             variant={selectedCategory === cat.id ? 'default' : 'outline'}
@@ -204,11 +266,11 @@ export default function OrdersPage() {
               <div className="flex items-center gap-2">
                 {item.discountedPrice ? (
                   <>
-                    <span className="font-semibold text-sm">${item.discountedPrice.toFixed(2)}</span>
-                    <span className="text-xs text-muted-foreground line-through">${item.price.toFixed(2)}</span>
+                    <span className="font-semibold text-sm">{currencySymbol}{item.discountedPrice.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground line-through">{currencySymbol}{item.price.toFixed(2)}</span>
                   </>
                 ) : (
-                  <span className="font-semibold text-sm">${item.price.toFixed(2)}</span>
+                  <span className="font-semibold text-sm">{currencySymbol}{item.price.toFixed(2)}</span>
                 )}
               </div>
             </CardContent>
@@ -251,9 +313,9 @@ export default function OrdersPage() {
                   <SelectValue placeholder="Select Table" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockTables.filter((t) => t.isActive).map((table) => (
-                    <SelectItem key={table.id} value={table.number}>
-                      Table {table.number} ({table.seats} seats)
+                  {tables.filter((t) => t.isActive).map((table) => (
+                    <SelectItem key={table.id} value={table.tableNumber}>
+                      Table {table.tableNumber} ({table.capacity} seats)
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -283,7 +345,7 @@ export default function OrdersPage() {
                         <div className="flex-1">
                           <h4 className="font-medium text-sm">{ci.menuItem.name.en}</h4>
                           <p className="text-sm text-muted-foreground">
-                            ${(ci.menuItem.discountedPrice || ci.menuItem.price).toFixed(2)} each
+                            {currencySymbol}{(ci.menuItem.discountedPrice || ci.menuItem.price).toFixed(2)} each
                           </p>
                         </div>
                       </div>
@@ -324,7 +386,7 @@ export default function OrdersPage() {
                         data-testid={`input-notes-${ci.menuItem.id}`}
                       />
                       <p className="text-right font-semibold">
-                        ${((ci.menuItem.discountedPrice || ci.menuItem.price) * ci.quantity).toFixed(2)}
+                        {currencySymbol}{((ci.menuItem.discountedPrice || ci.menuItem.price) * ci.quantity).toFixed(2)}
                       </p>
                     </CardContent>
                   </Card>
@@ -342,7 +404,7 @@ export default function OrdersPage() {
 
             <div className="flex items-center justify-between pt-4 border-t">
               <span className="text-lg font-semibold">Total:</span>
-              <span className="text-xl font-bold">${cartTotal.toFixed(2)}</span>
+              <span className="text-xl font-bold">{currencySymbol}{cartTotal.toFixed(2)}</span>
             </div>
 
             <div className="flex gap-2">
