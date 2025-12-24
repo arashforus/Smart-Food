@@ -592,8 +592,8 @@ export async function registerRoutes(
 
   app.post("/api/materials", async (req: Request, res: Response) => {
     try {
-      const { name, backgroundColor, image } = req.body;
-      const material = await storage.createMaterial?.({ name, backgroundColor, image });
+      const { name, image } = req.body;
+      const material = await storage.createMaterial?.({ name, image, order: 1 });
       res.json(material);
     } catch (error) {
       console.error("Create material error:", error);
@@ -603,8 +603,8 @@ export async function registerRoutes(
 
   app.patch("/api/materials/:id", async (req: Request, res: Response) => {
     try {
-      const { name, backgroundColor, image } = req.body;
-      const material = await storage.updateMaterial?.(req.params.id, { name, backgroundColor, image });
+      const { name, image } = req.body;
+      const material = await storage.updateMaterial?.(req.params.id, { name, image });
       res.json(material);
     } catch (error) {
       console.error("Update material error:", error);
