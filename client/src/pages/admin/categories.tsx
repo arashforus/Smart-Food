@@ -312,8 +312,11 @@ export default function CategoriesPage() {
                       <FormControl>
                         <Input 
                           type="number" 
-                          value={String(field.value || '')} 
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : '')}
+                          value={field.value ? String(field.value) : ''} 
+                          onChange={(e) => {
+                            const val = e.target.value.trim();
+                            field.onChange(val ? parseInt(val, 10) : 1);
+                          }}
                           data-testid="input-category-order" 
                         />
                       </FormControl>
@@ -403,8 +406,11 @@ export default function CategoriesPage() {
                       <FormControl>
                         <Input 
                           type="number" 
-                          value={String(field.value || '')} 
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : '')}
+                          value={field.value ? String(field.value) : ''} 
+                          onChange={(e) => {
+                            const val = e.target.value.trim();
+                            field.onChange(val ? parseInt(val, 10) : 1);
+                          }}
                           data-testid="input-category-order-edit" 
                         />
                       </FormControl>
