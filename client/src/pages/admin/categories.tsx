@@ -42,18 +42,12 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { Category } from '@/lib/types';
 
-const categorySchema = z.object({
-  nameEn: z.string().min(1, 'English name is required'),
-  nameEs: z.string().optional(),
-  nameFr: z.string().optional(),
-  nameFa: z.string().optional(),
-  nameTr: z.string().optional(),
-  image: z.string().optional(),
-  order: z.number().min(1, 'Order must be at least 1'),
-  isActive: z.boolean().default(true),
-});
-
-type CategoryFormData = z.infer<typeof categorySchema>;
+interface Language {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+}
 
 interface StorageCategory {
   id: string;
@@ -63,6 +57,24 @@ interface StorageCategory {
   isActive: boolean;
 }
 
+const createCategorySchema = (languages: Language[]) => {
+  const schema: Record<string, any> = {
+    image: z.string().optional(),
+    order: z.number().min(1, 'Order must be at least 1'),
+    isActive: z.boolean().default(true),
+  };
+
+  languages.forEach((lang) => {
+    if (lang.isActive) {
+      schema[`name_${lang.code}`] = lang.code === 'en' 
+        ? z.string().min(1, `${lang.name} name is required`)
+        : z.string().optional();
+    }
+  });
+
+  return z.object(schema);
+};
+
 export default function CategoriesPage() {
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
@@ -71,9 +83,21 @@ export default function CategoriesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputRefEdit = useRef<HTMLInputElement>(null);
 
+  const { data: languages = [], isLoading: languagesLoading } = useQuery<Language[]>({
+    queryKey: ['/api/languages'],
+  });
+
+  const categorySchema = createCategorySchema(languages);
+  type CategoryFormData = z.infer<typeof categorySchema>;
+
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
-    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', image: '', order: 1, isActive: true },
+    defaultValues: languages.reduce((acc, lang) => {
+      if (lang.isActive) {
+        acc[`name_${lang.code}`] = '';
+      }
+      return acc;
+    }, { image: '', order: 1, isActive: true } as any),
   });
 
   const { data: categories = [], isLoading, refetch } = useQuery<StorageCategory[]>({
@@ -82,8 +106,14 @@ export default function CategoriesPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: CategoryFormData) => {
+      const nameObj: Record<string, string> = {};
+      languages.forEach((lang) => {
+        if (lang.isActive) {
+          nameObj[lang.code] = (data as any)[`name_${lang.code}`] || '';
+        }
+      });
       return apiRequest('POST', '/api/categories', {
-        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        name: nameObj,
         image: data.image || null,
         order: data.order,
         isActive: data.isActive,
@@ -103,8 +133,14 @@ export default function CategoriesPage() {
   const updateMutation = useMutation({
     mutationFn: async (data: CategoryFormData) => {
       if (!editingCategory) throw new Error('No category selected');
+      const nameObj: Record<string, string> = {};
+      languages.forEach((lang) => {
+        if (lang.isActive) {
+          nameObj[lang.code] = (data as any)[`name_${lang.code}`] || '';
+        }
+      });
       return apiRequest('PATCH', `/api/categories/${editingCategory.id}`, {
-        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
+        name: nameObj,
         image: data.image || null,
         order: data.order,
         isActive: data.isActive,
@@ -136,30 +172,32 @@ export default function CategoriesPage() {
   });
 
   const openCreate = () => {
-    form.reset({ 
-      nameEn: '', 
-      nameEs: '', 
-      nameFr: '', 
-      nameFa: '', 
-      nameTr: '', 
+    const defaultValues: any = { 
       image: '', 
       order: (categories.length || 0) + 1, 
       isActive: true 
+    };
+    languages.forEach((lang) => {
+      if (lang.isActive) {
+        defaultValues[`name_${lang.code}`] = '';
+      }
     });
+    form.reset(defaultValues);
     setFormOpen(true);
   };
 
   const openEdit = (category: StorageCategory) => {
-    form.reset({
-      nameEn: category.name.en || '',
-      nameEs: category.name.es || '',
-      nameFr: category.name.fr || '',
-      nameFa: category.name.fa || '',
-      nameTr: category.name.tr || '',
+    const defaultValues: any = {
       image: category.image || '',
       order: category.order,
       isActive: category.isActive,
+    };
+    languages.forEach((lang) => {
+      if (lang.isActive) {
+        defaultValues[`name_${lang.code}`] = category.name[lang.code] || '';
+      }
     });
+    form.reset(defaultValues);
     setEditingCategory(category);
   };
 
@@ -176,7 +214,7 @@ export default function CategoriesPage() {
     deleteMutation.mutate(deleteCategory.id);
   };
 
-  if (isLoading) {
+  if (isLoading || languagesLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -230,58 +268,56 @@ export default function CategoriesPage() {
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
-              <FormField control={form.control} name="nameEn" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (English)</FormLabel>
-                  <FormControl><Input {...field} data-testid="input-category-name" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="nameEs" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (Spanish)</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-es" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="nameFr" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (French)</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fr" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="nameFa" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (Farsi)</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fa" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="nameTr" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (Turkish)</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-tr" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="image" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
-                  <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="order" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Display Order</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="flex justify-end gap-2">
+              <Tabs defaultValue="info" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="info">Info</TabsTrigger>
+                  <TabsTrigger value="translations">Translations</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="info" className="space-y-4 pt-4">
+                  {languages.map((lang) => lang.isActive && (
+                    <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name ({lang.name})</FormLabel>
+                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}`} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  ))}
+                  
+                  <FormField control={form.control} name="image" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image URL (optional)</FormLabel>
+                      <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  
+                  <FormField control={form.control} name="order" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Display Order</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </TabsContent>
+                
+                <TabsContent value="translations" className="space-y-4 pt-4">
+                  {languages.map((lang) => lang.isActive && lang.code !== 'en' && (
+                    <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name ({lang.name})</FormLabel>
+                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-trans`} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  ))}
+                </TabsContent>
+              </Tabs>
+              
+              <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
                 <Button type="submit" data-testid="button-save-category" disabled={createMutation.isPending}>
                   {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
@@ -364,34 +400,15 @@ export default function CategoriesPage() {
                 </TabsContent>
                 
                 <TabsContent value="translations" className="space-y-4 pt-4">
-                  <FormField control={form.control} name="nameEs" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name (Spanish)</FormLabel>
-                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-es-edit" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="nameFr" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name (French)</FormLabel>
-                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fr-edit" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="nameFa" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name (Farsi)</FormLabel>
-                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-fa-edit" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="nameTr" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name (Turkish)</FormLabel>
-                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-category-name-tr-edit" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                  {languages.map((lang) => lang.isActive && lang.code !== 'en' && (
+                    <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name ({lang.name})</FormLabel>
+                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-edit`} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  ))}
                 </TabsContent>
               </Tabs>
               
