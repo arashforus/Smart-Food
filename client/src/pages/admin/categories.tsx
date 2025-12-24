@@ -193,7 +193,7 @@ export default function CategoriesPage() {
 
   const openEdit = (category: StorageCategory) => {
     const defaultValues: any = {
-      name: category.name.en || '',
+      name: category.generalName || '',
       image: category.image || '',
       order: category.order,
       isActive: category.isActive,
@@ -255,12 +255,21 @@ export default function CategoriesPage() {
               </div>
             ),
           },
-          { key: 'name', header: 'General Name (Admin)', render: (item) => item.generalName || item.name.en },
+          { key: 'name', header: 'Name', render: (item) => item.generalName || item.name.en },
           { key: 'translations', header: 'Translations', render: (item) => {
             const count = Object.values(item.name).filter(v => v && v.length > 0).length;
             return `${count} language(s)`;
           }},
           { key: 'order', header: 'Order' },
+          { key: 'isActive', header: 'Status', render: (item) => (
+            <div data-testid={`status-active-${item.id}`} className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${
+              item.isActive 
+                ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' 
+                : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
+            }`}>
+              {item.isActive ? 'Active' : 'Inactive'}
+            </div>
+          )},
         ]}
         onEdit={openEdit}
         onDelete={(item) => setDeleteCategory(item)}
