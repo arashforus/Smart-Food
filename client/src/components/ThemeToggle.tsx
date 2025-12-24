@@ -1,9 +1,10 @@
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('theme');
@@ -13,15 +14,34 @@ export default function ThemeToggle() {
     document.documentElement.classList.toggle('dark', shouldBeDark);
   }, []);
 
-  const toggle = () => {
+  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     const newValue = !isDark;
     setIsDark(newValue);
     document.documentElement.classList.toggle('dark', newValue);
     localStorage.setItem('theme', newValue ? 'dark' : 'light');
+
+    // Create ripple effect
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      const ripple = document.createElement('div');
+      ripple.className = 'theme-ripple';
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+      document.body.appendChild(ripple);
+
+      // Remove ripple after animation completes
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    }
   };
 
   return (
     <Button
+      ref={buttonRef}
       size="icon"
       variant="ghost"
       onClick={toggle}
