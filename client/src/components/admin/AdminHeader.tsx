@@ -1,10 +1,6 @@
 import { Globe, User, LogOut, Settings, Key, ChevronDown, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import ukFlagImg from '@assets/stock_images/round_circle_country_cd79b8bf.jpg';
-import trFlagImg from '@assets/stock_images/round_circle_country_9792689f.jpg';
-import irFlagImg from '@assets/stock_images/round_circle_country_9ed353ff.jpg';
-import saudiArabiaFlagImg from '@assets/stock_images/round_circle_country_70b76d83.jpg';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,16 +35,18 @@ interface AdminHeaderProps {
 }
 
 const FlagIcon = ({ code }: { code: string }) => {
-  const flagImages: Record<string, string> = {
-    en: ukFlagImg,
-    tr: trFlagImg,
-    fa: irFlagImg,
-    ar: saudiArabiaFlagImg,
+  const countryCodeMap: Record<string, string> = {
+    en: 'gb',
+    tr: 'tr',
+    fa: 'ir',
+    ar: 'sa',
   };
-  const flagSrc = flagImages[code] || flagImages.en;
+  const countryCode = countryCodeMap[code] || 'gb';
+  const svgUrl = `https://flagicons.lipis.dev/flags/4x3/${countryCode}.svg`;
+  
   return (
     <img 
-      src={flagSrc} 
+      src={svgUrl} 
       alt={`${code} flag`}
       className="w-6 h-6 rounded-full flex-shrink-0 object-cover"
     />
