@@ -147,6 +147,12 @@ export default function ItemsPage() {
     queryKey: ['/api/categories'],
   });
 
+  // Watch for category change to update default image
+  const selectedCategoryId = form.watch('categoryId');
+  const categoryImage = useMemo(() => 
+    categories.find(c => c.id === selectedCategoryId)?.image
+  , [selectedCategoryId, categories]);
+
   const { data: materials = [], isLoading: materialsLoading } = useQuery<StorageMaterial[]>({
     queryKey: ['/api/materials'],
   });
@@ -277,8 +283,8 @@ export default function ItemsPage() {
     const formattedData = {
       ...data,
       price: Number(data.price),
-      discountedPrice: data.discountedPrice ? Number(data.discountedPrice) : undefined,
-      maxSelect: data.maxSelect ? Number(data.maxSelect) : undefined,
+      discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
+      maxSelect: data.maxSelect !== undefined ? Number(data.maxSelect) : undefined,
     };
     createMutation.mutate(formattedData);
   };
@@ -288,8 +294,8 @@ export default function ItemsPage() {
     const formattedData = {
       ...data,
       price: Number(data.price),
-      discountedPrice: data.discountedPrice ? Number(data.discountedPrice) : undefined,
-      maxSelect: data.maxSelect ? Number(data.maxSelect) : undefined,
+      discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
+      maxSelect: data.maxSelect !== undefined ? Number(data.maxSelect) : undefined,
     };
     updateMutation.mutate(formattedData);
   };
@@ -341,18 +347,18 @@ export default function ItemsPage() {
                 )} />
                 
                 <FormField control={form.control} name="image" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Item Image</FormLabel>
-                    <FormControl>
-                      <ImageUpload
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Upload image or enter URL"
-                        testId={`input-item-image${isEdit ? '-edit' : ''}`}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                    <FormItem>
+                      <FormLabel>Item Image</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={categoryImage || "Upload image or enter URL"}
+                          testId={`input-item-image${isEdit ? '-edit' : ''}`}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                 )} />
                 
                 <div className="grid grid-cols-2 gap-4">
