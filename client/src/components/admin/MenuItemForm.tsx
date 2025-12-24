@@ -35,8 +35,8 @@ const menuItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   descriptionEs: z.string().min(1, 'Spanish description is required'),
   descriptionFr: z.string().min(1, 'French description is required'),
-  price: z.number().min(0.01, 'Price must be greater than 0'),
-  maxSelect: z.number().min(1, 'Max selection must be at least 1').optional(),
+  price: z.preprocess((val) => Number(val), z.number().int().min(1, 'Price must be at least 1')),
+  maxSelect: z.preprocess((val) => Number(val), z.number().int().min(1, 'Max selection must be at least 1')).optional(),
   categoryId: z.string().min(1, 'Category is required'),
   available: z.boolean(),
   image: z.string().optional(),
@@ -67,8 +67,8 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       description: (item?.shortDescription as any)?.en ?? '',
       descriptionEs: (item?.shortDescription as any)?.es ?? '',
       descriptionFr: (item?.shortDescription as any)?.fr ?? '',
-      price: Math.floor(Number(item?.price)) || 0,
-      maxSelect: Number(item?.maxSelect) || 1,
+      price: Math.round(Number(item?.price)) || 0,
+      maxSelect: Math.round(Number(item?.maxSelect)) || 1,
       categoryId: item?.categoryId ?? '',
       available: item?.available ?? true,
       image: item?.image ?? '',
@@ -79,8 +79,8 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
     // Ensure numeric fields are actually numbers and rounded
     const formattedData = {
       ...data,
-      price: Math.floor(Number(data.price)),
-      maxSelect: Math.floor(Number(data.maxSelect || 1)),
+      price: Math.round(Number(data.price)),
+      maxSelect: Math.round(Number(data.maxSelect || 1)),
     };
     onSubmit(formattedData);
     form.reset();
@@ -188,7 +188,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                         step="1"
                         {...field}
                         onChange={(e) => {
-                          const val = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
+                          const val = e.target.value === '' ? 0 : Math.round(parseFloat(e.target.value));
                           field.onChange(val);
                         }}
                         data-testid="input-item-price"
@@ -210,7 +210,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                         step="1"
                         {...field}
                         onChange={(e) => {
-                          const val = e.target.value === '' ? 1 : parseInt(e.target.value, 10);
+                          const val = e.target.value === '' ? 1 : Math.round(parseFloat(e.target.value));
                           field.onChange(val);
                         }}
                         data-testid="input-item-max-select"
