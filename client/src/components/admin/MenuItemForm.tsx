@@ -51,16 +51,21 @@ interface MenuItemFormProps {
 }
 
 export default function MenuItemForm({ item, categories, open, onClose, onSubmit }: MenuItemFormProps) {
+  // Use category image as default if item doesn't have one
+  const getCategoryImage = (categoryId: string) => {
+    return categories.find(c => c.id === categoryId)?.image;
+  };
+
   const form = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
-      name: item?.name ?? '',
-      nameEs: item?.nameEs ?? '',
-      nameFr: item?.nameFr ?? '',
-      description: item?.description ?? '',
-      descriptionEs: item?.descriptionEs ?? '',
-      descriptionFr: item?.descriptionFr ?? '',
-      price: item?.price ?? 0,
+      name: (item?.name as any)?.en ?? '',
+      nameEs: (item?.name as any)?.es ?? '',
+      nameFr: (item?.name as any)?.fr ?? '',
+      description: (item?.shortDescription as any)?.en ?? '',
+      descriptionEs: (item?.shortDescription as any)?.es ?? '',
+      descriptionFr: (item?.shortDescription as any)?.fr ?? '',
+      price: Number(item?.price) || 0,
       categoryId: item?.categoryId ?? '',
       available: item?.available ?? true,
     },
@@ -82,18 +87,18 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (English)</FormLabel>
-                    <FormControl>
-                      <Input {...field} data-testid="input-item-name" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name (English)</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-item-name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
               <FormField
                 control={form.control}
                 name="nameEs"

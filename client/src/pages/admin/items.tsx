@@ -102,6 +102,7 @@ interface StorageItem {
 interface StorageCategory {
   id: string;
   name: Record<string, string>;
+  image?: string;
 }
 
 interface StorageMaterial {
