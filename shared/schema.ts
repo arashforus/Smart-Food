@@ -95,7 +95,11 @@ export const languages = pgTable("languages", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   code: text("code").notNull().unique(),
   name: text("name").notNull(),
+  nativeName: text("native_name").default(""),
+  direction: text("direction").default("ltr"),
+  flagImage: text("flag_image"),
   isActive: boolean("is_active").notNull().default(true),
+  isDefault: boolean("is_default").default(false),
   order: numeric("order").notNull().default("1"),
   createdAt: timestamp("created_at").defaultNow(),
 });
