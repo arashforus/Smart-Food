@@ -1,6 +1,10 @@
-import { Globe, User, LogOut, Settings, Key, ChevronDown, Building2, Flag } from 'lucide-react';
+import { Globe, User, LogOut, Settings, Key, ChevronDown, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ukFlagImg from '@assets/stock_images/round_circle_country_cd79b8bf.jpg';
+import trFlagImg from '@assets/stock_images/round_circle_country_9792689f.jpg';
+import irFlagImg from '@assets/stock_images/round_circle_country_9ed353ff.jpg';
+import saudiArabiaFlagImg from '@assets/stock_images/round_circle_country_70b76d83.jpg';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,17 +39,19 @@ interface AdminHeaderProps {
 }
 
 const FlagIcon = ({ code }: { code: string }) => {
-  const flags: Record<string, string> = {
-    en: '🇬🇧',
-    tr: '🇹🇷',
-    fa: '🇮🇷',
-    ar: '🇸🇦',
+  const flagImages: Record<string, string> = {
+    en: ukFlagImg,
+    tr: trFlagImg,
+    fa: irFlagImg,
+    ar: saudiArabiaFlagImg,
   };
-  const flag = flags[code] || flags.en;
+  const flagSrc = flagImages[code] || flagImages.en;
   return (
-    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-lg">
-      {flag}
-    </div>
+    <img 
+      src={flagSrc} 
+      alt={`${code} flag`}
+      className="w-6 h-6 rounded-full flex-shrink-0 object-cover"
+    />
   );
 };
 
