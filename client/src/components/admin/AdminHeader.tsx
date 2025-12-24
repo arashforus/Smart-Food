@@ -35,16 +35,16 @@ interface AdminHeaderProps {
 }
 
 const FlagIcon = ({ code }: { code: string }) => {
-  const flagColors: Record<string, { bg: string; colors: string }> = {
-    en: { bg: 'bg-blue-100 dark:bg-blue-950', colors: 'text-blue-600' },
-    tr: { bg: 'bg-red-100 dark:bg-red-950', colors: 'text-red-600' },
-    fa: { bg: 'bg-green-100 dark:bg-green-950', colors: 'text-green-600' },
-    ar: { bg: 'bg-yellow-100 dark:bg-yellow-950', colors: 'text-yellow-600' },
+  const flags: Record<string, string> = {
+    en: '🇬🇧',
+    tr: '🇹🇷',
+    fa: '🇮🇷',
+    ar: '🇸🇦',
   };
-  const config = flagColors[code] || flagColors.en;
+  const flag = flags[code] || flags.en;
   return (
-    <div className={`${config.bg} w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0`}>
-      <Flag className={`h-3.5 w-3.5 ${config.colors}`} />
+    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-lg">
+      {flag}
     </div>
   );
 };
