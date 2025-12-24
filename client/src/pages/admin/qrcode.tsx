@@ -1,16 +1,40 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, ExternalLink, QrCode } from 'lucide-react';
-import { mockTables, mockBranches } from '@/lib/mockData';
+import { Download, ExternalLink, QrCode, Loader2 } from 'lucide-react';
+
+interface StorageTable {
+  id: string;
+  tableNumber: string;
+  branchId: string;
+  capacity: number;
+  location?: string;
+  status: string;
+  isActive: boolean;
+}
+
+interface StorageBranch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  isActive: boolean;
+}
 
 export default function QRCodePage() {
   const [selectedBranch, setSelectedBranch] = useState<string>('all');
-  const tables = mockTables;
-  const branches = mockBranches;
+
+  const { data: tables = [], isLoading: tablesLoading } = useQuery<StorageTable[]>({
+    queryKey: ['/api/tables'],
+  });
+
+  const { data: branches = [], isLoading: branchesLoading } = useQuery<StorageBranch[]>({
+    queryKey: ['/api/branches'],
+  });
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   const mainMenuUrl = `${baseUrl}/menu`;
@@ -45,6 +69,14 @@ export default function QRCodePage() {
     : tables.filter((t) => t.branchId === selectedBranch);
 
   const getBranchName = (branchId: string) => branches.find((b) => b.id === branchId)?.name || 'Unknown';
+
+  if (tablesLoading || branchesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -145,9 +177,9 @@ export default function QRCodePage() {
                 <Card key={table.id}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between gap-2">
-                      <CardTitle className="text-base">Table {table.number}</CardTitle>
+                      <CardTitle className="text-base">Table {table.tableNumber}</CardTitle>
                       <Badge variant="outline" className="no-default-active-elevate text-xs">
-                        {table.seats} seats
+                        {table.capacity} seats
                       </Badge>
                     </div>
                     <CardDescription className="text-xs">
@@ -168,7 +200,7 @@ export default function QRCodePage() {
                     <div className="flex gap-2">
                       <Button 
                         size="sm"
-                        onClick={() => handleDownload(`table-qr-${table.id}`, `table-${table.number}-qr.png`)} 
+                        onClick={() => handleDownload(`table-qr-${table.id}`, `table-${table.tableNumber}-qr.png`)} 
                         className="flex-1"
                         data-testid={`button-download-table-${table.id}`}
                       >

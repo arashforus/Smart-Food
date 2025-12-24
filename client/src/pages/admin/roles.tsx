@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import React from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -43,9 +43,10 @@ import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth';
-import { mockUsers, mockBranches } from '@/lib/mockData';
+import { mockUsers } from '@/lib/mockData';
 import { roleLabels, rolePermissions } from '@/lib/types';
 import type { User, Role } from '@/lib/types';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -57,34 +58,49 @@ const userSchema = z.object({
 
 type UserFormData = z.infer<typeof userSchema>;
 
+interface StorageBranch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  isActive: boolean;
+}
+
 export default function RolesPage() {
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>(mockUsers);
-  const [branches, setBranches] = useState(mockBranches);
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [usersRes, branchesRes] = await Promise.all([
-          fetch('/api/users'),
-          fetch('/api/branches'),
-        ]);
-        if (usersRes.ok) setUsers(await usersRes.json());
-        if (branchesRes.ok) setBranches(await branchesRes.json());
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
-    };
-    fetchData();
-  }, []);
+  const { data: branches = [], isLoading: branchesLoading } = useQuery<StorageBranch[]>({
+    queryKey: ['/api/branches'],
+  });
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: { name: '', email: '', role: 'manager', branchId: '', isActive: true },
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: async (data: { userId: string; formData: UserFormData }) => {
+      return apiRequest('PATCH', `/api/users/${data.userId}`, {
+        name: data.formData.name,
+        email: data.formData.email,
+        role: data.formData.role,
+        branchId: data.formData.branchId,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setEditingUser(null);
+      form.reset();
+      toast({ title: 'User Updated' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to update user', variant: 'destructive' });
+    },
   });
 
   const openCreate = () => {
@@ -105,41 +121,9 @@ export default function RolesPage() {
     toast({ title: 'User Created' });
   };
 
-  const handleEdit = async (data: UserFormData) => {
+  const handleEdit = (data: UserFormData) => {
     if (!editingUser) return;
-    try {
-      const response = await fetch(`/api/users/${editingUser.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          role: data.role,
-          branchId: data.branchId,
-        }),
-      });
-
-      if (!response.ok) {
-        toast({ title: 'Error', description: 'Failed to update user' });
-        return;
-      }
-
-      const updatedUser = await response.json();
-      setUsers(users.map((u) => (u.id === editingUser.id ? updatedUser : u)));
-      
-      if (currentUser?.userId === editingUser.id) {
-        await fetch('/api/auth/me', {
-          credentials: 'include',
-        }).then((res) => res.ok && window.location.reload());
-      }
-      
-      setEditingUser(null);
-      form.reset();
-      toast({ title: 'User Updated' });
-    } catch (error) {
-      console.error('Update user error:', error);
-      toast({ title: 'Error', description: 'Failed to update user' });
-    }
+    updateUserMutation.mutate({ userId: editingUser.id, formData: data });
   };
 
   const handleDelete = () => {
@@ -155,6 +139,14 @@ export default function RolesPage() {
   };
 
   const roles: Role[] = ['admin', 'manager', 'chef', 'accountant'];
+
+  if (branchesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -228,7 +220,7 @@ export default function RolesPage() {
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl><Input {...field} data-testid="input-user-name" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -250,9 +242,10 @@ export default function RolesPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {roles.map((role) => (
-                        <SelectItem key={role} value={role}>{roleLabels[role]}</SelectItem>
-                      ))}
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="chef">Chef</SelectItem>
+                      <SelectItem value="accountant">Accountant</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -260,16 +253,16 @@ export default function RolesPage() {
               )} />
               <FormField control={form.control} name="branchId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch (optional)</FormLabel>
+                  <FormLabel>Branch</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-branch">
-                        <SelectValue placeholder="All branches" />
+                        <SelectValue placeholder="Select branch" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="all">All Branches</SelectItem>
-                      {branches.filter(b => b.isActive).map((branch) => (
+                      {branches.map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
                     </SelectContent>
@@ -303,7 +296,7 @@ export default function RolesPage() {
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl><Input {...field} data-testid="input-user-name-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -325,9 +318,10 @@ export default function RolesPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {roles.map((role) => (
-                        <SelectItem key={role} value={role}>{roleLabels[role]}</SelectItem>
-                      ))}
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="chef">Chef</SelectItem>
+                      <SelectItem value="accountant">Accountant</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -335,16 +329,16 @@ export default function RolesPage() {
               )} />
               <FormField control={form.control} name="branchId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch (optional)</FormLabel>
+                  <FormLabel>Branch</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-branch-edit">
-                        <SelectValue placeholder="All branches" />
+                        <SelectValue placeholder="Select branch" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="all">All Branches</SelectItem>
-                      {branches.filter(b => b.isActive).map((branch) => (
+                      {branches.map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
                     </SelectContent>
@@ -362,7 +356,10 @@ export default function RolesPage() {
               )} />
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="ghost" onClick={() => setEditingUser(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-user">Update</Button>
+                <Button type="submit" data-testid="button-update-user" disabled={updateUserMutation.isPending}>
+                  {updateUserMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update
+                </Button>
               </div>
             </form>
           </Form>
