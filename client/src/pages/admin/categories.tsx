@@ -59,6 +59,7 @@ interface StorageCategory {
 
 const createCategorySchema = (languages: Language[]) => {
   const schema: Record<string, any> = {
+    name: z.string().min(1, 'Name is required'),
     image: z.string().optional(),
     order: z.number().min(1, 'Order must be at least 1'),
     isActive: z.boolean().default(true),
@@ -66,9 +67,7 @@ const createCategorySchema = (languages: Language[]) => {
 
   languages.forEach((lang) => {
     if (lang.isActive) {
-      schema[`name_${lang.code}`] = lang.code === 'en' 
-        ? z.string().min(1, `${lang.name} name is required`)
-        : z.string().optional();
+      schema[`name_${lang.code}`] = z.string().optional();
     }
   });
 
@@ -97,7 +96,7 @@ export default function CategoriesPage() {
         acc[`name_${lang.code}`] = '';
       }
       return acc;
-    }, { image: '', order: 1, isActive: true } as any),
+    }, { name: '', image: '', order: 1, isActive: true } as any),
   });
 
   const { data: categories = [], isLoading, refetch } = useQuery<StorageCategory[]>({
@@ -109,7 +108,8 @@ export default function CategoriesPage() {
       const nameObj: Record<string, string> = {};
       languages.forEach((lang) => {
         if (lang.isActive) {
-          nameObj[lang.code] = (data as any)[`name_${lang.code}`] || '';
+          const langName = (data as any)[`name_${lang.code}`];
+          nameObj[lang.code] = langName || (lang.code === 'en' ? (data as any).name : '');
         }
       });
       return apiRequest('POST', '/api/categories', {
@@ -136,7 +136,8 @@ export default function CategoriesPage() {
       const nameObj: Record<string, string> = {};
       languages.forEach((lang) => {
         if (lang.isActive) {
-          nameObj[lang.code] = (data as any)[`name_${lang.code}`] || '';
+          const langName = (data as any)[`name_${lang.code}`];
+          nameObj[lang.code] = langName || (lang.code === 'en' ? (data as any).name : '');
         }
       });
       return apiRequest('PATCH', `/api/categories/${editingCategory.id}`, {
@@ -173,6 +174,7 @@ export default function CategoriesPage() {
 
   const openCreate = () => {
     const defaultValues: any = { 
+      name: '',
       image: '', 
       order: (categories.length || 0) + 1, 
       isActive: true 
@@ -188,6 +190,7 @@ export default function CategoriesPage() {
 
   const openEdit = (category: StorageCategory) => {
     const defaultValues: any = {
+      name: category.name.en || '',
       image: category.image || '',
       order: category.order,
       isActive: category.isActive,
@@ -275,15 +278,13 @@ export default function CategoriesPage() {
                 </TabsList>
                 
                 <TabsContent value="info" className="space-y-4 pt-4">
-                  {languages.map((lang) => lang.isActive && (
-                    <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name ({lang.name})</FormLabel>
-                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}`} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  ))}
+                  <FormField control={form.control} name="name" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl><Input {...field} placeholder="Category name" data-testid="input-category-name" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                   
                   <FormField control={form.control} name="image" render={({ field }) => (
                     <FormItem>
@@ -305,7 +306,7 @@ export default function CategoriesPage() {
                 </TabsContent>
                 
                 <TabsContent value="translations" className="space-y-4 pt-4">
-                  {languages.map((lang) => lang.isActive && lang.code !== 'en' && (
+                  {languages.map((lang) => lang.isActive && (
                     <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
                       <FormItem>
                         <FormLabel>Name ({lang.name})</FormLabel>
@@ -343,9 +344,9 @@ export default function CategoriesPage() {
                 </TabsList>
                 
                 <TabsContent value="info" className="space-y-4 pt-4">
-                  <FormField control={form.control} name="nameEn" render={({ field }) => (
+                  <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name (English)</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl><Input {...field} data-testid="input-category-name-edit" /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -400,7 +401,7 @@ export default function CategoriesPage() {
                 </TabsContent>
                 
                 <TabsContent value="translations" className="space-y-4 pt-4">
-                  {languages.map((lang) => lang.isActive && lang.code !== 'en' && (
+                  {languages.map((lang) => lang.isActive && (
                     <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
                       <FormItem>
                         <FormLabel>Name ({lang.name})</FormLabel>
