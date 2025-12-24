@@ -286,239 +286,242 @@ export default function ItemsPage() {
   const getCategoryName = (categoryId: string) => categories.find((c) => c.id === categoryId)?.name.en || 'Unknown';
   const currencySymbol = settings?.currencySymbol || '$';
 
-  const FormContent = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="basic">Basic</TabsTrigger>
-            <TabsTrigger value="descriptions">Descriptions</TabsTrigger>
-            <TabsTrigger value="materials">Materials</TabsTrigger>
-            <TabsTrigger value="translations">Translations</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="basic" className="space-y-4 pt-4">
-            <FormField control={form.control} name="nameEn" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl><Input {...field} data-testid={`input-item-name${isEdit ? '-edit' : ''}`} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+  const FormContent = useMemo(() => {
+    const Component = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="basic">Basic</TabsTrigger>
+              <TabsTrigger value="descriptions">Descriptions</TabsTrigger>
+              <TabsTrigger value="materials">Materials</TabsTrigger>
+              <TabsTrigger value="translations">Translations</TabsTrigger>
+            </TabsList>
             
-            <FormField control={form.control} name="image" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Item Image</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Upload image or enter URL"
-                    testId={`input-item-image${isEdit ? '-edit' : ''}`}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="price" render={({ field }) => (
+            <TabsContent value="basic" className="space-y-4 pt-4">
+              <FormField control={form.control} name="nameEn" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price ({currencySymbol})</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
-                  </FormControl>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl><Input {...field} data-testid={`input-item-name${isEdit ? '-edit' : ''}`} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="discountedPrice" render={({ field }) => (
+              
+              <FormField control={form.control} name="image" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discounted Price ({currencySymbol})</FormLabel>
+                  <FormLabel>Item Image</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      step="0.01" 
-                      {...field} 
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
-                      placeholder="Optional"
-                      data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Upload image or enter URL"
+                      testId={`input-item-image${isEdit ? '-edit' : ''}`}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <FormField control={form.control} name="categoryId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="price" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price ({currencySymbol})</FormLabel>
                     <FormControl>
-                      <SelectTrigger data-testid={`select-item-category${isEdit ? '-edit' : ''}`}>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
+                      <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
                     </FormControl>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>{cat.name.en}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="maxSelect" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Max Selection</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      {...field} 
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
-                      placeholder="Unlimited"
-                      data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
-            
-            <div className="flex items-center gap-4 flex-wrap">
-              <FormField control={form.control} name="available" render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Available</FormLabel>
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
-                  </FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="suggested" render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0 flex items-center gap-1">
-                    <Star className="h-4 w-4 text-amber-500" />
-                    Suggested
-                  </FormLabel>
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-suggested${isEdit ? '-edit' : ''}`} />
-                  </FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="isNew" render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">New</FormLabel>
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-new${isEdit ? '-edit' : ''}`} />
-                  </FormControl>
-                </FormItem>
-              )} />
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="materials" className="space-y-4 pt-4">
-            <FormField control={form.control} name="materials" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Select Materials / Ingredients</FormLabel>
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  {materials.map((material) => (
-                    <div
-                      key={material.id}
-                      className="flex items-center gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
-                      onClick={() => {
-                        const current = field.value || [];
-                        const newValue = current.includes(material.id)
-                          ? current.filter((id) => id !== material.id)
-                          : [...current, material.id];
-                        field.onChange(newValue);
-                      }}
-                      data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
-                    >
-                      <Checkbox
-                        checked={(field.value || []).includes(material.id)}
-                        onCheckedChange={(checked) => {
-                          const current = field.value || [];
-                          const newValue = checked
-                            ? [...current, material.id]
-                            : current.filter((id) => id !== material.id);
-                          field.onChange(newValue);
-                        }}
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="discountedPrice" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Discounted Price ({currencySymbol})</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        step="0.01" 
+                        {...field} 
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
+                        placeholder="Optional"
+                        data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
                       />
-                      {material.image ? (
-                        <img src={material.image} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
-                      ) : (
-                        <div
-                          className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
-                          style={{ backgroundColor: material.backgroundColor || '#999' }}
-                        >
-                          {material.name.en?.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="text-sm">{material.name.en}</span>
-                    </div>
-                  ))}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </TabsContent>
-          
-          <TabsContent value="descriptions" className="space-y-4 pt-4">
-            <FormField control={form.control} name="shortDescriptionEn" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Short Description</FormLabel>
-                <FormControl><Input {...field} data-testid={`input-item-short-desc${isEdit ? '-edit' : ''}`} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="longDescriptionEn" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Long Description</FormLabel>
-                <FormControl><Textarea {...field} data-testid={`input-item-long-desc${isEdit ? '-edit' : ''}`} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </TabsContent>
-          
-          <TabsContent value="translations" className="space-y-4 pt-4 max-h-[300px] overflow-y-auto">
-            {sortedLanguages.filter(lang => lang.isActive && lang.code !== 'en').map((language) => (
-              <div key={language.id} className="space-y-3 p-3 rounded-md bg-muted/50">
-                <h4 className="font-medium text-sm">{language.name}</h4>
-                <FormField control={form.control} name={`name${language.code.toUpperCase()}` as any} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Name</FormLabel>
-                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name={`shortDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Short Description</FormLabel>
-                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name={`longDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Long Description</FormLabel>
-                    <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )} />
               </div>
-            ))}
-          </TabsContent>
-        </Tabs>
-        
-        <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-          <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`} disabled={createMutation.isPending || updateMutation.isPending}>
-            {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {isEdit ? 'Update' : 'Create'}
-          </Button>
-        </div>
-      </form>
-    </Form>
-  );
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="categoryId" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid={`select-item-category${isEdit ? '-edit' : ''}`}>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>{cat.name.en}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="maxSelect" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Selection</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        {...field} 
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
+                        placeholder="Unlimited"
+                        data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              
+              <div className="flex items-center gap-4 flex-wrap">
+                <FormField control={form.control} name="available" render={({ field }) => (
+                  <FormItem className="flex items-center gap-3">
+                    <FormLabel className="mt-0">Available</FormLabel>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
+                    </FormControl>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="suggested" render={({ field }) => (
+                  <FormItem className="flex items-center gap-3">
+                    <FormLabel className="mt-0 flex items-center gap-1">
+                      <Star className="h-4 w-4 text-amber-500" />
+                      Suggested
+                    </FormLabel>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-suggested${isEdit ? '-edit' : ''}`} />
+                    </FormControl>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="isNew" render={({ field }) => (
+                  <FormItem className="flex items-center gap-3">
+                    <FormLabel className="mt-0">New</FormLabel>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-new${isEdit ? '-edit' : ''}`} />
+                    </FormControl>
+                  </FormItem>
+                )} />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="materials" className="space-y-4 pt-4">
+              <FormField control={form.control} name="materials" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Select Materials / Ingredients</FormLabel>
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    {materials.map((material) => (
+                      <div
+                        key={material.id}
+                        className="flex items-center gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
+                        onClick={() => {
+                          const current = field.value || [];
+                          const newValue = current.includes(material.id)
+                            ? current.filter((id) => id !== material.id)
+                            : [...current, material.id];
+                          field.onChange(newValue);
+                        }}
+                        data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
+                      >
+                        <Checkbox
+                          checked={(field.value || []).includes(material.id)}
+                          onCheckedChange={(checked) => {
+                            const current = field.value || [];
+                            const newValue = checked
+                              ? [...current, material.id]
+                              : current.filter((id) => id !== material.id);
+                            field.onChange(newValue);
+                          }}
+                        />
+                        {material.image ? (
+                          <img src={material.image} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
+                        ) : (
+                          <div
+                            className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
+                            style={{ backgroundColor: material.backgroundColor || '#999' }}
+                          >
+                            {material.name.en?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="text-sm">{material.name.en}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </TabsContent>
+            
+            <TabsContent value="descriptions" className="space-y-4 pt-4">
+              <FormField control={form.control} name="shortDescriptionEn" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Short Description</FormLabel>
+                  <FormControl><Input {...field} data-testid={`input-item-short-desc${isEdit ? '-edit' : ''}`} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="longDescriptionEn" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Long Description</FormLabel>
+                  <FormControl><Textarea {...field} data-testid={`input-item-long-desc${isEdit ? '-edit' : ''}`} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </TabsContent>
+            
+            <TabsContent value="translations" className="space-y-4 pt-4 max-h-[300px] overflow-y-auto">
+              {sortedLanguages.filter(lang => lang.isActive && lang.code !== 'en').map((language) => (
+                <div key={language.id} className="space-y-3 p-3 rounded-md bg-muted/50">
+                  <h4 className="font-medium text-sm">{language.name}</h4>
+                  <FormField control={form.control} name={`name${language.code.toUpperCase()}` as any} render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Name</FormLabel>
+                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name={`shortDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Short Description</FormLabel>
+                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name={`longDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Long Description</FormLabel>
+                      <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                    </FormItem>
+                  )} />
+                </div>
+              ))}
+            </TabsContent>
+          </Tabs>
+          
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
+            <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`} disabled={createMutation.isPending || updateMutation.isPending}>
+              {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isEdit ? 'Update' : 'Create'}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+    return Component;
+  }, [form, categories, materials, sortedLanguages, currencySymbol, createMutation.isPending, updateMutation.isPending]);
 
   if (itemsLoading || categoriesLoading || languagesLoading) {
     return (

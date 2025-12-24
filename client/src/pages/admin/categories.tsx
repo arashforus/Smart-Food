@@ -220,6 +220,112 @@ export default function CategoriesPage() {
     deleteMutation.mutate(deleteCategory.id);
   };
 
+  const FormContent = useMemo(() => {
+    return ({ onSubmit, onCancel, isCreate }: { onSubmit: (data: CategoryFormData) => void; onCancel: () => void; isCreate: boolean }) => (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="info">Info</TabsTrigger>
+              <TabsTrigger value="translations">Translations</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="info" className="space-y-4 pt-4">
+              <FormField control={form.control} name="name" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl><Input {...field} placeholder="Category name" data-testid={`input-category-name${isCreate ? '' : '-edit'}`} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              
+              <FormField control={form.control} name="image" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{isCreate ? 'Image URL (optional)' : 'Image'}</FormLabel>
+                  <FormControl>
+                    {isCreate ? (
+                      <Input {...field} placeholder="https://..." data-testid="input-category-image" />
+                    ) : (
+                      <div className="space-y-3">
+                        {field.value && typeof field.value === 'string' && (
+                          <div className="flex justify-center">
+                            <img src={field.value} alt="Category preview" className="h-48 w-48 rounded-lg object-cover border" />
+                          </div>
+                        )}
+                        <input type="file" ref={fileInputRefEdit} onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => field.onChange(event.target?.result as string);
+                            reader.readAsDataURL(file);
+                          }
+                        }} accept="image/*" className="hidden" data-testid="input-file-category-image-edit" />
+                        <Button type="button" variant="outline" className="w-full" onClick={() => fileInputRefEdit.current?.click()} data-testid="button-upload-image-edit">
+                          <Upload className="w-4 h-4 mr-2" />
+                          {field.value ? 'Change Image' : 'Upload Image'}
+                        </Button>
+                      </div>
+                    )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              
+              <FormField control={form.control} name="order" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Order</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      value={field.value ? String(field.value) : ''} 
+                      onChange={(e) => {
+                        const val = e.target.value.trim();
+                        field.onChange(val ? parseInt(val, 10) : 1);
+                      }}
+                      data-testid={`input-category-order${isCreate ? '' : '-edit'}`} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {!isCreate && (
+                <FormField control={form.control} name="isActive" render={({ field }) => (
+                  <FormItem className="flex items-center justify-between">
+                    <FormLabel>Active</FormLabel>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-category-active-edit" />
+                    </FormControl>
+                  </FormItem>
+                )} />
+              )}
+            </TabsContent>
+            
+            <TabsContent value="translations" className="space-y-4 pt-4">
+              {languages.map((lang) => lang.isActive && (
+                <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name ({lang.name})</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}${isCreate ? '-trans' : '-edit'}`} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              ))}
+            </TabsContent>
+          </Tabs>
+          
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
+            <Button type="submit" data-testid={`button-${isCreate ? 'save' : 'update'}-category`} disabled={createMutation.isPending || updateMutation.isPending}>
+              {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isCreate ? 'Create' : 'Update'}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+  }, [form, languages, createMutation.isPending, updateMutation.isPending]);
+
   if (isLoading || languagesLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -281,72 +387,7 @@ export default function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>Add Category</DialogTitle>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
-              <Tabs defaultValue="info" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">Info</TabsTrigger>
-                  <TabsTrigger value="translations">Translations</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="info" className="space-y-4 pt-4">
-                  <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl><Input {...field} placeholder="Category name" data-testid="input-category-name" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  
-                  <FormField control={form.control} name="image" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Image URL (optional)</FormLabel>
-                      <FormControl><Input {...field} placeholder="https://..." data-testid="input-category-image" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  
-                  <FormField control={form.control} name="order" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Display Order</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          value={field.value ? String(field.value) : ''} 
-                          onChange={(e) => {
-                            const val = e.target.value.trim();
-                            field.onChange(val ? parseInt(val, 10) : 1);
-                          }}
-                          data-testid="input-category-order" 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </TabsContent>
-                
-                <TabsContent value="translations" className="space-y-4 pt-4">
-                  {languages.map((lang) => lang.isActive && (
-                    <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name ({lang.name})</FormLabel>
-                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-trans`} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  ))}
-                </TabsContent>
-              </Tabs>
-              
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-category" disabled={createMutation.isPending}>
-                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <FormContent onSubmit={handleCreate} onCancel={() => setFormOpen(false)} isCreate={true} />
         </DialogContent>
       </Dialog>
 
@@ -355,101 +396,7 @@ export default function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>Edit Category</DialogTitle>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
-              <Tabs defaultValue="info" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">Info</TabsTrigger>
-                  <TabsTrigger value="translations">Translations</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="info" className="space-y-4 pt-4">
-                  <FormField control={form.control} name="name" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl><Input {...field} data-testid="input-category-name-edit" /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  
-                  <FormField control={form.control} name="image" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Image</FormLabel>
-                      <FormControl>
-                        <div className="space-y-3">
-                          {field.value && typeof field.value === 'string' && (
-                            <div className="flex justify-center">
-                              <img src={field.value} alt="Category preview" className="h-48 w-48 rounded-lg object-cover border" />
-                            </div>
-                          )}
-                          <input type="file" ref={fileInputRefEdit} onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => field.onChange(event.target?.result as string);
-                              reader.readAsDataURL(file);
-                            }
-                          }} accept="image/*" className="hidden" data-testid="input-file-category-image-edit" />
-                          <Button type="button" variant="outline" className="w-full" onClick={() => fileInputRefEdit.current?.click()} data-testid="button-upload-image-edit">
-                            <Upload className="w-4 h-4 mr-2" />
-                            {field.value ? 'Change Image' : 'Upload Image'}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  
-                  <FormField control={form.control} name="order" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Display Order</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          value={field.value ? String(field.value) : ''} 
-                          onChange={(e) => {
-                            const val = e.target.value.trim();
-                            field.onChange(val ? parseInt(val, 10) : 1);
-                          }}
-                          data-testid="input-category-order-edit" 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  
-                  <FormField control={form.control} name="isActive" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <FormLabel>Active</FormLabel>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-category-active-edit" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                </TabsContent>
-                
-                <TabsContent value="translations" className="space-y-4 pt-4">
-                  {languages.map((lang) => lang.isActive && (
-                    <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name ({lang.name})</FormLabel>
-                        <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-category-name-${lang.code}-edit`} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  ))}
-                </TabsContent>
-              </Tabs>
-              
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingCategory(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-category" disabled={updateMutation.isPending}>
-                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Update
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <FormContent onSubmit={handleEdit} onCancel={() => setEditingCategory(null)} isCreate={false} />
         </DialogContent>
       </Dialog>
 
