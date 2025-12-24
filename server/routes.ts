@@ -351,13 +351,15 @@ export async function registerRoutes(
   app.patch("/api/categories/:id", async (req: Request, res: Response) => {
     try {
       const { generalName, name, image, order, isActive } = req.body;
-      const category = await storage.updateCategory(req.params.id, {
-        generalName: generalName !== undefined ? generalName : undefined,
-        name: name || undefined,
-        image: image || undefined,
-        isActive: isActive !== undefined ? isActive : undefined,
-        order: order || undefined,
-      });
+      const updateData: any = {};
+      
+      if (generalName !== undefined) updateData.generalName = generalName;
+      if (name !== undefined) updateData.name = name;
+      if (image !== undefined) updateData.image = image;
+      if (isActive !== undefined) updateData.isActive = isActive;
+      if (order !== undefined) updateData.order = order;
+      
+      const category = await storage.updateCategory(req.params.id, updateData);
       if (!category) return res.status(404).json({ message: "Category not found" });
       res.json(category);
     } catch (error) {
