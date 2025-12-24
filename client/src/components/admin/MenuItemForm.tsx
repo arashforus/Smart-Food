@@ -67,7 +67,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       description: (item?.shortDescription as any)?.en ?? '',
       descriptionEs: (item?.shortDescription as any)?.es ?? '',
       descriptionFr: (item?.shortDescription as any)?.fr ?? '',
-      price: Number(item?.price) || 0,
+      price: Math.floor(Number(item?.price)) || 0,
       maxSelect: Number(item?.maxSelect) || 1,
       categoryId: item?.categoryId ?? '',
       available: item?.available ?? true,
@@ -76,7 +76,13 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
   });
 
   const handleSubmit = (data: MenuItemFormData) => {
-    onSubmit(data);
+    // Ensure numeric fields are actually numbers and rounded
+    const formattedData = {
+      ...data,
+      price: Math.floor(Number(data.price)),
+      maxSelect: Math.floor(Number(data.maxSelect || 1)),
+    };
+    onSubmit(formattedData);
     form.reset();
     onClose();
   };
@@ -179,9 +185,12 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="1"
                         {...field}
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => {
+                          const val = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
+                          field.onChange(val);
+                        }}
                         data-testid="input-item-price"
                       />
                     </FormControl>
@@ -198,8 +207,12 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                     <FormControl>
                       <Input
                         type="number"
+                        step="1"
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        onChange={(e) => {
+                          const val = e.target.value === '' ? 1 : parseInt(e.target.value, 10);
+                          field.onChange(val);
+                        }}
                         data-testid="input-item-max-select"
                       />
                     </FormControl>
