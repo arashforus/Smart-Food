@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,7 +20,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -54,7 +53,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const itemSchema = z.object({
-  nameEn: z.string().min(1, 'English name is required'),
+  nameEn: z.string().min(1, 'Name is required'),
   nameEs: z.string().optional(),
   nameFr: z.string().optional(),
   nameFa: z.string().optional(),
@@ -110,6 +109,18 @@ interface StorageMaterial {
   backgroundColor?: string;
 }
 
+interface StorageLanguage {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+  order: number;
+}
+
+interface StorageSettings {
+  currencySymbol: string;
+}
+
 export default function ItemsPage() {
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
@@ -137,6 +148,18 @@ export default function ItemsPage() {
   const { data: materials = [], isLoading: materialsLoading } = useQuery<StorageMaterial[]>({
     queryKey: ['/api/materials'],
   });
+
+  const { data: languages = [], isLoading: languagesLoading } = useQuery<StorageLanguage[]>({
+    queryKey: ['/api/languages'],
+  });
+
+  const { data: settings } = useQuery<StorageSettings>({
+    queryKey: ['/api/settings'],
+  });
+
+  const sortedLanguages = useMemo(() => {
+    return [...languages].sort((a, b) => a.order - b.order);
+  }, [languages]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ItemFormData) => {
@@ -261,6 +284,7 @@ export default function ItemsPage() {
   };
 
   const getCategoryName = (categoryId: string) => categories.find((c) => c.id === categoryId)?.name.en || 'Unknown';
+  const currencySymbol = settings?.currencySymbol || '$';
 
   const FormContent = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => (
     <Form {...form}>
@@ -276,7 +300,7 @@ export default function ItemsPage() {
           <TabsContent value="basic" className="space-y-4 pt-4">
             <FormField control={form.control} name="nameEn" render={({ field }) => (
               <FormItem>
-                <FormLabel>Name (English)</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl><Input {...field} data-testid={`input-item-name${isEdit ? '-edit' : ''}`} /></FormControl>
                 <FormMessage />
               </FormItem>
@@ -300,7 +324,7 @@ export default function ItemsPage() {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="price" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price ($)</FormLabel>
+                  <FormLabel>Price ({currencySymbol})</FormLabel>
                   <FormControl>
                     <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
                   </FormControl>
@@ -309,7 +333,7 @@ export default function ItemsPage() {
               )} />
               <FormField control={form.control} name="discountedPrice" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discounted Price ($)</FormLabel>
+                  <FormLabel>Discounted Price ({currencySymbol})</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -321,7 +345,6 @@ export default function ItemsPage() {
                       data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
                     />
                   </FormControl>
-                  <FormDescription>Leave empty for no discount</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -359,7 +382,6 @@ export default function ItemsPage() {
                       data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`} 
                     />
                   </FormControl>
-                  <FormDescription>Max quantity per order</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -400,7 +422,6 @@ export default function ItemsPage() {
             <FormField control={form.control} name="materials" render={({ field }) => (
               <FormItem>
                 <FormLabel>Select Materials / Ingredients</FormLabel>
-                <FormDescription>Choose the ingredients used in this dish</FormDescription>
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   {materials.map((material) => (
                     <div
@@ -447,89 +468,44 @@ export default function ItemsPage() {
           <TabsContent value="descriptions" className="space-y-4 pt-4">
             <FormField control={form.control} name="shortDescriptionEn" render={({ field }) => (
               <FormItem>
-                <FormLabel>Short Description (English)</FormLabel>
-                <FormControl><Input {...field} placeholder="Brief description for menu cards" data-testid={`input-item-short-desc${isEdit ? '-edit' : ''}`} /></FormControl>
-                <FormDescription>Shown on menu cards</FormDescription>
+                <FormLabel>Short Description</FormLabel>
+                <FormControl><Input {...field} data-testid={`input-item-short-desc${isEdit ? '-edit' : ''}`} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="longDescriptionEn" render={({ field }) => (
               <FormItem>
-                <FormLabel>Long Description (English)</FormLabel>
-                <FormControl><Textarea {...field} placeholder="Detailed description for item modal" data-testid={`input-item-long-desc${isEdit ? '-edit' : ''}`} /></FormControl>
-                <FormDescription>Shown in detailed view</FormDescription>
+                <FormLabel>Long Description</FormLabel>
+                <FormControl><Textarea {...field} data-testid={`input-item-long-desc${isEdit ? '-edit' : ''}`} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
           </TabsContent>
           
           <TabsContent value="translations" className="space-y-4 pt-4 max-h-[300px] overflow-y-auto">
-            <div className="space-y-3 p-3 rounded-md bg-muted/50">
-              <h4 className="font-medium text-sm">Spanish (Español)</h4>
-              <FormField control={form.control} name="nameEs" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Name</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-es${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="shortDescriptionEs" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Short Description</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-es${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="longDescriptionEs" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Long Description</FormLabel>
-                  <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-es${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-            </div>
-            <div className="space-y-3 p-3 rounded-md bg-muted/50">
-              <h4 className="font-medium text-sm">French (Français)</h4>
-              <FormField control={form.control} name="nameFr" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Name</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-fr${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="shortDescriptionFr" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Short Description</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-fr${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-            </div>
-            <div className="space-y-3 p-3 rounded-md bg-muted/50">
-              <h4 className="font-medium text-sm">Farsi (فارسی)</h4>
-              <FormField control={form.control} name="nameFa" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Name</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-fa${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="shortDescriptionFa" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Short Description</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-fa${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-            </div>
-            <div className="space-y-3 p-3 rounded-md bg-muted/50">
-              <h4 className="font-medium text-sm">Turkish (Türkçe)</h4>
-              <FormField control={form.control} name="nameTr" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Name</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-tr${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="shortDescriptionTr" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Short Description</FormLabel>
-                  <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-tr${isEdit ? '-edit' : ''}`} /></FormControl>
-                </FormItem>
-              )} />
-            </div>
+            {sortedLanguages.filter(lang => lang.isActive && lang.code !== 'en').map((language) => (
+              <div key={language.id} className="space-y-3 p-3 rounded-md bg-muted/50">
+                <h4 className="font-medium text-sm">{language.name}</h4>
+                <FormField control={form.control} name={`name${language.code.toUpperCase()}` as any} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Name</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name={`shortDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Short Description</FormLabel>
+                    <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name={`longDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Long Description</FormLabel>
+                    <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
+                  </FormItem>
+                )} />
+              </div>
+            ))}
           </TabsContent>
         </Tabs>
         
@@ -544,7 +520,7 @@ export default function ItemsPage() {
     </Form>
   );
 
-  if (itemsLoading || categoriesLoading) {
+  if (itemsLoading || categoriesLoading || languagesLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -586,11 +562,11 @@ export default function ItemsPage() {
               <div className="flex items-center gap-2">
                 {item.discountedPrice ? (
                   <>
-                    <span className="text-muted-foreground line-through">${item.price.toFixed(2)}</span>
-                    <span className="text-green-600 font-medium">${item.discountedPrice.toFixed(2)}</span>
+                    <span className="text-muted-foreground line-through">{currencySymbol}{item.price.toFixed(2)}</span>
+                    <span className="text-green-600 font-medium">{currencySymbol}{item.discountedPrice.toFixed(2)}</span>
                   </>
                 ) : (
-                  <span>${item.price.toFixed(2)}</span>
+                  <span>{currencySymbol}{item.price.toFixed(2)}</span>
                 )}
               </div>
             )
