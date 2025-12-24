@@ -195,7 +195,7 @@ export default function CategoriesPage() {
     const defaultValues: any = {
       name: category.generalName || '',
       image: category.image || '',
-      order: category.order,
+      order: parseInt(String(category.order), 10),
       isActive: category.isActive,
     };
     languages.forEach((lang) => {
