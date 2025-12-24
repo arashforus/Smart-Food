@@ -287,9 +287,26 @@ export default function ItemsPage() {
   const currencySymbol = settings?.currencySymbol || '$';
 
   const FormContent = useMemo(() => {
-    const Component = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => (
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    const Component = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => {
+      const { toast } = useToast();
+      
+      const onFormError = (errors: any) => {
+        const errorMessages = Object.values(errors)
+          .map((error: any) => error.message)
+          .filter(Boolean);
+        
+        if (errorMessages.length > 0) {
+          toast({
+            title: "Validation Error",
+            description: errorMessages.join(". "),
+            variant: "destructive",
+          });
+        }
+      };
+
+      return (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-4">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basic">Basic</TabsTrigger>
@@ -565,11 +582,11 @@ export default function ItemsPage() {
               <div className="flex items-center gap-2">
                 {item.discountedPrice ? (
                   <>
-                    <span className="text-muted-foreground line-through">{currencySymbol}{item.price.toFixed(2)}</span>
-                    <span className="text-green-600 font-medium">{currencySymbol}{item.discountedPrice.toFixed(2)}</span>
+                    <span className="text-muted-foreground line-through">{currencySymbol}{Number(item.price).toFixed(2)}</span>
+                    <span className="text-green-600 font-medium">{currencySymbol}{Number(item.discountedPrice).toFixed(2)}</span>
                   </>
                 ) : (
-                  <span>{currencySymbol}{item.price.toFixed(2)}</span>
+                  <span>{currencySymbol}{Number(item.price).toFixed(2)}</span>
                 )}
               </div>
             )
