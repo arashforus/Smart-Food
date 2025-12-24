@@ -47,7 +47,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 loading="lazy"
               />
             ) : (
-              <UtensilsCrossed className="h-10 w-10 text-muted-foreground" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
             )}
             {isSuggested && (
               <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
@@ -112,7 +112,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               loading="lazy"
             />
           ) : (
-            <UtensilsCrossed className="h-8 w-8 text-muted-foreground" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
           )}
           {isSuggested && (
             <div className="absolute top-1 right-1 bg-amber-500 rounded-full p-0.5">

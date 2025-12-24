@@ -591,11 +591,17 @@ export default function ItemsPage() {
             key: 'image', 
             header: 'Image', 
             render: (item) => (
-              <img 
-                src={item.image || stockImage} 
-                alt={item.name.en} 
-                className="w-10 h-10 rounded object-cover" 
-              />
+              <div className="w-10 h-10 rounded bg-muted flex items-center justify-center overflow-hidden">
+                {item.image ? (
+                  <img 
+                    src={item.image} 
+                    alt={item.name.en} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                )}
+              </div>
             )
           },
           { key: 'name', header: 'Name', render: (item) => item.name.en },

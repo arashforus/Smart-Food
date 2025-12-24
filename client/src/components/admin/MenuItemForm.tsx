@@ -185,10 +185,12 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => {
+                const categoryImage = getCategoryImage(field.value);
+                return (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -200,31 +202,50 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                       <SelectContent>
                         {categories.map((cat) => (
                           <SelectItem key={cat.id} value={cat.id}>
-                            {cat.name}
+                            <div className="flex items-center gap-2">
+                              {cat.image ? (
+                                <img src={cat.image} alt="" className="w-4 h-4 rounded-sm object-cover" />
+                              ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-3 h-3 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                              )}
+                              {cat.name}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
+                );
+              }}
+            />
             </div>
             <FormField
               control={form.control}
-              name="available"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Available</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      data-testid="switch-item-available"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+              name="image"
+              render={({ field }) => {
+                const categoryImage = getCategoryImage(form.watch('categoryId'));
+                return (
+                  <FormItem>
+                    <FormLabel>Image</FormLabel>
+                    <div className="flex flex-col gap-2">
+                      <div className="w-full aspect-video rounded-md bg-muted flex items-center justify-center overflow-hidden border">
+                        {field.value ? (
+                          <img src={field.value} alt="Preview" className="w-full h-full object-cover" />
+                        ) : categoryImage ? (
+                          <img src={categoryImage} alt="Category Default" className="w-full h-full object-cover opacity-50" />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-8 h-8 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                        )}
+                      </div>
+                      <FormControl>
+                        <Input {...field} value={typeof field.value === 'string' ? field.value : ''} placeholder="Image URL" data-testid="input-item-image" />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="ghost" onClick={onClose}>
