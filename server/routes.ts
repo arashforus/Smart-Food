@@ -545,7 +545,7 @@ export async function registerRoutes(
   app.post("/api/languages", async (req: Request, res: Response) => {
     try {
       const { code, name, nativeName, direction, flagImage, isActive, isDefault } = req.body;
-      const language = await storage.createLanguage?.({ code, name, nativeName, direction, flagImage, isActive, isDefault });
+      const language = await storage.createLanguage?.({ code, name, nativeName, direction, flagImage, isActive, isDefault: isDefault || false, order: 1 });
       res.json(language);
     } catch (error) {
       console.error("Create language error:", error);

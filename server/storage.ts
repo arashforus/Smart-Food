@@ -91,7 +91,11 @@ export interface StorageLanguage {
   id: string;
   code: string;
   name: string;
+  nativeName?: string;
+  direction?: string;
+  flagImage?: string;
   isActive: boolean;
+  isDefault?: boolean;
   order: number;
 }
 

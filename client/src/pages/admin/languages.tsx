@@ -139,11 +139,11 @@ export default function LanguagesPage() {
     form.reset({ 
       code: lang.code, 
       name: lang.name, 
-      nativeName: lang.nativeName, 
-      direction: lang.direction, 
+      nativeName: lang.nativeName || '', 
+      direction: (lang.direction || 'ltr') as 'ltr' | 'rtl', 
       flagImage: lang.flagImage || '',
-      isActive: lang.isActive, 
-      isDefault: lang.isDefault 
+      isActive: lang.isActive ?? true, 
+      isDefault: lang.isDefault ?? false
     });
     setEditingLanguage(lang);
   };
@@ -213,7 +213,7 @@ export default function LanguagesPage() {
           { 
             key: 'flag', 
             header: 'Flag', 
-            render: (item) => item.flagImage ? (
+            render: (item: any) => item.flagImage ? (
               <img src={item.flagImage} alt={item.name} className="w-8 h-5 object-cover rounded-sm" />
             ) : (
               <div className="w-8 h-5 rounded-sm bg-muted flex items-center justify-center text-xs">{item.code.toUpperCase()}</div>
@@ -221,17 +221,17 @@ export default function LanguagesPage() {
           },
           { key: 'code', header: 'Code' },
           { key: 'name', header: 'Name' },
-          { key: 'nativeName', header: 'Native Name' },
-          { key: 'direction', header: 'Direction', render: (item) => item.direction.toUpperCase() },
+          { key: 'nativeName', header: 'Native Name', render: (item: any) => item.nativeName || '-' },
+          { key: 'direction', header: 'Direction', render: (item: any) => (item.direction ? item.direction.toUpperCase() : 'LTR') },
           {
             key: 'isDefault',
             header: 'Default',
-            render: (item) => item.isDefault ? <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" /> : null,
+            render: (item: any) => item.isDefault ? <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" /> : null,
           },
           {
             key: 'isActive',
             header: 'Status',
-            render: (item) => (
+            render: (item: any) => (
               <Badge variant={item.isActive ? 'default' : 'secondary'} className="no-default-active-elevate">
                 {item.isActive ? 'Active' : 'Inactive'}
               </Badge>
@@ -241,17 +241,6 @@ export default function LanguagesPage() {
         onEdit={openEdit}
         onDelete={(item) => setDeleteLanguage(item)}
         testIdPrefix="language"
-        customActions={(item) => (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => openTextEditor(item)}
-            title="Edit Texts"
-            data-testid={`button-edit-texts-${item.id}`}
-          >
-            <FileText className="h-4 w-4" />
-          </Button>
-        )}
       />
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
