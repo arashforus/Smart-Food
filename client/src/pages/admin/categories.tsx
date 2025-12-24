@@ -310,7 +310,12 @@ export default function CategoriesPage() {
                     <FormItem>
                       <FormLabel>Display Order</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order" />
+                        <Input 
+                          type="number" 
+                          value={String(field.value || '')} 
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : '')}
+                          data-testid="input-category-order" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -396,7 +401,12 @@ export default function CategoriesPage() {
                     <FormItem>
                       <FormLabel>Display Order</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-category-order-edit" />
+                        <Input 
+                          type="number" 
+                          value={String(field.value || '')} 
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value, 10) : '')}
+                          data-testid="input-category-order-edit" 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
