@@ -35,9 +35,9 @@ const menuItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   descriptionEs: z.string().min(1, 'Spanish description is required'),
   descriptionFr: z.string().min(1, 'French description is required'),
-  price: z.preprocess((val) => Number(val), z.number().min(0.01, 'Price must be greater than 0')),
-  discountedPrice: z.preprocess((val) => val === '' || val === null ? undefined : Number(val), z.number().min(0).optional()),
-  maxSelect: z.preprocess((val) => val === '' || val === null ? undefined : Number(val), z.number().int().min(1).optional()),
+  price: z.preprocess((val) => (val === '' || val === null ? 0 : Number(val)), z.number().min(0.01, 'Price must be greater than 0')),
+  discountedPrice: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().min(0).optional()),
+  maxSelect: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().int().min(1).optional()),
   categoryId: z.string().min(1, 'Category is required'),
   available: z.boolean(),
   image: z.string().optional(),
@@ -82,10 +82,10 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
     const formattedData = {
       ...data,
       price: Number(data.price),
-      discountedPrice: data.discountedPrice ? Number(data.discountedPrice) : null,
-      maxSelect: data.maxSelect ? Math.round(Number(data.maxSelect)) : null,
+      discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
+      maxSelect: data.maxSelect !== undefined ? Math.round(Number(data.maxSelect)) : undefined,
     };
-    onSubmit(formattedData);
+    onSubmit(formattedData as any);
     form.reset();
     onClose();
   };
@@ -272,7 +272,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                                 ) : (
                                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image w-3 h-3 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
                                 )}
-                                {(cat.name as any)?.en ?? cat.generalName}
+                                {(cat.name as any)?.en ?? cat.name}
                               </div>
                             </SelectItem>
                           ))}
