@@ -15,6 +15,8 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "005-add-missing-user-columns", description: "Add missing name, email, role, and language columns to users table" },
   { version: "006-add-general-name-to-categories", description: "Add general_name field to categories table" },
   { version: "007-add-language-fields", description: "Add native_name, direction, flag_image, and is_default fields to languages table" },
+  { version: "008-add-icon-color-to-food-types", description: "Add icon and color columns to food_types table" },
+  { version: "009-add-general-name-to-food-types", description: "Add general_name column to food_types table" },
 ];
 
 export async function runDatabaseMigrations() {
