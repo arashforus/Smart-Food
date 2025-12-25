@@ -275,48 +275,52 @@ export default function TypesPage() {
       {isLoading ? (
         <div className="text-center py-8 text-muted-foreground">Loading food types...</div>
       ) : (
-        <DataTable
-          data={displayTypes}
-          columns={[
-            {
-              key: 'preview',
-              header: 'Preview',
-              render: (item) => (
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white"
-                  style={{ backgroundColor: item.color }}
-                >
-                  {getIconComponent(item.icon)}
-                </div>
-              ),
-            },
-            { key: 'generalName', header: 'Name', render: (item: any) => item.generalName || item.name?.en || 'N/A' },
-            {
-              key: 'icon',
-              header: 'Icon',
-              render: (item) => iconOptions.find((i) => i.value === item.icon)?.label || item.icon,
-            },
-            {
-              key: 'color',
-              header: 'Color',
-              render: (item) => (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
-                  <span className="text-xs text-muted-foreground">{item.color}</span>
-                </div>
-              ),
-            },
-          ]}
-          onEdit={(item) => {
-            const dbType = dbFoodTypes.find((t) => t.id === item.id);
-            if (dbType) openEdit(dbType);
-          }}
-          onDelete={(item) => {
-            const dbType = dbFoodTypes.find((t) => t.id === item.id);
-            if (dbType) setDeleteType(dbType);
-          }}
-          testIdPrefix="type"
-        />
+          <DataTable
+            data={displayTypes}
+            columns={[
+              {
+                key: 'preview',
+                header: 'Preview',
+                render: (item: any) => (
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white"
+                    style={{ backgroundColor: item.color }}
+                  >
+                    {getIconComponent(item.icon)}
+                  </div>
+                ),
+              },
+              { 
+                key: 'generalName', 
+                header: 'Name', 
+                render: (item: any) => item.generalName || (item.name as any)?.en || 'N/A' 
+              },
+              {
+                key: 'icon',
+                header: 'Icon',
+                render: (item: any) => iconOptions.find((i) => i.value === item.icon)?.label || item.icon,
+              },
+              {
+                key: 'color',
+                header: 'Color',
+                render: (item: any) => (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
+                    <span className="text-xs text-muted-foreground">{item.color}</span>
+                  </div>
+                ),
+              },
+            ]}
+            onEdit={(item: any) => {
+              const dbType = dbFoodTypes.find((t) => t.id === item.id);
+              if (dbType) openEdit(dbType);
+            }}
+            onDelete={(item: any) => {
+              const dbType = dbFoodTypes.find((t) => t.id === item.id);
+              if (dbType) setDeleteType(dbType);
+            }}
+            testIdPrefix="type"
+          />
       )}
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>

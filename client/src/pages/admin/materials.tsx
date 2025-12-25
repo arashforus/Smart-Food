@@ -289,36 +289,36 @@ export default function MaterialsPage() {
                   )} />
                 </TabsContent>
 
-                <TabsContent value="translation" className="space-y-4 m-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {languages.map((lang) => (
-                      <FormField 
-                        key={lang.code} 
-                        control={form.control} 
-                        name={`translations.${lang.code}`} 
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>{lang.name} Translation</FormLabel>
-                            <FormControl>
-                              <Input 
-                                {...field} 
-                                value={field.value || ''} 
-                                placeholder={`Name in ${lang.name}`}
-                                data-testid={`input-material-translation-${lang.code}`} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} 
-                      />
-                    ))}
-                    {languages.length === 0 && (
-                      <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                        No languages defined in database.
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
+                  <TabsContent value="translation" className="space-y-4 m-0 pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {languages.map((lang: any) => (
+                        <FormField 
+                          key={lang.code} 
+                          control={form.control} 
+                          name={`translations.${lang.code}`} 
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{lang.name} Translation</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  value={field.value || ''} 
+                                  placeholder={`Name in ${lang.name}`}
+                                  data-testid={`input-material-translation-${lang.code}`} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} 
+                        />
+                      ))}
+                      {languages.length === 0 && (
+                        <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                          No languages defined in database.
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
 
                 <div className="pt-4 flex justify-end gap-2 sticky bottom-0 bg-background pb-2">
                   <Button type="button" variant="ghost" onClick={() => {
