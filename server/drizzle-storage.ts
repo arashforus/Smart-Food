@@ -292,31 +292,89 @@ export class DrizzleStorage implements IStorage {
     const db = getDb();
     const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
     if (result.length === 0) return undefined;
-    return result[0];
+    const order = result[0];
+    return {
+      ...order,
+      tableNumber: order.tableNumber ?? undefined,
+      notes: order.notes ?? undefined,
+      createdAt: order.createdAt ?? new Date(),
+      updatedAt: order.updatedAt ?? new Date(),
+      items: order.items as any,
+      totalAmount: parseFloat(order.totalAmount),
+      status: order.status as "pending" | "preparing" | "ready" | "served" | "cancelled",
+    };
   }
 
   async getAllOrders(): Promise<StorageOrder[]> {
     const db = getDb();
-    return await db.select().from(orders);
+    const result = await db.select().from(orders);
+    return result.map(order => ({
+      ...order,
+      tableNumber: order.tableNumber ?? undefined,
+      notes: order.notes ?? undefined,
+      createdAt: order.createdAt ?? new Date(),
+      updatedAt: order.updatedAt ?? new Date(),
+      items: order.items as any,
+      totalAmount: parseFloat(order.totalAmount),
+      status: order.status as "pending" | "preparing" | "ready" | "served" | "cancelled",
+    }));
   }
 
   async getOrdersByBranch(branchId: string): Promise<StorageOrder[]> {
     const db = getDb();
-    return await db.select().from(orders).where(eq(orders.branchId, branchId));
+    const result = await db.select().from(orders).where(eq(orders.branchId, branchId));
+    return result.map(order => ({
+      ...order,
+      tableNumber: order.tableNumber ?? undefined,
+      notes: order.notes ?? undefined,
+      createdAt: order.createdAt ?? new Date(),
+      updatedAt: order.updatedAt ?? new Date(),
+      items: order.items as any,
+      totalAmount: parseFloat(order.totalAmount),
+      status: order.status as "pending" | "preparing" | "ready" | "served" | "cancelled",
+    }));
   }
 
   async createOrder(order: Omit<StorageOrder, "id">): Promise<StorageOrder> {
     const db = getDb();
-    const result = await db.insert(orders).values(order).returning();
+    const result = await db.insert(orders).values({
+      ...order,
+      totalAmount: order.totalAmount.toString(),
+      items: order.items as any,
+    }).returning();
     if (result.length === 0) throw new Error("Failed to create order");
-    return result[0];
+    const newOrder = result[0];
+    return {
+      ...newOrder,
+      tableNumber: newOrder.tableNumber ?? undefined,
+      notes: newOrder.notes ?? undefined,
+      createdAt: newOrder.createdAt ?? new Date(),
+      updatedAt: newOrder.updatedAt ?? new Date(),
+      items: newOrder.items as any,
+      totalAmount: parseFloat(newOrder.totalAmount),
+      status: newOrder.status as "pending" | "preparing" | "ready" | "served" | "cancelled",
+    };
   }
 
   async updateOrder(id: string, data: Partial<Omit<StorageOrder, "id">>): Promise<StorageOrder | undefined> {
     const db = getDb();
-    const result = await db.update(orders).set(data).where(eq(orders.id, id)).returning();
+    const updateData: any = { ...data };
+    if (data.totalAmount !== undefined) updateData.totalAmount = data.totalAmount.toString();
+    if (data.items !== undefined) updateData.items = data.items as any;
+    
+    const result = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();
     if (result.length === 0) return undefined;
-    return result[0];
+    const updatedOrder = result[0];
+    return {
+      ...updatedOrder,
+      tableNumber: updatedOrder.tableNumber ?? undefined,
+      notes: updatedOrder.notes ?? undefined,
+      createdAt: updatedOrder.createdAt ?? new Date(),
+      updatedAt: updatedOrder.updatedAt ?? new Date(),
+      items: updatedOrder.items as any,
+      totalAmount: parseFloat(updatedOrder.totalAmount),
+      status: updatedOrder.status as "pending" | "preparing" | "ready" | "served" | "cancelled",
+    };
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {

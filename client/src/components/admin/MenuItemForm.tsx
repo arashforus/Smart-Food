@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Star } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -40,6 +41,8 @@ const menuItemSchema = z.object({
   maxSelect: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().int().min(1).optional()),
   categoryId: z.string().min(1, 'Category is required'),
   available: z.boolean(),
+  suggested: z.boolean(),
+  isNew: z.boolean(),
   image: z.string().optional(),
 });
 
@@ -54,11 +57,6 @@ interface MenuItemFormProps {
 }
 
 export default function MenuItemForm({ item, categories, open, onClose, onSubmit }: MenuItemFormProps) {
-  // Use category image as default if item doesn't have one
-  const getCategoryImage = (categoryId: string) => {
-    return categories.find(c => c.id === categoryId)?.image;
-  };
-
   const form = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
@@ -73,9 +71,17 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       maxSelect: item?.maxSelect ? Number(item?.maxSelect) : 1,
       categoryId: item?.categoryId ?? '',
       available: item?.available ?? true,
+      suggested: item?.suggested ?? false,
+      isNew: (item as any)?.isNew ?? false,
       image: item?.image ?? '',
     },
   });
+
+  const isEdit = !!item;
+  const getCategoryImage = (categoryId: string) => {
+    return categories.find(c => c.id === categoryId)?.image;
+  };
+  const categoryImage = item?.categoryId ? getCategoryImage(item.categoryId) : undefined;
 
   const handleSubmit = (data: MenuItemFormData) => {
     // Convert numeric fields to appropriate types
@@ -322,6 +328,38 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       data-testid="switch-item-available"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="suggested"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormLabel className="mt-0">Suggested</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      data-testid="switch-item-suggested"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isNew"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormLabel className="mt-0">New Status</FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      data-testid="switch-item-isnew"
                     />
                   </FormControl>
                 </FormItem>

@@ -66,6 +66,7 @@ export interface MenuItem {
   image?: string;
   available: boolean;
   suggested: boolean;
+  isNew: boolean;
   materials: string[];
   types: string[];
 }
