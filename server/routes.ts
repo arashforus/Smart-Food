@@ -397,9 +397,9 @@ export async function registerRoutes(
         name: name || {},
         shortDescription: shortDescription || {},
         longDescription: longDescription || {},
-        price,
-        discountedPrice,
-        maxSelect,
+        price: price ? price.toString() : "0",
+        discountedPrice: discountedPrice ? discountedPrice.toString() : null,
+        maxSelect: maxSelect ? maxSelect.toString() : null,
         image: image || null,
         available: available !== undefined ? available : true,
         suggested: suggested !== undefined ? suggested : false,
@@ -422,9 +422,9 @@ export async function registerRoutes(
       if (name !== undefined) updateData.name = name;
       if (shortDescription !== undefined) updateData.shortDescription = shortDescription;
       if (longDescription !== undefined) updateData.longDescription = longDescription;
-      if (price !== undefined) updateData.price = price;
-      if (discountedPrice !== undefined) updateData.discountedPrice = discountedPrice;
-      if (maxSelect !== undefined) updateData.maxSelect = maxSelect;
+      if (price !== undefined) updateData.price = price.toString();
+      if (discountedPrice !== undefined) updateData.discountedPrice = discountedPrice ? discountedPrice.toString() : null;
+      if (maxSelect !== undefined) updateData.maxSelect = maxSelect ? maxSelect.toString() : null;
       if (image !== undefined) updateData.image = image;
       if (available !== undefined) updateData.available = available;
       if (suggested !== undefined) updateData.suggested = suggested;
@@ -592,8 +592,14 @@ export async function registerRoutes(
 
   app.post("/api/materials", async (req: Request, res: Response) => {
     try {
-      const { name, image } = req.body;
-      const material = await storage.createMaterial?.({ name, image, order: 1 });
+      const { name, icon, color } = req.body;
+      const material = await storage.createMaterial?.({ 
+        name: name || {}, 
+        icon: icon || null, 
+        color: color || null,
+        isActive: true,
+        order: 1 
+      });
       res.json(material);
     } catch (error) {
       console.error("Create material error:", error);
@@ -603,8 +609,13 @@ export async function registerRoutes(
 
   app.patch("/api/materials/:id", async (req: Request, res: Response) => {
     try {
-      const { name, image } = req.body;
-      const material = await storage.updateMaterial?.(req.params.id, { name, image });
+      const { name, icon, color } = req.body;
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (icon !== undefined) updateData.icon = icon;
+      if (color !== undefined) updateData.color = color;
+      
+      const material = await storage.updateMaterial?.(req.params.id, updateData);
       res.json(material);
     } catch (error) {
       console.error("Update material error:", error);
