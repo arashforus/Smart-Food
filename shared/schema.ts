@@ -54,6 +54,7 @@ export const items = pgTable("items", {
   image: text("image"),
   available: boolean("available").notNull().default(true),
   suggested: boolean("suggested").notNull().default(false),
+  isNew: boolean("is_new").notNull().default(false),
   materials: text("materials").array(),
   types: text("types").array(),
   createdAt: timestamp("created_at").defaultNow(),

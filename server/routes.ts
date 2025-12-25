@@ -391,7 +391,7 @@ export async function registerRoutes(
 
   app.post("/api/items", async (req: Request, res: Response) => {
     try {
-      const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, materials } = req.body;
+      const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, isNew, materials } = req.body;
       const item = await storage.createItem({
         categoryId,
         name: name || {},
@@ -403,6 +403,7 @@ export async function registerRoutes(
         image: image || null,
         available: available !== undefined ? available : true,
         suggested: suggested !== undefined ? suggested : false,
+        isNew: isNew !== undefined ? isNew : false,
         materials: materials || [],
         types: [],
       });
@@ -415,7 +416,7 @@ export async function registerRoutes(
 
   app.patch("/api/items/:id", async (req: Request, res: Response) => {
     try {
-      const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, materials } = req.body;
+      const { categoryId, name, shortDescription, longDescription, price, discountedPrice, maxSelect, image, available, suggested, isNew, materials } = req.body;
       
       const updateData: any = {};
       if (categoryId !== undefined) updateData.categoryId = categoryId;
@@ -428,6 +429,7 @@ export async function registerRoutes(
       if (image !== undefined) updateData.image = image;
       if (available !== undefined) updateData.available = available;
       if (suggested !== undefined) updateData.suggested = suggested;
+      if (isNew !== undefined) updateData.isNew = isNew;
       if (materials !== undefined) updateData.materials = materials;
 
       const item = await storage.updateItem(req.params.id, updateData);

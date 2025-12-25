@@ -43,6 +43,7 @@ export interface StorageItem {
   image?: string;
   available: boolean;
   suggested: boolean;
+  isNew: boolean;
   materials?: string[];
   types?: string[];
 }
