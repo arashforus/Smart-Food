@@ -60,6 +60,7 @@ const iconOptions = [
 ];
 
 const typeSchema = z.object({
+  generalName: z.string().min(1, 'General name is required'),
   icon: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
   names: z.record(z.string().min(1, 'Name is required')),
@@ -105,7 +106,7 @@ export default function TypesPage() {
   const createMutation = useMutation({
     mutationFn: (data: TypeFormData) =>
       apiRequest('POST', '/api/food-types', {
-        name: data.names,
+        name: { ...data.names, _general: data.generalName },
         description: {},
         icon: data.icon,
         color: data.color,
@@ -125,7 +126,7 @@ export default function TypesPage() {
     mutationFn: (data: TypeFormData) => {
       if (!editingType) throw new Error('No type selected');
       return apiRequest('PATCH', `/api/food-types/${editingType.id}`, {
-        name: data.names,
+        name: { ...data.names, _general: data.generalName },
         description: {},
         icon: data.icon,
         color: data.color,
@@ -157,6 +158,7 @@ export default function TypesPage() {
   const form = useForm<TypeFormData>({
     resolver: zodResolver(typeSchema),
     defaultValues: {
+      generalName: '',
       icon: 'leaf',
       color: '#4CAF50',
       names: {},
@@ -198,6 +200,7 @@ export default function TypesPage() {
       defaultNames[lang.code] = '';
     });
     form.reset({
+      generalName: '',
       icon: 'leaf',
       color: '#4CAF50',
       names: defaultNames,
@@ -212,6 +215,7 @@ export default function TypesPage() {
       names[lang.code] = (name as any)[lang.code] || '';
     });
     form.reset({
+      generalName: (name as any)._general || '',
       icon: foodType.icon || 'leaf',
       color: foodType.color,
       names,
@@ -275,7 +279,7 @@ export default function TypesPage() {
                 </div>
               ),
             },
-            { key: 'name', header: 'Name (English)', render: (item) => item.name.en },
+            { key: 'name', header: 'Name', render: (item) => (item.name as any)._general || item.name.en || 'N/A' },
             {
               key: 'icon',
               header: 'Icon',
@@ -318,6 +322,19 @@ export default function TypesPage() {
                 </TabsList>
                 
                 <TabsContent value="info" className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="generalName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>General Name (Admin Display)</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="icon"
@@ -419,6 +436,19 @@ export default function TypesPage() {
                 </TabsList>
                 
                 <TabsContent value="info" className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="generalName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>General Name (Admin Display)</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name-edit" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="icon"
