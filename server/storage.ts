@@ -111,6 +111,7 @@ export interface StorageFoodType {
 
 export interface StorageMaterial {
   id: string;
+  generalName: string;
   name: Record<string, string>;
   icon?: string;
   color?: string;

@@ -594,8 +594,9 @@ export async function registerRoutes(
 
   app.post("/api/materials", async (req: Request, res: Response) => {
     try {
-      const { name, icon, color } = req.body;
+      const { generalName, name, icon, color } = req.body;
       const material = await storage.createMaterial?.({ 
+        generalName: generalName || "",
         name: name || {}, 
         icon: icon || null, 
         color: color || null,
@@ -611,8 +612,9 @@ export async function registerRoutes(
 
   app.patch("/api/materials/:id", async (req: Request, res: Response) => {
     try {
-      const { name, icon, color } = req.body;
+      const { generalName, name, icon, color } = req.body;
       const updateData: any = {};
+      if (generalName !== undefined) updateData.generalName = generalName;
       if (name !== undefined) updateData.name = name;
       if (icon !== undefined) updateData.icon = icon;
       if (color !== undefined) updateData.color = color;
