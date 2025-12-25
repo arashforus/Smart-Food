@@ -264,9 +264,9 @@ export default function ItemsPage() {
       longDescriptionFr: item.longDescription.fr || '',
       longDescriptionFa: item.longDescription.fa || '',
       longDescriptionTr: item.longDescription.tr || '',
-      price: item.price,
-      discountedPrice: item.discountedPrice,
-      maxSelect: item.maxSelect,
+      price: parseFloat(String(item.price)),
+      discountedPrice: item.discountedPrice? parseFloat(String(item.discountedPrice)) : undefined,
+      maxSelect: parseFloat(String(item.maxSelect)),
       categoryId: item.categoryId,
       image: item.image || '',
       available: item.available,
@@ -365,7 +365,11 @@ export default function ItemsPage() {
                     <FormItem>
                       <FormLabel>Price ({currencySymbol})</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
+                        <Input 
+                          type="number" 
+                          step="0.01" {...field} 
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                          data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
