@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Loader2, Globe, Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -27,6 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,17 +36,13 @@ import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
-import type { Material } from '@/lib/types';
-import { Loader2 } from 'lucide-react';
+import type { Material, Language } from '@/lib/types';
 
 const materialSchema = z.object({
-  nameEn: z.string().min(1, 'English name is required'),
-  nameEs: z.string().optional(),
-  nameFr: z.string().optional(),
-  nameFa: z.string().optional(),
-  nameTr: z.string().optional(),
+  generalName: z.string().min(1, 'General name is required'),
   backgroundColor: z.string().min(1, 'Background color is required'),
   image: z.string().optional(),
+  translations: z.record(z.string()).optional(),
 });
 
 type MaterialFormData = z.infer<typeof materialSchema>;
@@ -55,10 +52,20 @@ export default function MaterialsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
   const [deleteMaterial, setDeleteMaterial] = useState<Material | null>(null);
+  const [activeTab, setActiveTab] = useState('info');
+
+  const { data: languages = [] } = useQuery<Language[]>({
+    queryKey: ['/api/languages'],
+  });
 
   const form = useForm<MaterialFormData>({
     resolver: zodResolver(materialSchema),
-    defaultValues: { nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B', image: '' },
+    defaultValues: { 
+      generalName: '', 
+      backgroundColor: '#FF6B6B', 
+      image: '',
+      translations: {},
+    },
   });
 
   const { data: materials = [], isLoading } = useQuery<Material[]>({
@@ -67,10 +74,18 @@ export default function MaterialsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: MaterialFormData) => {
+      // Structure name as object { en: ..., es: ... }
+      const name: Record<string, string> = { en: data.generalName };
+      if (data.translations) {
+        Object.entries(data.translations).forEach(([code, val]) => {
+          if (val) name[code] = val;
+        });
+      }
+
       return apiRequest('POST', '/api/materials', {
-        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-        backgroundColor: data.backgroundColor,
-        image: data.image,
+        name,
+        color: data.backgroundColor,
+        icon: data.image, // Using icon field for image URL as per schema
       });
     },
     onSuccess: () => {
@@ -79,18 +94,23 @@ export default function MaterialsPage() {
       form.reset();
       toast({ title: 'Material Added' });
     },
-    onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to add material', variant: 'destructive' });
-    },
   });
 
   const updateMutation = useMutation({
     mutationFn: async (data: MaterialFormData) => {
       if (!editingMaterial) throw new Error('No material selected');
+      
+      const name: Record<string, string> = { en: data.generalName };
+      if (data.translations) {
+        Object.entries(data.translations).forEach(([code, val]) => {
+          if (val) name[code] = val;
+        });
+      }
+
       return apiRequest('PATCH', `/api/materials/${editingMaterial.id}`, {
-        name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
-        backgroundColor: data.backgroundColor,
-        image: data.image,
+        name,
+        color: data.backgroundColor,
+        icon: data.image,
       });
     },
     onSuccess: () => {
@@ -99,54 +119,47 @@ export default function MaterialsPage() {
       form.reset();
       toast({ title: 'Material Updated' });
     },
-    onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to update material', variant: 'destructive' });
-    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return apiRequest('DELETE', `/api/materials/${id}`);
-    },
+    mutationFn: async (id: string) => apiRequest('DELETE', `/api/materials/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setDeleteMaterial(null);
       toast({ title: 'Material Deleted' });
     },
-    onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to delete material', variant: 'destructive' });
-    },
   });
 
   const openCreate = () => {
-    form.reset({ nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '', backgroundColor: '#FF6B6B', image: '' });
+    form.reset({ generalName: '', backgroundColor: '#FF6B6B', image: '', translations: {} });
+    setActiveTab('info');
     setFormOpen(true);
   };
 
-  const openEdit = (material: Material) => {
+  const openEdit = (material: any) => {
+    const translations: Record<string, string> = {};
+    if (material.name) {
+      Object.entries(material.name).forEach(([code, val]) => {
+        if (code !== 'en') translations[code] = val as string;
+      });
+    }
+
     form.reset({
-      nameEn: material.name.en || '',
-      nameEs: material.name.es || '',
-      nameFr: material.name.fr || '',
-      nameFa: material.name.fa || '',
-      nameTr: material.name.tr || '',
-      backgroundColor: material.backgroundColor,
-      image: material.image || '',
+      generalName: material.name?.en || '',
+      backgroundColor: material.color || '#FF6B6B',
+      image: material.icon || '',
+      translations,
     });
+    setActiveTab('info');
     setEditingMaterial(material);
   };
 
-  const handleCreate = (data: MaterialFormData) => {
-    createMutation.mutate(data);
-  };
-
-  const handleEdit = (data: MaterialFormData) => {
-    updateMutation.mutate(data);
-  };
-
-  const handleDelete = () => {
-    if (!deleteMaterial) return;
-    deleteMutation.mutate(deleteMaterial.id);
+  const onSubmit = (data: MaterialFormData) => {
+    if (editingMaterial) {
+      updateMutation.mutate(data);
+    } else {
+      createMutation.mutate(data);
+    }
   };
 
   if (isLoading) {
@@ -176,195 +189,140 @@ export default function MaterialsPage() {
           {
             key: 'preview',
             header: 'Preview',
-            render: (item) => (
-              item.image ? (
-                <img src={item.image} alt={item.name.en} className="w-8 h-8 rounded-md object-cover" />
+            render: (item: any) => (
+              item.icon ? (
+                <img src={item.icon} alt={item.name?.en} className="w-8 h-8 rounded-md object-cover" />
               ) : (
                 <div
                   className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
-                  style={{ backgroundColor: item.backgroundColor }}
+                  style={{ backgroundColor: item.color || '#ccc' }}
                 >
-                  {item.name.en?.charAt(0).toUpperCase()}
+                  {item.name?.en?.charAt(0).toUpperCase()}
                 </div>
               )
             ),
           },
-          { key: 'name', header: 'Name (English)', render: (item) => item.name.en },
-          { key: 'backgroundColor', header: 'Color', render: (item) => (
+          { key: 'name', header: 'Name (English)', render: (item: any) => item.name?.en },
+          { key: 'color', header: 'Color', render: (item: any) => (
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: item.backgroundColor }} />
-              <span className="text-xs text-muted-foreground">{item.backgroundColor}</span>
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
+              <span className="text-xs text-muted-foreground">{item.color}</span>
             </div>
           )},
         ]}
         onEdit={openEdit}
-        onDelete={(item) => setDeleteMaterial(item)}
+        onDelete={(item: any) => setDeleteMaterial(item)}
         testIdPrefix="material"
       />
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-material-form">
+      <Dialog open={formOpen || !!editingMaterial} onOpenChange={(open) => {
+        if (!open) {
+          setFormOpen(false);
+          setEditingMaterial(null);
+        }
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" data-testid="modal-material-form">
           <DialogHeader>
-            <DialogTitle>Add Material</DialogTitle>
+            <DialogTitle>{editingMaterial ? 'Edit Material' : 'Add Material'}</DialogTitle>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
-              <FormField control={form.control} name="nameEn" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (English)</FormLabel>
-                  <FormControl><Input {...field} data-testid="input-material-name-en" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="nameEs" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Spanish)</FormLabel>
-                    <FormControl><Input {...field} placeholder="Nombre en español" value={field.value || ''} data-testid="input-material-name-es" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="nameFr" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (French)</FormLabel>
-                    <FormControl><Input {...field} placeholder="Nom en français" value={field.value || ''} data-testid="input-material-name-fr" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="nameFa" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Persian)</FormLabel>
-                    <FormControl><Input {...field} placeholder="نام فارسی" value={field.value || ''} data-testid="input-material-name-fa" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="nameTr" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Turkish)</FormLabel>
-                    <FormControl><Input {...field} placeholder="Türkçe ad" value={field.value || ''} data-testid="input-material-name-tr" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-              <FormField control={form.control} name="image" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image (Optional)</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Upload image or enter URL"
-                      testId="input-material-image"
-                    />
-                  </FormControl>
-                  <FormDescription>If no image, the color will be used as background</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="backgroundColor" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Background Color</FormLabel>
-                  <FormControl>
-                    <div className="flex gap-2">
-                      <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-material-color" />
-                      <Input {...field} placeholder="#FF6B6B" className="flex-1" />
-                    </div>
-                  </FormControl>
-                  <FormDescription>Used when no image is set</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-material" disabled={createMutation.isPending}>
-                  {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="info" className="flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                Info
+              </TabsTrigger>
+              <TabsTrigger value="translation" className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                Translation
+              </TabsTrigger>
+            </TabsList>
 
-      <Dialog open={!!editingMaterial} onOpenChange={() => setEditingMaterial(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-material-edit">
-          <DialogHeader>
-            <DialogTitle>Edit Material</DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
-              <FormField control={form.control} name="nameEn" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (English)</FormLabel>
-                  <FormControl><Input {...field} data-testid="input-material-name-en-edit" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="nameEs" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Spanish)</FormLabel>
-                    <FormControl><Input {...field} placeholder="Nombre en español" value={field.value || ''} data-testid="input-material-name-es-edit" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="nameFr" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (French)</FormLabel>
-                    <FormControl><Input {...field} placeholder="Nom en français" value={field.value || ''} data-testid="input-material-name-fr-edit" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="nameFa" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Persian)</FormLabel>
-                    <FormControl><Input {...field} placeholder="نام فارسی" value={field.value || ''} data-testid="input-material-name-fa-edit" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="nameTr" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Turkish)</FormLabel>
-                    <FormControl><Input {...field} placeholder="Türkçe ad" value={field.value || ''} data-testid="input-material-name-tr-edit" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-              <FormField control={form.control} name="image" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image (Optional)</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Upload image or enter URL"
-                      testId="input-material-image-edit"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="backgroundColor" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Background Color</FormLabel>
-                  <FormControl>
-                    <div className="flex gap-2">
-                      <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-material-color-edit" />
-                      <Input {...field} placeholder="#FF6B6B" className="flex-1" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingMaterial(null)}>Cancel</Button>
-                <Button type="submit" data-testid="button-update-material" disabled={updateMutation.isPending}>
-                  {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Update
-                </Button>
-              </div>
-            </form>
-          </Form>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 overflow-y-auto py-4 space-y-4 px-1">
+                <TabsContent value="info" className="space-y-4 m-0">
+                  <FormField control={form.control} name="generalName" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name (General/English)</FormLabel>
+                      <FormControl><Input {...field} placeholder="e.g. Tomato" data-testid="input-material-general-name" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  
+                  <FormField control={form.control} name="image" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image (Optional)</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Upload image or enter URL"
+                          testId="input-material-image"
+                        />
+                      </FormControl>
+                      <FormDescription>If no image, the color will be used as background</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  <FormField control={form.control} name="backgroundColor" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Background Color</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-material-color" />
+                          <Input {...field} placeholder="#FF6B6B" className="flex-1" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </TabsContent>
+
+                <TabsContent value="translation" className="space-y-4 m-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {languages.filter(l => l.code !== 'en').map((lang) => (
+                      <FormField 
+                        key={lang.code} 
+                        control={form.control} 
+                        name={`translations.${lang.code}`} 
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{lang.name} Translation</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                value={field.value || ''} 
+                                placeholder={`Name in ${lang.name}`}
+                                data-testid={`input-material-translation-${lang.code}`} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} 
+                      />
+                    ))}
+                    {languages.filter(l => l.code !== 'en').length === 0 && (
+                      <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                        No additional languages defined in database.
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <div className="pt-4 flex justify-end gap-2 sticky bottom-0 bg-background pb-2">
+                  <Button type="button" variant="ghost" onClick={() => {
+                    setFormOpen(false);
+                    setEditingMaterial(null);
+                  }}>Cancel</Button>
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-save-material">
+                    {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    {editingMaterial ? 'Update' : 'Create'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
@@ -373,12 +331,19 @@ export default function MaterialsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Material</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteMaterial?.name.en}"?
+              Are you sure you want to delete this material? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-material">Delete</AlertDialogAction>
+            <AlertDialogAction 
+              onClick={() => deleteMaterial && deleteMutation.mutate(deleteMaterial.id)}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground"
+            >
+              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
