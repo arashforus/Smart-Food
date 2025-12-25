@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Plus, Leaf, Salad, WheatOff, Flame, Heart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -43,6 +44,13 @@ import { apiRequest } from '@/lib/queryClient';
 import type { FoodType } from '@/lib/types';
 import { useState } from 'react';
 
+interface DbLanguage {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+}
+
 const iconOptions = [
   { value: 'leaf', label: 'Leaf', Icon: Leaf },
   { value: 'salad', label: 'Salad', Icon: Salad },
@@ -52,18 +60,9 @@ const iconOptions = [
 ];
 
 const typeSchema = z.object({
-  nameEn: z.string().min(1, 'English name is required'),
-  nameEs: z.string().optional(),
-  nameFr: z.string().optional(),
-  nameFa: z.string().optional(),
-  nameTr: z.string().optional(),
-  descEn: z.string().optional(),
-  descEs: z.string().optional(),
-  descFr: z.string().optional(),
-  descFa: z.string().optional(),
-  descTr: z.string().optional(),
   icon: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
+  names: z.record(z.string().min(1, 'Name is required')),
 });
 
 type TypeFormData = z.infer<typeof typeSchema>;
@@ -93,23 +92,21 @@ export default function TypesPage() {
     },
   });
 
+  const { data: languages = [] } = useQuery({
+    queryKey: ['/api/languages'],
+    queryFn: async () => {
+      const response = await fetch('/api/languages');
+      if (!response.ok) throw new Error('Failed to fetch languages');
+      const data = await response.json();
+      return (data as DbLanguage[]).filter((lang) => lang.isActive);
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: (data: TypeFormData) =>
       apiRequest('POST', '/api/food-types', {
-        name: {
-          en: data.nameEn,
-          es: data.nameEs || '',
-          fr: data.nameFr || '',
-          fa: data.nameFa || '',
-          tr: data.nameTr || '',
-        },
-        description: {
-          en: data.descEn || '',
-          es: data.descEs || '',
-          fr: data.descFr || '',
-          fa: data.descFa || '',
-          tr: data.descTr || '',
-        },
+        name: data.names,
+        description: {},
         icon: data.icon,
         color: data.color,
       }),
@@ -128,20 +125,8 @@ export default function TypesPage() {
     mutationFn: (data: TypeFormData) => {
       if (!editingType) throw new Error('No type selected');
       return apiRequest('PATCH', `/api/food-types/${editingType.id}`, {
-        name: {
-          en: data.nameEn,
-          es: data.nameEs || '',
-          fr: data.nameFr || '',
-          fa: data.nameFa || '',
-          tr: data.nameTr || '',
-        },
-        description: {
-          en: data.descEn || '',
-          es: data.descEs || '',
-          fr: data.descFr || '',
-          fa: data.descFa || '',
-          tr: data.descTr || '',
-        },
+        name: data.names,
+        description: {},
         icon: data.icon,
         color: data.color,
       });
@@ -172,18 +157,9 @@ export default function TypesPage() {
   const form = useForm<TypeFormData>({
     resolver: zodResolver(typeSchema),
     defaultValues: {
-      nameEn: '',
-      nameEs: '',
-      nameFr: '',
-      nameFa: '',
-      nameTr: '',
-      descEn: '',
-      descEs: '',
-      descFr: '',
-      descFa: '',
-      descTr: '',
       icon: 'leaf',
       color: '#4CAF50',
+      names: {},
     },
   });
 
@@ -217,39 +193,28 @@ export default function TypesPage() {
   };
 
   const openCreate = () => {
+    const defaultNames: Record<string, string> = {};
+    languages.forEach((lang) => {
+      defaultNames[lang.code] = '';
+    });
     form.reset({
-      nameEn: '',
-      nameEs: '',
-      nameFr: '',
-      nameFa: '',
-      nameTr: '',
-      descEn: '',
-      descEs: '',
-      descFr: '',
-      descFa: '',
-      descTr: '',
       icon: 'leaf',
       color: '#4CAF50',
+      names: defaultNames,
     });
     setFormOpen(true);
   };
 
   const openEdit = (foodType: DbFoodType) => {
     const name = parseName(foodType.name);
-    const description = parseDescription(foodType.description);
+    const names: Record<string, string> = {};
+    languages.forEach((lang) => {
+      names[lang.code] = (name as any)[lang.code] || '';
+    });
     form.reset({
-      nameEn: name.en || '',
-      nameEs: name.es || '',
-      nameFr: name.fr || '',
-      nameFa: name.fa || '',
-      nameTr: name.tr || '',
-      descEn: description.en || '',
-      descEs: description.es || '',
-      descFr: description.fr || '',
-      descFa: description.fa || '',
-      descTr: description.tr || '',
       icon: foodType.icon || 'leaf',
       color: foodType.color,
+      names,
     });
     setEditingType(foodType);
   };
@@ -346,68 +311,88 @@ export default function TypesPage() {
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="nameEn"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (English)</FormLabel>
-                    <FormControl>
-                      <Input {...field} data-testid="input-type-name-en" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="icon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Icon</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-type-icon">
-                          <SelectValue placeholder="Select icon" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {iconOptions.map((icon) => (
-                          <SelectItem key={icon.value} value={icon.value}>
-                            <div className="flex items-center gap-2">
-                              <icon.Icon className="h-4 w-4" />
-                              {icon.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="color"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Color</FormLabel>
-                    <FormControl>
-                      <div className="flex gap-2">
-                        <Input
-                          type="color"
-                          {...field}
-                          className="w-14 h-9 p-1"
-                          data-testid="input-type-color"
-                        />
-                        <Input {...field} placeholder="#4CAF50" className="flex-1" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end gap-2">
+              <Tabs defaultValue="info" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="info">Info</TabsTrigger>
+                  <TabsTrigger value="translation">Translation</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="info" className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="icon"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Icon</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-type-icon">
+                              <SelectValue placeholder="Select icon" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {iconOptions.map((icon) => (
+                              <SelectItem key={icon.value} value={icon.value}>
+                                <div className="flex items-center gap-2">
+                                  <icon.Icon className="h-4 w-4" />
+                                  {icon.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="color"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Color</FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <Input
+                              type="color"
+                              {...field}
+                              className="w-14 h-9 p-1"
+                              data-testid="input-type-color"
+                            />
+                            <Input {...field} placeholder="#4CAF50" className="flex-1" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+
+                <TabsContent value="translation" className="space-y-4">
+                  {languages.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No active languages defined</p>
+                  ) : (
+                    languages.map((lang) => (
+                      <FormField
+                        key={lang.code}
+                        control={form.control}
+                        name={`names.${lang.code}`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{lang.name}</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}`} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))
+                  )}
+                </TabsContent>
+              </Tabs>
+
+              <div className="flex justify-end gap-2 mt-6">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>
                   Cancel
                 </Button>
@@ -427,68 +412,88 @@ export default function TypesPage() {
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="nameEn"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (English)</FormLabel>
-                    <FormControl>
-                      <Input {...field} data-testid="input-type-name-en-edit" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="icon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Icon</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-type-icon-edit">
-                          <SelectValue placeholder="Select icon" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {iconOptions.map((icon) => (
-                          <SelectItem key={icon.value} value={icon.value}>
-                            <div className="flex items-center gap-2">
-                              <icon.Icon className="h-4 w-4" />
-                              {icon.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="color"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Color</FormLabel>
-                    <FormControl>
-                      <div className="flex gap-2">
-                        <Input
-                          type="color"
-                          {...field}
-                          className="w-14 h-9 p-1"
-                          data-testid="input-type-color-edit"
-                        />
-                        <Input {...field} placeholder="#4CAF50" className="flex-1" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex justify-end gap-2">
+              <Tabs defaultValue="info" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="info">Info</TabsTrigger>
+                  <TabsTrigger value="translation">Translation</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="info" className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="icon"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Icon</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-type-icon-edit">
+                              <SelectValue placeholder="Select icon" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {iconOptions.map((icon) => (
+                              <SelectItem key={icon.value} value={icon.value}>
+                                <div className="flex items-center gap-2">
+                                  <icon.Icon className="h-4 w-4" />
+                                  {icon.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="color"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Color</FormLabel>
+                        <FormControl>
+                          <div className="flex gap-2">
+                            <Input
+                              type="color"
+                              {...field}
+                              className="w-14 h-9 p-1"
+                              data-testid="input-type-color-edit"
+                            />
+                            <Input {...field} placeholder="#4CAF50" className="flex-1" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+
+                <TabsContent value="translation" className="space-y-4">
+                  {languages.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No active languages defined</p>
+                  ) : (
+                    languages.map((lang) => (
+                      <FormField
+                        key={lang.code}
+                        control={form.control}
+                        name={`names.${lang.code}`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{lang.name}</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}-edit`} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))
+                  )}
+                </TabsContent>
+              </Tabs>
+
+              <div className="flex justify-end gap-2 mt-6">
                 <Button type="button" variant="ghost" onClick={() => setEditingType(null)}>
                   Cancel
                 </Button>
