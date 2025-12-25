@@ -116,6 +116,7 @@ export const foodTypes = pgTable("food_types", {
 
 export const materials = pgTable("materials", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  generalName: text("general_name").notNull().default(""),
   name: jsonb("name").notNull(),
   icon: text("icon"),
   color: text("color"),

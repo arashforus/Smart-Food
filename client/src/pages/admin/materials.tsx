@@ -74,18 +74,13 @@ export default function MaterialsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: MaterialFormData) => {
-      // Structure name as object { en: ..., es: ... }
-      const name: Record<string, string> = { en: data.generalName };
-      if (data.translations) {
-        Object.entries(data.translations).forEach(([code, val]) => {
-          if (val) name[code] = val;
-        });
-      }
-
+      const name: Record<string, string> = { ...data.translations };
+      
       return apiRequest('POST', '/api/materials', {
+        generalName: data.generalName,
         name,
         color: data.backgroundColor,
-        icon: data.image, // Using icon field for image URL as per schema
+        icon: data.image,
       });
     },
     onSuccess: () => {
@@ -100,14 +95,10 @@ export default function MaterialsPage() {
     mutationFn: async (data: MaterialFormData) => {
       if (!editingMaterial) throw new Error('No material selected');
       
-      const name: Record<string, string> = { en: data.generalName };
-      if (data.translations) {
-        Object.entries(data.translations).forEach(([code, val]) => {
-          if (val) name[code] = val;
-        });
-      }
+      const name: Record<string, string> = { ...data.translations };
 
       return apiRequest('PATCH', `/api/materials/${editingMaterial.id}`, {
+        generalName: data.generalName,
         name,
         color: data.backgroundColor,
         icon: data.image,
@@ -137,18 +128,11 @@ export default function MaterialsPage() {
   };
 
   const openEdit = (material: any) => {
-    const translations: Record<string, string> = {};
-    if (material.name) {
-      Object.entries(material.name).forEach(([code, val]) => {
-        if (code !== 'en') translations[code] = val as string;
-      });
-    }
-
     form.reset({
-      generalName: material.name?.en || '',
+      generalName: material.generalName || '',
       backgroundColor: material.color || '#FF6B6B',
       image: material.icon || '',
-      translations,
+      translations: material.name || {},
     });
     setActiveTab('info');
     setEditingMaterial(material);
@@ -191,18 +175,18 @@ export default function MaterialsPage() {
             header: 'Preview',
             render: (item: any) => (
               item.icon ? (
-                <img src={item.icon} alt={item.name?.en} className="w-8 h-8 rounded-md object-cover" />
+                <img src={item.icon} alt={item.generalName} className="w-8 h-8 rounded-md object-cover" />
               ) : (
                 <div
                   className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
                   style={{ backgroundColor: item.color || '#ccc' }}
                 >
-                  {item.name?.en?.charAt(0).toUpperCase()}
+                  {item.generalName?.charAt(0).toUpperCase()}
                 </div>
               )
             ),
           },
-          { key: 'name', header: 'Name (English)', render: (item: any) => item.name?.en },
+          { key: 'generalName', header: 'Name', render: (item: any) => item.generalName },
           { key: 'color', header: 'Color', render: (item: any) => (
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
@@ -243,7 +227,7 @@ export default function MaterialsPage() {
                 <TabsContent value="info" className="space-y-4 m-0">
                   <FormField control={form.control} name="generalName" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name (General/English)</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl><Input {...field} placeholder="e.g. Tomato" data-testid="input-material-general-name" /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -281,7 +265,7 @@ export default function MaterialsPage() {
 
                 <TabsContent value="translation" className="space-y-4 m-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {languages.filter(l => l.code !== 'en').map((lang) => (
+                    {languages.map((lang) => (
                       <FormField 
                         key={lang.code} 
                         control={form.control} 
@@ -302,9 +286,9 @@ export default function MaterialsPage() {
                         )} 
                       />
                     ))}
-                    {languages.filter(l => l.code !== 'en').length === 0 && (
+                    {languages.length === 0 && (
                       <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                        No additional languages defined in database.
+                        No languages defined in database.
                       </div>
                     )}
                   </div>
