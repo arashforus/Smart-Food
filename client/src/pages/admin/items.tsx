@@ -93,6 +93,7 @@ interface StorageItem {
   image?: string;
   available: boolean;
   suggested: boolean;
+  isNew: boolean;
   materials?: string[];
   types?: string[];
 }
@@ -181,6 +182,7 @@ export default function ItemsPage() {
         image: data.image || null,
         available: data.available,
         suggested: data.suggested,
+        isNew: data.isNew,
         materials: data.materials,
       });
     },
@@ -209,6 +211,7 @@ export default function ItemsPage() {
         image: data.image || null,
         available: data.available,
         suggested: data.suggested,
+        isNew: data.isNew,
         materials: data.materials,
       });
     },
@@ -266,7 +269,7 @@ export default function ItemsPage() {
       longDescriptionTr: item.longDescription.tr || '',
       price: parseFloat(String(item.price)),
       discountedPrice: item.discountedPrice? parseFloat(String(item.discountedPrice)) : undefined,
-      maxSelect: parseFloat(String(item.maxSelect)),
+      maxSelect: item.maxSelect ? parseFloat(String(item.maxSelect)) : undefined,
       categoryId: item.categoryId,
       image: item.image || '',
       available: item.available,
