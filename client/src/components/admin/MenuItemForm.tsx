@@ -90,6 +90,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       price: Number(data.price),
       discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
       maxSelect: data.maxSelect !== undefined ? Math.round(Number(data.maxSelect)) : undefined,
+      isNew: data.isNew,
     };
     onSubmit(formattedData as any);
     form.reset();
