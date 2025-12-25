@@ -145,7 +145,7 @@ export default function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <p className="text-xs text-muted-foreground">v1.0.0</p>
+        <p className="text-xs text-muted-foreground">v1.5.0</p>
       </SidebarFooter>
     </Sidebar>
   );

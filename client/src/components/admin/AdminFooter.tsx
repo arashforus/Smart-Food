@@ -10,7 +10,10 @@ export default function AdminFooter() {
           © {year} Restaurant Menu Manager. All rights reserved.
         </p>
         <p className="flex items-center gap-1" data-testid="text-author">
-          Made with <Heart className="h-4 w-4 text-red-500 fill-red-500" /> by arashforus
+          Made with <Heart className="h-4 w-4 text-red-500 fill-red-500" /> by{' '}
+          <a href="https://arashsohrabi.com" target="_blank" rel="noopener noreferrer" className="hover:underline text-foreground">
+            arashforus
+          </a>
         </p>
       </div>
     </footer>
