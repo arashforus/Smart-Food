@@ -271,7 +271,7 @@ export default function ItemsPage() {
       image: item.image || '',
       available: item.available,
       suggested: item.suggested,
-      isNew: false,
+      isNew: item.isNew ?? false,
       materials: item.materials || [],
     });
     setEditingItem(item);
@@ -284,6 +284,7 @@ export default function ItemsPage() {
       price: Number(data.price),
       discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
       maxSelect: data.maxSelect !== undefined ? Number(data.maxSelect) : undefined,
+      isNew: data.isNew,
     };
     createMutation.mutate(formattedData);
   };
@@ -295,6 +296,7 @@ export default function ItemsPage() {
       price: Number(data.price),
       discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
       maxSelect: data.maxSelect !== undefined ? Number(data.maxSelect) : undefined,
+      isNew: data.isNew,
     };
     updateMutation.mutate(formattedData);
   };
@@ -636,6 +638,11 @@ export default function ItemsPage() {
                   <Badge variant="outline" className="no-default-active-elevate text-amber-600 border-amber-500/50">
                     <Star className="h-3 w-3 mr-1 fill-amber-500" />
                     Suggested
+                  </Badge>
+                )}
+                {item.isNew && (
+                  <Badge variant="outline" className="no-default-active-elevate text-blue-600 border-blue-500/50">
+                    New
                   </Badge>
                 )}
               </div>
