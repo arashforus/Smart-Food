@@ -103,8 +103,11 @@ export interface StorageLanguage {
 
 export interface StorageFoodType {
   id: string;
+  generalName: string;
   name: Record<string, string>;
   description: Record<string, string>;
+  icon?: string;
+  color?: string;
   isActive: boolean;
   order: number;
 }

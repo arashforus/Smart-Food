@@ -107,8 +107,10 @@ export const languages = pgTable("languages", {
 
 export const foodTypes = pgTable("food_types", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  generalName: text("general_name").notNull().default(""),
   name: jsonb("name").notNull(),
   description: jsonb("description").notNull(),
+  icon: text("icon"),
   isActive: boolean("is_active").notNull().default(true),
   order: numeric("order").notNull().default("1"),
   createdAt: timestamp("created_at").defaultNow(),

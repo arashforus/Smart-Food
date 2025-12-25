@@ -63,18 +63,19 @@ const typeSchema = z.object({
   generalName: z.string().min(1, 'General name is required'),
   icon: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
-  names: z.record(z.string().min(1, 'Name is required')),
+  names: z.record(z.string().optional()),
 });
 
 type TypeFormData = z.infer<typeof typeSchema>;
 
 interface DbFoodType {
   id: string;
-  name: string;
-  description: string;
+  generalName: string;
+  name: Record<string, string>;
+  description: Record<string, string>;
   icon: string | null;
   color: string;
-  is_active: boolean;
+  isActive: boolean;
   order: number;
 }
 
@@ -104,13 +105,19 @@ export default function TypesPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: TypeFormData) =>
-      apiRequest('POST', '/api/food-types', {
-        name: { ...data.names, _general: data.generalName },
+    mutationFn: (data: TypeFormData) => {
+      const nameObj: Record<string, string> = {};
+      languages.forEach((lang) => {
+        nameObj[lang.code] = data.names[lang.code] || (lang.code === 'en' ? data.generalName : '');
+      });
+      return apiRequest('POST', '/api/food-types', {
+        generalName: data.generalName,
+        name: nameObj,
         description: {},
         icon: data.icon,
         color: data.color,
-      }),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setFormOpen(false);
@@ -125,8 +132,13 @@ export default function TypesPage() {
   const updateMutation = useMutation({
     mutationFn: (data: TypeFormData) => {
       if (!editingType) throw new Error('No type selected');
+      const nameObj: Record<string, string> = {};
+      languages.forEach((lang) => {
+        nameObj[lang.code] = data.names[lang.code] || (lang.code === 'en' ? data.generalName : '');
+      });
       return apiRequest('PATCH', `/api/food-types/${editingType.id}`, {
-        name: { ...data.names, _general: data.generalName },
+        generalName: data.generalName,
+        name: nameObj,
         description: {},
         icon: data.icon,
         color: data.color,
@@ -209,13 +221,12 @@ export default function TypesPage() {
   };
 
   const openEdit = (foodType: DbFoodType) => {
-    const name = parseName(foodType.name);
     const names: Record<string, string> = {};
     languages.forEach((lang) => {
-      names[lang.code] = (name as any)[lang.code] || '';
+      names[lang.code] = foodType.name[lang.code] || '';
     });
     form.reset({
-      generalName: (name as any)._general || '',
+      generalName: foodType.generalName || '',
       icon: foodType.icon || 'leaf',
       color: foodType.color,
       names,
@@ -239,10 +250,10 @@ export default function TypesPage() {
 
   // Convert DB types to FoodType for display
   const displayTypes: FoodType[] = dbFoodTypes.map((t) => {
-    const name = parseName(t.name);
     return {
       id: t.id,
-      name,
+      generalName: t.generalName,
+      name: t.name,
       icon: t.icon || 'leaf',
       color: t.color,
     };
@@ -279,7 +290,7 @@ export default function TypesPage() {
                 </div>
               ),
             },
-            { key: 'name', header: 'Name', render: (item) => (item.name as any)._general || item.name.en || 'N/A' },
+            { key: 'generalName', header: 'Name', render: (item: any) => item.generalName || item.name?.en || 'N/A' },
             {
               key: 'icon',
               header: 'Icon',
@@ -321,13 +332,13 @@ export default function TypesPage() {
                   <TabsTrigger value="translation">Translation</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="info" className="space-y-4">
+                <TabsContent value="info" className="space-y-4 pt-4">
                   <FormField
                     control={form.control}
                     name="generalName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>General Name (Admin Display)</FormLabel>
+                        <FormLabel>Name</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name" />
                         </FormControl>
@@ -385,7 +396,7 @@ export default function TypesPage() {
                   />
                 </TabsContent>
 
-                <TabsContent value="translation" className="space-y-4">
+                <TabsContent value="translation" className="space-y-4 pt-4">
                   {languages.length === 0 ? (
                     <p className="text-sm text-muted-foreground">No active languages defined</p>
                   ) : (
@@ -398,7 +409,7 @@ export default function TypesPage() {
                           <FormItem>
                             <FormLabel>{lang.name}</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}`} />
+                              <Input {...field} value={field.value || ''} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}`} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -435,13 +446,13 @@ export default function TypesPage() {
                   <TabsTrigger value="translation">Translation</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="info" className="space-y-4">
+                <TabsContent value="info" className="space-y-4 pt-4">
                   <FormField
                     control={form.control}
                     name="generalName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>General Name (Admin Display)</FormLabel>
+                        <FormLabel>Name</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name-edit" />
                         </FormControl>
@@ -499,7 +510,7 @@ export default function TypesPage() {
                   />
                 </TabsContent>
 
-                <TabsContent value="translation" className="space-y-4">
+                <TabsContent value="translation" className="space-y-4 pt-4">
                   {languages.length === 0 ? (
                     <p className="text-sm text-muted-foreground">No active languages defined</p>
                   ) : (
@@ -512,7 +523,7 @@ export default function TypesPage() {
                           <FormItem>
                             <FormLabel>{lang.name}</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}-edit`} />
+                              <Input {...field} value={field.value || ''} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}-edit`} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

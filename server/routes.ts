@@ -729,7 +729,7 @@ export async function registerRoutes(
       });
 
       const result = await pool.query(
-        "SELECT id, name, description, icon, color, is_active, \"order\" FROM food_types ORDER BY \"order\" ASC"
+        "SELECT id, general_name as \"generalName\", name, description, icon, color, is_active as \"isActive\", \"order\" FROM food_types ORDER BY \"order\" ASC"
       );
 
       await pool.end();
@@ -746,14 +746,15 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Database not configured" });
       }
 
-      const { name, description, icon, color } = req.body;
+      const { generalName, name, description, icon, color } = req.body;
       const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
       });
 
       const result = await pool.query(
-        "INSERT INTO food_types (name, description, icon, color, is_active, \"order\") VALUES ($1, $2, $3, $4, true, 1) RETURNING *",
+        "INSERT INTO food_types (general_name, name, description, icon, color, is_active, \"order\") VALUES ($1, $2, $3, $4, $5, true, 1) RETURNING id, general_name as \"generalName\", name, description, icon, color, is_active as \"isActive\", \"order\"",
         [
+          generalName || "",
           JSON.stringify(name),
           JSON.stringify(description || {}),
           icon || "leaf",
@@ -775,14 +776,15 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Database not configured" });
       }
 
-      const { name, description, icon, color } = req.body;
+      const { generalName, name, description, icon, color } = req.body;
       const pool = new Pool({
         connectionString: process.env.DATABASE_URL,
       });
 
       const result = await pool.query(
-        "UPDATE food_types SET name = $1, description = $2, icon = $3, color = $4 WHERE id = $5 RETURNING *",
+        "UPDATE food_types SET general_name = $1, name = $2, description = $3, icon = $4, color = $5 WHERE id = $6 RETURNING id, general_name as \"generalName\", name, description, icon, color, is_active as \"isActive\", \"order\"",
         [
+          generalName || "",
           JSON.stringify(name),
           JSON.stringify(description || {}),
           icon || "leaf",

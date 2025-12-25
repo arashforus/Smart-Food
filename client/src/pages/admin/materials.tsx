@@ -167,50 +167,63 @@ export default function MaterialsPage() {
         </Button>
       </div>
 
-      <DataTable
-        data={materials}
-        columns={[
-          {
-            key: 'preview',
-            header: 'Preview',
-            render: (item: any) => (
-              item.icon ? (
-                <img src={item.icon} alt={item.generalName} className="w-8 h-8 rounded-md object-cover" />
-              ) : (
-                <div
-                  className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
-                  style={{ backgroundColor: item.color || '#ccc' }}
-                >
-                  {item.generalName?.charAt(0).toUpperCase()}
+          <DataTable
+            data={materials.map((m: any) => ({
+              ...m,
+              id: m.id,
+              generalName: m.generalName,
+              name: m.name,
+              image: m.icon || '',
+              color: m.color || '#FF6B6B',
+              isActive: m.isActive,
+              order: Number(m.order),
+            }))}
+            columns={[
+              {
+                key: 'preview',
+                header: 'Preview',
+                render: (item: any) => (
+                  item.image ? (
+                    <img src={item.image} alt={item.generalName} className="w-8 h-8 rounded-md object-cover" />
+                  ) : (
+                    <div
+                      className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
+                      style={{ backgroundColor: item.color || '#ccc' }}
+                    >
+                      {item.generalName?.charAt(0).toUpperCase()}
+                    </div>
+                  )
+                ),
+              },
+              { 
+                key: 'generalName', 
+                header: 'Name', 
+                render: (item: any) => item.generalName || (item.name as any)?.en || 'N/A' 
+              },
+              { 
+                key: 'translations', 
+                header: 'Translations', 
+                render: (item: any) => {
+                  const count = Object.values(item.name || {}).filter(v => v && String(v).trim() !== '').length;
+                  return (
+                    <div className="flex items-center gap-1.5">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-sm font-medium">{count}</span>
+                    </div>
+                  );
+                }
+              },
+              { key: 'color', header: 'Color', render: (item: any) => (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
+                  <span className="text-xs text-muted-foreground">{item.color}</span>
                 </div>
-              )
-            ),
-          },
-          { key: 'generalName', header: 'Name', render: (item: any) => item.generalName },
-          { 
-            key: 'translations', 
-            header: 'Translations', 
-            render: (item: any) => {
-              const count = Object.values(item.name || {}).filter(v => v && String(v).trim() !== '').length;
-              return (
-                <div className="flex items-center gap-1.5">
-                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-sm font-medium">{count}</span>
-                </div>
-              );
-            }
-          },
-          { key: 'color', header: 'Color', render: (item: any) => (
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
-              <span className="text-xs text-muted-foreground">{item.color}</span>
-            </div>
-          )},
-        ]}
-        onEdit={openEdit}
-        onDelete={(item: any) => setDeleteMaterial(item)}
-        testIdPrefix="material"
-      />
+              )},
+            ]}
+            onEdit={openEdit}
+            onDelete={(item: any) => setDeleteMaterial(item)}
+            testIdPrefix="material"
+          />
 
       <Dialog open={formOpen || !!editingMaterial} onOpenChange={(open) => {
         if (!open) {
