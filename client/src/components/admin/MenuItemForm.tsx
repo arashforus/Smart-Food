@@ -35,8 +35,9 @@ const menuItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   descriptionEs: z.string().min(1, 'Spanish description is required'),
   descriptionFr: z.string().min(1, 'French description is required'),
-  price: z.preprocess((val) => Number(val), z.number().int().min(1, 'Price must be at least 1')),
-  maxSelect: z.preprocess((val) => Number(val), z.number().int().min(1, 'Max selection must be at least 1')).optional(),
+  price: z.preprocess((val) => Number(val), z.number().min(0.01, 'Price must be greater than 0')),
+  discountedPrice: z.preprocess((val) => val === '' || val === null ? undefined : Number(val), z.number().min(0).optional()),
+  maxSelect: z.preprocess((val) => val === '' || val === null ? undefined : Number(val), z.number().int().min(1).optional()),
   categoryId: z.string().min(1, 'Category is required'),
   available: z.boolean(),
   image: z.string().optional(),
@@ -67,8 +68,9 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       description: (item?.shortDescription as any)?.en ?? '',
       descriptionEs: (item?.shortDescription as any)?.es ?? '',
       descriptionFr: (item?.shortDescription as any)?.fr ?? '',
-      price: Math.round(Number(item?.price)) || 0,
-      maxSelect: Math.round(Number(item?.maxSelect)) || 1,
+      price: Number(item?.price) || 0,
+      discountedPrice: item?.discountedPrice ? Number(item?.discountedPrice) : undefined,
+      maxSelect: item?.maxSelect ? Number(item?.maxSelect) : 1,
       categoryId: item?.categoryId ?? '',
       available: item?.available ?? true,
       image: item?.image ?? '',
@@ -76,11 +78,12 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
   });
 
   const handleSubmit = (data: MenuItemFormData) => {
-    // Ensure numeric fields are actually numbers and rounded
+    // Convert numeric fields to appropriate types
     const formattedData = {
       ...data,
-      price: Math.round(Number(data.price)),
-      maxSelect: Math.round(Number(data.maxSelect || 1)),
+      price: Number(data.price),
+      discountedPrice: data.discountedPrice ? Number(data.discountedPrice) : null,
+      maxSelect: data.maxSelect ? Math.round(Number(data.maxSelect)) : null,
     };
     onSubmit(formattedData);
     form.reset();
@@ -185,10 +188,10 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                     <FormControl>
                       <Input
                         type="number"
-                        step="1"
+                        step="0.01"
                         {...field}
                         onChange={(e) => {
-                          const val = e.target.value === '' ? 0 : Math.round(parseFloat(e.target.value));
+                          const val = e.target.value === '' ? '' : e.target.value;
                           field.onChange(val);
                         }}
                         data-testid="input-item-price"
@@ -200,6 +203,31 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
               />
               <FormField
                 control={form.control}
+                name="discountedPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Discounted Price ($)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          const val = e.target.value === '' ? '' : e.target.value;
+                          field.onChange(val);
+                        }}
+                        data-testid="input-item-discounted-price"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
                 name="maxSelect"
                 render={({ field }) => (
                   <FormItem>
@@ -209,8 +237,9 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                         type="number"
                         step="1"
                         {...field}
+                        value={field.value ?? ''}
                         onChange={(e) => {
-                          const val = e.target.value === '' ? 1 : Math.round(parseFloat(e.target.value));
+                          const val = e.target.value === '' ? '' : e.target.value;
                           field.onChange(val);
                         }}
                         data-testid="input-item-max-select"
@@ -220,8 +249,6 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="categoryId"
@@ -243,9 +270,9 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                                 {cat.image ? (
                                   <img src={cat.image} alt="" className="w-4 h-4 rounded-sm object-cover" />
                                 ) : (
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-3 h-3 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image w-3 h-3 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
                                 )}
-                                {cat.name}
+                                {(cat.name as any)?.en ?? cat.generalName}
                               </div>
                             </SelectItem>
                           ))}

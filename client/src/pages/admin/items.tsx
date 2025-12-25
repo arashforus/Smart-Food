@@ -81,8 +81,6 @@ const itemSchema = z.object({
 
 type ItemFormData = z.infer<typeof itemSchema>;
 
-import stockImage from '@assets/stock_images/professional_food_pl_953ff621.jpg';
-
 interface StorageItem {
   id: string;
   categoryId: string;
