@@ -15,6 +15,8 @@ export const branches = pgTable("branches", {
   name: text("name").notNull(),
   address: text("address").notNull(),
   phone: text("phone").notNull(),
+  owner: text("owner"),
+  ownerPhone: text("owner_phone"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });

@@ -289,8 +289,8 @@ export async function registerRoutes(
 
   app.post("/api/branches", async (req: Request, res: Response) => {
     try {
-      const { name, address, phone, isActive } = req.body;
-      const branch = await storage.createBranch({ name, address, phone, isActive });
+      const { name, address, phone, owner, ownerPhone, isActive } = req.body;
+      const branch = await storage.createBranch({ name, address, phone, owner, ownerPhone, isActive });
       res.json(branch);
     } catch (error) {
       console.error("Create branch error:", error);
@@ -300,8 +300,8 @@ export async function registerRoutes(
 
   app.patch("/api/branches/:id", async (req: Request, res: Response) => {
     try {
-      const { name, address, phone, isActive } = req.body;
-      const branch = await storage.updateBranch(req.params.id, { name, address, phone, isActive });
+      const { name, address, phone, owner, ownerPhone, isActive } = req.body;
+      const branch = await storage.updateBranch(req.params.id, { name, address, phone, owner, ownerPhone, isActive });
       if (!branch) return res.status(404).json({ message: "Branch not found" });
       res.json(branch);
     } catch (error) {

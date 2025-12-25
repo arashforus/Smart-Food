@@ -17,6 +17,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "007-add-language-fields", description: "Add native_name, direction, flag_image, and is_default fields to languages table" },
   { version: "008-add-icon-color-to-food-types", description: "Add icon and color columns to food_types table" },
   { version: "009-add-general-name-to-food-types", description: "Add general_name column to food_types table" },
+  { version: "010-add-owner-fields-to-branches", description: "Add owner and owner_phone columns to branches table" },
 ];
 
 export async function runDatabaseMigrations() {
