@@ -148,7 +148,12 @@ export default function TablesPage() {
   };
 
   const openEdit = (table: StorageTable) => {
-    form.reset({ branchId: table.branchId, tableNumber: table.tableNumber, capacity: table.capacity, isActive: table.isActive });
+    form.reset({ 
+      branchId: table.branchId, 
+      tableNumber: table.tableNumber,
+      capacity: Number(table.capacity), 
+      isActive: table.isActive 
+    });
     setEditingTable(table);
   };
 

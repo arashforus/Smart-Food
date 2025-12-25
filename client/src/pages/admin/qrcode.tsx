@@ -85,13 +85,13 @@ export default function QRCodePage() {
         <p className="text-muted-foreground">Generate QR codes for your digital menu</p>
       </div>
 
-      <Tabs defaultValue="main" className="space-y-6">
+      <Tabs defaultValue="main" className="space-y-6 flex flex-col items-center">
         <TabsList>
           <TabsTrigger value="main" data-testid="tab-main-qr">Main Menu</TabsTrigger>
           <TabsTrigger value="tables" data-testid="tab-tables-qr">Table QR Codes</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="main">
+        <TabsContent value="main" className="w-full flex justify-center">
           <Card className="max-w-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -139,8 +139,8 @@ export default function QRCodePage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="tables" className="space-y-4">
-          <div className="flex items-center gap-2 flex-wrap">
+        <TabsContent value="tables" className="space-y-4 w-full flex flex-col items-center">
+          <div className="flex items-center gap-2 flex-wrap justify-center">
             <span className="text-sm text-muted-foreground">Filter by branch:</span>
             <div className="flex gap-2 flex-wrap">
               <Button
@@ -172,7 +172,8 @@ export default function QRCodePage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="w-full flex justify-center">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-6xl">
               {filteredTables.filter(t => t.isActive).map((table) => (
                 <Card key={table.id}>
                   <CardHeader className="pb-2">
@@ -219,6 +220,7 @@ export default function QRCodePage() {
                   </CardContent>
                 </Card>
               ))}
+              </div>
             </div>
           )}
         </TabsContent>
