@@ -182,7 +182,7 @@ export default function TypesPage() {
     return iconOption ? <iconOption.Icon className="h-4 w-4" /> : null;
   };
 
-  const parseName = (nameStr: string) => {
+  const parseName = (nameStr: string | Record<string, string>) => {
     if (!nameStr) return { en: '' };
     if (typeof nameStr === 'string') {
       try {
@@ -207,6 +207,7 @@ export default function TypesPage() {
   };
 
   const openCreate = () => {
+    setEditingType(null);
     const defaultNames: Record<string, string> = {};
     languages.forEach((lang) => {
       defaultNames[lang.code] = '';
@@ -221,6 +222,7 @@ export default function TypesPage() {
   };
 
   const openEdit = (foodType: DbFoodType) => {
+    setFormOpen(false);
     const names: Record<string, string> = {};
     languages.forEach((lang) => {
       names[lang.code] = foodType.name[lang.code] || '';
@@ -323,7 +325,12 @@ export default function TypesPage() {
           />
       )}
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+      <Dialog open={formOpen} onOpenChange={(open) => {
+        if (!open) {
+          setFormOpen(false);
+          form.reset();
+        }
+      }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-form">
           <DialogHeader>
             <DialogTitle>Add Food Type</DialogTitle>
@@ -425,10 +432,13 @@ export default function TypesPage() {
               </Tabs>
 
               <div className="flex justify-end gap-2 mt-6">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>
+                <Button type="button" variant="ghost" onClick={() => {
+                  setFormOpen(false);
+                  form.reset();
+                }}>
                   Cancel
                 </Button>
-                <Button type="submit" data-testid="button-save-type" disabled={createMutation.isPending}>
+                <Button type="submit" data-testid="button-save-type" disabled={createMutation.isPending || !form.formState.isValid}>
                   {createMutation.isPending ? 'Creating...' : 'Create'}
                 </Button>
               </div>
@@ -437,7 +447,12 @@ export default function TypesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!editingType} onOpenChange={() => setEditingType(null)}>
+      <Dialog open={!!editingType} onOpenChange={(open) => {
+        if (!open) {
+          setEditingType(null);
+          form.reset();
+        }
+      }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-edit">
           <DialogHeader>
             <DialogTitle>Edit Food Type</DialogTitle>
@@ -539,10 +554,13 @@ export default function TypesPage() {
               </Tabs>
 
               <div className="flex justify-end gap-2 mt-6">
-                <Button type="button" variant="ghost" onClick={() => setEditingType(null)}>
+                <Button type="button" variant="ghost" onClick={() => {
+                  setEditingType(null);
+                  form.reset();
+                }}>
                   Cancel
                 </Button>
-                <Button type="submit" data-testid="button-update-type" disabled={updateMutation.isPending}>
+                <Button type="submit" data-testid="button-update-type" disabled={updateMutation.isPending || !form.formState.isValid}>
                   {updateMutation.isPending ? 'Updating...' : 'Update'}
                 </Button>
               </div>
