@@ -312,25 +312,24 @@ export default function ItemsPage() {
   const getCategoryName = (categoryId: string) => categories.find((c) => c.id === categoryId)?.name.en || 'Unknown';
   const currencySymbol = settings?.currencySymbol || '$';
 
-  const FormContent = useMemo(() => {
-    return ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => {
-      const { toast } = useToast();
+  const FormContent = ({ onSubmit, onCancel, isEdit }: { onSubmit: (data: ItemFormData) => void; onCancel: () => void; isEdit: boolean }) => {
+    const { toast } = useToast();
+    
+    const onFormError = (errors: any) => {
+      const errorMessages = Object.values(errors)
+        .map((error: any) => error.message)
+        .filter(Boolean);
       
-      const onFormError = (errors: any) => {
-        const errorMessages = Object.values(errors)
-          .map((error: any) => error.message)
-          .filter(Boolean);
-        
-        if (errorMessages.length > 0) {
-          toast({
-            title: "Validation Error",
-            description: errorMessages.join(". "),
-            variant: "destructive",
-          });
-        }
-      };
+      if (errorMessages.length > 0) {
+        toast({
+          title: "Validation Error",
+          description: errorMessages.join(". "),
+          variant: "destructive",
+        });
+      }
+    };
 
-      return (
+    return (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-4">
             <Tabs defaultValue="basic" className="w-full">
@@ -567,8 +566,7 @@ export default function ItemsPage() {
           </form>
         </Form>
       );
-    };
-  }, [form, categories, materials, sortedLanguages, currencySymbol, createMutation.isPending, updateMutation.isPending]);
+  };
 
   if (itemsLoading || categoriesLoading || languagesLoading) {
     return (
