@@ -35,7 +35,7 @@ const menuItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   descriptionEs: z.string().min(1, 'Spanish description is required'),
   descriptionFr: z.string().min(1, 'French description is required'),
-  price: z.preprocess((val) => (val === '' || val === null ? 0 : Number(val)), z.number().min(0.01, 'Price must be greater than 0')),
+  price: z.preprocess((val) => (val === '' || val === null || val === undefined ? 0 : Number(val)), z.number().min(0.01, 'Price must be greater than 0')),
   discountedPrice: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().min(0).optional()),
   maxSelect: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().int().min(1).optional()),
   categoryId: z.string().min(1, 'Category is required'),
