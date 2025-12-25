@@ -293,7 +293,7 @@ export default function TypesPage() {
               { 
                 key: 'generalName', 
                 header: 'Name', 
-                render: (item: any) => item.generalName || (item.name as any)?.en || 'N/A' 
+                render: (item: any) => item.generalName || item.name?.en || 'N/A' 
               },
               {
                 key: 'icon',
