@@ -1036,11 +1036,16 @@ export default function SettingsPage() {
                         <div>
                           <FormLabel className="text-xs text-muted-foreground">Start</FormLabel>
                           <Input
-                            type="time"
-                            step="60"
+                            type="text"
+                            placeholder="HH:mm"
                             value={hoursData.start}
-                            onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: e.target.value } })}
-                            className="w-32"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || /^([01]?[0-9]|2[0-3])$/.test(value)) {
+                                setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: value } });
+                              }
+                            }}
+                            className="w-24"
                             disabled={hoursData.closed}
                             data-testid={`input-hours-start-${day.toLowerCase()}`}
                           />
@@ -1048,11 +1053,16 @@ export default function SettingsPage() {
                         <div>
                           <FormLabel className="text-xs text-muted-foreground">End</FormLabel>
                           <Input
-                            type="time"
-                            step="60"
+                            type="text"
+                            placeholder="HH:mm"
                             value={hoursData.end}
-                            onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: e.target.value } })}
-                            className="w-32"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || /^([01]?[0-9]|2[0-3])$/.test(value)) {
+                                setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: value } });
+                              }
+                            }}
+                            className="w-24"
                             disabled={hoursData.closed}
                             data-testid={`input-hours-end-${day.toLowerCase()}`}
                           />
