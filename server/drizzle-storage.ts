@@ -54,30 +54,72 @@ export class DrizzleStorage implements IStorage {
     return allUsers.map(u => this.mapToStorageUser(u));
   }
 
+  async deleteUser(id: string): Promise<boolean> {
+    const db = getDb();
+    const result = await db.delete(users).where(eq(users.id, id)).returning();
+    return result.length > 0;
+  }
+
   async getBranch(id: string): Promise<StorageBranch | undefined> {
     const db = getDb();
     const result = await db.select().from(branches).where(eq(branches.id, id)).limit(1);
     if (result.length === 0) return undefined;
-    return result[0];
+    const b = result[0];
+    return {
+      id: b.id,
+      name: b.name,
+      address: b.address,
+      phone: b.phone,
+      owner: b.owner ?? undefined,
+      ownerPhone: b.ownerPhone ?? undefined,
+      isActive: b.isActive,
+    };
   }
 
   async getAllBranches(): Promise<StorageBranch[]> {
     const db = getDb();
-    return await db.select().from(branches);
+    const results = await db.select().from(branches);
+    return results.map((b) => ({
+      id: b.id,
+      name: b.name,
+      address: b.address,
+      phone: b.phone,
+      owner: b.owner ?? undefined,
+      ownerPhone: b.ownerPhone ?? undefined,
+      isActive: b.isActive,
+    }));
   }
 
   async createBranch(branch: Omit<StorageBranch, "id">): Promise<StorageBranch> {
     const db = getDb();
     const result = await db.insert(branches).values(branch).returning();
     if (result.length === 0) throw new Error("Failed to create branch");
-    return result[0];
+    const b = result[0];
+    return {
+      id: b.id,
+      name: b.name,
+      address: b.address,
+      phone: b.phone,
+      owner: b.owner ?? undefined,
+      ownerPhone: b.ownerPhone ?? undefined,
+      isActive: b.isActive,
+    };
   }
 
   async updateBranch(id: string, data: Partial<Omit<StorageBranch, "id">>): Promise<StorageBranch | undefined> {
     const db = getDb();
     const result = await db.update(branches).set(data).where(eq(branches.id, id)).returning();
     if (result.length === 0) return undefined;
-    return result[0];
+    const b = result[0];
+    return {
+      id: b.id,
+      name: b.name,
+      address: b.address,
+      phone: b.phone,
+      owner: b.owner ?? undefined,
+      ownerPhone: b.ownerPhone ?? undefined,
+      isActive: b.isActive,
+    };
   }
 
   async deleteBranch(id: string): Promise<boolean> {

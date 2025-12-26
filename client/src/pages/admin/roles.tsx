@@ -69,10 +69,13 @@ interface StorageBranch {
 export default function RolesPage() {
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<User[]>(mockUsers);
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
+
+  const { data: users = [], isLoading: usersLoading } = useQuery<User[]>({
+    queryKey: ['/api/users'],
+  });
 
   const { data: branches = [], isLoading: branchesLoading } = useQuery<StorageBranch[]>({
     queryKey: ['/api/branches'],
@@ -83,13 +86,37 @@ export default function RolesPage() {
     defaultValues: { name: '', email: '', role: 'manager', branchId: '', isActive: true },
   });
 
+  const createUserMutation = useMutation({
+    mutationFn: async (data: UserFormData) => {
+      return apiRequest('POST', '/api/users', {
+        username: data.email.split('@')[0] + Math.floor(Math.random() * 1000),
+        password: 'password123',
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        branchId: data.branchId === 'all' ? null : data.branchId,
+        isActive: data.isActive,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setFormOpen(false);
+      form.reset();
+      toast({ title: 'User Created' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to create user', variant: 'destructive' });
+    },
+  });
+
   const updateUserMutation = useMutation({
     mutationFn: async (data: { userId: string; formData: UserFormData }) => {
       return apiRequest('PATCH', `/api/users/${data.userId}`, {
         name: data.formData.name,
         email: data.formData.email,
         role: data.formData.role,
-        branchId: data.formData.branchId,
+        branchId: data.formData.branchId === 'all' ? null : data.formData.branchId,
+        isActive: data.formData.isActive,
       });
     },
     onSuccess: () => {
@@ -100,6 +127,20 @@ export default function RolesPage() {
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message || 'Failed to update user', variant: 'destructive' });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      return apiRequest('DELETE', `/api/users/${userId}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setDeleteUser(null);
+      toast({ title: 'User Deleted' });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete user', variant: 'destructive' });
     },
   });
 
@@ -114,11 +155,7 @@ export default function RolesPage() {
   };
 
   const handleCreate = async (data: UserFormData) => {
-    const newUser: User = { id: String(Date.now()), ...data, branchId: data.branchId === 'all' ? undefined : data.branchId };
-    setUsers([...users, newUser]);
-    setFormOpen(false);
-    form.reset();
-    toast({ title: 'User Created' });
+    createUserMutation.mutate(data);
   };
 
   const handleEdit = (data: UserFormData) => {
@@ -128,9 +165,7 @@ export default function RolesPage() {
 
   const handleDelete = () => {
     if (!deleteUser) return;
-    setUsers(users.filter((u) => u.id !== deleteUser.id));
-    setDeleteUser(null);
-    toast({ title: 'User Deleted' });
+    deleteUserMutation.mutate(deleteUser.id);
   };
 
   const getBranchName = (branchId?: string) => {
@@ -140,7 +175,7 @@ export default function RolesPage() {
 
   const roles: Role[] = ['admin', 'manager', 'chef', 'accountant'];
 
-  if (branchesLoading) {
+  if (branchesLoading || usersLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin" />

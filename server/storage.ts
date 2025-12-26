@@ -149,6 +149,7 @@ export interface IStorage {
   createUser(user: Omit<StorageUser, 'id'>): Promise<StorageUser>;
   updateUser(id: string, data: Partial<Omit<StorageUser, 'id' | 'username'>>): Promise<StorageUser | undefined>;
   getAllUsers(): Promise<StorageUser[]>;
+  deleteUser(id: string): Promise<boolean>;
   getBranch(id: string): Promise<StorageBranch | undefined>;
   getAllBranches(): Promise<StorageBranch[]>;
   createBranch(branch: Omit<StorageBranch, 'id'>): Promise<StorageBranch>;
@@ -262,6 +263,10 @@ export class MemStorage implements IStorage {
 
   async getAllUsers(): Promise<StorageUser[]> {
     return Array.from(this.users.values());
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    return this.users.delete(id);
   }
 
   async getBranch(id: string): Promise<StorageBranch | undefined> {
