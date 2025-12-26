@@ -148,12 +148,13 @@ export default function SettingsPage() {
   const [googleMapsUrl, setGoogleMapsUrl] = useState(() => localStorage.getItem('googleMapsUrl') || '');
 
   // Profile State
-  const [profileName, setProfileName] = useState(() => localStorage.getItem('profileName') || 'John Admin');
-  const [profileEmail, setProfileEmail] = useState(() => localStorage.getItem('profileEmail') || 'admin@restaurant.com');
-  const [profilePhone, setProfilePhone] = useState(() => localStorage.getItem('profilePhone') || '+1 (555) 123-4567');
-  const [profileAvatar, setProfileAvatar] = useState(() => localStorage.getItem('profileAvatar') || '');
-  const [profileAvatarPreview, setProfileAvatarPreview] = useState(() => localStorage.getItem('profileAvatar') || '');
+  const [profileName, setProfileName] = useState('');
+  const [profileEmail, setProfileEmail] = useState('');
+  const [profilePhone, setProfilePhone] = useState('');
+  const [profileAvatar, setProfileAvatar] = useState('');
+  const [profileAvatarPreview, setProfileAvatarPreview] = useState('');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   
   // General Settings State
   const [timezone, setTimezone] = useState(() => localStorage.getItem('appTimezone') || 'UTC');
@@ -218,6 +219,28 @@ export default function SettingsPage() {
   useEffect(() => {
     setShowChangePassword(location.includes('action=changePassword'));
   }, [location]);
+
+  // Load user profile data from API
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const user = await response.json();
+          setProfileName(user.name || '');
+          setProfileEmail(user.email || '');
+          setProfilePhone(user.phone || '');
+          setProfileAvatar(user.avatar || '');
+          setProfileAvatarPreview(user.avatar || '');
+        }
+      } catch (error) {
+        console.error('Failed to load user profile:', error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+    loadUserProfile();
+  }, []);
 
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -705,7 +728,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex gap-2 pt-2">
                       <Button
-                        onClick={() => {
+                        onClick={async () => {
                           if (newPassword !== confirmPassword) {
                             toast({ title: 'Error', description: 'Passwords do not match', variant: 'destructive' });
                             return;
@@ -714,11 +737,28 @@ export default function SettingsPage() {
                             toast({ title: 'Error', description: 'Password must be at least 6 characters', variant: 'destructive' });
                             return;
                           }
-                          setCurrentPassword('');
-                          setNewPassword('');
-                          setConfirmPassword('');
-                          setShowChangePassword(false);
-                          toast({ title: 'Success', description: 'Password has been changed.' });
+                          try {
+                            const response = await fetch('/api/auth/change-password', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                currentPassword,
+                                newPassword,
+                              }),
+                            });
+                            if (response.ok) {
+                              setCurrentPassword('');
+                              setNewPassword('');
+                              setConfirmPassword('');
+                              setShowChangePassword(false);
+                              toast({ title: 'Success', description: 'Password has been changed successfully.' });
+                            } else {
+                              const error = await response.json();
+                              toast({ title: 'Error', description: error.message || 'Failed to change password', variant: 'destructive' });
+                            }
+                          } catch (error) {
+                            toast({ title: 'Error', description: 'Failed to change password', variant: 'destructive' });
+                          }
                         }}
                         data-testid="button-save-password"
                       >

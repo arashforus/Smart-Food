@@ -84,4 +84,47 @@ export function setupAuth(app: Express) {
     }
     res.json(req.user);
   });
+
+  app.patch("/api/auth/me", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    try {
+      const { name, email, phone } = req.body;
+      const updatedUser = await storage.updateUser(req.user!.id, {
+        name: name || req.user!.name,
+        email: email || req.user!.email,
+        phone: phone || req.user!.phone,
+      });
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Update profile error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.post("/api/auth/change-password", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    try {
+      const { currentPassword, newPassword } = req.body;
+      if (req.user!.password !== currentPassword) {
+        return res.status(401).json({ message: "Current password is incorrect" });
+      }
+      const updatedUser = await storage.updateUser(req.user!.id, {
+        password: newPassword,
+      });
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Change password error:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
 }
