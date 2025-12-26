@@ -69,7 +69,7 @@ import { initPromise } from "./storage";
   // Wait for storage to initialize before registering routes
   await initPromise;
   
-  await registerRoutes(httpServer, app);
+  await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

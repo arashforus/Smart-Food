@@ -18,12 +18,12 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     store: storage.sessionStore,
     cookie: {
-      secure: app.get("env") === "production",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     },
   };
 
-  if (app.get("env") === "production") {
+  if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
   }
 
