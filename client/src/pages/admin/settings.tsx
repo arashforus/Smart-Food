@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code } from 'lucide-react';
 import { SiInstagram, SiTelegram } from 'react-icons/si';
 import { useLocation } from 'wouter';
 import {
@@ -30,7 +30,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { mockSettings, mockLanguages } from '@/lib/mockData';
-import type { Settings } from '@/lib/types';
+import type { Settings as SettingsType } from '@/lib/types';
 import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 import { useOrders, type OSSSettings } from '@/lib/orderContext';
 
@@ -89,7 +89,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [location] = useLocation();
   const { ossSettings, updateOSSSettings } = useOrders();
-  const [settings, setSettings] = useState<Settings>(() => {
+  const [settings, setSettings] = useState<SettingsType>(() => {
     const stored = localStorage.getItem('appSettings');
     return stored ? JSON.parse(stored) : mockSettings;
   });
@@ -406,19 +406,55 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <Tabs defaultValue={location.includes('tab=profile') ? 'profile' : 'general'} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 md:grid-cols-6 lg:grid-cols-12 gap-1">
-              <TabsTrigger value="profile" className="text-xs md:text-sm">Profile</TabsTrigger>
-              <TabsTrigger value="general" className="text-xs md:text-sm">General</TabsTrigger>
-              <TabsTrigger value="restaurant" className="text-xs md:text-sm">Restaurant</TabsTrigger>
-              <TabsTrigger value="login" className="text-xs md:text-sm">Login</TabsTrigger>
-              <TabsTrigger value="qr" className="text-xs md:text-sm">QR Page</TabsTrigger>
-              <TabsTrigger value="qrcode" className="text-xs md:text-sm">QR Design</TabsTrigger>
-              <TabsTrigger value="menu" className="text-xs md:text-sm">Menu</TabsTrigger>
-              <TabsTrigger value="currency" className="text-xs md:text-sm">Currency</TabsTrigger>
-              <TabsTrigger value="payment" className="text-xs md:text-sm">Payment</TabsTrigger>
-              <TabsTrigger value="roles" className="text-xs md:text-sm">Roles</TabsTrigger>
-              <TabsTrigger value="license" className="text-xs md:text-sm">License</TabsTrigger>
-              <TabsTrigger value="oss" className="text-xs md:text-sm">OSS</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-6 gap-2 bg-transparent h-auto p-0">
+              <TabsTrigger value="profile" className="flex flex-col items-center gap-2 py-3 px-2">
+                <User className="h-5 w-5" />
+                <span className="text-xs">Profile</span>
+              </TabsTrigger>
+              <TabsTrigger value="general" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Sliders className="h-5 w-5" />
+                <span className="text-xs">General</span>
+              </TabsTrigger>
+              <TabsTrigger value="restaurant" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Building2 className="h-5 w-5" />
+                <span className="text-xs">Restaurant</span>
+              </TabsTrigger>
+              <TabsTrigger value="login" className="flex flex-col items-center gap-2 py-3 px-2">
+                <LogIn className="h-5 w-5" />
+                <span className="text-xs">Login</span>
+              </TabsTrigger>
+              <TabsTrigger value="qr" className="flex flex-col items-center gap-2 py-3 px-2">
+                <QrCode className="h-5 w-5" />
+                <span className="text-xs">QR Page</span>
+              </TabsTrigger>
+              <TabsTrigger value="qrcode" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Palette className="h-5 w-5" />
+                <span className="text-xs">QR Design</span>
+              </TabsTrigger>
+              <TabsTrigger value="menu" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Menu className="h-5 w-5" />
+                <span className="text-xs">Menu</span>
+              </TabsTrigger>
+              <TabsTrigger value="currency" className="flex flex-col items-center gap-2 py-3 px-2">
+                <DollarSign className="h-5 w-5" />
+                <span className="text-xs">Currency</span>
+              </TabsTrigger>
+              <TabsTrigger value="payment" className="flex flex-col items-center gap-2 py-3 px-2">
+                <CreditCard className="h-5 w-5" />
+                <span className="text-xs">Payment</span>
+              </TabsTrigger>
+              <TabsTrigger value="roles" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Users className="h-5 w-5" />
+                <span className="text-xs">Roles</span>
+              </TabsTrigger>
+              <TabsTrigger value="license" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Award className="h-5 w-5" />
+                <span className="text-xs">License</span>
+              </TabsTrigger>
+              <TabsTrigger value="oss" className="flex flex-col items-center gap-2 py-3 px-2">
+                <Code className="h-5 w-5" />
+                <span className="text-xs">OSS</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* Profile Tab */}
