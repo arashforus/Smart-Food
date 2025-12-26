@@ -777,24 +777,32 @@ export default function SettingsPage() {
             <TabsContent value="general" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Appearance</CardTitle>
-                  <CardDescription>Customize how your admin panel and menu look</CardDescription>
+                  <CardTitle className="text-lg">General Settings</CardTitle>
+                  <CardDescription>Configure language, timezone, and appearance</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <FormField control={form.control} name="primaryColor" render={({ field }) => (
+                <CardContent className="space-y-6">
+                  {/* Language Section */}
+                  <FormField control={form.control} name="defaultLanguage" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Primary Color</FormLabel>
-                      <FormControl>
-                        <div className="flex gap-2">
-                          <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-settings-color" />
-                          <Input {...field} placeholder="#0079F2" className="flex-1" />
-                        </div>
-                      </FormControl>
-                      <FormDescription>Used for buttons, links, and accents throughout the admin panel (e.g., orange will change all primary colored elements)</FormDescription>
-                      <FormMessage />
+                      <FormLabel>Language</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-settings-language">
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="tr">Turkish</SelectItem>
+                          <SelectItem value="fa">Persian</SelectItem>
+                          <SelectItem value="ar">Arabic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Choose the primary language for the application</FormDescription>
                     </FormItem>
                   )} />
 
+                  {/* Timezone Section */}
                   <div className="space-y-2">
                     <FormLabel htmlFor="timezone">Timezone</FormLabel>
                     <Select value={timezone} onValueChange={setTimezone}>
@@ -812,6 +820,22 @@ export default function SettingsPage() {
                     <FormDescription>All times in the panels will be displayed in this timezone</FormDescription>
                   </div>
 
+                  {/* Primary Color Section */}
+                  <FormField control={form.control} name="primaryColor" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Primary Color</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-settings-color" />
+                          <Input {...field} placeholder="#0079F2" className="flex-1" />
+                        </div>
+                      </FormControl>
+                      <FormDescription>Used for buttons, links, and accents throughout the application</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  {/* Favicon Section */}
                   <div className="space-y-2">
                     <FormLabel htmlFor="favicon">Favicon</FormLabel>
                     <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
@@ -826,7 +850,7 @@ export default function SettingsPage() {
                         <div className="space-y-2 py-4">
                           <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
                           <p className="text-sm text-muted-foreground">Click to upload favicon</p>
-                          <p className="text-xs text-muted-foreground">PNG, ICO up to 1MB (preferred size: 32x32 or 64x64)</p>
+                          <p className="text-xs text-muted-foreground">PNG, ICO up to 1MB</p>
                         </div>
                       )}
                       <input
@@ -852,101 +876,6 @@ export default function SettingsPage() {
                       </Button>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="copyright">Copyright Text</FormLabel>
-                    <Input
-                      id="copyright"
-                      value={copyrightText}
-                      onChange={(e) => setCopyrightText(e.target.value)}
-                      placeholder="© 2024 Your Restaurant. All rights reserved."
-                      data-testid="input-copyright-text"
-                    />
-                    <FormDescription>This text will appear at the bottom of all pages</FormDescription>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Display Options</CardTitle>
-                  <CardDescription>Control what information is shown to customers</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <FormField control={form.control} name="showPrices" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Prices</FormLabel>
-                        <FormDescription>Display prices on menu items</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-prices" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="showImages" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Images</FormLabel>
-                        <FormDescription>Display item images on the menu</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-images" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="showMaterials" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Ingredients</FormLabel>
-                        <FormDescription>Display ingredient tags on items</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-materials" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="showTypes" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Food Types</FormLabel>
-                        <FormDescription>Display dietary tags like vegan, spicy</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-types" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Language</CardTitle>
-                  <CardDescription>Set admin panel default language</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FormField control={form.control} name="defaultLanguage" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Default Language</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-settings-language">
-                            <SelectValue placeholder="Select language" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {languages.map((lang) => (
-                            <SelectItem key={lang.code} value={lang.code}>
-                              {lang.name} ({lang.nativeName})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>Interface language for the admin panel</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -1336,6 +1265,59 @@ export default function SettingsPage() {
                       <FormControl><Input {...field} placeholder="Our Menu" data-testid="input-settings-title" /></FormControl>
                       <FormDescription>Displayed at the top of the menu page</FormDescription>
                       <FormMessage />
+                    </FormItem>
+                  )} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Display Options</CardTitle>
+                  <CardDescription>Control what information is shown to customers</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField control={form.control} name="showPrices" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Prices</FormLabel>
+                        <FormDescription>Display prices on menu items</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-prices" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="showImages" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Images</FormLabel>
+                        <FormDescription>Display item images on the menu</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-images" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="showMaterials" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Ingredients</FormLabel>
+                        <FormDescription>Display ingredient tags on items</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-materials" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="showTypes" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Food Types</FormLabel>
+                        <FormDescription>Display dietary tags like vegan, spicy</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-types" />
+                      </FormControl>
                     </FormItem>
                   )} />
                 </CardContent>
