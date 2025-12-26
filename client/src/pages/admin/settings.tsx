@@ -1833,8 +1833,8 @@ export default function SettingsPage() {
           </Tabs>
 
           <div className="flex justify-end">
-            <Button type="submit" disabled={isPending} data-testid="button-save-settings">
-              {isPending ? 'Saving...' : 'Save All Settings'}
+            <Button type="submit" disabled={updateSettingsMutation.isPending} data-testid="button-save-settings">
+              {updateSettingsMutation.isPending ? 'Saving...' : 'Save All Settings'}
             </Button>
           </div>
         </form>
