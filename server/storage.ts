@@ -148,8 +148,25 @@ import MemoryStore from "memorystore";
 
 const SessionStore = MemoryStore(session as any);
 
+export interface StorageSetting {
+  id: string;
+  primaryColor: string;
+  timezone: string;
+  favicon?: string;
+  currencyName: string;
+  currencySymbol: string;
+  licenseKey?: string;
+  licenseExpiryDate?: Date;
+  defaultLanguage: string;
+  createdAt?: Date;
+}
+
 export interface IStorage {
   sessionStore: session.Store;
+  // Settings
+  getSettings(): Promise<StorageSetting | undefined>;
+  updateSettings(data: Partial<Omit<StorageSetting, 'id' | 'createdAt'>>): Promise<StorageSetting>;
+  
   getUser(id: string): Promise<StorageUser | undefined>;
   getUserByUsername(username: string): Promise<StorageUser | undefined>;
   createUser(user: Omit<StorageUser, 'id'>): Promise<StorageUser>;
@@ -204,6 +221,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<string, StorageUser>;
+  private settings: StorageSetting | undefined;
   private branches: Map<string, StorageBranch>;
   private categories: Map<string, StorageCategory>;
   private items: Map<string, StorageItem>;
@@ -245,6 +263,36 @@ export class MemStorage implements IStorage {
       role: 'admin',
     };
     this.users.set(adminUser.id, adminUser);
+
+    this.settings = {
+      id: '1',
+      primaryColor: '#4CAF50',
+      timezone: 'UTC',
+      currencyName: 'US Dollar',
+      currencySymbol: '$',
+      defaultLanguage: 'en',
+    };
+  }
+
+  async getSettings(): Promise<StorageSetting | undefined> {
+    return this.settings;
+  }
+
+  async updateSettings(data: Partial<Omit<StorageSetting, 'id' | 'createdAt'>>): Promise<StorageSetting> {
+    if (!this.settings) {
+      this.settings = {
+        id: '1',
+        primaryColor: '#4CAF50',
+        timezone: 'UTC',
+        currencyName: 'US Dollar',
+        currencySymbol: '$',
+        defaultLanguage: 'en',
+        ...data,
+      };
+    } else {
+      this.settings = { ...this.settings, ...data };
+    }
+    return this.settings;
   }
 
   async getUser(id: string): Promise<StorageUser | undefined> {

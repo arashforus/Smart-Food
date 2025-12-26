@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials } from "@shared/schema";
+import { users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
-import type { StorageUser, StorageBranch, StorageCategory, StorageItem, StorageOrder, StorageTable, StorageLanguage, StorageFoodType, StorageMaterial, WaiterRequest, IStorage, DashboardMetrics } from "./storage";
+import type { StorageUser, StorageBranch, StorageCategory, StorageItem, StorageOrder, StorageTable, StorageLanguage, StorageFoodType, StorageMaterial, WaiterRequest, IStorage, DashboardMetrics, StorageSetting } from "./storage";
 
 let db: ReturnType<typeof drizzle> | null = null;
 
@@ -33,6 +33,47 @@ export class DrizzleStorage implements IStorage {
       pool,
       createTableIfMissing: true,
     });
+  }
+
+  async getSettings(): Promise<StorageSetting | undefined> {
+    const db = getDb();
+    const result = await db.select().from(settings).limit(1);
+    if (result.length === 0) return undefined;
+    const s = result[0];
+    return {
+      ...s,
+      favicon: s.favicon ?? undefined,
+      licenseKey: s.licenseKey ?? undefined,
+      licenseExpiryDate: s.licenseExpiryDate ?? undefined,
+      createdAt: s.createdAt ?? undefined,
+    };
+  }
+
+  async updateSettings(data: Partial<Omit<StorageSetting, "id" | "createdAt">>): Promise<StorageSetting> {
+    const db = getDb();
+    const existing = await this.getSettings();
+    
+    if (!existing) {
+      const result = await db.insert(settings).values(data as any).returning();
+      const s = result[0];
+      return {
+        ...s,
+        favicon: s.favicon ?? undefined,
+        licenseKey: s.licenseKey ?? undefined,
+        licenseExpiryDate: s.licenseExpiryDate ?? undefined,
+        createdAt: s.createdAt ?? undefined,
+      };
+    }
+
+    const result = await db.update(settings).set(data as any).where(eq(settings.id, existing.id)).returning();
+    const s = result[0];
+    return {
+      ...s,
+      favicon: s.favicon ?? undefined,
+      licenseKey: s.licenseKey ?? undefined,
+      licenseExpiryDate: s.licenseExpiryDate ?? undefined,
+      createdAt: s.createdAt ?? undefined,
+    };
   }
 
   async getUser(id: string): Promise<StorageUser | undefined> {

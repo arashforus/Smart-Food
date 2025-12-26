@@ -140,6 +140,26 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export const settings = pgTable("settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  primaryColor: text("primary_color").notNull().default("#4CAF50"),
+  timezone: text("timezone").notNull().default("UTC"),
+  favicon: text("favicon"),
+  currencyName: text("currency_name").notNull().default("US Dollar"),
+  currencySymbol: text("currency_symbol").notNull().default("$"),
+  licenseKey: text("license_key"),
+  licenseExpiryDate: timestamp("license_expiry_date"),
+  defaultLanguage: text("default_language").notNull().default("en"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSettingsSchema = createInsertSchema(settings).omit({ 
+  id: true,
+  createdAt: true 
+});
+
+export type InsertSettings = z.infer<typeof insertSettingsSchema>;
+export type Setting = typeof settings.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Branch = typeof branches.$inferSelect;
 export type Category = typeof categories.$inferSelect;
