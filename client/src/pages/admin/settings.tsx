@@ -1037,9 +1037,10 @@ export default function SettingsPage() {
                           <FormLabel className="text-xs text-muted-foreground">Start</FormLabel>
                           <Input
                             type="time"
+                            step="60"
                             value={hoursData.start}
                             onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: e.target.value } })}
-                            className="w-24"
+                            className="w-32"
                             disabled={hoursData.closed}
                             data-testid={`input-hours-start-${day.toLowerCase()}`}
                           />
@@ -1048,9 +1049,10 @@ export default function SettingsPage() {
                           <FormLabel className="text-xs text-muted-foreground">End</FormLabel>
                           <Input
                             type="time"
+                            step="60"
                             value={hoursData.end}
                             onChange={(e) => setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: e.target.value } })}
-                            className="w-24"
+                            className="w-32"
                             disabled={hoursData.closed}
                             data-testid={`input-hours-end-${day.toLowerCase()}`}
                           />
