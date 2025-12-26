@@ -19,7 +19,22 @@ function getDb() {
   return db;
 }
 
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
+
+const PostgresSessionStore = connectPg(session);
+
 export class DrizzleStorage implements IStorage {
+  public sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
+    });
+  }
+
   async getUser(id: string): Promise<StorageUser | undefined> {
     const db = getDb();
     const user = await db.select().from(users).where(eq(users.id, id)).limit(1);

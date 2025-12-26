@@ -3,11 +3,11 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { type Express } from "express";
 import session from "express-session";
 import { storage } from "./storage";
-import { type User } from "@shared/schema";
+import { type User as SelectUser } from "@shared/schema";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    interface User extends SelectUser {}
   }
 }
 
@@ -45,8 +45,11 @@ export function setupAuth(app: Express) {
     }),
   );
 
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: string, done) => {
+  passport.serializeUser((user: any, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(async (id: any, done) => {
     try {
       const user = await storage.getUser(id);
       done(null, user);

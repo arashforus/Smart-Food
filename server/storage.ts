@@ -143,7 +143,13 @@ export interface DashboardMetrics {
   viewsChart: { date: string; views: number }[];
 }
 
+import session from "express-session";
+import MemoryStore from "memorystore";
+
+const SessionStore = MemoryStore(session as any);
+
 export interface IStorage {
+  sessionStore: session.Store;
   getUser(id: string): Promise<StorageUser | undefined>;
   getUserByUsername(username: string): Promise<StorageUser | undefined>;
   createUser(user: Omit<StorageUser, 'id'>): Promise<StorageUser>;
@@ -208,7 +214,12 @@ export class MemStorage implements IStorage {
   private foodTypes: Map<string, StorageFoodType>;
   private materials: Map<string, StorageMaterial>;
 
+  public sessionStore: session.Store;
+
   constructor() {
+    this.sessionStore = new (SessionStore as any)({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
     this.users = new Map();
     this.branches = new Map();
     this.categories = new Map();
@@ -569,4 +580,8 @@ async function initializeStorage() {
   }
 }
 
-initializeStorage();
+// Call it immediately but export the promise if needed, 
+// or ensure it finishes before routes use it.
+// For simplicity in this env, we call it top-level.
+const initPromise = initializeStorage();
+export { initPromise };

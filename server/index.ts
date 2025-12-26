@@ -60,9 +60,14 @@ app.use((req, res, next) => {
   next();
 });
 
+import { initPromise } from "./storage";
+
 (async () => {
   // Initialize database if DATABASE_URL is set
   await initializeDatabase();
+  
+  // Wait for storage to initialize before registering routes
+  await initPromise;
   
   await registerRoutes(httpServer, app);
 
