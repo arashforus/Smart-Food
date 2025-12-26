@@ -86,14 +86,60 @@ const currencies = [
   { code: 'IRR', symbol: '﷼', name: 'Iranian Rial' },
 ];
 
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+
 export default function SettingsPage() {
   const { toast } = useToast();
   const [location] = useLocation();
   const { ossSettings, updateOSSSettings } = useOrders();
-  const [settings, setSettings] = useState<SettingsType>(() => {
-    const stored = localStorage.getItem('appSettings');
-    return stored ? JSON.parse(stored) : mockSettings;
+
+  const { data: dbSettings, isLoading: isLoadingSettings } = useQuery<SettingsType>({
+    queryKey: ['/api/settings'],
   });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (data: Partial<SettingsType>) => {
+      const res = await apiRequest('PATCH', '/api/settings', data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
+      toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: 'Failed to update settings', variant: 'destructive' });
+    }
+  });
+
+  const [settings, setSettings] = useState<SettingsType>(mockSettings);
+  
+  useEffect(() => {
+    if (dbSettings) {
+      setSettings(dbSettings);
+      // Update form values when DB settings load
+      form.reset({
+        primaryColor: dbSettings.primaryColor,
+        menuTitle: dbSettings.menuTitle,
+        showPrices: dbSettings.showPrices,
+        showImages: dbSettings.showImages,
+        showMaterials: dbSettings.showMaterials,
+        showTypes: dbSettings.showTypes,
+        defaultLanguage: dbSettings.defaultLanguage,
+        currency: dbSettings.currency || 'USD',
+        currencySymbol: dbSettings.currencySymbol || '$',
+        paymentMethod: dbSettings.paymentSettings?.paymentMethod || 'both',
+        licenseKey: dbSettings.licenseKey || '',
+        licenseExpiry: dbSettings.licenseExpiry || '',
+        restaurantName: localStorage.getItem('restaurantName') || '',
+        restaurantDescription: localStorage.getItem('restaurantDescription') || '',
+        restaurantAddress: localStorage.getItem('restaurantAddress') || '',
+        restaurantPhone: localStorage.getItem('restaurantPhone') || '',
+        restaurantEmail: localStorage.getItem('restaurantEmail') || '',
+        restaurantHours: localStorage.getItem('restaurantHours') || '',
+      });
+    }
+  }, [dbSettings]);
   const [ossForm, setOSSForm] = useState<OSSSettings>(ossSettings);
   const [isPending, setIsPending] = useState(false);
   const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>(() => {
@@ -275,48 +321,47 @@ export default function SettingsPage() {
   }, [form.watch('primaryColor')]);
 
   const handleSubmit = (data: SettingsFormData) => {
-    setIsPending(true);
-    setTimeout(() => {
-      const updatedSettings = {
-        ...settings,
-        ...data,
-        paymentSettings: { paymentMethod: data.paymentMethod },
-        rolePermissions,
-      };
-      localStorage.setItem('appSettings', JSON.stringify(updatedSettings));
-      if (loginBackgroundImage) {
-        localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
-      }
-      localStorage.setItem('qrPageTitle', qrPageTitle);
-      localStorage.setItem('qrPageDescription', qrPageDescription);
-      localStorage.setItem('showQrTitle', showQrTitle.toString());
-      localStorage.setItem('showQrDescription', showQrDescription.toString());
-      localStorage.setItem('showCallWaiter', showCallWaiter.toString());
-      localStorage.setItem('showAddressPhone', showAddressPhone.toString());
-      localStorage.setItem('qrTextColor', qrTextColor);
-      localStorage.setItem('menuPageTitle', menuPageTitle);
-      localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
-      localStorage.setItem('restaurantName', restaurantName);
-      localStorage.setItem('restaurantDescription', restaurantDescription);
-      localStorage.setItem('restaurantAddress', restaurantAddress);
-      localStorage.setItem('restaurantPhone', restaurantPhone);
-      localStorage.setItem('restaurantEmail', restaurantEmail);
-      localStorage.setItem('restaurantHours', restaurantHours);
-      if (restaurantLogo) {
-        localStorage.setItem('restaurantLogo', restaurantLogo);
-      }
-      localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
-      localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
-      localStorage.setItem('googleMapsUrl', googleMapsUrl);
-      localStorage.setItem('appTimezone', timezone);
-      localStorage.setItem('copyrightText', copyrightText);
-      if (favicon) {
-        localStorage.setItem('favicon', favicon);
-      }
-      setSettings(updatedSettings);
-      setIsPending(false);
-      toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
-    }, 500);
+    updateSettingsMutation.mutate({
+      primaryColor: data.primaryColor,
+      menuTitle: data.menuTitle,
+      showPrices: data.showPrices,
+      showImages: data.showImages,
+      showMaterials: data.showMaterials,
+      showTypes: data.showTypes,
+      defaultLanguage: data.defaultLanguage,
+      currency: data.currency,
+      currencySymbol: data.currencySymbol,
+      paymentSettings: { paymentMethod: data.paymentMethod },
+    });
+
+    // Also update other local storage settings for now
+    localStorage.setItem('restaurantName', data.restaurantName || '');
+    localStorage.setItem('restaurantDescription', data.restaurantDescription || '');
+    localStorage.setItem('restaurantAddress', data.restaurantAddress || '');
+    localStorage.setItem('restaurantPhone', data.restaurantPhone || '');
+    localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
+    localStorage.setItem('restaurantHours', data.restaurantHours || '');
+    
+    if (loginBackgroundImage) {
+      localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
+    }
+    localStorage.setItem('qrPageTitle', qrPageTitle);
+    localStorage.setItem('qrPageDescription', qrPageDescription);
+    localStorage.setItem('showQrTitle', showQrTitle.toString());
+    localStorage.setItem('showQrDescription', showQrDescription.toString());
+    localStorage.setItem('showCallWaiter', showCallWaiter.toString());
+    localStorage.setItem('showAddressPhone', showAddressPhone.toString());
+    localStorage.setItem('qrTextColor', qrTextColor);
+    localStorage.setItem('menuPageTitle', menuPageTitle);
+    localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
+    localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
+    localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
+    localStorage.setItem('googleMapsUrl', googleMapsUrl);
+    localStorage.setItem('appTimezone', timezone);
+    localStorage.setItem('copyrightText', copyrightText);
+    if (favicon) {
+      localStorage.setItem('favicon', favicon);
+    }
   };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
