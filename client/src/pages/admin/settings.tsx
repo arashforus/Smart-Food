@@ -1041,8 +1041,12 @@ export default function SettingsPage() {
                             value={hoursData.start}
                             onChange={(e) => {
                               const value = e.target.value;
-                              if (value === '' || /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || /^([01]?[0-9]|2[0-3])$/.test(value)) {
-                                setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: value } });
+                              // Allow partial typing (digits and colon) and full HH:mm match
+                              if (value === '' || /^[0-9:]*$/.test(value)) {
+                                // Only update if it's a valid partial or full time
+                                if (value === '' || /^([01]?[0-9]|2[0-3])?(:([0-5][0-9]?)?)?$/.test(value)) {
+                                  setOperatingHours({ ...operatingHours, [day]: { ...hoursData, start: value } });
+                                }
                               }
                             }}
                             className="w-24"
@@ -1058,8 +1062,12 @@ export default function SettingsPage() {
                             value={hoursData.end}
                             onChange={(e) => {
                               const value = e.target.value;
-                              if (value === '' || /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value) || /^([01]?[0-9]|2[0-3])$/.test(value)) {
-                                setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: value } });
+                              // Allow partial typing (digits and colon) and full HH:mm match
+                              if (value === '' || /^[0-9:]*$/.test(value)) {
+                                // Only update if it's a valid partial or full time
+                                if (value === '' || /^([01]?[0-9]|2[0-3])?(:([0-5][0-9]?)?)?$/.test(value)) {
+                                  setOperatingHours({ ...operatingHours, [day]: { ...hoursData, end: value } });
+                                }
                               }
                             }}
                             className="w-24"
