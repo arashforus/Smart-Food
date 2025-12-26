@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code, Tv2 } from 'lucide-react';
 import { SiInstagram, SiTelegram } from 'react-icons/si';
 import { useLocation } from 'wouter';
 import {
@@ -406,59 +407,67 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <Tabs defaultValue={location.includes('tab=profile') ? 'profile' : 'general'} className="w-full">
-            <TabsList className="grid w-full grid-cols-6 gap-2 bg-transparent h-auto p-0">
-              <TabsTrigger value="profile" className="flex flex-col items-center gap-2 py-3 px-2">
-                <User className="h-5 w-5" />
-                <span className="text-xs">Profile</span>
-              </TabsTrigger>
-              <TabsTrigger value="general" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Sliders className="h-5 w-5" />
-                <span className="text-xs">General</span>
-              </TabsTrigger>
-              <TabsTrigger value="restaurant" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Building2 className="h-5 w-5" />
-                <span className="text-xs">Restaurant</span>
-              </TabsTrigger>
-              <TabsTrigger value="login" className="flex flex-col items-center gap-2 py-3 px-2">
-                <LogIn className="h-5 w-5" />
-                <span className="text-xs">Login</span>
-              </TabsTrigger>
-              <TabsTrigger value="qr" className="flex flex-col items-center gap-2 py-3 px-2">
-                <QrCode className="h-5 w-5" />
-                <span className="text-xs">QR Page</span>
-              </TabsTrigger>
-              <TabsTrigger value="qrcode" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Palette className="h-5 w-5" />
-                <span className="text-xs">QR Design</span>
-              </TabsTrigger>
-              <TabsTrigger value="menu" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Menu className="h-5 w-5" />
-                <span className="text-xs">Menu</span>
-              </TabsTrigger>
-              <TabsTrigger value="currency" className="flex flex-col items-center gap-2 py-3 px-2">
-                <DollarSign className="h-5 w-5" />
-                <span className="text-xs">Currency</span>
-              </TabsTrigger>
-              <TabsTrigger value="payment" className="flex flex-col items-center gap-2 py-3 px-2">
-                <CreditCard className="h-5 w-5" />
-                <span className="text-xs">Payment</span>
-              </TabsTrigger>
-              <TabsTrigger value="roles" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Users className="h-5 w-5" />
-                <span className="text-xs">Roles</span>
-              </TabsTrigger>
-              <TabsTrigger value="license" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Award className="h-5 w-5" />
-                <span className="text-xs">License</span>
-              </TabsTrigger>
-              <TabsTrigger value="oss" className="flex flex-col items-center gap-2 py-3 px-2">
-                <Code className="h-5 w-5" />
-                <span className="text-xs">OSS</span>
-              </TabsTrigger>
-            </TabsList>
+            <Card className="border border-border/50 bg-card/50 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <TabsList className="grid w-full grid-cols-6 gap-3 bg-transparent h-auto p-0">
+                  <TabsTrigger value="profile" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <User className="h-5 w-5" />
+                    <span className="text-xs">Profile</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="general" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Sliders className="h-5 w-5" />
+                    <span className="text-xs">General</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="restaurant" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Building2 className="h-5 w-5" />
+                    <span className="text-xs">Restaurant</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="login" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <LogIn className="h-5 w-5" />
+                    <span className="text-xs">Login Page</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="qr" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <QrCode className="h-5 w-5" />
+                    <span className="text-xs">QR Page</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="qrcode" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Palette className="h-5 w-5" />
+                    <span className="text-xs">QR Design</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="menu" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Menu className="h-5 w-5" />
+                    <span className="text-xs">Menu Page</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="kd" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Tv2 className="h-5 w-5" />
+                    <span className="text-xs">KD</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="currency" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <DollarSign className="h-5 w-5" />
+                    <span className="text-xs">Currency</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="payment" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <CreditCard className="h-5 w-5" />
+                    <span className="text-xs">Payment</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="roles" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Users className="h-5 w-5" />
+                    <span className="text-xs">Roles</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="license" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Award className="h-5 w-5" />
+                    <span className="text-xs">License</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="oss" className="flex flex-col items-center gap-2 py-3 px-2 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Code className="h-5 w-5" />
+                    <span className="text-xs">OSS</span>
+                  </TabsTrigger>
+                </TabsList>
+              </CardContent>
+            </Card>
 
             {/* Profile Tab */}
-            <TabsContent value="profile" className="space-y-6">
+            <TabsContent value="profile" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -725,7 +734,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* General Tab */}
-            <TabsContent value="general" className="space-y-6">
+            <TabsContent value="general" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Appearance</CardTitle>
@@ -903,7 +912,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* Restaurant Tab */}
-            <TabsContent value="restaurant" className="space-y-6">
+            <TabsContent value="restaurant" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Restaurant Information</CardTitle>
@@ -1107,7 +1116,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* Login Screen Tab */}
-            <TabsContent value="login" className="space-y-6">
+            <TabsContent value="login" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Background Image</CardTitle>
@@ -1274,7 +1283,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* Menu Page Tab */}
-            <TabsContent value="menu" className="space-y-6">
+            <TabsContent value="menu" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Menu Display Settings</CardTitle>
@@ -1293,8 +1302,23 @@ export default function SettingsPage() {
               </Card>
             </TabsContent>
 
+            {/* Kitchen Display Tab */}
+            <TabsContent value="kd" className="space-y-6 animate-in fade-in duration-300">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Kitchen Display System</CardTitle>
+                  <CardDescription>Configure your kitchen display settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm text-muted-foreground">Kitchen Display System settings coming soon. This feature will allow you to customize your KD display, manage order priorities, and set up kitchen workflows.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             {/* Currency Tab */}
-            <TabsContent value="currency" className="space-y-6">
+            <TabsContent value="currency" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Currency Settings</CardTitle>
@@ -1348,7 +1372,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* Payment Tab */}
-            <TabsContent value="payment" className="space-y-6">
+            <TabsContent value="payment" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" />Payment Methods</CardTitle>
@@ -1379,7 +1403,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* Roles Tab */}
-            <TabsContent value="roles" className="space-y-6">
+            <TabsContent value="roles" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" />Role-Based Access Control</CardTitle>
@@ -1411,7 +1435,7 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* License Tab */}
-            <TabsContent value="license" className="space-y-6">
+            <TabsContent value="license" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" />License Information</CardTitle>
@@ -1451,12 +1475,12 @@ export default function SettingsPage() {
             </TabsContent>
 
             {/* QR Code Tab */}
-            <TabsContent value="qrcode" className="space-y-6">
+            <TabsContent value="qrcode" className="space-y-6 animate-in fade-in duration-300">
               <QRCodeDesigner />
             </TabsContent>
 
             {/* Order Status Screen Tab */}
-            <TabsContent value="oss" className="space-y-6">
+            <TabsContent value="oss" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
                   <CardTitle>Order Status Screen Settings</CardTitle>
