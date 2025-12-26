@@ -94,6 +94,11 @@ export default function TypesPage() {
     },
   });
 
+  const getTranslationCount = (nameObj: any) => {
+    if (!nameObj || typeof nameObj !== 'object') return 0;
+    return Object.values(nameObj).filter(val => typeof val === 'string' && val.trim() !== '').length;
+  };
+
   const { data: languages = [] } = useQuery({
     queryKey: ['/api/languages'],
     queryFn: async () => {
@@ -296,6 +301,22 @@ export default function TypesPage() {
                 key: 'generalName', 
                 header: 'Name', 
                 render: (item: any) => item.generalName || item.name?.en || 'N/A' 
+              },
+              {
+                key: 'translations',
+                header: 'Translations',
+                render: (item: any) => {
+                  const dbType = dbFoodTypes.find(t => t.id === item.id);
+                  const count = getTranslationCount(dbType?.name);
+                  return (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary">
+                        <span className="text-[10px] font-bold">🌐</span>
+                      </div>
+                      <span className="text-xs font-medium">{count}</span>
+                    </div>
+                  );
+                }
               },
               {
                 key: 'icon',

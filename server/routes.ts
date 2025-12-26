@@ -693,26 +693,8 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to delete food type" });
     }
   });
-    try {
-      if (!process.env.DATABASE_URL) {
-        return res.json([]);
-      }
 
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-      });
-
-      const result = await pool.query(
-        "SELECT id, order_number, table_number, branch_id, items, status, total_amount, notes, created_at, updated_at FROM orders ORDER BY created_at DESC"
-      );
-
-      await pool.end();
-      res.json(result.rows);
-    } catch (error) {
-      console.error("Get orders error:", error);
-      res.status(500).json({ message: "Failed to get orders" });
-    }
-  });
+  // Categories routes
 
   app.get("/api/orders/:id", async (req: Request, res: Response) => {
     try {
