@@ -99,16 +99,16 @@ export default function TypesPage() {
     queryFn: async () => {
       const response = await fetch('/api/languages');
       if (!response.ok) throw new Error('Failed to fetch languages');
-      const data = await response.json();
-      return (data as DbLanguage[]).filter((lang) => lang.isActive);
+      return response.json() as Promise<DbLanguage[]>;
     },
   });
 
   const createMutation = useMutation({
     mutationFn: (data: TypeFormData) => {
       const nameObj: Record<string, string> = {};
+      // Get all languages to ensure we save all fields, not just active ones
       languages.forEach((lang) => {
-        nameObj[lang.code] = data.names[lang.code] || (lang.code === 'en' ? data.generalName : '');
+        nameObj[lang.code] = data.names[lang.code] || '';
       });
       return apiRequest('POST', '/api/food-types', {
         generalName: data.generalName,
@@ -134,7 +134,7 @@ export default function TypesPage() {
       if (!editingType) throw new Error('No type selected');
       const nameObj: Record<string, string> = {};
       languages.forEach((lang) => {
-        nameObj[lang.code] = data.names[lang.code] || (lang.code === 'en' ? data.generalName : '');
+        nameObj[lang.code] = data.names[lang.code] || '';
       });
       return apiRequest('PATCH', `/api/food-types/${editingType.id}`, {
         generalName: data.generalName,

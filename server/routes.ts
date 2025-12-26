@@ -637,8 +637,62 @@ export async function registerRoutes(
     }
   });
 
-  // Orders routes
-  app.get("/api/orders", async (req: Request, res: Response) => {
+  app.get("/api/food-types", async (_req: Request, res: Response) => {
+    try {
+      const allFoodTypes = await storage.getAllFoodTypes?.();
+      res.json(allFoodTypes || []);
+    } catch (error) {
+      console.error("Get food types error:", error);
+      res.status(500).json({ message: "Failed to get food types" });
+    }
+  });
+
+  app.post("/api/food-types", async (req: Request, res: Response) => {
+    try {
+      const { generalName, name, description, icon, color } = req.body;
+      const foodType = await storage.createFoodType?.({
+        generalName: generalName || "",
+        name: name || {},
+        description: description || {},
+        icon: icon || null,
+        color: color || "#4CAF50",
+        isActive: true,
+        order: 1
+      });
+      res.json(foodType);
+    } catch (error) {
+      console.error("Create food type error:", error);
+      res.status(500).json({ message: "Failed to create food type" });
+    }
+  });
+
+  app.patch("/api/food-types/:id", async (req: Request, res: Response) => {
+    try {
+      const { generalName, name, description, icon, color } = req.body;
+      const updateData: any = {};
+      if (generalName !== undefined) updateData.generalName = generalName;
+      if (name !== undefined) updateData.name = name;
+      if (description !== undefined) updateData.description = description;
+      if (icon !== undefined) updateData.icon = icon;
+      if (color !== undefined) updateData.color = color;
+
+      const foodType = await storage.updateFoodType?.(req.params.id, updateData);
+      res.json(foodType);
+    } catch (error) {
+      console.error("Update food type error:", error);
+      res.status(500).json({ message: "Failed to update food type" });
+    }
+  });
+
+  app.delete("/api/food-types/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteFoodType?.(req.params.id);
+      res.json({ message: success ? "Food type deleted" : "Food type not found" });
+    } catch (error) {
+      console.error("Delete food type error:", error);
+      res.status(500).json({ message: "Failed to delete food type" });
+    }
+  });
     try {
       if (!process.env.DATABASE_URL) {
         return res.json([]);
