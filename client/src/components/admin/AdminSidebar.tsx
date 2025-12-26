@@ -32,7 +32,6 @@ import {
 
 const menuItems = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
-  { title: 'Restaurant Info', url: '/admin/restaurant', icon: Store },
   { title: 'Categories', url: '/admin/categories', icon: List },
   { title: 'Menu Items', url: '/admin/items', icon: UtensilsCrossed },
   { title: 'QR Codes', url: '/admin/qrcode', icon: QrCode },
