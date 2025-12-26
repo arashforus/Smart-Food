@@ -6,6 +6,27 @@ import { setupAuth } from "./auth";
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
+  // Settings routes
+  app.get("/api/settings", async (_req: Request, res: Response) => {
+    try {
+      const settings = await storage.getSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Get settings error:", error);
+      res.status(500).json({ message: "Failed to get settings" });
+    }
+  });
+
+  app.patch("/api/settings", async (req: Request, res: Response) => {
+    try {
+      const updatedSettings = await storage.updateSettings(req.body);
+      res.json(updatedSettings);
+    } catch (error) {
+      console.error("Update settings error:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
   // Users routes
   app.get("/api/users", async (_req: Request, res: Response) => {
     try {
