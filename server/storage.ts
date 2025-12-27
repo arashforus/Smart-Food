@@ -175,6 +175,8 @@ export interface StorageSetting {
   showQrLogo?: boolean;
   showQrAnimatedText?: boolean;
   qrAnimatedTexts?: string[];
+  qrMediaUrl?: string;
+  qrMediaType?: string;
   createdAt?: Date;
 }
 

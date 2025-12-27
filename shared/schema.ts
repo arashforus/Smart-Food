@@ -172,6 +172,8 @@ export const settings = pgTable("settings", {
   showQrLogo: boolean("show_qr_logo").notNull().default(true),
   showQrAnimatedText: boolean("show_qr_animated_text").notNull().default(true),
   qrAnimatedTexts: text("qr_animated_texts").array().notNull().default(sql`ARRAY['Welcome', 'Discover our Menu']::text[]`),
+  qrMediaUrl: text("qr_media_url"),
+  qrMediaType: text("qr_media_type"), // 'image' | 'video'
   createdAt: timestamp("created_at").defaultNow(),
 });
 

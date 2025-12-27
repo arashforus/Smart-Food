@@ -57,6 +57,8 @@ export class DrizzleStorage implements IStorage {
       showQrLogo: s.showQrLogo ?? true,
       showQrAnimatedText: s.showQrAnimatedText ?? true,
       qrAnimatedTexts: s.qrAnimatedTexts ?? ['Welcome', 'Discover our Menu'],
+      qrMediaUrl: s.qrMediaUrl ?? undefined,
+      qrMediaType: s.qrMediaType ?? undefined,
       createdAt: s.createdAt ?? undefined,
     };
   }
@@ -107,6 +109,8 @@ export class DrizzleStorage implements IStorage {
       showQrLogo: s.showQrLogo ?? true,
       showQrAnimatedText: s.showQrAnimatedText ?? true,
       qrAnimatedTexts: s.qrAnimatedTexts ?? ['Welcome', 'Discover our Menu'],
+      qrMediaUrl: s.qrMediaUrl ?? undefined,
+      qrMediaType: s.qrMediaType ?? undefined,
       createdAt: s.createdAt ?? undefined,
     };
   }

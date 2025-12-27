@@ -137,6 +137,8 @@ export default function SettingsPage() {
       if (dbSettings.showQrLogo !== undefined) setShowQrLogo(dbSettings.showQrLogo);
       if (dbSettings.showQrAnimatedText !== undefined) setShowQrAnimatedText(dbSettings.showQrAnimatedText);
       if (dbSettings.qrAnimatedTexts) setQrAnimatedTexts(dbSettings.qrAnimatedTexts);
+      if (dbSettings.qrMediaUrl) setQrMediaUrl(dbSettings.qrMediaUrl);
+      if (dbSettings.qrMediaType) setQrMediaType(dbSettings.qrMediaType as 'image' | 'video');
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -184,6 +186,9 @@ export default function SettingsPage() {
     const stored = localStorage.getItem('qrAnimatedTexts');
     return stored ? JSON.parse(stored) : ['Welcome', 'Discover our Menu'];
   });
+  const [qrMediaUrl, setQrMediaUrl] = useState(() => localStorage.getItem('qrMediaUrl') || '');
+  const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>(() => (localStorage.getItem('qrMediaType') as 'image' | 'video') || 'image');
+  const qrMediaInputRef = useRef<HTMLInputElement>(null);
   const [showCallWaiter, setShowCallWaiter] = useState(() => localStorage.getItem('showCallWaiter') !== 'false');
   const [showAddressPhone, setShowAddressPhone] = useState(() => localStorage.getItem('showAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
@@ -390,6 +395,8 @@ export default function SettingsPage() {
       showQrLogo: showQrLogo,
       showQrAnimatedText: showQrAnimatedText,
       qrAnimatedTexts: qrAnimatedTexts,
+      qrMediaUrl: qrMediaUrl,
+      qrMediaType: qrMediaType,
     });
 
     // Also update local storage for fallback
@@ -417,6 +424,8 @@ export default function SettingsPage() {
     localStorage.setItem('showQrDescription', showQrDescription.toString());
     localStorage.setItem('showQrAnimatedText', showQrAnimatedText.toString());
     localStorage.setItem('qrAnimatedTexts', JSON.stringify(qrAnimatedTexts));
+    localStorage.setItem('qrMediaUrl', qrMediaUrl);
+    localStorage.setItem('qrMediaType', qrMediaType);
     localStorage.setItem('showCallWaiter', showCallWaiter.toString());
     localStorage.setItem('showAddressPhone', showAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
@@ -500,6 +509,27 @@ export default function SettingsPage() {
     setLoginBackgroundPreview('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleQrMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const isVideo = file.type.startsWith('video/');
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const mediaData = event.target?.result as string;
+        setQrMediaUrl(mediaData);
+        setQrMediaType(isVideo ? 'video' : 'image');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearQrMedia = () => {
+    setQrMediaUrl('');
+    if (qrMediaInputRef.current) {
+      qrMediaInputRef.current.value = '';
     }
   };
 
@@ -1370,6 +1400,45 @@ export default function SettingsPage() {
                         data-testid="input-qr-page-description"
                       />
                       <FormDescription>Subtitle or description shown below the title (optional)</FormDescription>
+                    </div>
+
+                    <div className="space-y-4 pt-4">
+                      <FormLabel>QR Page Media (Photo or Video)</FormLabel>
+                      <div className="flex flex-col gap-4">
+                        {qrMediaUrl ? (
+                          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted border">
+                            {qrMediaType === 'video' ? (
+                              <video src={qrMediaUrl} controls className="w-full h-full object-cover" />
+                            ) : (
+                              <img src={qrMediaUrl} alt="QR Media Preview" className="w-full h-full object-cover" />
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 h-8 w-8"
+                              onClick={handleClearQrMedia}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div
+                            onClick={() => qrMediaInputRef.current?.click()}
+                            className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                          >
+                            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          ref={qrMediaInputRef}
+                          onChange={handleQrMediaUpload}
+                          accept="image/*,video/*"
+                          className="hidden"
+                        />
+                      </div>
+                      <FormDescription>Upload a photo or video to be displayed on your QR landing page</FormDescription>
                     </div>
                   </div>
 
