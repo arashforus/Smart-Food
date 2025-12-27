@@ -429,15 +429,15 @@ export default function SettingsPage() {
     localStorage.setItem('showLoginResetPassword', showLoginResetPassword.toString());
     localStorage.setItem('qrPageTitle', qrPageTitle);
     localStorage.setItem('qrPageDescription', qrPageDescription);
-    localStorage.setItem('showQrTitle', showQrTitle.toString());
-    localStorage.setItem('showQrLogo', showQrLogo.toString());
-    localStorage.setItem('showQrDescription', showQrDescription.toString());
-    localStorage.setItem('showQrAnimatedText', showQrAnimatedText.toString());
+    localStorage.setItem('qrShowTitle', qrShowTitle.toString());
+    localStorage.setItem('qrShowLogo', qrShowLogo.toString());
+    localStorage.setItem('qrShowDescription', qrShowDescription.toString());
+    localStorage.setItem('qrShowAnimatedText', qrShowAnimatedText.toString());
     localStorage.setItem('qrAnimatedTexts', JSON.stringify(qrAnimatedTexts));
     localStorage.setItem('qrMediaUrl', qrMediaUrl);
     localStorage.setItem('qrMediaType', qrMediaType);
-    localStorage.setItem('showCallWaiter', showCallWaiter.toString());
-    localStorage.setItem('showAddressPhone', showAddressPhone.toString());
+    localStorage.setItem('qrShowCallWaiter', qrShowCallWaiter.toString());
+    localStorage.setItem('qrShowAddressPhone', qrShowAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
     localStorage.setItem('menuPageTitle', menuPageTitle);
     localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
@@ -1394,7 +1394,7 @@ export default function SettingsPage() {
                         value={qrPageTitle}
                         onChange={(e) => setQrPageTitle(e.target.value)}
                         placeholder="Scan to Order"
-                        disabled={!showQrTitle}
+                        disabled={!qrShowTitle}
                         data-testid="input-qr-page-title"
                       />
                       
@@ -1406,7 +1406,7 @@ export default function SettingsPage() {
                         value={qrPageDescription}
                         onChange={(e) => setQrPageDescription(e.target.value)}
                         placeholder="Welcome to our restaurant. Browse our menu and place your order."
-                        disabled={!showQrDescription}
+                        disabled={!qrShowDescription}
                         data-testid="input-qr-page-description"
                       />
                     
