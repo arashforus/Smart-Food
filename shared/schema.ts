@@ -169,6 +169,8 @@ export const settings = pgTable("settings", {
   showLoginTitle: boolean("show_login_title").notNull().default(true),
   loginTitle: text("login_title").notNull().default("Welcome"),
   showLoginResetPassword: boolean("show_login_reset_password").notNull().default(true),
+  showQrLogo: boolean("show_qr_logo").notNull().default(true),
+  showQrAnimatedText: boolean("show_qr_animated_text").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -172,6 +172,8 @@ export interface StorageSetting {
   restaurantWhatsapp?: string;
   restaurantTelegram?: string;
   restaurantGoogleMapsUrl?: string;
+  showQrLogo?: boolean;
+  showQrAnimatedText?: boolean;
   createdAt?: Date;
 }
 
@@ -285,6 +287,8 @@ export class MemStorage implements IStorage {
       currencyName: 'US Dollar',
       currencySymbol: '$',
       defaultLanguage: 'en',
+      showQrLogo: true,
+      showQrAnimatedText: true,
     };
   }
 

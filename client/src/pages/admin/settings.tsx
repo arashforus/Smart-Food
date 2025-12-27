@@ -134,6 +134,8 @@ export default function SettingsPage() {
       if (dbSettings.showLoginTitle !== undefined) setShowLoginTitle(dbSettings.showLoginTitle);
       if (dbSettings.loginTitle) setLoginTitle(dbSettings.loginTitle);
       if (dbSettings.showLoginResetPassword !== undefined) setShowLoginResetPassword(dbSettings.showLoginResetPassword);
+      if (dbSettings.showQrLogo !== undefined) setShowQrLogo(dbSettings.showQrLogo);
+      if (dbSettings.showQrAnimatedText !== undefined) setShowQrAnimatedText(dbSettings.showQrAnimatedText);
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -174,7 +176,9 @@ export default function SettingsPage() {
   const [qrPageTitle, setQrPageTitle] = useState(() => localStorage.getItem('qrPageTitle') || 'Scan to Order');
   const [qrPageDescription, setQrPageDescription] = useState(() => localStorage.getItem('qrPageDescription') || '');
   const [showQrTitle, setShowQrTitle] = useState(() => localStorage.getItem('showQrTitle') !== 'false');
+  const [showQrLogo, setShowQrLogo] = useState(() => localStorage.getItem('showQrLogo') !== 'false');
   const [showQrDescription, setShowQrDescription] = useState(() => localStorage.getItem('showQrDescription') !== 'false');
+  const [showQrAnimatedText, setShowQrAnimatedText] = useState(() => localStorage.getItem('showQrAnimatedText') !== 'false');
   const [showCallWaiter, setShowCallWaiter] = useState(() => localStorage.getItem('showCallWaiter') !== 'false');
   const [showAddressPhone, setShowAddressPhone] = useState(() => localStorage.getItem('showAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
@@ -378,6 +382,8 @@ export default function SettingsPage() {
       showLoginTitle: showLoginTitle,
       loginTitle: loginTitle,
       showLoginResetPassword: showLoginResetPassword,
+      showQrLogo: showQrLogo,
+      showQrAnimatedText: showQrAnimatedText,
     });
 
     // Also update local storage for fallback
@@ -401,7 +407,9 @@ export default function SettingsPage() {
     localStorage.setItem('qrPageTitle', qrPageTitle);
     localStorage.setItem('qrPageDescription', qrPageDescription);
     localStorage.setItem('showQrTitle', showQrTitle.toString());
+    localStorage.setItem('showQrLogo', showQrLogo.toString());
     localStorage.setItem('showQrDescription', showQrDescription.toString());
+    localStorage.setItem('showQrAnimatedText', showQrAnimatedText.toString());
     localStorage.setItem('showCallWaiter', showCallWaiter.toString());
     localStorage.setItem('showAddressPhone', showAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
@@ -1364,6 +1372,18 @@ export default function SettingsPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between p-3 border rounded-lg">
                         <div>
+                          <FormLabel className="text-base mb-1">Show Logo</FormLabel>
+                          <FormDescription>Display the restaurant logo</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showQrLogo}
+                          onCheckedChange={setShowQrLogo}
+                          data-testid="switch-show-qr-logo"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
                           <FormLabel className="text-base mb-1">Show Title</FormLabel>
                           <FormDescription>Display the page title</FormDescription>
                         </div>
@@ -1383,6 +1403,18 @@ export default function SettingsPage() {
                           checked={showQrDescription}
                           onCheckedChange={setShowQrDescription}
                           data-testid="switch-show-qr-description"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Animated Text</FormLabel>
+                          <FormDescription>Display animated text on the page</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showQrAnimatedText}
+                          onCheckedChange={setShowQrAnimatedText}
+                          data-testid="switch-show-qr-animated-text"
                         />
                       </div>
 
