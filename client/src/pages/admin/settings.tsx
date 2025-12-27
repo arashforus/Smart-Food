@@ -333,6 +333,10 @@ export default function SettingsPage() {
       restaurantPhone,
       restaurantEmail,
       restaurantHours,
+      restaurantInstagram,
+      restaurantWhatsapp,
+      restaurantTelegram,
+      restaurantGoogleMapsUrl,
     },
   });
 
@@ -1074,55 +1078,6 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Social Media & Maps</CardTitle>
-                  <CardDescription>Connect your social media and location services</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-instagram">Instagram</FormLabel>
-                    <Input
-                      id="rest-instagram"
-                      value={restaurantInstagram}
-                      onChange={(e) => setRestaurantInstagram(e.target.value)}
-                      placeholder="https://instagram.com/yourrestaurant"
-                      data-testid="input-restaurant-instagram"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-whatsapp">WhatsApp</FormLabel>
-                    <Input
-                      id="rest-whatsapp"
-                      value={restaurantWhatsapp}
-                      onChange={(e) => setRestaurantWhatsapp(e.target.value)}
-                      placeholder="+1234567890 or https://wa.me/1234567890"
-                      data-testid="input-restaurant-whatsapp"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-telegram">Telegram</FormLabel>
-                    <Input
-                      id="rest-telegram"
-                      value={restaurantTelegram}
-                      onChange={(e) => setRestaurantTelegram(e.target.value)}
-                      placeholder="https://t.me/yourrestaurant"
-                      data-testid="input-restaurant-telegram"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-gmaps">Google Maps URL</FormLabel>
-                    <Input
-                      id="rest-gmaps"
-                      value={restaurantGoogleMapsUrl}
-                      onChange={(e) => setRestaurantGoogleMapsUrl(e.target.value)}
-                      placeholder="https://maps.google.com/?q=..."
-                      data-testid="input-restaurant-google-maps"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
                   <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5" />Operating Hours</CardTitle>
                   <CardDescription>Set your restaurant hours for each day</CardDescription>
                 </CardHeader>
@@ -1191,59 +1146,78 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Social Media</CardTitle>
-                  <CardDescription>Add your social media links</CardDescription>
+                  <CardTitle className="text-lg">Social Media & Maps</CardTitle>
+                  <CardDescription>Connect your social media and location services</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <FormLabel htmlFor="social-instagram">Instagram</FormLabel>
-                    <Input
-                      id="social-instagram"
-                      value={socialMedia.instagram}
-                      onChange={(e) => setSocialMedia({ ...socialMedia, instagram: e.target.value })}
-                      placeholder="https://instagram.com/yourprofile"
-                      data-testid="input-social-instagram"
-                    />
+                    <FormLabel htmlFor="rest-instagram">Instagram</FormLabel>
+                    <FormField control={form.control} name="restaurantInstagram" render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            id="rest-instagram"
+                            {...field}
+                            value={field.value || ''}
+                            placeholder="https://instagram.com/yourrestaurant"
+                            data-testid="input-restaurant-instagram"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                   </div>
                   <div className="space-y-2">
-                    <FormLabel htmlFor="social-whatsapp">WhatsApp</FormLabel>
-                    <Input
-                      id="social-whatsapp"
-                      value={socialMedia.whatsapp}
-                      onChange={(e) => setSocialMedia({ ...socialMedia, whatsapp: e.target.value })}
-                      placeholder="+1 (555) 123-4567"
-                      data-testid="input-social-whatsapp"
-                    />
+                    <FormLabel htmlFor="rest-whatsapp">WhatsApp</FormLabel>
+                    <FormField control={form.control} name="restaurantWhatsapp" render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            id="rest-whatsapp"
+                            {...field}
+                            value={field.value || ''}
+                            placeholder="+1234567890 or https://wa.me/1234567890"
+                            data-testid="input-restaurant-whatsapp"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                   </div>
                   <div className="space-y-2">
-                    <FormLabel htmlFor="social-telegram">Telegram</FormLabel>
-                    <Input
-                      id="social-telegram"
-                      value={socialMedia.telegram}
-                      onChange={(e) => setSocialMedia({ ...socialMedia, telegram: e.target.value })}
-                      placeholder="@yourprofile"
-                      data-testid="input-social-telegram"
-                    />
+                    <FormLabel htmlFor="rest-telegram">Telegram</FormLabel>
+                    <FormField control={form.control} name="restaurantTelegram" render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            id="rest-telegram"
+                            {...field}
+                            value={field.value || ''}
+                            placeholder="https://t.me/yourrestaurant"
+                            data-testid="input-restaurant-telegram"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Google Maps</CardTitle>
-                  <CardDescription>Add your Google Maps location link</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <FormLabel htmlFor="google-maps">Google Maps URL</FormLabel>
-                    <Input
-                      id="google-maps"
-                      value={googleMapsUrl}
-                      onChange={(e) => setGoogleMapsUrl(e.target.value)}
-                      placeholder="https://maps.google.com/maps?q=..."
-                      data-testid="input-google-maps-url"
-                    />
-                    <FormDescription>Paste your Google Maps embed or share link</FormDescription>
+                    <FormLabel htmlFor="rest-gmaps">Google Maps URL</FormLabel>
+                    <FormField control={form.control} name="restaurantGoogleMapsUrl" render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            id="rest-gmaps"
+                            {...field}
+                            value={field.value || ''}
+                            placeholder="https://maps.google.com/?q=..."
+                            data-testid="input-restaurant-google-maps"
+                          />
+                        </FormControl>
+                        <FormDescription>Paste your Google Maps location link</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                   </div>
                 </CardContent>
               </Card>
