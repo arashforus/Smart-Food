@@ -59,6 +59,7 @@ const settingsSchema = z.object({
   restaurantWhatsapp: z.string().optional(),
   restaurantTelegram: z.string().optional(),
   restaurantGoogleMapsUrl: z.string().optional(),
+  qrLogo: z.string().optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -144,7 +145,9 @@ export default function SettingsPage() {
       if (dbSettings.qrTextColor) setQrTextColor(dbSettings.qrTextColor);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
-      if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
+      if (dbSettings.qrLogo) {
+        setQrLogo(dbSettings.qrLogo);
+      }
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,

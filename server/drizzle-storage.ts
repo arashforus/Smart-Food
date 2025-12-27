@@ -64,6 +64,7 @@ export class DrizzleStorage implements IStorage {
       qrTextColor: s.qrTextColor ?? '#000000',
       qrShowCallWaiter: s.qrShowCallWaiter ?? true,
       qrShowAddressPhone: s.qrShowAddressPhone ?? true,
+      qrLogo: s.qrLogo ?? undefined,
       createdAt: s.createdAt ?? undefined,
     };
   }
@@ -89,8 +90,17 @@ export class DrizzleStorage implements IStorage {
         restaurantGoogleMapsUrl: s.restaurantGoogleMapsUrl ?? undefined,
         loginBackgroundImage: s.loginBackgroundImage ?? undefined,
         loginTitle: s.loginTitle ?? undefined,
-        showQrLogo: s.showQrLogo ?? true,
-        showQrAnimatedText: s.showQrAnimatedText ?? true,
+        qrShowLogo: s.qrShowLogo ?? true,
+        qrShowTitle: s.qrShowTitle ?? true,
+        qrShowDescription: s.qrShowDescription ?? true,
+        qrShowAnimatedText: s.qrShowAnimatedText ?? true,
+        qrAnimatedTexts: s.qrAnimatedTexts ?? ['Welcome', 'Discover our Menu'],
+        qrMediaUrl: s.qrMediaUrl ?? undefined,
+        qrMediaType: s.qrMediaType ?? undefined,
+        qrTextColor: s.qrTextColor ?? '#000000',
+        qrShowCallWaiter: s.qrShowCallWaiter ?? true,
+        qrShowAddressPhone: s.qrShowAddressPhone ?? true,
+        qrLogo: s.qrLogo ?? undefined,
         createdAt: s.createdAt ?? undefined,
       };
     }
@@ -121,6 +131,7 @@ export class DrizzleStorage implements IStorage {
       qrTextColor: s.qrTextColor ?? '#000000',
       qrShowCallWaiter: s.qrShowCallWaiter ?? true,
       qrShowAddressPhone: s.qrShowAddressPhone ?? true,
+      qrLogo: s.qrLogo ?? undefined,
       createdAt: s.createdAt ?? undefined,
     };
   }

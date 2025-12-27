@@ -198,6 +198,7 @@ export interface Settings {
   qrTextColor?: string;
   qrShowCallWaiter?: boolean;
   qrShowAddressPhone?: boolean;
+  qrLogo?: string;
 }
 
 export interface DashboardMetrics {
