@@ -218,17 +218,6 @@ export default function QRCodeDesigner() {
             {/* Left: Controls */}
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Design Name</label>
-                <Input
-                  value={currentDesign.name || ''}
-                  onChange={handleNameChange}
-                  placeholder="e.g., Restaurant Menu"
-                  data-testid="input-qr-design-name"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
                 <label className="text-sm font-medium">QR Code Text/URL</label>
                 <Input
                   value={currentDesign.qrText || ''}
@@ -346,11 +335,6 @@ export default function QRCodeDesigner() {
                   </div>
                 )}
               </div>
-
-              <Button onClick={handleSaveDesign} className="w-full" data-testid="button-save-qr-design">
-                <Plus className="w-4 h-4 mr-2" />
-                Save Design
-              </Button>
             </div>
 
             {/* Right: Preview */}
@@ -368,85 +352,6 @@ export default function QRCodeDesigner() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Saved Designs Section */}
-      {designs.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Saved QR Codes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {designs.map((design) => (
-                <Card key={design.id} className="overflow-hidden">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className="font-medium text-sm truncate">{design.name}</h4>
-                      <Badge variant="outline" className="text-xs">
-                        {new Date(design.createdAt).toLocaleDateString()}
-                      </Badge>
-                    </div>
-
-                    <div className="flex justify-center p-3 bg-gray-50 rounded">
-                      <QRCode
-                        value={design.qrText}
-                        size={128}
-                        level="H"
-                        includeMargin={true}
-                        fgColor={design.foregroundColor}
-                        bgColor={design.backgroundColor}
-                        data-testid={`qr-code-${design.id}`}
-                      />
-                    </div>
-
-                    <div className="text-xs text-muted-foreground truncate">{design.qrText}</div>
-
-                    <div className="flex flex-wrap gap-1">
-                      {design.logoUrl && <Badge variant="secondary" className="text-xs">Logo</Badge>}
-                      <Badge variant="secondary" className="text-xs">{design.cornerDots}</Badge>
-                    </div>
-
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => handleLoadDesign(design)}
-                        data-testid={`button-edit-qr-${design.id}`}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDuplicateDesign(design)}
-                        data-testid={`button-duplicate-qr-${design.id}`}
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleDownload(design)}
-                        data-testid={`button-download-qr-${design.id}`}
-                      >
-                        <Download className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDeleteDesign(design.id)}
-                        data-testid={`button-delete-qr-${design.id}`}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
