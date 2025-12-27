@@ -163,6 +163,9 @@ export default function SettingsPage() {
     return localStorage.getItem('loginBackgroundImage') || '';
   });
   const [loginBackgroundPreview, setLoginBackgroundPreview] = useState<string>(loginBackgroundImage);
+  const [showLoginTitle, setShowLoginTitle] = useState(() => localStorage.getItem('showLoginTitle') !== 'false');
+  const [loginTitle, setLoginTitle] = useState(() => localStorage.getItem('loginTitle') || 'Welcome');
+  const [showLoginResetPassword, setShowLoginResetPassword] = useState(() => localStorage.getItem('showLoginResetPassword') !== 'false');
   const [qrPageTitle, setQrPageTitle] = useState(() => localStorage.getItem('qrPageTitle') || 'Scan to Order');
   const [qrPageDescription, setQrPageDescription] = useState(() => localStorage.getItem('qrPageDescription') || '');
   const [showQrTitle, setShowQrTitle] = useState(() => localStorage.getItem('showQrTitle') !== 'false');
@@ -383,6 +386,9 @@ export default function SettingsPage() {
     if (loginBackgroundImage) {
       localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
     }
+    localStorage.setItem('showLoginTitle', showLoginTitle.toString());
+    localStorage.setItem('loginTitle', loginTitle);
+    localStorage.setItem('showLoginResetPassword', showLoginResetPassword.toString());
     localStorage.setItem('qrPageTitle', qrPageTitle);
     localStorage.setItem('qrPageDescription', qrPageDescription);
     localStorage.setItem('showQrTitle', showQrTitle.toString());
@@ -1210,50 +1216,96 @@ export default function SettingsPage() {
             <TabsContent value="login" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Background Image</CardTitle>
-                  <CardDescription>Customize the login page background</CardDescription>
+                  <CardTitle className="text-lg">Login Page</CardTitle>
+                  <CardDescription>Customize the login page appearance and options</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <FormLabel>Background Image</FormLabel>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      {loginBackgroundPreview ? (
-                        <div className="space-y-2">
-                          <img src={loginBackgroundPreview} alt="Preview" className="max-h-48 mx-auto rounded" />
-                          <p className="text-sm text-muted-foreground">Click to change or scroll down to clear</p>
+                <CardContent className="space-y-6">
+                  {/* Background Image Section */}
+                  <div className="space-y-4 pb-6 border-b">
+                    <h3 className="font-semibold text-sm">Background Image</h3>
+                    <div className="space-y-2">
+                      <FormLabel>Background Image</FormLabel>
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        {loginBackgroundPreview ? (
+                          <div className="space-y-2">
+                            <img src={loginBackgroundPreview} alt="Preview" className="max-h-48 mx-auto rounded" />
+                            <p className="text-sm text-muted-foreground">Click to change or scroll down to clear</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 py-4">
+                            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                            <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                          </div>
+                        )}
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          data-testid="input-login-background"
+                        />
+                      </div>
+                      {loginBackgroundImage && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleClearImage}
+                          className="w-full"
+                          data-testid="button-clear-background"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Clear Image
+                        </Button>
+                      )}
+                      <FormDescription>Recommended size: 1920x1080px or larger. The image will be used as a background with a dark overlay for better text visibility.</FormDescription>
+                    </div>
+                  </div>
+
+                  {/* Display Options */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-sm">Display Options</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Title</FormLabel>
+                          <FormDescription>Display a title on the login page</FormDescription>
                         </div>
-                      ) : (
-                        <div className="space-y-2 py-4">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
+                        <Switch
+                          checked={showLoginTitle}
+                          onCheckedChange={setShowLoginTitle}
+                          data-testid="switch-show-login-title"
+                        />
+                      </div>
+                      {showLoginTitle && (
+                        <div className="space-y-2 ml-3">
+                          <FormLabel htmlFor="login-title">Title</FormLabel>
+                          <Input
+                            id="login-title"
+                            value={loginTitle}
+                            onChange={(e) => setLoginTitle(e.target.value)}
+                            placeholder="Welcome"
+                            data-testid="input-login-title"
+                          />
                         </div>
                       )}
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        data-testid="input-login-background"
-                      />
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Reset Password</FormLabel>
+                          <FormDescription>Display reset password option</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showLoginResetPassword}
+                          onCheckedChange={setShowLoginResetPassword}
+                          data-testid="switch-show-reset-password"
+                        />
+                      </div>
                     </div>
-                    {loginBackgroundImage && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleClearImage}
-                        className="w-full"
-                        data-testid="button-clear-background"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Clear Image
-                      </Button>
-                    )}
-                    <FormDescription>Recommended size: 1920x1080px or larger. The image will be used as a background with a dark overlay for better text visibility.</FormDescription>
                   </div>
                 </CardContent>
               </Card>
