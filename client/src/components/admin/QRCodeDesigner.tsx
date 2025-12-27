@@ -22,8 +22,8 @@ interface QRDesign {
   logoUrl: string;
   backgroundColor: string;
   foregroundColor: string;
-  cornerDots: 'square' | 'rounded' | 'circle';
-  cornerSquares: 'square' | 'rounded' | 'circle';
+  cornerDots: string;
+  cornerSquares: string;
   createdAt: Date;
 }
 
@@ -55,14 +55,16 @@ export default function QRCodeDesigner() {
 
     const updateQRCode = () => {
       try {
-        // Always recreate the QR code to ensure corner dots and squares update properly
+        // Clear previous QR code
         if (qrDisplayRef.current) {
           qrDisplayRef.current.innerHTML = '';
         }
 
-        qrInstanceRef.current = new QRCodeStyling({
+        // Create new QR code instance
+        const qrCode = new QRCodeStyling({
           width: 256,
           height: 256,
+          type: 'svg' as any,
           data: currentDesign.qrText || 'https://example.com',
           dotsOptions: {
             color: currentDesign.foregroundColor || '#000000',
@@ -79,16 +81,13 @@ export default function QRCodeDesigner() {
           backgroundOptions: {
             color: currentDesign.backgroundColor || '#FFFFFF',
           },
-          image: currentDesign.logoUrl || undefined,
-          imageOptions: currentDesign.logoUrl ? {
-            crossOrigin: 'anonymous',
-            margin: 10,
-          } : undefined,
+          margin: 10,
         });
 
-        // Append the QR code to the display container
-        if (qrDisplayRef.current && qrInstanceRef.current) {
-          qrInstanceRef.current.append(qrDisplayRef.current);
+        // Store instance and render
+        qrInstanceRef.current = qrCode;
+        if (qrDisplayRef.current) {
+          qrCode.append(qrDisplayRef.current);
         }
       } catch (error) {
         console.error('Error updating QR code:', error);
@@ -150,9 +149,36 @@ export default function QRCodeDesigner() {
     toast({ title: 'Success', description: 'QR code design saved' });
   };
 
-  const handleDownload = (design: QRDesign) => {
-    if (qrInstanceRef.current) {
-      qrInstanceRef.current.download({ name: design.name, extension: 'png' });
+  const handleDownload = async (design: QRDesign) => {
+    try {
+      // Create a new QR code instance for download
+      const qrCode = new QRCodeStyling({
+        width: 512,
+        height: 512,
+        type: 'image/png' as any,
+        data: design.qrText,
+        dotsOptions: {
+          color: design.foregroundColor,
+          type: (design.cornerDots || 'square') as any,
+        },
+        cornersSquareOptions: {
+          color: design.foregroundColor,
+          type: (design.cornerSquares || 'square') as any,
+        },
+        cornersDotOptions: {
+          color: design.foregroundColor,
+          type: (design.cornerDots || 'square') as any,
+        },
+        backgroundOptions: {
+          color: design.backgroundColor,
+        },
+        margin: 10,
+      });
+      
+      qrCode.download({ name: design.name, extension: 'png' });
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+      toast({ title: 'Error', description: 'Failed to download QR code', variant: 'destructive' });
     }
   };
 
