@@ -295,8 +295,8 @@ export class MemStorage implements IStorage {
       currencyName: 'US Dollar',
       currencySymbol: '$',
       defaultLanguage: 'en',
-      showQrLogo: true,
-      showQrAnimatedText: true,
+      qrShowLogo: true,
+      qrShowAnimatedText: true,
       qrAnimatedTexts: ['Welcome', 'Discover our Menu'],
     };
   }

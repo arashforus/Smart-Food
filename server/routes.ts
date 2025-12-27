@@ -2,9 +2,31 @@ import { createServer, type Server } from "http";
 import { type Express, Request, Response } from "express";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
+import multer from "multer";
+import path from "path";
+import express from "express";
+
+const storage_multer = multer.diskStorage({
+  destination: "./uploads",
+  filename: (_req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage: storage_multer });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  app.use("/uploads", express.static("uploads"));
+
+  app.post("/api/upload", upload.single("file"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const url = `/uploads/${req.file.filename}`;
+    res.json({ url });
+  });
 
   // Settings routes
   app.get("/api/settings", async (_req: Request, res: Response) => {

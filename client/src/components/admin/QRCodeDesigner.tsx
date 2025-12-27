@@ -27,7 +27,12 @@ interface QRDesign {
   createdAt: Date;
 }
 
-export default function QRCodeDesigner() {
+interface QRCodeDesignerProps {
+  initialLogo?: string;
+  onLogoChange?: (url: string) => void;
+}
+
+export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesignerProps) {
   const { toast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
   const qrDisplayRef = useRef<HTMLDivElement>(null);
@@ -42,12 +47,18 @@ export default function QRCodeDesigner() {
   const [currentDesign, setCurrentDesign] = useState<Partial<QRDesign>>({
     name: 'QR Design 1',
     qrText: 'https://example.com',
-    logoUrl: '',
+    logoUrl: initialLogo || '',
     backgroundColor: '#FFFFFF',
     foregroundColor: '#000000',
     cornerDots: 'square',
     cornerSquares: 'square',
   });
+
+  useEffect(() => {
+    if (initialLogo !== undefined) {
+      setCurrentDesign(prev => ({ ...prev, logoUrl: initialLogo }));
+    }
+  }, [initialLogo]);
 
   // Initialize and update QR code whenever design changes
   useEffect(() => {
@@ -81,6 +92,13 @@ export default function QRCodeDesigner() {
           backgroundOptions: {
             color: currentDesign.backgroundColor || '#FFFFFF',
           },
+          image: currentDesign.logoUrl || undefined,
+          imageOptions: {
+            hideBackgroundDots: true,
+            imageSize: 0.4,
+            margin: 0,
+            crossOrigin: 'anonymous',
+          },
           margin: 10,
         });
 
@@ -113,15 +131,30 @@ export default function QRCodeDesigner() {
     }
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setCurrentDesign({ ...currentDesign, logoUrl: imageData });
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentDesign({ ...currentDesign, logoUrl: data.url });
+          onLogoChange?.(data.url);
+          toast({ title: 'Success', description: 'Logo uploaded successfully' });
+        } else {
+          throw new Error('Upload failed');
+        }
+      } catch (error) {
+        console.error('Error uploading logo:', error);
+        toast({ title: 'Error', description: 'Failed to upload logo', variant: 'destructive' });
+      }
     }
   };
 

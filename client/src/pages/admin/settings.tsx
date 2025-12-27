@@ -144,6 +144,7 @@ export default function SettingsPage() {
       if (dbSettings.qrTextColor) setQrTextColor(dbSettings.qrTextColor);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
+      if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -197,6 +198,7 @@ export default function SettingsPage() {
   const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
+  const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
   const [rolePermissions, setRolePermissions] = useState(() => {
     const stored = localStorage.getItem('rolePermissions');
@@ -405,6 +407,7 @@ export default function SettingsPage() {
       qrMediaUrl: qrMediaUrl,
       qrMediaType: qrMediaType,
       qrTextColor: qrTextColor,
+      qrLogo: qrLogo,
       qrShowCallWaiter: qrShowCallWaiter,
       qrShowAddressPhone: qrShowAddressPhone,
     });
@@ -416,6 +419,7 @@ export default function SettingsPage() {
     localStorage.setItem('restaurantPhone', data.restaurantPhone || '');
     localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
     localStorage.setItem('restaurantLogo', restaurantLogo);
+    localStorage.setItem('qrLogo', qrLogo);
     localStorage.setItem('restaurantInstagram', data.restaurantInstagram || '');
     localStorage.setItem('restaurantWhatsapp', data.restaurantWhatsapp || '');
     localStorage.setItem('restaurantTelegram', data.restaurantTelegram || '');
@@ -1857,7 +1861,10 @@ export default function SettingsPage() {
 
             {/* QR Code Tab */}
             <TabsContent value="qrcode" className="space-y-6 animate-in fade-in duration-300">
-              <QRCodeDesigner />
+              <QRCodeDesigner 
+                initialLogo={qrLogo} 
+                onLogoChange={(url) => setQrLogo(url)} 
+              />
             </TabsContent>
 
             {/* Order Status Screen Tab */}
