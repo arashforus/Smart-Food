@@ -65,7 +65,7 @@ export default function QRCodeDesigner() {
           width: 256,
           height: 256,
           type: 'svg' as any,
-          data: currentDesign.qrText || 'https://example.com',
+          data: currentDesign.qrText || 'https://arashsohrabi.com',
           dotsOptions: {
             color: currentDesign.foregroundColor || '#000000',
             type: (currentDesign.cornerDots || 'square') as any,
@@ -218,11 +218,11 @@ export default function QRCodeDesigner() {
             {/* Left: Controls */}
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">QR Code Text/URL</label>
+                <label className="text-sm font-medium">QR Test URL</label>
                 <Input
                   value={currentDesign.qrText || ''}
                   onChange={handleQRTextChange}
-                  placeholder="https://example.com"
+                  placeholder="https://arashsohrabi.com"
                   data-testid="input-qr-text"
                   className="mt-1"
                 />
