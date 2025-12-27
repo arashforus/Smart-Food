@@ -180,6 +180,10 @@ export interface Settings {
   restaurantBackgroundImage?: string;
   restaurantMapLat?: number;
   restaurantMapLng?: number;
+  restaurantInstagram?: string;
+  restaurantWhatsapp?: string;
+  restaurantTelegram?: string;
+  restaurantGoogleMapsUrl?: string;
 }
 
 export interface DashboardMetrics {

@@ -56,6 +56,10 @@ const settingsSchema = z.object({
   restaurantHours: z.string().optional(),
   restaurantLogo: z.string().optional(),
   restaurantBackgroundImage: z.string().optional(),
+  restaurantInstagram: z.string().optional(),
+  restaurantWhatsapp: z.string().optional(),
+  restaurantTelegram: z.string().optional(),
+  restaurantGoogleMapsUrl: z.string().optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -149,6 +153,10 @@ export default function SettingsPage() {
         restaurantHours: dbSettings.restaurantHours || localStorage.getItem('restaurantHours') || '',
         restaurantLogo: dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '',
         restaurantBackgroundImage: dbSettings.restaurantBackgroundImage || '',
+        restaurantInstagram: dbSettings.restaurantInstagram || localStorage.getItem('restaurantInstagram') || '',
+        restaurantWhatsapp: dbSettings.restaurantWhatsapp || localStorage.getItem('restaurantWhatsapp') || '',
+        restaurantTelegram: dbSettings.restaurantTelegram || localStorage.getItem('restaurantTelegram') || '',
+        restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || localStorage.getItem('restaurantGoogleMapsUrl') || '',
       });
     }
   }, [dbSettings]);
@@ -183,6 +191,10 @@ export default function SettingsPage() {
   const [restaurantHours, setRestaurantHours] = useState(() => localStorage.getItem('restaurantHours') || '');
   const [restaurantLogo, setRestaurantLogo] = useState(() => localStorage.getItem('restaurantLogo') || '');
   const [restaurantLogoPreview, setRestaurantLogoPreview] = useState(() => localStorage.getItem('restaurantLogo') || '');
+  const [restaurantInstagram, setRestaurantInstagram] = useState(() => localStorage.getItem('restaurantInstagram') || '');
+  const [restaurantWhatsapp, setRestaurantWhatsapp] = useState(() => localStorage.getItem('restaurantWhatsapp') || '');
+  const [restaurantTelegram, setRestaurantTelegram] = useState(() => localStorage.getItem('restaurantTelegram') || '');
+  const [restaurantGoogleMapsUrl, setRestaurantGoogleMapsUrl] = useState(() => localStorage.getItem('restaurantGoogleMapsUrl') || '');
   const [operatingHours, setOperatingHours] = useState(() => {
     const stored = localStorage.getItem('operatingHours');
     return stored ? JSON.parse(stored) : {
@@ -352,6 +364,10 @@ export default function SettingsPage() {
       restaurantHours: data.restaurantHours,
       restaurantLogo: restaurantLogo,
       restaurantBackgroundImage: data.restaurantBackgroundImage,
+      restaurantInstagram: data.restaurantInstagram,
+      restaurantWhatsapp: data.restaurantWhatsapp,
+      restaurantTelegram: data.restaurantTelegram,
+      restaurantGoogleMapsUrl: data.restaurantGoogleMapsUrl,
     });
 
     // Also update local storage for fallback
@@ -362,6 +378,10 @@ export default function SettingsPage() {
     localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
     localStorage.setItem('restaurantHours', data.restaurantHours || '');
     localStorage.setItem('restaurantLogo', restaurantLogo);
+    localStorage.setItem('restaurantInstagram', data.restaurantInstagram || '');
+    localStorage.setItem('restaurantWhatsapp', data.restaurantWhatsapp || '');
+    localStorage.setItem('restaurantTelegram', data.restaurantTelegram || '');
+    localStorage.setItem('restaurantGoogleMapsUrl', data.restaurantGoogleMapsUrl || '');
     
     if (loginBackgroundImage) {
       localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
@@ -1047,6 +1067,55 @@ export default function SettingsPage() {
                       onChange={(e) => setRestaurantHours(e.target.value)}
                       placeholder="e.g., Mon-Fri: 9AM-10PM, Sat-Sun: 10AM-11PM"
                       data-testid="input-restaurant-hours"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Social Media & Maps</CardTitle>
+                  <CardDescription>Connect your social media and location services</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-instagram">Instagram</FormLabel>
+                    <Input
+                      id="rest-instagram"
+                      value={restaurantInstagram}
+                      onChange={(e) => setRestaurantInstagram(e.target.value)}
+                      placeholder="https://instagram.com/yourrestaurant"
+                      data-testid="input-restaurant-instagram"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-whatsapp">WhatsApp</FormLabel>
+                    <Input
+                      id="rest-whatsapp"
+                      value={restaurantWhatsapp}
+                      onChange={(e) => setRestaurantWhatsapp(e.target.value)}
+                      placeholder="+1234567890 or https://wa.me/1234567890"
+                      data-testid="input-restaurant-whatsapp"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-telegram">Telegram</FormLabel>
+                    <Input
+                      id="rest-telegram"
+                      value={restaurantTelegram}
+                      onChange={(e) => setRestaurantTelegram(e.target.value)}
+                      placeholder="https://t.me/yourrestaurant"
+                      data-testid="input-restaurant-telegram"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-gmaps">Google Maps URL</FormLabel>
+                    <Input
+                      id="rest-gmaps"
+                      value={restaurantGoogleMapsUrl}
+                      onChange={(e) => setRestaurantGoogleMapsUrl(e.target.value)}
+                      placeholder="https://maps.google.com/?q=..."
+                      data-testid="input-restaurant-google-maps"
                     />
                   </div>
                 </CardContent>

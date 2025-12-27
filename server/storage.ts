@@ -168,6 +168,10 @@ export interface StorageSetting {
   restaurantBackgroundImage?: string;
   restaurantMapLat?: number;
   restaurantMapLng?: number;
+  restaurantInstagram?: string;
+  restaurantWhatsapp?: string;
+  restaurantTelegram?: string;
+  restaurantGoogleMapsUrl?: string;
   createdAt?: Date;
 }
 

@@ -161,6 +161,10 @@ export const settings = pgTable("settings", {
   restaurantBackgroundImage: text("restaurant_background_image"),
   restaurantMapLat: numeric("restaurant_map_lat"),
   restaurantMapLng: numeric("restaurant_map_lng"),
+  restaurantInstagram: text("restaurant_instagram"),
+  restaurantWhatsapp: text("restaurant_whatsapp"),
+  restaurantTelegram: text("restaurant_telegram"),
+  restaurantGoogleMapsUrl: text("restaurant_google_maps_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
