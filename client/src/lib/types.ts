@@ -188,6 +188,11 @@ export interface Settings {
   showLoginTitle?: boolean;
   loginTitle?: string;
   showLoginResetPassword?: boolean;
+  showQrLogo?: boolean;
+  showQrAnimatedText?: boolean;
+  qrAnimatedTexts?: string[];
+  qrMediaUrl?: string;
+  qrMediaType?: string;
 }
 
 export interface DashboardMetrics {
