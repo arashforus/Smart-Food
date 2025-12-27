@@ -1387,7 +1387,7 @@ export default function SettingsPage() {
                         disabled={!showQrTitle}
                         data-testid="input-qr-page-title"
                       />
-                      <FormDescription>Main heading displayed on the QR landing page</FormDescription>
+                      
                     </div>
                     <div className="space-y-2">
                       <FormLabel htmlFor="qr-description">Page Description</FormLabel>
@@ -1399,7 +1399,7 @@ export default function SettingsPage() {
                         disabled={!showQrDescription}
                         data-testid="input-qr-page-description"
                       />
-                      <FormDescription>Subtitle or description shown below the title (optional)</FormDescription>
+                    
                     </div>
 
                     <div className="space-y-4 pt-4">
