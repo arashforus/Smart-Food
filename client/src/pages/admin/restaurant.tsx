@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,7 @@ import { mockRestaurant } from '@/lib/mockData';
 import type { Restaurant } from '@/lib/types';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { MapPin } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
 
 const restaurantSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -61,16 +62,81 @@ export default function RestaurantPage() {
     },
   });
 
-  const handleSubmit = (data: RestaurantFormData) => {
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await apiRequest('GET', '/api/settings');
+        const settings = await response.json();
+        if (settings) {
+          const updatedRestaurant: Restaurant = {
+            id: mockRestaurant.id,
+            name: settings.restaurantName || mockRestaurant.name,
+            description: settings.restaurantDescription || mockRestaurant.description,
+            address: settings.restaurantAddress || mockRestaurant.address,
+            phone: settings.restaurantPhone || mockRestaurant.phone,
+            email: settings.restaurantEmail || mockRestaurant.email,
+            hours: settings.restaurantHours || mockRestaurant.hours,
+            currency: mockRestaurant.currency,
+            currencySymbol: settings.currencySymbol || mockRestaurant.currencySymbol,
+            logo: settings.restaurantLogo || mockRestaurant.logo,
+            backgroundImage: settings.restaurantBackgroundImage || mockRestaurant.backgroundImage,
+            mapLat: settings.restaurantMapLat ? Number(settings.restaurantMapLat) : mockRestaurant.mapLat,
+            mapLng: settings.restaurantMapLng ? Number(settings.restaurantMapLng) : mockRestaurant.mapLng,
+          };
+          setRestaurant(updatedRestaurant);
+          form.reset({
+            name: updatedRestaurant.name,
+            description: updatedRestaurant.description,
+            address: updatedRestaurant.address,
+            phone: updatedRestaurant.phone,
+            email: updatedRestaurant.email,
+            hours: updatedRestaurant.hours,
+            currency: updatedRestaurant.currency,
+            currencySymbol: updatedRestaurant.currencySymbol,
+            logo: updatedRestaurant.logo,
+            backgroundImage: updatedRestaurant.backgroundImage,
+            mapLat: updatedRestaurant.mapLat,
+            mapLng: updatedRestaurant.mapLng,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleSubmit = async (data: RestaurantFormData) => {
     setIsPending(true);
-    setTimeout(() => {
+    try {
+      await apiRequest('PATCH', '/api/settings', {
+        restaurantName: data.name,
+        restaurantDescription: data.description,
+        restaurantAddress: data.address,
+        restaurantPhone: data.phone,
+        restaurantEmail: data.email,
+        restaurantHours: data.hours,
+        restaurantLogo: data.logo,
+        restaurantBackgroundImage: data.backgroundImage,
+        restaurantMapLat: data.mapLat,
+        restaurantMapLng: data.mapLng,
+        currencySymbol: data.currencySymbol,
+      });
       setRestaurant({ ...restaurant, ...data });
-      setIsPending(false);
       toast({
         title: 'Restaurant Updated',
         description: 'Your restaurant information has been saved.',
       });
-    }, 500);
+    } catch (error) {
+      console.error('Failed to update settings:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save restaurant information.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

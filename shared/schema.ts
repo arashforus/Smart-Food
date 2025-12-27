@@ -151,6 +151,16 @@ export const settings = pgTable("settings", {
   licenseKey: text("license_key"),
   licenseExpiryDate: timestamp("license_expiry_date"),
   defaultLanguage: text("default_language").notNull().default("en"),
+  restaurantName: text("restaurant_name"),
+  restaurantDescription: text("restaurant_description"),
+  restaurantAddress: text("restaurant_address"),
+  restaurantPhone: text("restaurant_phone"),
+  restaurantEmail: text("restaurant_email"),
+  restaurantHours: text("restaurant_hours"),
+  restaurantLogo: text("restaurant_logo"),
+  restaurantBackgroundImage: text("restaurant_background_image"),
+  restaurantMapLat: numeric("restaurant_map_lat"),
+  restaurantMapLng: numeric("restaurant_map_lng"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
