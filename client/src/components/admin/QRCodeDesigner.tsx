@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import QRCodeStyling from 'qr-code-styling';
 import { QRCodeSVG as QRCode } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,7 +30,9 @@ interface QRDesign {
 export default function QRCodeDesigner() {
   const { toast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
+  const qrDisplayRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const qrInstanceRef = useRef<QRCodeStyling | null>(null);
 
   const [designs, setDesigns] = useState<QRDesign[]>(() => {
     const stored = localStorage.getItem('qrDesigns');
@@ -45,6 +48,55 @@ export default function QRCodeDesigner() {
     cornerDots: 'square',
     cornerSquares: 'square',
   });
+
+  // Initialize and update QR code whenever design changes
+  useEffect(() => {
+    if (!qrDisplayRef.current) return;
+
+    const updateQRCode = () => {
+      try {
+        // Always recreate the QR code to ensure corner dots and squares update properly
+        if (qrDisplayRef.current) {
+          qrDisplayRef.current.innerHTML = '';
+        }
+
+        qrInstanceRef.current = new QRCodeStyling({
+          width: 256,
+          height: 256,
+          data: currentDesign.qrText || 'https://example.com',
+          dotsOptions: {
+            color: currentDesign.foregroundColor || '#000000',
+            type: (currentDesign.cornerDots || 'square') as any,
+          },
+          cornersSquareOptions: {
+            color: currentDesign.foregroundColor || '#000000',
+            type: (currentDesign.cornerSquares || 'square') as any,
+          },
+          cornersDotOptions: {
+            color: currentDesign.foregroundColor || '#000000',
+            type: (currentDesign.cornerDots || 'square') as any,
+          },
+          backgroundOptions: {
+            color: currentDesign.backgroundColor || '#FFFFFF',
+          },
+          image: currentDesign.logoUrl || undefined,
+          imageOptions: currentDesign.logoUrl ? {
+            crossOrigin: 'anonymous',
+            margin: 10,
+          } : undefined,
+        });
+
+        // Append the QR code to the display container
+        if (qrDisplayRef.current && qrInstanceRef.current) {
+          qrInstanceRef.current.append(qrDisplayRef.current);
+        }
+      } catch (error) {
+        console.error('Error updating QR code:', error);
+      }
+    };
+
+    updateQRCode();
+  }, [currentDesign]);
 
   const handleQRTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentDesign({ ...currentDesign, qrText: e.target.value });
@@ -99,14 +151,8 @@ export default function QRCodeDesigner() {
   };
 
   const handleDownload = (design: QRDesign) => {
-    if (qrRef.current) {
-      const canvas = qrRef.current.querySelector('canvas');
-      if (canvas) {
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = `${design.name}.png`;
-        link.click();
-      }
+    if (qrInstanceRef.current) {
+      qrInstanceRef.current.download({ name: design.name, extension: 'png' });
     }
   };
 
@@ -283,17 +329,12 @@ export default function QRCodeDesigner() {
 
             {/* Right: Preview */}
             <div className="flex flex-col items-center justify-center space-y-4 p-6 border rounded-lg bg-gray-50">
-              <div ref={qrRef} className="bg-white p-4 rounded-lg">
-                <QRCode
-                  value={currentDesign.qrText || 'https://example.com'}
-                  size={256}
-                  level="H"
-                  includeMargin={true}
-                  fgColor={currentDesign.foregroundColor || '#000000'}
-                  bgColor={currentDesign.backgroundColor || '#FFFFFF'}
-                  data-testid="qr-code-preview"
-                />
-              </div>
+              <div 
+                ref={qrDisplayRef} 
+                className="bg-white p-4 rounded-lg flex items-center justify-center"
+                data-testid="qr-code-preview"
+                style={{ width: '280px', height: '280px' }}
+              />
               {currentDesign.logoUrl && (
                 <div className="text-xs text-muted-foreground">Logo will appear in center</div>
               )}
