@@ -53,7 +53,6 @@ const settingsSchema = z.object({
   restaurantAddress: z.string().optional(),
   restaurantPhone: z.string().optional(),
   restaurantEmail: z.string().optional(),
-  restaurantHours: z.string().optional(),
   restaurantLogo: z.string().optional(),
   restaurantBackgroundImage: z.string().optional(),
   restaurantInstagram: z.string().optional(),
@@ -128,7 +127,6 @@ export default function SettingsPage() {
       setRestaurantAddress(dbSettings.restaurantAddress || localStorage.getItem('restaurantAddress') || '');
       setRestaurantPhone(dbSettings.restaurantPhone || localStorage.getItem('restaurantPhone') || '');
       setRestaurantEmail(dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '');
-      setRestaurantHours(dbSettings.restaurantHours || localStorage.getItem('restaurantHours') || '');
       setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       // Update form values when DB settings load
@@ -150,7 +148,6 @@ export default function SettingsPage() {
         restaurantAddress: dbSettings.restaurantAddress || localStorage.getItem('restaurantAddress') || '',
         restaurantPhone: dbSettings.restaurantPhone || localStorage.getItem('restaurantPhone') || '',
         restaurantEmail: dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '',
-        restaurantHours: dbSettings.restaurantHours || localStorage.getItem('restaurantHours') || '',
         restaurantLogo: dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '',
         restaurantBackgroundImage: dbSettings.restaurantBackgroundImage || '',
         restaurantInstagram: dbSettings.restaurantInstagram || localStorage.getItem('restaurantInstagram') || '',
@@ -188,7 +185,6 @@ export default function SettingsPage() {
   const [restaurantAddress, setRestaurantAddress] = useState(() => localStorage.getItem('restaurantAddress') || '');
   const [restaurantPhone, setRestaurantPhone] = useState(() => localStorage.getItem('restaurantPhone') || '');
   const [restaurantEmail, setRestaurantEmail] = useState(() => localStorage.getItem('restaurantEmail') || '');
-  const [restaurantHours, setRestaurantHours] = useState(() => localStorage.getItem('restaurantHours') || '');
   const [restaurantLogo, setRestaurantLogo] = useState(() => localStorage.getItem('restaurantLogo') || '');
   const [restaurantLogoPreview, setRestaurantLogoPreview] = useState(() => localStorage.getItem('restaurantLogo') || '');
   const [restaurantInstagram, setRestaurantInstagram] = useState(() => localStorage.getItem('restaurantInstagram') || '');
@@ -332,7 +328,6 @@ export default function SettingsPage() {
       restaurantAddress,
       restaurantPhone,
       restaurantEmail,
-      restaurantHours,
       restaurantInstagram,
       restaurantWhatsapp,
       restaurantTelegram,
@@ -365,7 +360,6 @@ export default function SettingsPage() {
       restaurantAddress: data.restaurantAddress,
       restaurantPhone: data.restaurantPhone,
       restaurantEmail: data.restaurantEmail,
-      restaurantHours: data.restaurantHours,
       restaurantLogo: restaurantLogo,
       restaurantBackgroundImage: data.restaurantBackgroundImage,
       restaurantInstagram: data.restaurantInstagram,
@@ -380,7 +374,6 @@ export default function SettingsPage() {
     localStorage.setItem('restaurantAddress', data.restaurantAddress || '');
     localStorage.setItem('restaurantPhone', data.restaurantPhone || '');
     localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
-    localStorage.setItem('restaurantHours', data.restaurantHours || '');
     localStorage.setItem('restaurantLogo', restaurantLogo);
     localStorage.setItem('restaurantInstagram', data.restaurantInstagram || '');
     localStorage.setItem('restaurantWhatsapp', data.restaurantWhatsapp || '');
@@ -1061,16 +1054,6 @@ export default function SettingsPage() {
                       onChange={(e) => setRestaurantEmail(e.target.value)}
                       placeholder="Contact email"
                       data-testid="input-restaurant-email"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-hours">Business Hours</FormLabel>
-                    <Input
-                      id="rest-hours"
-                      value={restaurantHours}
-                      onChange={(e) => setRestaurantHours(e.target.value)}
-                      placeholder="e.g., Mon-Fri: 9AM-10PM, Sat-Sun: 10AM-11PM"
-                      data-testid="input-restaurant-hours"
                     />
                   </div>
                 </CardContent>
