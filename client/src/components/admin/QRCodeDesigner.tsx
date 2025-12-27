@@ -31,10 +31,21 @@ interface QRDesign {
 
 interface QRCodeDesignerProps {
   initialLogo?: string;
+  initialCenterType?: 'none' | 'logo' | 'text';
+  initialCenterText?: string;
   onLogoChange?: (url: string) => void;
+  onCenterTypeChange?: (type: 'none' | 'logo' | 'text') => void;
+  onCenterTextChange?: (text: string) => void;
 }
 
-export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesignerProps) {
+export default function QRCodeDesigner({ 
+  initialLogo, 
+  initialCenterType = 'logo',
+  initialCenterText = '',
+  onLogoChange,
+  onCenterTypeChange,
+  onCenterTextChange
+}: QRCodeDesignerProps) {
   const { toast } = useToast();
   const qrRef = useRef<HTMLDivElement>(null);
   const qrDisplayRef = useRef<HTMLDivElement>(null);
@@ -50,8 +61,8 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
     name: 'QR Design 1',
     qrText: 'https://example.com',
     logoUrl: initialLogo || '',
-    centerType: 'logo',
-    centerText: '',
+    centerType: initialCenterType,
+    centerText: initialCenterText,
     backgroundColor: '#FFFFFF',
     foregroundColor: '#000000',
     cornerDots: 'square',
@@ -59,10 +70,13 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
   });
 
   useEffect(() => {
-    if (initialLogo !== undefined) {
-      setCurrentDesign(prev => ({ ...prev, logoUrl: initialLogo }));
-    }
-  }, [initialLogo]);
+    setCurrentDesign(prev => ({ 
+      ...prev, 
+      logoUrl: initialLogo || prev.logoUrl,
+      centerType: initialCenterType || prev.centerType,
+      centerText: initialCenterText || prev.centerText
+    }));
+  }, [initialLogo, initialCenterType, initialCenterText]);
 
   // Initialize and update QR code whenever design changes
   useEffect(() => {
@@ -372,28 +386,69 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Logo/Center Image</label>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleLogoUpload}
-                  accept="image/*"
-                  className="hidden"
-                  data-testid="input-qr-logo"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full mt-1"
-                  onClick={() => fileInputRef.current?.click()}
-                  data-testid="button-upload-logo"
-                >
-                  {currentDesign.logoUrl ? 'Change Logo' : 'Upload Logo'}
-                </Button>
-                {currentDesign.logoUrl && (
-                  <div className="mt-2">
-                    <img src={currentDesign.logoUrl} alt="Logo preview" className="h-16 w-16 rounded border" />
+                <div>
+                  <label className="text-sm font-medium">Center Type</label>
+                  <Select
+                    value={currentDesign.centerType || 'logo'}
+                    onValueChange={(value) => {
+                      const type = value as 'none' | 'logo' | 'text';
+                      setCurrentDesign({ ...currentDesign, centerType: type });
+                      onCenterTypeChange?.(type);
+                    }}
+                  >
+                    <SelectTrigger data-testid="select-qr-center-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="logo">Logo</SelectItem>
+                      <SelectItem value="text">Text</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {currentDesign.centerType === 'text' && (
+                  <div>
+                    <label className="text-sm font-medium">Center Text</label>
+                    <Input
+                      value={currentDesign.centerText || ''}
+                      onChange={(e) => {
+                        const text = e.target.value;
+                        setCurrentDesign({ ...currentDesign, centerText: text });
+                        onCenterTextChange?.(text);
+                      }}
+                      placeholder="Enter center text"
+                      data-testid="input-qr-center-text"
+                      className="mt-1"
+                    />
+                  </div>
+                )}
+
+                {currentDesign.centerType === 'logo' && (
+                  <div>
+                    <label className="text-sm font-medium">Logo/Center Image</label>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleLogoUpload}
+                      accept="image/*"
+                      className="hidden"
+                      data-testid="input-qr-logo"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full mt-1"
+                      onClick={() => fileInputRef.current?.click()}
+                      data-testid="button-upload-logo"
+                    >
+                      {currentDesign.logoUrl ? 'Change Logo' : 'Upload Logo'}
+                    </Button>
+                    {currentDesign.logoUrl && (
+                      <div className="mt-2">
+                        <img src={currentDesign.logoUrl} alt="Logo preview" className="h-16 w-16 rounded border" />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -407,8 +462,11 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
                 data-testid="qr-code-preview"
                 style={{ width: '280px', height: '280px' }}
               />
-              {currentDesign.logoUrl && (
+              {currentDesign.centerType === 'logo' && currentDesign.logoUrl && (
                 <div className="text-xs text-muted-foreground">Logo will appear in center</div>
+              )}
+              {currentDesign.centerType === 'text' && currentDesign.centerText && (
+                <div className="text-xs text-muted-foreground">Text will appear in center</div>
               )}
             </div>
           </div>

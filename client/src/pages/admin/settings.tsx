@@ -148,6 +148,12 @@ export default function SettingsPage() {
       if (dbSettings.qrLogo) {
         setQrLogo(dbSettings.qrLogo);
       }
+      if (dbSettings.qrCenterType) {
+        setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
+      }
+      if (dbSettings.qrCenterText) {
+        setQrCenterText(dbSettings.qrCenterText);
+      }
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -202,6 +208,8 @@ export default function SettingsPage() {
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
+  const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
+  const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
   const [rolePermissions, setRolePermissions] = useState(() => {
     const stored = localStorage.getItem('rolePermissions');
@@ -411,6 +419,8 @@ export default function SettingsPage() {
       qrMediaType: qrMediaType,
       qrTextColor: qrTextColor,
       qrLogo: qrLogo,
+      qrCenterType: qrCenterType,
+      qrCenterText: qrCenterText,
       qrShowCallWaiter: qrShowCallWaiter,
       qrShowAddressPhone: qrShowAddressPhone,
     });
@@ -423,6 +433,8 @@ export default function SettingsPage() {
     localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
     localStorage.setItem('restaurantLogo', restaurantLogo);
     localStorage.setItem('qrLogo', qrLogo);
+    localStorage.setItem('qrCenterType', qrCenterType);
+    localStorage.setItem('qrCenterText', qrCenterText);
     localStorage.setItem('restaurantInstagram', data.restaurantInstagram || '');
     localStorage.setItem('restaurantWhatsapp', data.restaurantWhatsapp || '');
     localStorage.setItem('restaurantTelegram', data.restaurantTelegram || '');
@@ -1866,7 +1878,11 @@ export default function SettingsPage() {
             <TabsContent value="qrcode" className="space-y-6 animate-in fade-in duration-300">
               <QRCodeDesigner 
                 initialLogo={qrLogo} 
+                initialCenterType={qrCenterType}
+                initialCenterText={qrCenterText}
                 onLogoChange={(url) => setQrLogo(url)} 
+                onCenterTypeChange={(type) => setQrCenterType(type)}
+                onCenterTextChange={(text) => setQrCenterText(text)}
               />
             </TabsContent>
 
