@@ -172,11 +172,16 @@ export interface StorageSetting {
   restaurantWhatsapp?: string;
   restaurantTelegram?: string;
   restaurantGoogleMapsUrl?: string;
-  showQrLogo?: boolean;
-  showQrAnimatedText?: boolean;
+  qrShowLogo?: boolean;
+  qrShowTitle?: boolean;
+  qrShowDescription?: boolean;
+  qrShowAnimatedText?: boolean;
   qrAnimatedTexts?: string[];
   qrMediaUrl?: string;
   qrMediaType?: string;
+  qrTextColor?: string;
+  qrShowCallWaiter?: boolean;
+  qrShowAddressPhone?: boolean;
   createdAt?: Date;
 }
 

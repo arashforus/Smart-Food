@@ -134,11 +134,16 @@ export default function SettingsPage() {
       if (dbSettings.showLoginTitle !== undefined) setShowLoginTitle(dbSettings.showLoginTitle);
       if (dbSettings.loginTitle) setLoginTitle(dbSettings.loginTitle);
       if (dbSettings.showLoginResetPassword !== undefined) setShowLoginResetPassword(dbSettings.showLoginResetPassword);
-      if (dbSettings.showQrLogo !== undefined) setShowQrLogo(dbSettings.showQrLogo);
-      if (dbSettings.showQrAnimatedText !== undefined) setShowQrAnimatedText(dbSettings.showQrAnimatedText);
+      if (dbSettings.qrShowLogo !== undefined) setQrShowLogo(dbSettings.qrShowLogo);
+      if (dbSettings.qrShowTitle !== undefined) setQrShowTitle(dbSettings.qrShowTitle);
+      if (dbSettings.qrShowDescription !== undefined) setQrShowDescription(dbSettings.qrShowDescription);
+      if (dbSettings.qrShowAnimatedText !== undefined) setQrShowAnimatedText(dbSettings.qrShowAnimatedText);
       if (dbSettings.qrAnimatedTexts) setQrAnimatedTexts(dbSettings.qrAnimatedTexts);
       if (dbSettings.qrMediaUrl) setQrMediaUrl(dbSettings.qrMediaUrl);
       if (dbSettings.qrMediaType) setQrMediaType(dbSettings.qrMediaType as 'image' | 'video');
+      if (dbSettings.qrTextColor) setQrTextColor(dbSettings.qrTextColor);
+      if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
+      if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -178,10 +183,10 @@ export default function SettingsPage() {
   const [showLoginResetPassword, setShowLoginResetPassword] = useState(() => localStorage.getItem('showLoginResetPassword') !== 'false');
   const [qrPageTitle, setQrPageTitle] = useState(() => localStorage.getItem('qrPageTitle') || 'Scan to Order');
   const [qrPageDescription, setQrPageDescription] = useState(() => localStorage.getItem('qrPageDescription') || '');
-  const [showQrTitle, setShowQrTitle] = useState(() => localStorage.getItem('showQrTitle') !== 'false');
-  const [showQrLogo, setShowQrLogo] = useState(() => localStorage.getItem('showQrLogo') !== 'false');
-  const [showQrDescription, setShowQrDescription] = useState(() => localStorage.getItem('showQrDescription') !== 'false');
-  const [showQrAnimatedText, setShowQrAnimatedText] = useState(() => localStorage.getItem('showQrAnimatedText') !== 'false');
+  const [qrShowTitle, setQrShowTitle] = useState(() => localStorage.getItem('qrShowTitle') !== 'false');
+  const [qrShowLogo, setQrShowLogo] = useState(() => localStorage.getItem('qrShowLogo') !== 'false');
+  const [qrShowDescription, setQrShowDescription] = useState(() => localStorage.getItem('qrShowDescription') !== 'false');
+  const [qrShowAnimatedText, setQrShowAnimatedText] = useState(() => localStorage.getItem('qrShowAnimatedText') !== 'false');
   const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(() => {
     const stored = localStorage.getItem('qrAnimatedTexts');
     return stored ? JSON.parse(stored) : ['Welcome', 'Discover our Menu'];
@@ -189,8 +194,8 @@ export default function SettingsPage() {
   const [qrMediaUrl, setQrMediaUrl] = useState(() => localStorage.getItem('qrMediaUrl') || '');
   const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>(() => (localStorage.getItem('qrMediaType') as 'image' | 'video') || 'image');
   const qrMediaInputRef = useRef<HTMLInputElement>(null);
-  const [showCallWaiter, setShowCallWaiter] = useState(() => localStorage.getItem('showCallWaiter') !== 'false');
-  const [showAddressPhone, setShowAddressPhone] = useState(() => localStorage.getItem('showAddressPhone') !== 'false');
+  const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
+  const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
   const [rolePermissions, setRolePermissions] = useState(() => {
@@ -392,11 +397,16 @@ export default function SettingsPage() {
       showLoginTitle: showLoginTitle,
       loginTitle: loginTitle,
       showLoginResetPassword: showLoginResetPassword,
-      showQrLogo: showQrLogo,
-      showQrAnimatedText: showQrAnimatedText,
+      qrShowLogo: qrShowLogo,
+      qrShowTitle: qrShowTitle,
+      qrShowDescription: qrShowDescription,
+      qrShowAnimatedText: qrShowAnimatedText,
       qrAnimatedTexts: qrAnimatedTexts,
       qrMediaUrl: qrMediaUrl,
       qrMediaType: qrMediaType,
+      qrTextColor: qrTextColor,
+      qrShowCallWaiter: qrShowCallWaiter,
+      qrShowAddressPhone: qrShowAddressPhone,
     });
 
     // Also update local storage for fallback
@@ -1449,11 +1459,11 @@ export default function SettingsPage() {
                       <div className="flex items-center justify-between p-3 border rounded-lg">
                         <div>
                           <FormLabel className="text-base mb-1">Show Logo</FormLabel>
-                          <FormDescription>Display the restaurant logo</FormDescription>
+                          <FormDescription>Display restaurant logo on the page</FormDescription>
                         </div>
                         <Switch
-                          checked={showQrLogo}
-                          onCheckedChange={setShowQrLogo}
+                          checked={qrShowLogo}
+                          onCheckedChange={setQrShowLogo}
                           data-testid="switch-show-qr-logo"
                         />
                       </div>
@@ -1464,8 +1474,8 @@ export default function SettingsPage() {
                           <FormDescription>Display the page title</FormDescription>
                         </div>
                         <Switch
-                          checked={showQrTitle}
-                          onCheckedChange={setShowQrTitle}
+                          checked={qrShowTitle}
+                          onCheckedChange={setQrShowTitle}
                           data-testid="switch-show-qr-title"
                         />
                       </div>
@@ -1476,8 +1486,8 @@ export default function SettingsPage() {
                           <FormDescription>Display the page description</FormDescription>
                         </div>
                         <Switch
-                          checked={showQrDescription}
-                          onCheckedChange={setShowQrDescription}
+                          checked={qrShowDescription}
+                          onCheckedChange={setQrShowDescription}
                           data-testid="switch-show-qr-description"
                         />
                       </div>
@@ -1488,8 +1498,8 @@ export default function SettingsPage() {
                           <FormDescription>Display animated text on the page</FormDescription>
                         </div>
                         <Switch
-                          checked={showQrAnimatedText}
-                          onCheckedChange={setShowQrAnimatedText}
+                          checked={qrShowAnimatedText}
+                          onCheckedChange={setQrShowAnimatedText}
                           data-testid="switch-show-qr-animated-text"
                         />
                       </div>
@@ -1500,8 +1510,8 @@ export default function SettingsPage() {
                           <FormDescription>Display the call waiter button</FormDescription>
                         </div>
                         <Switch
-                          checked={showCallWaiter}
-                          onCheckedChange={setShowCallWaiter}
+                          checked={qrShowCallWaiter}
+                          onCheckedChange={setQrShowCallWaiter}
                           data-testid="switch-show-call-waiter"
                         />
                       </div>
@@ -1512,13 +1522,13 @@ export default function SettingsPage() {
                           <FormDescription>Display restaurant address and phone number</FormDescription>
                         </div>
                         <Switch
-                          checked={showAddressPhone}
-                          onCheckedChange={setShowAddressPhone}
+                          checked={qrShowAddressPhone}
+                          onCheckedChange={setQrShowAddressPhone}
                           data-testid="switch-show-address-phone"
                         />
                       </div>
 
-                      {showQrAnimatedText && (
+                      {qrShowAnimatedText && (
                         <div className="space-y-3 p-4 bg-muted/30 rounded-lg border mt-4">
                           <div className="flex items-center justify-between mb-2">
                             <FormLabel className="text-sm font-semibold">Animated Texts</FormLabel>

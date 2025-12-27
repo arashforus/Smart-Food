@@ -169,11 +169,16 @@ export const settings = pgTable("settings", {
   showLoginTitle: boolean("show_login_title").notNull().default(true),
   loginTitle: text("login_title").notNull().default("Welcome"),
   showLoginResetPassword: boolean("show_login_reset_password").notNull().default(true),
-  showQrLogo: boolean("show_qr_logo").notNull().default(true),
-  showQrAnimatedText: boolean("show_qr_animated_text").notNull().default(true),
+  qrShowLogo: boolean("qr_show_logo").notNull().default(true),
+  qrShowTitle: boolean("qr_show_title").notNull().default(true),
+  qrShowDescription: boolean("qr_show_description").notNull().default(true),
+  qrShowAnimatedText: boolean("qr_show_animated_text").notNull().default(true),
   qrAnimatedTexts: text("qr_animated_texts").array().notNull().default(sql`ARRAY['Welcome', 'Discover our Menu']::text[]`),
   qrMediaUrl: text("qr_media_url"),
   qrMediaType: text("qr_media_type"), // 'image' | 'video'
+  qrTextColor: text("qr_text_color").notNull().default("#000000"),
+  qrShowCallWaiter: boolean("qr_show_call_waiter").notNull().default(true),
+  qrShowAddressPhone: boolean("qr_show_address_phone").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
