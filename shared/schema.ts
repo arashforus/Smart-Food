@@ -178,6 +178,8 @@ export const settings = pgTable("settings", {
   qrMediaUrl: text("qr_media_url"),
   qrMediaType: text("qr_media_type"), // 'image' | 'video'
   qrTextColor: text("qr_text_color").notNull().default("#000000"),
+  qrCenterType: text("qr_center_type").notNull().default("logo"), // 'none' | 'logo' | 'text'
+  qrCenterText: text("qr_center_text"),
   qrShowCallWaiter: boolean("qr_show_call_waiter").notNull().default(true),
   qrShowAddressPhone: boolean("qr_show_address_phone").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),

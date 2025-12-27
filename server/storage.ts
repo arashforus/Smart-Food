@@ -180,6 +180,8 @@ export interface StorageSetting {
   qrMediaUrl?: string;
   qrMediaType?: string;
   qrTextColor?: string;
+  qrCenterType?: string;
+  qrCenterText?: string;
   qrShowCallWaiter?: boolean;
   qrShowAddressPhone?: boolean;
   createdAt?: Date;

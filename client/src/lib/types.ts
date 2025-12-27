@@ -196,6 +196,8 @@ export interface Settings {
   qrMediaUrl?: string;
   qrMediaType?: string;
   qrTextColor?: string;
+  qrCenterType?: 'none' | 'logo' | 'text';
+  qrCenterText?: string;
   qrShowCallWaiter?: boolean;
   qrShowAddressPhone?: boolean;
   qrLogo?: string;

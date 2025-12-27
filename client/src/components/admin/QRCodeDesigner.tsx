@@ -20,6 +20,8 @@ interface QRDesign {
   name: string;
   qrText: string;
   logoUrl: string;
+  centerType: 'none' | 'logo' | 'text';
+  centerText: string;
   backgroundColor: string;
   foregroundColor: string;
   cornerDots: string;
@@ -48,6 +50,8 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
     name: 'QR Design 1',
     qrText: 'https://example.com',
     logoUrl: initialLogo || '',
+    centerType: 'logo',
+    centerText: '',
     backgroundColor: '#FFFFFF',
     foregroundColor: '#000000',
     cornerDots: 'square',
@@ -92,7 +96,7 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
           backgroundOptions: {
             color: currentDesign.backgroundColor || '#FFFFFF',
           },
-          image: currentDesign.logoUrl || undefined,
+          image: currentDesign.centerType === 'logo' ? (currentDesign.logoUrl || undefined) : undefined,
           imageOptions: {
             hideBackgroundDots: true,
             imageSize: 0.4,
@@ -101,6 +105,31 @@ export default function QRCodeDesigner({ initialLogo, onLogoChange }: QRCodeDesi
           },
           margin: 10,
         });
+
+        // Add center text if selected
+        if (currentDesign.centerType === 'text' && currentDesign.centerText) {
+          // Note: qr-code-styling doesn't natively support "text" in center as an image.
+          // We can use a Canvas to generate a text image and use that as the 'image'
+          const canvas = document.createElement('canvas');
+          canvas.width = 100;
+          canvas.height = 100;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = currentDesign.foregroundColor || '#000000';
+            ctx.font = 'bold 40px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(currentDesign.centerText, 50, 50);
+            qrCode.update({
+              image: canvas.toDataURL(),
+              imageOptions: {
+                hideBackgroundDots: true,
+                imageSize: 0.3,
+                margin: 0
+              }
+            });
+          }
+        }
 
         // Store instance and render
         qrInstanceRef.current = qrCode;
