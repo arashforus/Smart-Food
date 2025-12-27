@@ -171,6 +171,7 @@ export const settings = pgTable("settings", {
   showLoginResetPassword: boolean("show_login_reset_password").notNull().default(true),
   showQrLogo: boolean("show_qr_logo").notNull().default(true),
   showQrAnimatedText: boolean("show_qr_animated_text").notNull().default(true),
+  qrAnimatedTexts: text("qr_animated_texts").array().notNull().default(sql`ARRAY['Welcome', 'Discover our Menu']::text[]`),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

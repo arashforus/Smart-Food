@@ -174,6 +174,7 @@ export interface StorageSetting {
   restaurantGoogleMapsUrl?: string;
   showQrLogo?: boolean;
   showQrAnimatedText?: boolean;
+  qrAnimatedTexts?: string[];
   createdAt?: Date;
 }
 
@@ -289,6 +290,7 @@ export class MemStorage implements IStorage {
       defaultLanguage: 'en',
       showQrLogo: true,
       showQrAnimatedText: true,
+      qrAnimatedTexts: ['Welcome', 'Discover our Menu'],
     };
   }
 

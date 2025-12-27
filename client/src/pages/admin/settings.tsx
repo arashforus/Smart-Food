@@ -136,6 +136,7 @@ export default function SettingsPage() {
       if (dbSettings.showLoginResetPassword !== undefined) setShowLoginResetPassword(dbSettings.showLoginResetPassword);
       if (dbSettings.showQrLogo !== undefined) setShowQrLogo(dbSettings.showQrLogo);
       if (dbSettings.showQrAnimatedText !== undefined) setShowQrAnimatedText(dbSettings.showQrAnimatedText);
+      if (dbSettings.qrAnimatedTexts) setQrAnimatedTexts(dbSettings.qrAnimatedTexts);
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -179,6 +180,10 @@ export default function SettingsPage() {
   const [showQrLogo, setShowQrLogo] = useState(() => localStorage.getItem('showQrLogo') !== 'false');
   const [showQrDescription, setShowQrDescription] = useState(() => localStorage.getItem('showQrDescription') !== 'false');
   const [showQrAnimatedText, setShowQrAnimatedText] = useState(() => localStorage.getItem('showQrAnimatedText') !== 'false');
+  const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(() => {
+    const stored = localStorage.getItem('qrAnimatedTexts');
+    return stored ? JSON.parse(stored) : ['Welcome', 'Discover our Menu'];
+  });
   const [showCallWaiter, setShowCallWaiter] = useState(() => localStorage.getItem('showCallWaiter') !== 'false');
   const [showAddressPhone, setShowAddressPhone] = useState(() => localStorage.getItem('showAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
@@ -384,6 +389,7 @@ export default function SettingsPage() {
       showLoginResetPassword: showLoginResetPassword,
       showQrLogo: showQrLogo,
       showQrAnimatedText: showQrAnimatedText,
+      qrAnimatedTexts: qrAnimatedTexts,
     });
 
     // Also update local storage for fallback
@@ -410,6 +416,7 @@ export default function SettingsPage() {
     localStorage.setItem('showQrLogo', showQrLogo.toString());
     localStorage.setItem('showQrDescription', showQrDescription.toString());
     localStorage.setItem('showQrAnimatedText', showQrAnimatedText.toString());
+    localStorage.setItem('qrAnimatedTexts', JSON.stringify(qrAnimatedTexts));
     localStorage.setItem('showCallWaiter', showCallWaiter.toString());
     localStorage.setItem('showAddressPhone', showAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
@@ -1417,6 +1424,63 @@ export default function SettingsPage() {
                           data-testid="switch-show-qr-animated-text"
                         />
                       </div>
+
+                      {showQrAnimatedText && (
+                        <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
+                          <div className="flex items-center justify-between mb-2">
+                            <FormLabel className="text-sm font-semibold">Animated Texts</FormLabel>
+                            <span className="text-xs text-muted-foreground">{qrAnimatedTexts.length}/10 texts</span>
+                          </div>
+                          <div className="space-y-2">
+                            {qrAnimatedTexts.map((text, index) => (
+                              <div key={index} className="flex gap-2">
+                                <Input
+                                  value={text}
+                                  onChange={(e) => {
+                                    const newTexts = [...qrAnimatedTexts];
+                                    newTexts[index] = e.target.value;
+                                    setQrAnimatedTexts(newTexts);
+                                  }}
+                                  placeholder={`Text ${index + 1}`}
+                                  data-testid={`input-qr-animated-text-${index}`}
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    if (qrAnimatedTexts.length > 2) {
+                                      const newTexts = qrAnimatedTexts.filter((_, i) => i !== index);
+                                      setQrAnimatedTexts(newTexts);
+                                    }
+                                  }}
+                                  disabled={qrAnimatedTexts.length <= 2}
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                          {qrAnimatedTexts.length < 10 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full mt-2"
+                              onClick={() => {
+                                if (qrAnimatedTexts.length < 10) {
+                                  setQrAnimatedTexts([...qrAnimatedTexts, '']);
+                                }
+                              }}
+                            >
+                              Add Text
+                            </Button>
+                          )}
+                          <FormDescription>
+                            Enter 2 to 10 texts that will be displayed with animation on the QR page.
+                          </FormDescription>
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between p-3 border rounded-lg">
                         <div>

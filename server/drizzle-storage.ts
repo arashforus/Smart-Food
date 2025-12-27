@@ -56,6 +56,7 @@ export class DrizzleStorage implements IStorage {
       loginTitle: s.loginTitle ?? undefined,
       showQrLogo: s.showQrLogo ?? true,
       showQrAnimatedText: s.showQrAnimatedText ?? true,
+      qrAnimatedTexts: s.qrAnimatedTexts ?? ['Welcome', 'Discover our Menu'],
       createdAt: s.createdAt ?? undefined,
     };
   }
@@ -105,6 +106,7 @@ export class DrizzleStorage implements IStorage {
       loginTitle: s.loginTitle ?? undefined,
       showQrLogo: s.showQrLogo ?? true,
       showQrAnimatedText: s.showQrAnimatedText ?? true,
+      qrAnimatedTexts: s.qrAnimatedTexts ?? ['Welcome', 'Discover our Menu'],
       createdAt: s.createdAt ?? undefined,
     };
   }
