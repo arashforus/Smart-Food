@@ -170,6 +170,16 @@ export interface Settings {
   licenseExpiry?: string;
   paymentSettings?: PaymentSettings;
   rolePermissions?: RolePermissions;
+  restaurantName?: string;
+  restaurantDescription?: string;
+  restaurantAddress?: string;
+  restaurantPhone?: string;
+  restaurantEmail?: string;
+  restaurantHours?: string;
+  restaurantLogo?: string;
+  restaurantBackgroundImage?: string;
+  restaurantMapLat?: number;
+  restaurantMapLng?: number;
 }
 
 export interface DashboardMetrics {

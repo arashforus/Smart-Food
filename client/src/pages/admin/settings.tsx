@@ -54,6 +54,8 @@ const settingsSchema = z.object({
   restaurantPhone: z.string().optional(),
   restaurantEmail: z.string().optional(),
   restaurantHours: z.string().optional(),
+  restaurantLogo: z.string().optional(),
+  restaurantBackgroundImage: z.string().optional(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -117,6 +119,14 @@ export default function SettingsPage() {
   useEffect(() => {
     if (dbSettings) {
       setSettings(dbSettings);
+      setRestaurantName(dbSettings.restaurantName || localStorage.getItem('restaurantName') || '');
+      setRestaurantDescription(dbSettings.restaurantDescription || localStorage.getItem('restaurantDescription') || '');
+      setRestaurantAddress(dbSettings.restaurantAddress || localStorage.getItem('restaurantAddress') || '');
+      setRestaurantPhone(dbSettings.restaurantPhone || localStorage.getItem('restaurantPhone') || '');
+      setRestaurantEmail(dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '');
+      setRestaurantHours(dbSettings.restaurantHours || localStorage.getItem('restaurantHours') || '');
+      setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
+      setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -131,12 +141,14 @@ export default function SettingsPage() {
         paymentMethod: dbSettings.paymentSettings?.paymentMethod || 'both',
         licenseKey: dbSettings.licenseKey || '',
         licenseExpiry: dbSettings.licenseExpiry || '',
-        restaurantName: localStorage.getItem('restaurantName') || '',
-        restaurantDescription: localStorage.getItem('restaurantDescription') || '',
-        restaurantAddress: localStorage.getItem('restaurantAddress') || '',
-        restaurantPhone: localStorage.getItem('restaurantPhone') || '',
-        restaurantEmail: localStorage.getItem('restaurantEmail') || '',
-        restaurantHours: localStorage.getItem('restaurantHours') || '',
+        restaurantName: dbSettings.restaurantName || localStorage.getItem('restaurantName') || '',
+        restaurantDescription: dbSettings.restaurantDescription || localStorage.getItem('restaurantDescription') || '',
+        restaurantAddress: dbSettings.restaurantAddress || localStorage.getItem('restaurantAddress') || '',
+        restaurantPhone: dbSettings.restaurantPhone || localStorage.getItem('restaurantPhone') || '',
+        restaurantEmail: dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '',
+        restaurantHours: dbSettings.restaurantHours || localStorage.getItem('restaurantHours') || '',
+        restaurantLogo: dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '',
+        restaurantBackgroundImage: dbSettings.restaurantBackgroundImage || '',
       });
     }
   }, [dbSettings]);
@@ -332,15 +344,24 @@ export default function SettingsPage() {
       currency: data.currency,
       currencySymbol: data.currencySymbol,
       paymentSettings: { paymentMethod: data.paymentMethod },
+      restaurantName: data.restaurantName,
+      restaurantDescription: data.restaurantDescription,
+      restaurantAddress: data.restaurantAddress,
+      restaurantPhone: data.restaurantPhone,
+      restaurantEmail: data.restaurantEmail,
+      restaurantHours: data.restaurantHours,
+      restaurantLogo: restaurantLogo,
+      restaurantBackgroundImage: data.restaurantBackgroundImage,
     });
 
-    // Also update other local storage settings for now
+    // Also update local storage for fallback
     localStorage.setItem('restaurantName', data.restaurantName || '');
     localStorage.setItem('restaurantDescription', data.restaurantDescription || '');
     localStorage.setItem('restaurantAddress', data.restaurantAddress || '');
     localStorage.setItem('restaurantPhone', data.restaurantPhone || '');
     localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
     localStorage.setItem('restaurantHours', data.restaurantHours || '');
+    localStorage.setItem('restaurantLogo', restaurantLogo);
     
     if (loginBackgroundImage) {
       localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
@@ -1016,6 +1037,16 @@ export default function SettingsPage() {
                       onChange={(e) => setRestaurantEmail(e.target.value)}
                       placeholder="Contact email"
                       data-testid="input-restaurant-email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="rest-hours">Business Hours</FormLabel>
+                    <Input
+                      id="rest-hours"
+                      value={restaurantHours}
+                      onChange={(e) => setRestaurantHours(e.target.value)}
+                      placeholder="e.g., Mon-Fri: 9AM-10PM, Sat-Sun: 10AM-11PM"
+                      data-testid="input-restaurant-hours"
                     />
                   </div>
                 </CardContent>
