@@ -19,6 +19,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "009-add-general-name-to-food-types", description: "Add general_name column to food_types table" },
   { version: "010-add-owner-fields-to-branches", description: "Add owner and owner_phone columns to branches table" },
   { version: "011-add-settings-table", description: "Add settings table for application configuration" },
+  { version: "012-add-login-settings", description: "Add login page customization settings to settings table" },
 ];
 
 export async function runDatabaseMigrations() {

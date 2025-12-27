@@ -184,6 +184,10 @@ export interface Settings {
   restaurantWhatsapp?: string;
   restaurantTelegram?: string;
   restaurantGoogleMapsUrl?: string;
+  loginBackgroundImage?: string;
+  showLoginTitle?: boolean;
+  loginTitle?: string;
+  showLoginResetPassword?: boolean;
 }
 
 export interface DashboardMetrics {

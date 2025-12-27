@@ -129,6 +129,11 @@ export default function SettingsPage() {
       setRestaurantEmail(dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '');
       setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
+      // Load login settings from DB
+      if (dbSettings.loginBackgroundImage) setLoginBackgroundImage(dbSettings.loginBackgroundImage);
+      if (dbSettings.showLoginTitle !== undefined) setShowLoginTitle(dbSettings.showLoginTitle);
+      if (dbSettings.loginTitle) setLoginTitle(dbSettings.loginTitle);
+      if (dbSettings.showLoginResetPassword !== undefined) setShowLoginResetPassword(dbSettings.showLoginResetPassword);
       // Update form values when DB settings load
       form.reset({
         primaryColor: dbSettings.primaryColor,
@@ -369,6 +374,10 @@ export default function SettingsPage() {
       restaurantWhatsapp: data.restaurantWhatsapp,
       restaurantTelegram: data.restaurantTelegram,
       restaurantGoogleMapsUrl: data.restaurantGoogleMapsUrl,
+      loginBackgroundImage: loginBackgroundImage,
+      showLoginTitle: showLoginTitle,
+      loginTitle: loginTitle,
+      showLoginResetPassword: showLoginResetPassword,
     });
 
     // Also update local storage for fallback
@@ -1222,7 +1231,6 @@ export default function SettingsPage() {
                 <CardContent className="space-y-6">
                   {/* Background Image Section */}
                   <div className="space-y-4 pb-6 border-b">
-                    <h3 className="font-semibold text-sm">Background Image</h3>
                     <div className="space-y-2">
                       <FormLabel>Background Image</FormLabel>
                       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
@@ -1270,29 +1278,31 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <h3 className="font-semibold text-sm">Display Options</h3>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <FormLabel className="text-base mb-1">Show Title</FormLabel>
-                          <FormDescription>Display a title on the login page</FormDescription>
-                        </div>
-                        <Switch
-                          checked={showLoginTitle}
-                          onCheckedChange={setShowLoginTitle}
-                          data-testid="switch-show-login-title"
-                        />
-                      </div>
-                      {showLoginTitle && (
-                        <div className="space-y-2 ml-3">
-                          <FormLabel htmlFor="login-title">Title</FormLabel>
-                          <Input
-                            id="login-title"
-                            value={loginTitle}
-                            onChange={(e) => setLoginTitle(e.target.value)}
-                            placeholder="Welcome"
-                            data-testid="input-login-title"
+                      <div className="border rounded-lg p-4 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <FormLabel className="text-base mb-1">Show Title</FormLabel>
+                            <FormDescription>Display a title on the login page</FormDescription>
+                          </div>
+                          <Switch
+                            checked={showLoginTitle}
+                            onCheckedChange={setShowLoginTitle}
+                            data-testid="switch-show-login-title"
                           />
                         </div>
-                      )}
+                        {showLoginTitle && (
+                          <div className="space-y-2 pt-2 border-t">
+                            <FormLabel htmlFor="login-title">Title</FormLabel>
+                            <Input
+                              id="login-title"
+                              value={loginTitle}
+                              onChange={(e) => setLoginTitle(e.target.value)}
+                              placeholder="Welcome"
+                              data-testid="input-login-title"
+                            />
+                          </div>
+                        )}
+                      </div>
 
                       <div className="flex items-center justify-between p-3 border rounded-lg">
                         <div>

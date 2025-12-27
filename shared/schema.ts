@@ -165,6 +165,10 @@ export const settings = pgTable("settings", {
   restaurantWhatsapp: text("restaurant_whatsapp"),
   restaurantTelegram: text("restaurant_telegram"),
   restaurantGoogleMapsUrl: text("restaurant_google_maps_url"),
+  loginBackgroundImage: text("login_background_image"),
+  showLoginTitle: boolean("show_login_title").notNull().default(true),
+  loginTitle: text("login_title").notNull().default("Welcome"),
+  showLoginResetPassword: boolean("show_login_reset_password").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
