@@ -1325,13 +1325,13 @@ export default function SettingsPage() {
             <TabsContent value="qr" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">QR Landing Page</CardTitle>
-                  <CardDescription>Customize what customers see when they scan a QR code</CardDescription>
+                  <CardTitle className="text-lg">QR Page</CardTitle>
+                  <CardDescription>Customize the QR page elements</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Content Settings */}
                   <div className="space-y-4 pb-6 border-b">
-                    <h3 className="font-semibold text-sm">Page Content</h3>
+                  
                     <div className="space-y-2">
                       <FormLabel htmlFor="qr-title">Page Title</FormLabel>
                       <Input
