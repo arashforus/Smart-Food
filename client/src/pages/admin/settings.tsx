@@ -1425,8 +1425,32 @@ export default function SettingsPage() {
                         />
                       </div>
 
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Call Waiter Button</FormLabel>
+                          <FormDescription>Display the call waiter button</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showCallWaiter}
+                          onCheckedChange={setShowCallWaiter}
+                          data-testid="switch-show-call-waiter"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <FormLabel className="text-base mb-1">Show Address & Phone</FormLabel>
+                          <FormDescription>Display restaurant address and phone number</FormDescription>
+                        </div>
+                        <Switch
+                          checked={showAddressPhone}
+                          onCheckedChange={setShowAddressPhone}
+                          data-testid="switch-show-address-phone"
+                        />
+                      </div>
+
                       {showQrAnimatedText && (
-                        <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
+                        <div className="space-y-3 p-4 bg-muted/30 rounded-lg border mt-4">
                           <div className="flex items-center justify-between mb-2">
                             <FormLabel className="text-sm font-semibold">Animated Texts</FormLabel>
                             <span className="text-xs text-muted-foreground">{qrAnimatedTexts.length}/10 texts</span>
@@ -1481,30 +1505,6 @@ export default function SettingsPage() {
                           </FormDescription>
                         </div>
                       )}
-
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <FormLabel className="text-base mb-1">Show Call Waiter Button</FormLabel>
-                          <FormDescription>Display the call waiter button</FormDescription>
-                        </div>
-                        <Switch
-                          checked={showCallWaiter}
-                          onCheckedChange={setShowCallWaiter}
-                          data-testid="switch-show-call-waiter"
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <FormLabel className="text-base mb-1">Show Address & Phone</FormLabel>
-                          <FormDescription>Display restaurant address and phone number</FormDescription>
-                        </div>
-                        <Switch
-                          checked={showAddressPhone}
-                          onCheckedChange={setShowAddressPhone}
-                          data-testid="switch-show-address-phone"
-                        />
-                      </div>
                     </div>
                   </div>
 
