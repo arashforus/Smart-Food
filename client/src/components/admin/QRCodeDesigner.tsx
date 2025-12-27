@@ -47,7 +47,6 @@ export default function QRCodeDesigner({
   onCenterTextChange
 }: QRCodeDesignerProps) {
   const { toast } = useToast();
-  const qrRef = useRef<HTMLDivElement>(null);
   const qrDisplayRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const qrInstanceRef = useRef<QRCodeStyling | null>(null);
@@ -72,9 +71,9 @@ export default function QRCodeDesigner({
   useEffect(() => {
     setCurrentDesign(prev => ({ 
       ...prev, 
-      logoUrl: initialLogo || prev.logoUrl,
-      centerType: initialCenterType || prev.centerType,
-      centerText: initialCenterText || prev.centerText
+      logoUrl: initialLogo !== undefined ? initialLogo : prev.logoUrl,
+      centerType: initialCenterType !== undefined ? initialCenterType : (prev.centerType as any),
+      centerText: initialCenterText !== undefined ? initialCenterText : prev.centerText
     }));
   }, [initialLogo, initialCenterType, initialCenterText]);
 
@@ -212,6 +211,8 @@ export default function QRCodeDesigner({
       name: currentDesign.name,
       qrText: currentDesign.qrText,
       logoUrl: currentDesign.logoUrl || '',
+      centerType: currentDesign.centerType as 'none' | 'logo' | 'text',
+      centerText: currentDesign.centerText || '',
       backgroundColor: currentDesign.backgroundColor || '#FFFFFF',
       foregroundColor: currentDesign.foregroundColor || '#000000',
       cornerDots: currentDesign.cornerDots as 'square' | 'rounded' | 'circle',
@@ -386,6 +387,7 @@ export default function QRCodeDesigner({
                 </div>
               </div>
 
+              <div className="space-y-4 pt-4 border-t">
                 <div>
                   <label className="text-sm font-medium">Center Type</label>
                   <Select
