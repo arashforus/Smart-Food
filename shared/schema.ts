@@ -178,6 +178,10 @@ export const settings = pgTable("settings", {
   qrMediaUrl: text("qr_media_url"),
   qrMediaType: text("qr_media_type"), // 'image' | 'video'
   qrTextColor: text("qr_text_color").notNull().default("#000000"),
+  qrEyeBorderColor: text("qr_eye_border_color").notNull().default("#000000"),
+  qrEyeDotColor: text("qr_eye_dot_color").notNull().default("#000000"),
+  qrEyeBorderShape: text("qr_eye_border_shape").notNull().default("square"),
+  qrEyeDotShape: text("qr_eye_dot_shape").notNull().default("square"),
   qrCenterType: text("qr_center_type").notNull().default("logo"), // 'none' | 'logo' | 'text'
   qrCenterText: text("qr_center_text"),
   qrShowCallWaiter: boolean("qr_show_call_waiter").notNull().default(true),

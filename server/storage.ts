@@ -181,6 +181,10 @@ export interface StorageSetting {
   qrMediaUrl?: string;
   qrMediaType?: string;
   qrTextColor?: string;
+  qrEyeBorderColor?: string;
+  qrEyeDotColor?: string;
+  qrEyeBorderShape?: string;
+  qrEyeDotShape?: string;
   qrCenterType?: string;
   qrCenterText?: string;
   qrShowCallWaiter?: boolean;
