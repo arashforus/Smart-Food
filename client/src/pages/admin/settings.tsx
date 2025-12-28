@@ -1716,7 +1716,7 @@ export default function SettingsPage() {
                         <SelectItem value="dark">Dark</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormDescription>Set the default theme when customers open the menu</FormDescription>
+                  
                   </div>
 
                   <div className="space-y-2">
@@ -1825,29 +1825,29 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Menu Features</CardTitle>
-                  <CardDescription>Control which features are visible to customers on the menu page</CardDescription>
+                  <CardTitle className="text-lg">Top Bar</CardTitle>
+                  <CardDescription>Control which Buttons are visible in the top bar</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <FormLabel>Show Instagram</FormLabel>
-                        <FormDescription>Display Instagram link in menu header</FormDescription>
+                        <FormDescription>Display Instagram Icon in top bar</FormDescription>
                       </div>
                       <Switch checked={showMenuInstagram} onCheckedChange={setShowMenuInstagram} data-testid="switch-menu-instagram" />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
                         <FormLabel>Show WhatsApp</FormLabel>
-                        <FormDescription>Display WhatsApp contact in menu header</FormDescription>
+                        <FormDescription>Display WhatsApp icon in top bar</FormDescription>
                       </div>
                       <Switch checked={showMenuWhatsapp} onCheckedChange={setShowMenuWhatsapp} data-testid="switch-menu-whatsapp" />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
                         <FormLabel>Show Telegram</FormLabel>
-                        <FormDescription>Display Telegram link in menu header</FormDescription>
+                        <FormDescription>Display Telegram icon in top bar</FormDescription>
                       </div>
                       <Switch checked={showMenuTelegram} onCheckedChange={setShowMenuTelegram} data-testid="switch-menu-telegram" />
                     </div>
@@ -1871,22 +1871,22 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Restaurant Display</CardTitle>
-                  <CardDescription>Control what restaurant information is shown on the menu page</CardDescription>
+                  <CardTitle className="text-lg">Restaurant Bar</CardTitle>
+                  <CardDescription>Control what restaurant information is shown on restaurant bar</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <FormLabel>Show Restaurant Logo</FormLabel>
-                        <FormDescription>Display restaurant logo at the top</FormDescription>
+                        <FormDescription>Display restaurant logo at the restaurant bar</FormDescription>
                       </div>
                       <Switch checked={showRestaurantLogo} onCheckedChange={setShowRestaurantLogo} data-testid="switch-show-logo" />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
                         <FormLabel>Show Restaurant Name</FormLabel>
-                        <FormDescription>Display restaurant name in the header</FormDescription>
+                        <FormDescription>Display restaurant name in the restaurat bar</FormDescription>
                       </div>
                       <Switch checked={showRestaurantName} onCheckedChange={setShowRestaurantName} data-testid="switch-show-name" />
                     </div>
@@ -1900,7 +1900,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <FormLabel>Show Operating Hours</FormLabel>
-                        <FormDescription>Display restaurant operating hours</FormDescription>
+                        <FormDescription>Display restaurant operating hours and open/close text</FormDescription>
                       </div>
                       <Switch checked={showRestaurantHours} onCheckedChange={setShowRestaurantHours} data-testid="switch-show-hours" />
                     </div>
