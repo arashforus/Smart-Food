@@ -162,15 +162,51 @@ export default function QRCodeDesigner({
             ctx.textBaseline = 'middle';
             
             const lines = currentDesign.centerText.split('\n');
-            const fontSize = Math.max(20, 120 / (lines.length + 1));
+            
+            // Dynamic font sizing
+            let fontSize = 100; // Start with a large size
+            const maxWidth = 260; // Leave some padding
+            const maxHeight = 260;
+            
             ctx.font = `bold ${fontSize}px sans-serif`;
             
-            const lineHeight = fontSize * 1.2;
+            // Adjust font size to fit width and height
+            const adjustFontSize = () => {
+              for (let size = 100; size >= 10; size -= 5) {
+                ctx.font = `bold ${size}px sans-serif`;
+                let fits = true;
+                const lineHeight = size * 1.1;
+                
+                // Check height
+                if (lines.length * lineHeight > maxHeight) fits = false;
+                
+                // Check each line's width
+                if (fits) {
+                  for (const line of lines) {
+                    if (ctx.measureText(line).width > maxWidth) {
+                      fits = false;
+                      break;
+                    }
+                  }
+                }
+                
+                if (fits) {
+                  fontSize = size;
+                  return size;
+                }
+              }
+              return 10;
+            };
+            
+            fontSize = adjustFontSize();
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            
+            const lineHeight = fontSize * 1.1;
             const totalHeight = lines.length * lineHeight;
-            const startY = (300 - totalHeight) / 2 + lineHeight / 2;
+            const startY = (300 - totalHeight) / 2 + (fontSize * 0.8) / 2; // Adjusted baseline offset
 
             lines.forEach((line, i) => {
-              ctx.fillText(line, 150, startY + (i * lineHeight));
+              ctx.fillText(line.trim(), 150, startY + (i * lineHeight));
             });
             
             qrCode.update({
