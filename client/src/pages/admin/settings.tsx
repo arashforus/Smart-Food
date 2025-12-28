@@ -209,6 +209,7 @@ export default function SettingsPage() {
   const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>(() => (localStorage.getItem('qrMediaType') as 'image' | 'video') || 'image');
   const qrMediaInputRef = useRef<HTMLInputElement>(null);
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
+  const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
