@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import QRCodeStyling from 'qr-code-styling';
 import { QRCodeSVG as QRCode } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
@@ -147,23 +148,36 @@ export default function QRCodeDesigner({
 
         // Add center text if selected
         if (currentDesign.centerType === 'text' && currentDesign.centerText) {
-          // Note: qr-code-styling doesn't natively support "text" in center as an image.
-          // We can use a Canvas to generate a text image and use that as the 'image'
           const canvas = document.createElement('canvas');
-          canvas.width = 100;
-          canvas.height = 100;
+          canvas.width = 300;
+          canvas.height = 300;
           const ctx = canvas.getContext('2d');
           if (ctx) {
+            // Draw background to clear space behind text
+            ctx.fillStyle = currentDesign.backgroundColor || '#FFFFFF';
+            ctx.fillRect(0, 0, 300, 300);
+
             ctx.fillStyle = currentDesign.foregroundColor || '#000000';
-            ctx.font = 'bold 40px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(currentDesign.centerText, 50, 50);
+            
+            const lines = currentDesign.centerText.split('\n');
+            const fontSize = Math.max(20, 120 / (lines.length + 1));
+            ctx.font = `bold ${fontSize}px sans-serif`;
+            
+            const lineHeight = fontSize * 1.2;
+            const totalHeight = lines.length * lineHeight;
+            const startY = (300 - totalHeight) / 2 + lineHeight / 2;
+
+            lines.forEach((line, i) => {
+              ctx.fillText(line, 150, startY + (i * lineHeight));
+            });
+            
             qrCode.update({
               image: canvas.toDataURL(),
               imageOptions: {
                 hideBackgroundDots: true,
-                imageSize: 0.3,
+                imageSize: 0.45,
                 margin: 0
               }
             });
@@ -525,16 +539,16 @@ export default function QRCodeDesigner({
                 {currentDesign.centerType === 'text' && (
                   <div>
                     <label className="text-sm font-medium">Center Text</label>
-                    <Input
+                    <Textarea
                       value={currentDesign.centerText || ''}
                       onChange={(e) => {
                         const text = e.target.value;
                         setCurrentDesign({ ...currentDesign, centerText: text });
                         onCenterTextChange?.(text);
                       }}
-                      placeholder="Enter center text"
+                      placeholder="Enter center text (supports multiple lines)"
                       data-testid="input-qr-center-text"
-                      className="mt-1"
+                      className="mt-1 min-h-[100px]"
                     />
                   </div>
                 )}
