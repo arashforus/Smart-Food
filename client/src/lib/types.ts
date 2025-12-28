@@ -190,7 +190,9 @@ export interface Settings {
   showLoginResetPassword?: boolean;
   qrShowLogo?: boolean;
   qrShowTitle?: boolean;
+  qrPageTitle?: string;
   qrShowDescription?: boolean;
+  qrPageDescription?: string;
   qrShowAnimatedText?: boolean;
   qrAnimatedTexts?: string[];
   qrMediaUrl?: string;

@@ -150,6 +150,12 @@ export default function SettingsPage() {
       if (dbSettings.qrDotsStyle) setQrDotsStyle(dbSettings.qrDotsStyle);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
+      if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
+      if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
+      if (dbSettings.qrShowTitle !== undefined) setQrShowTitle(dbSettings.qrShowTitle);
+      if (dbSettings.qrShowDescription !== undefined) setQrShowDescription(dbSettings.qrShowDescription);
+      if (dbSettings.qrShowAnimatedText !== undefined) setQrShowAnimatedText(dbSettings.qrShowAnimatedText);
+      if (dbSettings.qrAnimatedTexts) setQrAnimatedTexts(dbSettings.qrAnimatedTexts);
       if (dbSettings.qrLogo) {
         setQrLogo(dbSettings.qrLogo);
       }
@@ -440,7 +446,9 @@ export default function SettingsPage() {
       showLoginResetPassword: showLoginResetPassword,
       qrShowLogo: qrShowLogo,
       qrShowTitle: qrShowTitle,
+      qrPageTitle: qrPageTitle,
       qrShowDescription: qrShowDescription,
+      qrPageDescription: qrPageDescription,
       qrShowAnimatedText: qrShowAnimatedText,
       qrAnimatedTexts: qrAnimatedTexts,
       qrMediaUrl: qrMediaUrl,
