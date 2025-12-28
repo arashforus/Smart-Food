@@ -1,7 +1,7 @@
 import { createServer, type Server } from "http";
 import { type Express, Request, Response } from "express";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth } from "./auth.js";
 import multer from "multer";
 import path from "path";
 import express from "express";
