@@ -226,6 +226,10 @@ export default function SettingsPage() {
   const [menuGradientEnd, setMenuGradientEnd] = useState(() => localStorage.getItem('menuGradientEnd') || '#f0f0f0');
   const [menuBackgroundImage, setMenuBackgroundImage] = useState(() => localStorage.getItem('menuBackgroundImage') || '');
   const menuBackgroundImageRef = useRef<HTMLInputElement>(null);
+  const [showRestaurantLogo, setShowRestaurantLogo] = useState(() => localStorage.getItem('showRestaurantLogo') !== 'false');
+  const [showRestaurantName, setShowRestaurantName] = useState(() => localStorage.getItem('showRestaurantName') !== 'false');
+  const [showRestaurantDescription, setShowRestaurantDescription] = useState(() => localStorage.getItem('showRestaurantDescription') !== 'false');
+  const [showRestaurantHours, setShowRestaurantHours] = useState(() => localStorage.getItem('showRestaurantHours') !== 'false');
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
   const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
@@ -463,6 +467,10 @@ export default function SettingsPage() {
       menuGradientStart: menuGradientStart,
       menuGradientEnd: menuGradientEnd,
       menuBackgroundImage: menuBackgroundImage,
+      showRestaurantLogo: showRestaurantLogo,
+      showRestaurantName: showRestaurantName,
+      showRestaurantDescription: showRestaurantDescription,
+      showRestaurantHours: showRestaurantHours,
     });
 
     // Also update local storage for fallback
@@ -521,6 +529,10 @@ export default function SettingsPage() {
     localStorage.setItem('menuGradientStart', menuGradientStart);
     localStorage.setItem('menuGradientEnd', menuGradientEnd);
     localStorage.setItem('menuBackgroundImage', menuBackgroundImage);
+    localStorage.setItem('showRestaurantLogo', showRestaurantLogo.toString());
+    localStorage.setItem('showRestaurantName', showRestaurantName.toString());
+    localStorage.setItem('showRestaurantDescription', showRestaurantDescription.toString());
+    localStorage.setItem('showRestaurantHours', showRestaurantHours.toString());
     if (favicon) {
       localStorage.setItem('favicon', favicon);
     }
@@ -1689,52 +1701,6 @@ export default function SettingsPage() {
             <TabsContent value="menu" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Menu Features</CardTitle>
-                  <CardDescription>Control which features are visible to customers on the menu page</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Instagram</FormLabel>
-                        <FormDescription>Display Instagram link in menu header</FormDescription>
-                      </div>
-                      <Switch checked={showMenuInstagram} onCheckedChange={setShowMenuInstagram} data-testid="switch-menu-instagram" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show WhatsApp</FormLabel>
-                        <FormDescription>Display WhatsApp contact in menu header</FormDescription>
-                      </div>
-                      <Switch checked={showMenuWhatsapp} onCheckedChange={setShowMenuWhatsapp} data-testid="switch-menu-whatsapp" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Telegram</FormLabel>
-                        <FormDescription>Display Telegram link in menu header</FormDescription>
-                      </div>
-                      <Switch checked={showMenuTelegram} onCheckedChange={setShowMenuTelegram} data-testid="switch-menu-telegram" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Language Selector</FormLabel>
-                        <FormDescription>Allow customers to change language</FormDescription>
-                      </div>
-                      <Switch checked={showMenuLanguageSelector} onCheckedChange={setShowMenuLanguageSelector} data-testid="switch-menu-language" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Theme Switcher</FormLabel>
-                        <FormDescription>Allow customers to toggle dark/light mode</FormDescription>
-                      </div>
-                      <Switch checked={showMenuThemeSwitcher} onCheckedChange={setShowMenuThemeSwitcher} data-testid="switch-menu-theme" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
                   <CardTitle className="text-lg">Theme</CardTitle>
                   <CardDescription>Customize the appearance and background of the menu page</CardDescription>
                 </CardHeader>
@@ -1854,6 +1820,91 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Menu Features</CardTitle>
+                  <CardDescription>Control which features are visible to customers on the menu page</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Instagram</FormLabel>
+                        <FormDescription>Display Instagram link in menu header</FormDescription>
+                      </div>
+                      <Switch checked={showMenuInstagram} onCheckedChange={setShowMenuInstagram} data-testid="switch-menu-instagram" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show WhatsApp</FormLabel>
+                        <FormDescription>Display WhatsApp contact in menu header</FormDescription>
+                      </div>
+                      <Switch checked={showMenuWhatsapp} onCheckedChange={setShowMenuWhatsapp} data-testid="switch-menu-whatsapp" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Telegram</FormLabel>
+                        <FormDescription>Display Telegram link in menu header</FormDescription>
+                      </div>
+                      <Switch checked={showMenuTelegram} onCheckedChange={setShowMenuTelegram} data-testid="switch-menu-telegram" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Language Selector</FormLabel>
+                        <FormDescription>Allow customers to change language</FormDescription>
+                      </div>
+                      <Switch checked={showMenuLanguageSelector} onCheckedChange={setShowMenuLanguageSelector} data-testid="switch-menu-language" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Theme Switcher</FormLabel>
+                        <FormDescription>Allow customers to toggle dark/light mode</FormDescription>
+                      </div>
+                      <Switch checked={showMenuThemeSwitcher} onCheckedChange={setShowMenuThemeSwitcher} data-testid="switch-menu-theme" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Restaurant Display</CardTitle>
+                  <CardDescription>Control what restaurant information is shown on the menu page</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Restaurant Logo</FormLabel>
+                        <FormDescription>Display restaurant logo at the top</FormDescription>
+                      </div>
+                      <Switch checked={showRestaurantLogo} onCheckedChange={setShowRestaurantLogo} data-testid="switch-show-logo" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Restaurant Name</FormLabel>
+                        <FormDescription>Display restaurant name in the header</FormDescription>
+                      </div>
+                      <Switch checked={showRestaurantName} onCheckedChange={setShowRestaurantName} data-testid="switch-show-name" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Restaurant Description</FormLabel>
+                        <FormDescription>Display restaurant description text</FormDescription>
+                      </div>
+                      <Switch checked={showRestaurantDescription} onCheckedChange={setShowRestaurantDescription} data-testid="switch-show-description" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Operating Hours</FormLabel>
+                        <FormDescription>Display restaurant operating hours</FormDescription>
+                      </div>
+                      <Switch checked={showRestaurantHours} onCheckedChange={setShowRestaurantHours} data-testid="switch-show-hours" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 

@@ -217,6 +217,10 @@ export interface Settings {
   menuGradientStart?: string;
   menuGradientEnd?: string;
   menuBackgroundImage?: string;
+  showRestaurantLogo?: boolean;
+  showRestaurantName?: boolean;
+  showRestaurantDescription?: boolean;
+  showRestaurantHours?: boolean;
 }
 
 export interface DashboardMetrics {
