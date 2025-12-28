@@ -143,6 +143,10 @@ export default function SettingsPage() {
       if (dbSettings.qrMediaUrl) setQrMediaUrl(dbSettings.qrMediaUrl);
       if (dbSettings.qrMediaType) setQrMediaType(dbSettings.qrMediaType as 'image' | 'video');
       if (dbSettings.qrTextColor) setQrTextColor(dbSettings.qrTextColor);
+      if (dbSettings.qrEyeBorderColor) setQrEyeBorderColor(dbSettings.qrEyeBorderColor);
+      if (dbSettings.qrEyeDotColor) setQrEyeDotColor(dbSettings.qrEyeDotColor);
+      if (dbSettings.qrEyeBorderShape) setQrEyeBorderShape(dbSettings.qrEyeBorderShape);
+      if (dbSettings.qrEyeDotShape) setQrEyeDotShape(dbSettings.qrEyeDotShape);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
       if (dbSettings.qrLogo) {
@@ -207,6 +211,10 @@ export default function SettingsPage() {
   const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
+  const [qrEyeBorderColor, setQrEyeBorderColor] = useState(() => dbSettings?.qrEyeBorderColor || localStorage.getItem('qrEyeBorderColor') || '#000000');
+  const [qrEyeDotColor, setQrEyeDotColor] = useState(() => dbSettings?.qrEyeDotColor || localStorage.getItem('qrEyeDotColor') || '#000000');
+  const [qrEyeBorderShape, setQrEyeBorderShape] = useState<string>(() => dbSettings?.qrEyeBorderShape || localStorage.getItem('qrEyeBorderShape') || 'square');
+  const [qrEyeDotShape, setQrEyeDotShape] = useState<string>(() => dbSettings?.qrEyeDotShape || localStorage.getItem('qrEyeDotShape') || 'square');
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
   const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
@@ -418,6 +426,10 @@ export default function SettingsPage() {
       qrMediaUrl: qrMediaUrl,
       qrMediaType: qrMediaType,
       qrTextColor: qrTextColor,
+      qrEyeBorderColor: qrEyeBorderColor,
+      qrEyeDotColor: qrEyeDotColor,
+      qrEyeBorderShape: qrEyeBorderShape,
+      qrEyeDotShape: qrEyeDotShape,
       qrLogo: qrLogo,
       qrCenterType: qrCenterType,
       qrCenterText: qrCenterText,
@@ -455,6 +467,10 @@ export default function SettingsPage() {
     localStorage.setItem('qrAnimatedTexts', JSON.stringify(qrAnimatedTexts));
     localStorage.setItem('qrMediaUrl', qrMediaUrl);
     localStorage.setItem('qrMediaType', qrMediaType);
+    localStorage.setItem('qrEyeBorderColor', qrEyeBorderColor);
+    localStorage.setItem('qrEyeDotColor', qrEyeDotColor);
+    localStorage.setItem('qrEyeBorderShape', qrEyeBorderShape);
+    localStorage.setItem('qrEyeDotShape', qrEyeDotShape);
     localStorage.setItem('qrShowCallWaiter', qrShowCallWaiter.toString());
     localStorage.setItem('qrShowAddressPhone', qrShowAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
@@ -1880,9 +1896,17 @@ export default function SettingsPage() {
                 initialLogo={qrLogo} 
                 initialCenterType={qrCenterType}
                 initialCenterText={qrCenterText}
+                initialEyeBorderColor={qrEyeBorderColor}
+                initialEyeDotColor={qrEyeDotColor}
+                initialEyeBorderShape={qrEyeBorderShape}
+                initialEyeDotShape={qrEyeDotShape}
                 onLogoChange={(url) => setQrLogo(url)} 
                 onCenterTypeChange={(type) => setQrCenterType(type)}
                 onCenterTextChange={(text) => setQrCenterText(text)}
+                onEyeBorderColorChange={(color) => setQrEyeBorderColor(color)}
+                onEyeDotColorChange={(color) => setQrEyeDotColor(color)}
+                onEyeBorderShapeChange={(shape) => setQrEyeBorderShape(shape)}
+                onEyeDotShapeChange={(shape) => setQrEyeDotShape(shape)}
               />
             </TabsContent>
 

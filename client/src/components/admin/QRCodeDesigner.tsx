@@ -20,6 +20,10 @@ interface QRDesign {
   name: string;
   qrText: string;
   logoUrl: string;
+  eyeBorderColor: string;
+  eyeDotColor: string;
+  eyeBorderShape: string;
+  eyeDotShape: string;
   centerType: 'none' | 'logo' | 'text';
   centerText: string;
   backgroundColor: string;
@@ -33,18 +37,34 @@ interface QRCodeDesignerProps {
   initialLogo?: string;
   initialCenterType?: 'none' | 'logo' | 'text';
   initialCenterText?: string;
+  initialEyeBorderColor?: string;
+  initialEyeDotColor?: string;
+  initialEyeBorderShape?: string;
+  initialEyeDotShape?: string;
   onLogoChange?: (url: string) => void;
   onCenterTypeChange?: (type: 'none' | 'logo' | 'text') => void;
   onCenterTextChange?: (text: string) => void;
+  onEyeBorderColorChange?: (color: string) => void;
+  onEyeDotColorChange?: (color: string) => void;
+  onEyeBorderShapeChange?: (shape: string) => void;
+  onEyeDotShapeChange?: (shape: string) => void;
 }
 
 export default function QRCodeDesigner({ 
   initialLogo, 
   initialCenterType = 'logo',
   initialCenterText = '',
+  initialEyeBorderColor = '#000000',
+  initialEyeDotColor = '#000000',
+  initialEyeBorderShape = 'square',
+  initialEyeDotShape = 'square',
   onLogoChange,
   onCenterTypeChange,
-  onCenterTextChange
+  onCenterTextChange,
+  onEyeBorderColorChange,
+  onEyeDotColorChange,
+  onEyeBorderShapeChange,
+  onEyeDotShapeChange
 }: QRCodeDesignerProps) {
   const { toast } = useToast();
   const qrDisplayRef = useRef<HTMLDivElement>(null);
@@ -60,6 +80,10 @@ export default function QRCodeDesigner({
     name: 'QR Design 1',
     qrText: 'https://example.com',
     logoUrl: initialLogo || '',
+    eyeBorderColor: '#000000',
+    eyeDotColor: '#000000',
+    eyeBorderShape: 'square',
+    eyeDotShape: 'square',
     centerType: initialCenterType,
     centerText: initialCenterText,
     backgroundColor: '#FFFFFF',
@@ -73,9 +97,13 @@ export default function QRCodeDesigner({
       ...prev, 
       logoUrl: initialLogo !== undefined ? initialLogo : prev.logoUrl,
       centerType: initialCenterType !== undefined ? initialCenterType : (prev.centerType as any),
-      centerText: initialCenterText !== undefined ? initialCenterText : prev.centerText
+      centerText: initialCenterText !== undefined ? initialCenterText : prev.centerText,
+      eyeBorderColor: initialEyeBorderColor !== undefined ? initialEyeBorderColor : prev.eyeBorderColor,
+      eyeDotColor: initialEyeDotColor !== undefined ? initialEyeDotColor : prev.eyeDotColor,
+      eyeBorderShape: initialEyeBorderShape !== undefined ? initialEyeBorderShape : prev.eyeBorderShape,
+      eyeDotShape: initialEyeDotShape !== undefined ? initialEyeDotShape : prev.eyeDotShape
     }));
-  }, [initialLogo, initialCenterType, initialCenterText]);
+  }, [initialLogo, initialCenterType, initialCenterText, initialEyeBorderColor, initialEyeDotColor, initialEyeBorderShape, initialEyeDotShape]);
 
   // Initialize and update QR code whenever design changes
   useEffect(() => {
@@ -99,12 +127,12 @@ export default function QRCodeDesigner({
             type: (currentDesign.cornerDots || 'square') as any,
           },
           cornersSquareOptions: {
-            color: currentDesign.foregroundColor || '#000000',
-            type: (currentDesign.cornerSquares || 'square') as any,
+            color: currentDesign.eyeBorderColor || currentDesign.foregroundColor || '#000000',
+            type: (currentDesign.eyeBorderShape || 'square') as any,
           },
           cornersDotOptions: {
-            color: currentDesign.foregroundColor || '#000000',
-            type: (currentDesign.cornerDots || 'square') as any,
+            color: currentDesign.eyeDotColor || currentDesign.foregroundColor || '#000000',
+            type: (currentDesign.eyeDotShape || 'square') as any,
           },
           backgroundOptions: {
             color: currentDesign.backgroundColor || '#FFFFFF',
@@ -213,6 +241,10 @@ export default function QRCodeDesigner({
       logoUrl: currentDesign.logoUrl || '',
       centerType: currentDesign.centerType as 'none' | 'logo' | 'text',
       centerText: currentDesign.centerText || '',
+      eyeBorderColor: currentDesign.eyeBorderColor || '#000000',
+      eyeDotColor: currentDesign.eyeDotColor || '#000000',
+      eyeBorderShape: currentDesign.eyeBorderShape || 'square',
+      eyeDotShape: currentDesign.eyeDotShape || 'square',
       backgroundColor: currentDesign.backgroundColor || '#FFFFFF',
       foregroundColor: currentDesign.foregroundColor || '#000000',
       cornerDots: currentDesign.cornerDots as 'square' | 'rounded' | 'circle',
@@ -239,12 +271,12 @@ export default function QRCodeDesigner({
           type: (design.cornerDots || 'square') as any,
         },
         cornersSquareOptions: {
-          color: design.foregroundColor,
-          type: (design.cornerSquares || 'square') as any,
+          color: design.eyeBorderColor || design.foregroundColor,
+          type: (design.eyeBorderShape || 'square') as any,
         },
         cornersDotOptions: {
-          color: design.foregroundColor,
-          type: (design.cornerDots || 'square') as any,
+          color: design.eyeDotColor || design.foregroundColor,
+          type: (design.eyeDotShape || 'square') as any,
         },
         backgroundOptions: {
           color: design.backgroundColor,
@@ -303,6 +335,105 @@ export default function QRCodeDesigner({
                   data-testid="input-qr-text"
                   className="mt-1"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium">Eye Border Color</label>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      type="color"
+                      value={currentDesign.eyeBorderColor || '#000000'}
+                      onChange={(e) => {
+                        const color = e.target.value;
+                        setCurrentDesign({ ...currentDesign, eyeBorderColor: color });
+                        onEyeBorderColorChange?.(color);
+                      }}
+                      className="w-12 h-9 p-1"
+                      data-testid="input-qr-eye-border-color"
+                    />
+                    <Input
+                      type="text"
+                      value={currentDesign.eyeBorderColor || '#000000'}
+                      onChange={(e) => {
+                        const color = e.target.value;
+                        setCurrentDesign({ ...currentDesign, eyeBorderColor: color });
+                        onEyeBorderColorChange?.(color);
+                      }}
+                      placeholder="#000000"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Eye Dot Color</label>
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      type="color"
+                      value={currentDesign.eyeDotColor || '#000000'}
+                      onChange={(e) => {
+                        const color = e.target.value;
+                        setCurrentDesign({ ...currentDesign, eyeDotColor: color });
+                        onEyeDotColorChange?.(color);
+                      }}
+                      className="w-12 h-9 p-1"
+                      data-testid="input-qr-eye-dot-color"
+                    />
+                    <Input
+                      type="text"
+                      value={currentDesign.eyeDotColor || '#000000'}
+                      onChange={(e) => {
+                        const color = e.target.value;
+                        setCurrentDesign({ ...currentDesign, eyeDotColor: color });
+                        onEyeDotColorChange?.(color);
+                      }}
+                      placeholder="#000000"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium">Eye Border Shape</label>
+                  <Select
+                    value={currentDesign.eyeBorderShape || 'square'}
+                    onValueChange={(value) => {
+                      setCurrentDesign({ ...currentDesign, eyeBorderShape: value });
+                      onEyeBorderShapeChange?.(value);
+                    }}
+                  >
+                    <SelectTrigger data-testid="select-qr-eye-border-shape">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="square">Square</SelectItem>
+                      <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
+                      <SelectItem value="dot">Dot</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Eye Dot Shape</label>
+                  <Select
+                    value={currentDesign.eyeDotShape || 'square'}
+                    onValueChange={(value) => {
+                      setCurrentDesign({ ...currentDesign, eyeDotShape: value });
+                      onEyeDotShapeChange?.(value);
+                    }}
+                  >
+                    <SelectTrigger data-testid="select-qr-eye-dot-shape">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="square">Square</SelectItem>
+                      <SelectItem value="dot">Dot</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
