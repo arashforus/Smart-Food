@@ -201,6 +201,10 @@ export interface Settings {
   qrShowCallWaiter?: boolean;
   qrShowAddressPhone?: boolean;
   qrLogo?: string;
+  qrEyeBorderColor?: string;
+  qrEyeDotColor?: string;
+  qrEyeBorderShape?: string;
+  qrEyeDotShape?: string;
 }
 
 export interface DashboardMetrics {
