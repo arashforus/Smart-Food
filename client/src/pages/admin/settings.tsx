@@ -81,7 +81,6 @@ const adminSections = [
   'Menu Management',
   'Orders',
   'Kitchen Display',
-  'Settings',
   'Reports',
   'Users',
   'Branches',
@@ -287,9 +286,19 @@ export default function SettingsPage() {
     const stored = localStorage.getItem('rolePermissions');
     return stored ? JSON.parse(stored) : {
       admin: adminSections,
-      manager: ['Menu Management', 'Orders', 'Kitchen Display', 'Reports'],
-      chef: ['Kitchen Display', 'Orders'],
-      accountant: ['Reports', 'Analytics'],
+      manager: adminSections,
+      chef: adminSections,
+      accountant: adminSections,
+    };
+  });
+
+  const [settingsAccessLevel, setSettingsAccessLevel] = useState(() => {
+    const stored = localStorage.getItem('settingsAccessLevel');
+    return stored ? JSON.parse(stored) : {
+      admin: 'all',
+      manager: 'profile',
+      chef: 'profile',
+      accountant: 'profile',
     };
   });
   const [restaurantName, setRestaurantName] = useState(() => localStorage.getItem('restaurantName') || '');
@@ -713,6 +722,23 @@ export default function SettingsPage() {
       [role]: prev[role].includes(section)
         ? prev[role].filter((s: string) => s !== section)
         : [...prev[role], section],
+    }));
+    localStorage.setItem('rolePermissions', JSON.stringify({
+      ...rolePermissions,
+      [role]: rolePermissions[role].includes(section)
+        ? rolePermissions[role].filter((s: string) => s !== section)
+        : [...rolePermissions[role], section],
+    }));
+  };
+
+  const updateSettingsAccessLevel = (role: 'admin' | 'manager' | 'chef' | 'accountant', level: 'profile' | 'all') => {
+    setSettingsAccessLevel((prev: Record<string, string>) => ({
+      ...prev,
+      [role]: level,
+    }));
+    localStorage.setItem('settingsAccessLevel', JSON.stringify({
+      ...settingsAccessLevel,
+      [role]: level,
     }));
   };
 
@@ -2393,24 +2419,66 @@ export default function SettingsPage() {
                   <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5" />Role-Based Access Control</CardTitle>
                   <CardDescription>Define which admin sections each role can access</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-8">
                   {(['admin', 'manager', 'chef', 'accountant'] as const).map((role) => (
-                    <div key={role} className="space-y-3 pb-6 border-b last:border-0">
+                    <div key={role} className="space-y-4 pb-8 border-b last:border-0">
                       <h3 className="font-semibold capitalize text-sm">{role} Permissions</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {adminSections.map((section) => (
-                          <div key={section} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`${role}-${section}`}
-                              checked={rolePermissions[role].includes(section)}
-                              onCheckedChange={() => toggleRoleSection(role, section)}
-                              data-testid={`checkbox-role-${role}-${section}`}
+                      
+                      {/* Menu Sections */}
+                      <div className="space-y-3">
+                        <p className="text-xs text-muted-foreground font-medium">Menu Sections</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {adminSections.map((section) => (
+                            <div key={section} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`${role}-${section}`}
+                                checked={rolePermissions[role].includes(section)}
+                                onCheckedChange={() => toggleRoleSection(role, section)}
+                                data-testid={`checkbox-role-${role}-${section}`}
+                              />
+                              <label htmlFor={`${role}-${section}`} className="text-sm cursor-pointer">
+                                {section}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Settings Access */}
+                      <div className="space-y-3 pt-3 border-t">
+                        <p className="text-xs text-muted-foreground font-medium">Settings Access</p>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id={`${role}-settings-profile`}
+                              name={`${role}-settings`}
+                              value="profile"
+                              checked={settingsAccessLevel[role] === 'profile'}
+                              onChange={() => updateSettingsAccessLevel(role, 'profile')}
+                              data-testid={`radio-${role}-settings-profile`}
+                              className="w-4 h-4"
                             />
-                            <label htmlFor={`${role}-${section}`} className="text-sm cursor-pointer">
-                              {section}
+                            <label htmlFor={`${role}-settings-profile`} className="text-sm cursor-pointer">
+                              Profile Tab Only
                             </label>
                           </div>
-                        ))}
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="radio"
+                              id={`${role}-settings-all`}
+                              name={`${role}-settings`}
+                              value="all"
+                              checked={settingsAccessLevel[role] === 'all'}
+                              onChange={() => updateSettingsAccessLevel(role, 'all')}
+                              data-testid={`radio-${role}-settings-all`}
+                              className="w-4 h-4"
+                            />
+                            <label htmlFor={`${role}-settings-all`} className="text-sm cursor-pointer">
+                              All Settings Tabs
+                            </label>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
