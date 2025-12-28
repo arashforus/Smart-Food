@@ -211,13 +211,13 @@ export default function SettingsPage() {
   const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
-  const [qrEyeBorderColor, setQrEyeBorderColor] = useState(() => dbSettings?.qrEyeBorderColor || localStorage.getItem('qrEyeBorderColor') || '#000000');
-  const [qrEyeDotColor, setQrEyeDotColor] = useState(() => dbSettings?.qrEyeDotColor || localStorage.getItem('qrEyeDotColor') || '#000000');
-  const [qrEyeBorderShape, setQrEyeBorderShape] = useState<string>(() => dbSettings?.qrEyeBorderShape || localStorage.getItem('qrEyeBorderShape') || 'square');
-  const [qrEyeDotShape, setQrEyeDotShape] = useState<string>(() => dbSettings?.qrEyeDotShape || localStorage.getItem('qrEyeDotShape') || 'square');
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
   const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
+  const [qrEyeBorderColor, setQrEyeBorderColor] = useState(() => dbSettings?.qrEyeBorderColor || localStorage.getItem('qrEyeBorderColor') || '#000000');
+  const [qrEyeDotColor, setQrEyeDotColor] = useState(() => dbSettings?.qrEyeDotColor || localStorage.getItem('qrEyeDotColor') || '#000000');
+  const [qrEyeBorderShape, setQrEyeBorderShape] = useState(() => dbSettings?.qrEyeBorderShape || localStorage.getItem('qrEyeBorderShape') || 'square');
+  const [qrEyeDotShape, setQrEyeDotShape] = useState(() => dbSettings?.qrEyeDotShape || localStorage.getItem('qrEyeDotShape') || 'square');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
   const [rolePermissions, setRolePermissions] = useState(() => {
     const stored = localStorage.getItem('rolePermissions');

@@ -173,6 +173,7 @@ export interface StorageSetting {
   restaurantTelegram?: string;
   restaurantGoogleMapsUrl?: string;
   loginBackgroundImage?: string;
+  loginTitle?: string;
   qrShowLogo?: boolean;
   qrShowTitle?: boolean;
   qrShowDescription?: boolean;
