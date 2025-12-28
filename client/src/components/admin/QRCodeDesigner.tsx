@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -245,7 +245,7 @@ export default function QRCodeDesigner({
       eyeDotShape: currentDesign.eyeDotShape || 'square',
       backgroundColor: currentDesign.backgroundColor || '#FFFFFF',
       foregroundColor: currentDesign.foregroundColor || '#000000',
-      cornerDots: currentDesign.cornerDots as 'square' | 'rounded' | 'circle',
+      cornerDots: currentDesign.cornerDots || 'square',
       createdAt: new Date(),
     };
 
@@ -405,35 +405,35 @@ export default function QRCodeDesigner({
                     <SelectTrigger data-testid="select-qr-eye-border-shape">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="square">Square</SelectItem>
-                      <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
-                      <SelectItem value="dot">Dot</SelectItem>
-                      <SelectItem value="eye">Eye</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+      <SelectContent>
+        <SelectItem value="square">Square</SelectItem>
+        <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
+        <SelectItem value="dot">Dot</SelectItem>
+        <SelectItem value="eye">Eye</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
 
-                <div>
-                  <label className="text-sm font-medium">Eye Dot Shape</label>
-                  <Select
-                    value={currentDesign.eyeDotShape || 'square'}
-                    onValueChange={(value) => {
-                      setCurrentDesign({ ...currentDesign, eyeDotShape: value });
-                      onEyeDotShapeChange?.(value);
-                    }}
-                  >
-                    <SelectTrigger data-testid="select-qr-eye-dot-shape">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="square">Square</SelectItem>
-                      <SelectItem value="dot">Dot</SelectItem>
-                      <SelectItem value="eye">Eye</SelectItem>
-                      <SelectItem value="star">Star</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+  <div>
+    <label className="text-sm font-medium">Eye Dot Shape</label>
+    <Select
+      value={currentDesign.eyeDotShape || 'square'}
+      onValueChange={(value) => {
+        setCurrentDesign({ ...currentDesign, eyeDotShape: value });
+        onEyeDotShapeChange?.(value);
+      }}
+    >
+      <SelectTrigger data-testid="select-qr-eye-dot-shape">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="square">Square</SelectItem>
+        <SelectItem value="dot">Dot</SelectItem>
+        <SelectItem value="eye">Eye</SelectItem>
+        <SelectItem value="star">Star</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -480,11 +480,11 @@ export default function QRCodeDesigner({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium">Corner Dots</label>
+                  <label className="text-sm font-medium">Dots Style</label>
                   <Select
                     value={currentDesign.cornerDots || 'square'}
                     onValueChange={(value) =>
-                      setCurrentDesign({ ...currentDesign, cornerDots: value as 'square' | 'rounded' | 'circle' })
+                      setCurrentDesign({ ...currentDesign, cornerDots: value })
                     }
                   >
                     <SelectTrigger data-testid="select-qr-corner-dots">
@@ -492,8 +492,11 @@ export default function QRCodeDesigner({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="square">Square</SelectItem>
+                      <SelectItem value="dots">Dots</SelectItem>
                       <SelectItem value="rounded">Rounded</SelectItem>
-                      <SelectItem value="circle">Circle</SelectItem>
+                      <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
+                      <SelectItem value="classy">Classy</SelectItem>
+                      <SelectItem value="classy-rounded">Classy Rounded</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
