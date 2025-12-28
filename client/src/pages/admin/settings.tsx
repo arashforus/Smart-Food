@@ -62,6 +62,15 @@ const settingsSchema = z.object({
   restaurantTelegram: z.string().optional(),
   restaurantGoogleMapsUrl: z.string().optional(),
   qrLogo: z.string().optional(),
+  kdShowTableNumber: z.boolean().default(true),
+  kdShowOrderTime: z.boolean().default(true),
+  kdShowClock: z.boolean().default(true),
+  kdShowNotes: z.boolean().default(true),
+  kdHasPendingStatus: z.boolean().default(true),
+  kdShowRecentlyCompleted: z.boolean().default(true),
+  kdPendingColor: z.string().default("#FF9800"),
+  kdPreparingColor: z.string().default("#2196F3"),
+  kdReadyColor: z.string().default("#4CAF50"),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -175,7 +184,16 @@ export default function SettingsPage() {
       }
       // Update form values when DB settings load
       form.reset({
-        primaryColor: dbSettings.primaryColor,
+      kdShowTableNumber: dbSettings.kdShowTableNumber ?? true,
+      kdShowOrderTime: dbSettings.kdShowOrderTime ?? true,
+      kdShowClock: dbSettings.kdShowClock ?? true,
+      kdShowNotes: dbSettings.kdShowNotes ?? true,
+      kdHasPendingStatus: dbSettings.kdHasPendingStatus ?? true,
+      kdShowRecentlyCompleted: dbSettings.kdShowRecentlyCompleted ?? true,
+      kdPendingColor: dbSettings.kdPendingColor || '#FF9800',
+      kdPreparingColor: dbSettings.kdPreparingColor || '#2196F3',
+      kdReadyColor: dbSettings.kdReadyColor || '#4CAF50',
+      primaryColor: dbSettings.primaryColor,
         menuTitle: dbSettings.menuTitle,
         showPrices: dbSettings.showPrices,
         showImages: dbSettings.showImages,
@@ -200,6 +218,15 @@ export default function SettingsPage() {
         restaurantWhatsapp: dbSettings.restaurantWhatsapp || localStorage.getItem('restaurantWhatsapp') || '',
         restaurantTelegram: dbSettings.restaurantTelegram || localStorage.getItem('restaurantTelegram') || '',
         restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || localStorage.getItem('restaurantGoogleMapsUrl') || '',
+        kdShowTableNumber: dbSettings.kdShowTableNumber ?? true,
+        kdShowOrderTime: dbSettings.kdShowOrderTime ?? true,
+        kdShowClock: dbSettings.kdShowClock ?? true,
+        kdShowNotes: dbSettings.kdShowNotes ?? true,
+        kdHasPendingStatus: dbSettings.kdHasPendingStatus ?? true,
+        kdShowRecentlyCompleted: dbSettings.kdShowRecentlyCompleted ?? true,
+        kdPendingColor: dbSettings.kdPendingColor || '#FF9800',
+        kdPreparingColor: dbSettings.kdPreparingColor || '#2196F3',
+        kdReadyColor: dbSettings.kdReadyColor || '#4CAF50',
       });
     }
   }, [dbSettings]);
@@ -486,7 +513,16 @@ export default function SettingsPage() {
       qrCenterText: qrCenterText,
       qrShowCallWaiter: qrShowCallWaiter,
       qrShowAddressPhone: qrShowAddressPhone,
-      showMenuInstagram: showMenuInstagram,
+      kdShowTableNumber: data.kdShowTableNumber,
+    kdShowOrderTime: data.kdShowOrderTime,
+    kdShowClock: data.kdShowClock,
+    kdShowNotes: data.kdShowNotes,
+    kdHasPendingStatus: data.kdHasPendingStatus,
+    kdShowRecentlyCompleted: data.kdShowRecentlyCompleted,
+    kdPendingColor: data.kdPendingColor,
+    kdPreparingColor: data.kdPreparingColor,
+    kdReadyColor: data.kdReadyColor,
+    showMenuInstagram: showMenuInstagram,
       showMenuWhatsapp: showMenuWhatsapp,
       showMenuTelegram: showMenuTelegram,
       showMenuLanguageSelector: showMenuLanguageSelector,
@@ -497,6 +533,12 @@ export default function SettingsPage() {
       menuGradientStart: menuGradientStart,
       menuGradientEnd: menuGradientEnd,
       menuBackgroundImage: menuBackgroundImage,
+      kdShowTableNumber: showMenu, // Using existing state as reference for placement
+      kdShowOrderTime: showMenu,
+      kdShowClock: showMenu,
+      kdShowNotes: showMenu,
+      kdHasPendingStatus: showMenu,
+      kdShowRecentlyCompleted: showMenu,
       showRestaurantLogo: showRestaurantLogo,
       showRestaurantName: showRestaurantName,
       showRestaurantDescription: showRestaurantDescription,
@@ -2083,13 +2125,118 @@ export default function SettingsPage() {
             <TabsContent value="kd" className="space-y-6 animate-in fade-in duration-300">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Kitchen Display System</CardTitle>
-                  <CardDescription>Configure your kitchen display settings</CardDescription>
+                  <CardTitle className="text-lg">General</CardTitle>
+                  <CardDescription>Configure basic kitchen display options</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">Kitchen Display System settings coming soon. This feature will allow you to customize your KD display, manage order priorities, and set up kitchen workflows.</p>
-                  </div>
+                  <FormField control={form.control} name="kdShowTableNumber" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Table Number</FormLabel>
+                        <FormDescription>Display table numbers on kitchen tickets</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-kd-table-number" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdShowOrderTime" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Order Time</FormLabel>
+                        <FormDescription>Display the time elapsed since the order was placed</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-kd-order-time" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdShowClock" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Clock</FormLabel>
+                        <FormDescription>Display current time on the kitchen display</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-kd-clock" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdShowNotes" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Notes</FormLabel>
+                        <FormDescription>Display customer notes on kitchen tickets</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-kd-notes" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdHasPendingStatus" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Has Pending Status</FormLabel>
+                        <FormDescription>Include pending status in the workflow</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-kd-pending-status" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdShowRecentlyCompleted" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Recently Completed Section</FormLabel>
+                        <FormDescription>Display a list of recently completed orders</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-kd-recently-completed" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Theme</CardTitle>
+                  <CardDescription>Customize kitchen display status colors</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField control={form.control} name="kdPendingColor" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pending Color</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-kd-pending-color" />
+                          <Input {...field} className="flex-1" />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdPreparingColor" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Preparing Color</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-kd-preparing-color" />
+                          <Input {...field} className="flex-1" />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="kdReadyColor" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ready Color</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-kd-ready-color" />
+                          <Input {...field} className="flex-1" />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )} />
                 </CardContent>
               </Card>
             </TabsContent>

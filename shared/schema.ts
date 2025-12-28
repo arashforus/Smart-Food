@@ -130,20 +130,6 @@ export const materials = pgTable("materials", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  name: true,
-  email: true,
-  role: true,
-  phone: true,
-});
-
-export const insertSettingsSchema = createInsertSchema(settings).omit({ 
-  id: true,
-  createdAt: true 
-});
-
 export const settings = pgTable("settings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   primaryColor: text("primary_color").notNull().default("#4CAF50"),
@@ -211,6 +197,20 @@ export const settings = pgTable("settings", {
   kdPreparingColor: text("kd_preparing_color").notNull().default("#2196F3"),
   kdReadyColor: text("kd_ready_color").notNull().default("#4CAF50"),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+  name: true,
+  email: true,
+  role: true,
+  phone: true,
+});
+
+export const insertSettingsSchema = createInsertSchema(settings).omit({ 
+  id: true,
+  createdAt: true 
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
