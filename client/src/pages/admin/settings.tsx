@@ -1944,7 +1944,7 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Menu Display Options</CardTitle>
+                  <CardTitle className="text-lg">Menu Bar</CardTitle>
                   <CardDescription>Control which menu elements are visible to customers</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -2014,8 +2014,8 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Display Options</CardTitle>
-                  <CardDescription>Control what information is shown to customers</CardDescription>
+                  <CardTitle className="text-lg">Menu Items Section</CardTitle>
+                  <CardDescription>Control what information in the menu items section shown to customers</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField control={form.control} name="showPrices" render={({ field }) => (
