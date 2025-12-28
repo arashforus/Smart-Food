@@ -156,6 +156,12 @@ export default function SettingsPage() {
       if (dbSettings.qrShowDescription !== undefined) setQrShowDescription(dbSettings.qrShowDescription);
       if (dbSettings.qrShowAnimatedText !== undefined) setQrShowAnimatedText(dbSettings.qrShowAnimatedText);
       if (dbSettings.qrAnimatedTexts) setQrAnimatedTexts(dbSettings.qrAnimatedTexts);
+      if (dbSettings.showMenu !== undefined) setShowMenu(dbSettings.showMenu);
+      if (dbSettings.showAllMenuItem !== undefined) setShowAllMenuItem(dbSettings.showAllMenuItem);
+      if (dbSettings.showRecommendedMenuItem !== undefined) setShowRecommendedMenuItem(dbSettings.showRecommendedMenuItem);
+      if (dbSettings.showFoodType !== undefined) setShowFoodType(dbSettings.showFoodType);
+      if (dbSettings.showSearchBar !== undefined) setShowSearchBar(dbSettings.showSearchBar);
+      if (dbSettings.showViewSwitcher !== undefined) setShowViewSwitcher(dbSettings.showViewSwitcher);
       if (dbSettings.qrLogo) {
         setQrLogo(dbSettings.qrLogo);
       }
@@ -236,6 +242,14 @@ export default function SettingsPage() {
   const [showRestaurantName, setShowRestaurantName] = useState(() => localStorage.getItem('showRestaurantName') !== 'false');
   const [showRestaurantDescription, setShowRestaurantDescription] = useState(() => localStorage.getItem('showRestaurantDescription') !== 'false');
   const [showRestaurantHours, setShowRestaurantHours] = useState(() => localStorage.getItem('showRestaurantHours') !== 'false');
+  
+  // Menu Display Settings
+  const [showMenu, setShowMenu] = useState(() => localStorage.getItem('showMenu') !== 'false');
+  const [showAllMenuItem, setShowAllMenuItem] = useState(() => localStorage.getItem('showAllMenuItem') !== 'false');
+  const [showRecommendedMenuItem, setShowRecommendedMenuItem] = useState(() => localStorage.getItem('showRecommendedMenuItem') !== 'false');
+  const [showFoodType, setShowFoodType] = useState(() => localStorage.getItem('showFoodType') !== 'false');
+  const [showSearchBar, setShowSearchBar] = useState(() => localStorage.getItem('showSearchBar') !== 'false');
+  const [showViewSwitcher, setShowViewSwitcher] = useState(() => localStorage.getItem('showViewSwitcher') !== 'false');
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
   const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
@@ -479,6 +493,12 @@ export default function SettingsPage() {
       showRestaurantName: showRestaurantName,
       showRestaurantDescription: showRestaurantDescription,
       showRestaurantHours: showRestaurantHours,
+      showMenu: showMenu,
+      showAllMenuItem: showAllMenuItem,
+      showRecommendedMenuItem: showRecommendedMenuItem,
+      showFoodType: showFoodType,
+      showSearchBar: showSearchBar,
+      showViewSwitcher: showViewSwitcher,
     });
 
     // Also update local storage for fallback
@@ -541,6 +561,12 @@ export default function SettingsPage() {
     localStorage.setItem('showRestaurantName', showRestaurantName.toString());
     localStorage.setItem('showRestaurantDescription', showRestaurantDescription.toString());
     localStorage.setItem('showRestaurantHours', showRestaurantHours.toString());
+    localStorage.setItem('showMenu', showMenu.toString());
+    localStorage.setItem('showAllMenuItem', showAllMenuItem.toString());
+    localStorage.setItem('showRecommendedMenuItem', showRecommendedMenuItem.toString());
+    localStorage.setItem('showFoodType', showFoodType.toString());
+    localStorage.setItem('showSearchBar', showSearchBar.toString());
+    localStorage.setItem('showViewSwitcher', showViewSwitcher.toString());
     if (favicon) {
       localStorage.setItem('favicon', favicon);
     }
@@ -1911,6 +1937,59 @@ export default function SettingsPage() {
                         <FormDescription>Display restaurant operating hours and open/close text</FormDescription>
                       </div>
                       <Switch checked={showRestaurantHours} onCheckedChange={setShowRestaurantHours} data-testid="switch-show-hours" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Menu Display Options</CardTitle>
+                  <CardDescription>Control which menu elements are visible to customers</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Menu</FormLabel>
+                        <FormDescription>Display the menu section on the page</FormDescription>
+                      </div>
+                      <Switch checked={showMenu} onCheckedChange={setShowMenu} data-testid="switch-show-menu" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show All Menu Items</FormLabel>
+                        <FormDescription>Display the "All Items" category option</FormDescription>
+                      </div>
+                      <Switch checked={showAllMenuItem} onCheckedChange={setShowAllMenuItem} data-testid="switch-show-all-menu-items" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Recommended Menu Items</FormLabel>
+                        <FormDescription>Display the "Recommended" items section</FormDescription>
+                      </div>
+                      <Switch checked={showRecommendedMenuItem} onCheckedChange={setShowRecommendedMenuItem} data-testid="switch-show-recommended-items" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Food Type</FormLabel>
+                        <FormDescription>Display food type/category tags on items</FormDescription>
+                      </div>
+                      <Switch checked={showFoodType} onCheckedChange={setShowFoodType} data-testid="switch-show-food-type" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Search Bar</FormLabel>
+                        <FormDescription>Display the menu search functionality</FormDescription>
+                      </div>
+                      <Switch checked={showSearchBar} onCheckedChange={setShowSearchBar} data-testid="switch-show-search-bar" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show View Switcher</FormLabel>
+                        <FormDescription>Allow customers to switch between grid and list views</FormDescription>
+                      </div>
+                      <Switch checked={showViewSwitcher} onCheckedChange={setShowViewSwitcher} data-testid="switch-show-view-switcher" />
                     </div>
                   </div>
                 </CardContent>

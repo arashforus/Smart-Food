@@ -223,6 +223,12 @@ export interface Settings {
   showRestaurantName?: boolean;
   showRestaurantDescription?: boolean;
   showRestaurantHours?: boolean;
+  showMenu?: boolean;
+  showAllMenuItem?: boolean;
+  showRecommendedMenuItem?: boolean;
+  showFoodType?: boolean;
+  showSearchBar?: boolean;
+  showViewSwitcher?: boolean;
 }
 
 export interface DashboardMetrics {
