@@ -193,6 +193,17 @@ export interface StorageSetting {
   qrCenterText?: string;
   qrShowCallWaiter?: boolean;
   qrShowAddressPhone?: boolean;
+  showMenuInstagram?: boolean;
+  showMenuWhatsapp?: boolean;
+  showMenuTelegram?: boolean;
+  showMenuLanguageSelector?: boolean;
+  showMenuThemeSwitcher?: boolean;
+  menuDefaultTheme?: string;
+  menuBackgroundType?: string;
+  menuBackgroundColor?: string;
+  menuGradientStart?: string;
+  menuGradientEnd?: string;
+  menuBackgroundImage?: string;
   createdAt?: Date;
 }
 

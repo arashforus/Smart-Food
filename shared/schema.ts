@@ -187,6 +187,17 @@ export const settings = pgTable("settings", {
   qrCenterText: text("qr_center_text"),
   qrShowCallWaiter: boolean("qr_show_call_waiter").notNull().default(true),
   qrShowAddressPhone: boolean("qr_show_address_phone").notNull().default(true),
+  showMenuInstagram: boolean("show_menu_instagram").notNull().default(true),
+  showMenuWhatsapp: boolean("show_menu_whatsapp").notNull().default(true),
+  showMenuTelegram: boolean("show_menu_telegram").notNull().default(true),
+  showMenuLanguageSelector: boolean("show_menu_language_selector").notNull().default(true),
+  showMenuThemeSwitcher: boolean("show_menu_theme_switcher").notNull().default(true),
+  menuDefaultTheme: text("menu_default_theme").notNull().default("light"),
+  menuBackgroundType: text("menu_background_type").notNull().default("default"),
+  menuBackgroundColor: text("menu_background_color"),
+  menuGradientStart: text("menu_gradient_start"),
+  menuGradientEnd: text("menu_gradient_end"),
+  menuBackgroundImage: text("menu_background_image"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

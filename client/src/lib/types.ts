@@ -205,6 +205,18 @@ export interface Settings {
   qrEyeDotColor?: string;
   qrEyeBorderShape?: string;
   qrEyeDotShape?: string;
+  qrDotsStyle?: string;
+  showMenuInstagram?: boolean;
+  showMenuWhatsapp?: boolean;
+  showMenuTelegram?: boolean;
+  showMenuLanguageSelector?: boolean;
+  showMenuThemeSwitcher?: boolean;
+  menuDefaultTheme?: string;
+  menuBackgroundType?: string;
+  menuBackgroundColor?: string;
+  menuGradientStart?: string;
+  menuGradientEnd?: string;
+  menuBackgroundImage?: string;
 }
 
 export interface DashboardMetrics {

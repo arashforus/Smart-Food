@@ -212,6 +212,20 @@ export default function SettingsPage() {
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
+  
+  // Menu Page Settings
+  const [showMenuInstagram, setShowMenuInstagram] = useState(() => localStorage.getItem('showMenuInstagram') !== 'false');
+  const [showMenuWhatsapp, setShowMenuWhatsapp] = useState(() => localStorage.getItem('showMenuWhatsapp') !== 'false');
+  const [showMenuTelegram, setShowMenuTelegram] = useState(() => localStorage.getItem('showMenuTelegram') !== 'false');
+  const [showMenuLanguageSelector, setShowMenuLanguageSelector] = useState(() => localStorage.getItem('showMenuLanguageSelector') !== 'false');
+  const [showMenuThemeSwitcher, setShowMenuThemeSwitcher] = useState(() => localStorage.getItem('showMenuThemeSwitcher') !== 'false');
+  const [menuDefaultTheme, setMenuDefaultTheme] = useState(() => localStorage.getItem('menuDefaultTheme') || 'light');
+  const [menuBackgroundType, setMenuBackgroundType] = useState(() => localStorage.getItem('menuBackgroundType') || 'default');
+  const [menuBackgroundColor, setMenuBackgroundColor] = useState(() => localStorage.getItem('menuBackgroundColor') || '#ffffff');
+  const [menuGradientStart, setMenuGradientStart] = useState(() => localStorage.getItem('menuGradientStart') || '#ffffff');
+  const [menuGradientEnd, setMenuGradientEnd] = useState(() => localStorage.getItem('menuGradientEnd') || '#f0f0f0');
+  const [menuBackgroundImage, setMenuBackgroundImage] = useState(() => localStorage.getItem('menuBackgroundImage') || '');
+  const menuBackgroundImageRef = useRef<HTMLInputElement>(null);
   const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
   const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
   const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
@@ -438,6 +452,17 @@ export default function SettingsPage() {
       qrCenterText: qrCenterText,
       qrShowCallWaiter: qrShowCallWaiter,
       qrShowAddressPhone: qrShowAddressPhone,
+      showMenuInstagram: showMenuInstagram,
+      showMenuWhatsapp: showMenuWhatsapp,
+      showMenuTelegram: showMenuTelegram,
+      showMenuLanguageSelector: showMenuLanguageSelector,
+      showMenuThemeSwitcher: showMenuThemeSwitcher,
+      menuDefaultTheme: menuDefaultTheme,
+      menuBackgroundType: menuBackgroundType,
+      menuBackgroundColor: menuBackgroundColor,
+      menuGradientStart: menuGradientStart,
+      menuGradientEnd: menuGradientEnd,
+      menuBackgroundImage: menuBackgroundImage,
     });
 
     // Also update local storage for fallback
@@ -485,6 +510,17 @@ export default function SettingsPage() {
     localStorage.setItem('googleMapsUrl', googleMapsUrl);
     localStorage.setItem('appTimezone', timezone);
     localStorage.setItem('copyrightText', copyrightText);
+    localStorage.setItem('showMenuInstagram', showMenuInstagram.toString());
+    localStorage.setItem('showMenuWhatsapp', showMenuWhatsapp.toString());
+    localStorage.setItem('showMenuTelegram', showMenuTelegram.toString());
+    localStorage.setItem('showMenuLanguageSelector', showMenuLanguageSelector.toString());
+    localStorage.setItem('showMenuThemeSwitcher', showMenuThemeSwitcher.toString());
+    localStorage.setItem('menuDefaultTheme', menuDefaultTheme);
+    localStorage.setItem('menuBackgroundType', menuBackgroundType);
+    localStorage.setItem('menuBackgroundColor', menuBackgroundColor);
+    localStorage.setItem('menuGradientStart', menuGradientStart);
+    localStorage.setItem('menuGradientEnd', menuGradientEnd);
+    localStorage.setItem('menuBackgroundImage', menuBackgroundImage);
     if (favicon) {
       localStorage.setItem('favicon', favicon);
     }
@@ -1651,6 +1687,176 @@ export default function SettingsPage() {
 
             {/* Menu Page Tab */}
             <TabsContent value="menu" className="space-y-6 animate-in fade-in duration-300">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Menu Features</CardTitle>
+                  <CardDescription>Control which features are visible to customers on the menu page</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Instagram</FormLabel>
+                        <FormDescription>Display Instagram link in menu header</FormDescription>
+                      </div>
+                      <Switch checked={showMenuInstagram} onCheckedChange={setShowMenuInstagram} data-testid="switch-menu-instagram" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show WhatsApp</FormLabel>
+                        <FormDescription>Display WhatsApp contact in menu header</FormDescription>
+                      </div>
+                      <Switch checked={showMenuWhatsapp} onCheckedChange={setShowMenuWhatsapp} data-testid="switch-menu-whatsapp" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Telegram</FormLabel>
+                        <FormDescription>Display Telegram link in menu header</FormDescription>
+                      </div>
+                      <Switch checked={showMenuTelegram} onCheckedChange={setShowMenuTelegram} data-testid="switch-menu-telegram" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Language Selector</FormLabel>
+                        <FormDescription>Allow customers to change language</FormDescription>
+                      </div>
+                      <Switch checked={showMenuLanguageSelector} onCheckedChange={setShowMenuLanguageSelector} data-testid="switch-menu-language" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Theme Switcher</FormLabel>
+                        <FormDescription>Allow customers to toggle dark/light mode</FormDescription>
+                      </div>
+                      <Switch checked={showMenuThemeSwitcher} onCheckedChange={setShowMenuThemeSwitcher} data-testid="switch-menu-theme" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Theme</CardTitle>
+                  <CardDescription>Customize the appearance and background of the menu page</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="menu-default-theme">Default Theme</FormLabel>
+                    <Select value={menuDefaultTheme} onValueChange={setMenuDefaultTheme}>
+                      <SelectTrigger id="menu-default-theme" data-testid="select-menu-theme">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="dark">Dark</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>Set the default theme when customers open the menu</FormDescription>
+                  </div>
+
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="menu-bg-type">Background Type</FormLabel>
+                    <Select value={menuBackgroundType} onValueChange={setMenuBackgroundType}>
+                      <SelectTrigger id="menu-bg-type" data-testid="select-menu-bg-type">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="default">Default (Theme based)</SelectItem>
+                        <SelectItem value="solid">Solid Color</SelectItem>
+                        <SelectItem value="gradient">Gradient</SelectItem>
+                        <SelectItem value="image">Image</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {menuBackgroundType === 'solid' && (
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="menu-bg-color">Background Color</FormLabel>
+                      <div className="flex gap-2 items-center">
+                        <Input
+                          id="menu-bg-color"
+                          type="color"
+                          value={menuBackgroundColor}
+                          onChange={(e) => setMenuBackgroundColor(e.target.value)}
+                          className="w-16 h-10 cursor-pointer"
+                          data-testid="input-menu-bg-color"
+                        />
+                        <span className="text-sm text-muted-foreground font-mono">{menuBackgroundColor}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {menuBackgroundType === 'gradient' && (
+                    <>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="menu-gradient-start">Gradient Start Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="menu-gradient-start"
+                            type="color"
+                            value={menuGradientStart}
+                            onChange={(e) => setMenuGradientStart(e.target.value)}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-menu-gradient-start"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{menuGradientStart}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="menu-gradient-end">Gradient End Color</FormLabel>
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id="menu-gradient-end"
+                            type="color"
+                            value={menuGradientEnd}
+                            onChange={(e) => setMenuGradientEnd(e.target.value)}
+                            className="w-16 h-10 cursor-pointer"
+                            data-testid="input-menu-gradient-end"
+                          />
+                          <span className="text-sm text-muted-foreground font-mono">{menuGradientEnd}</span>
+                        </div>
+                      </div>
+                      <div className="p-4 rounded-lg border" style={{ background: `linear-gradient(135deg, ${menuGradientStart} 0%, ${menuGradientEnd} 100%)` }}>
+                        <p className="text-xs text-muted-foreground">Preview</p>
+                      </div>
+                    </>
+                  )}
+
+                  {menuBackgroundType === 'image' && (
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="menu-bg-image">Upload Background Image</FormLabel>
+                      <div className="space-y-2">
+                        {menuBackgroundImage && (
+                          <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                            <img src={menuBackgroundImage} alt="Preview" className="w-full h-full object-cover" />
+                            <Button size="icon" variant="destructive" className="absolute top-2 right-2" onClick={() => setMenuBackgroundImage('')} data-testid="button-remove-menu-bg">
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                        <Input
+                          ref={menuBackgroundImageRef}
+                          id="menu-bg-image"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                const result = event.target?.result as string;
+                                setMenuBackgroundImage(result);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          data-testid="input-menu-bg-image"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Menu Display Settings</CardTitle>
