@@ -147,6 +147,7 @@ export default function SettingsPage() {
       if (dbSettings.qrEyeDotColor) setQrEyeDotColor(dbSettings.qrEyeDotColor);
       if (dbSettings.qrEyeBorderShape) setQrEyeBorderShape(dbSettings.qrEyeBorderShape);
       if (dbSettings.qrEyeDotShape) setQrEyeDotShape(dbSettings.qrEyeDotShape);
+      if (dbSettings.qrDotsStyle) setQrDotsStyle(dbSettings.qrDotsStyle);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
       if (dbSettings.qrLogo) {
@@ -218,6 +219,7 @@ export default function SettingsPage() {
   const [qrEyeDotColor, setQrEyeDotColor] = useState(() => dbSettings?.qrEyeDotColor || localStorage.getItem('qrEyeDotColor') || '#000000');
   const [qrEyeBorderShape, setQrEyeBorderShape] = useState(() => dbSettings?.qrEyeBorderShape || localStorage.getItem('qrEyeBorderShape') || 'square');
   const [qrEyeDotShape, setQrEyeDotShape] = useState(() => dbSettings?.qrEyeDotShape || localStorage.getItem('qrEyeDotShape') || 'square');
+  const [qrDotsStyle, setQrDotsStyle] = useState(() => dbSettings?.qrDotsStyle || localStorage.getItem('qrDotsStyle') || 'square');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
   const [rolePermissions, setRolePermissions] = useState(() => {
     const stored = localStorage.getItem('rolePermissions');
@@ -430,6 +432,7 @@ export default function SettingsPage() {
       qrEyeDotColor: qrEyeDotColor,
       qrEyeBorderShape: qrEyeBorderShape,
       qrEyeDotShape: qrEyeDotShape,
+      qrDotsStyle: qrDotsStyle,
       qrLogo: qrLogo,
       qrCenterType: qrCenterType,
       qrCenterText: qrCenterText,
@@ -471,6 +474,7 @@ export default function SettingsPage() {
     localStorage.setItem('qrEyeDotColor', qrEyeDotColor);
     localStorage.setItem('qrEyeBorderShape', qrEyeBorderShape);
     localStorage.setItem('qrEyeDotShape', qrEyeDotShape);
+    localStorage.setItem('qrDotsStyle', qrDotsStyle);
     localStorage.setItem('qrShowCallWaiter', qrShowCallWaiter.toString());
     localStorage.setItem('qrShowAddressPhone', qrShowAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
@@ -1900,6 +1904,7 @@ export default function SettingsPage() {
                 initialEyeDotColor={qrEyeDotColor}
                 initialEyeBorderShape={qrEyeBorderShape}
                 initialEyeDotShape={qrEyeDotShape}
+                initialDotsStyle={qrDotsStyle}
                 onLogoChange={(url) => setQrLogo(url)} 
                 onCenterTypeChange={(type) => setQrCenterType(type)}
                 onCenterTextChange={(text) => setQrCenterText(text)}
@@ -1907,6 +1912,7 @@ export default function SettingsPage() {
                 onEyeDotColorChange={(color) => setQrEyeDotColor(color)}
                 onEyeBorderShapeChange={(shape) => setQrEyeBorderShape(shape)}
                 onEyeDotShapeChange={(shape) => setQrEyeDotShape(shape)}
+                onDotsStyleChange={(style) => setQrDotsStyle(style)}
               />
             </TabsContent>
 

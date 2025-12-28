@@ -41,6 +41,7 @@ interface QRCodeDesignerProps {
   initialEyeDotColor?: string;
   initialEyeBorderShape?: string;
   initialEyeDotShape?: string;
+  initialDotsStyle?: string;
   onLogoChange?: (url: string) => void;
   onCenterTypeChange?: (type: 'none' | 'logo' | 'text') => void;
   onCenterTextChange?: (text: string) => void;
@@ -48,6 +49,7 @@ interface QRCodeDesignerProps {
   onEyeDotColorChange?: (color: string) => void;
   onEyeBorderShapeChange?: (shape: string) => void;
   onEyeDotShapeChange?: (shape: string) => void;
+  onDotsStyleChange?: (style: string) => void;
 }
 
 export default function QRCodeDesigner({ 
@@ -58,13 +60,15 @@ export default function QRCodeDesigner({
   initialEyeDotColor = '#000000',
   initialEyeBorderShape = 'square',
   initialEyeDotShape = 'square',
+  initialDotsStyle = 'square',
   onLogoChange,
   onCenterTypeChange,
   onCenterTextChange,
   onEyeBorderColorChange,
   onEyeDotColorChange,
   onEyeBorderShapeChange,
-  onEyeDotShapeChange
+  onEyeDotShapeChange,
+  onDotsStyleChange
 }: QRCodeDesignerProps) {
   const { toast } = useToast();
   const qrDisplayRef = useRef<HTMLDivElement>(null);
@@ -82,13 +86,13 @@ export default function QRCodeDesigner({
     logoUrl: initialLogo || '',
     eyeBorderColor: '#000000',
     eyeDotColor: '#000000',
-    eyeBorderShape: 'square',
-    eyeDotShape: 'square',
+    eyeBorderShape: initialEyeBorderShape,
+    eyeDotShape: initialEyeDotShape,
     centerType: initialCenterType,
     centerText: initialCenterText,
     backgroundColor: '#FFFFFF',
     foregroundColor: '#000000',
-    cornerDots: 'square',
+    cornerDots: initialDotsStyle,
   });
 
   useEffect(() => {
@@ -100,9 +104,10 @@ export default function QRCodeDesigner({
       eyeBorderColor: initialEyeBorderColor !== undefined ? initialEyeBorderColor : prev.eyeBorderColor,
       eyeDotColor: initialEyeDotColor !== undefined ? initialEyeDotColor : prev.eyeDotColor,
       eyeBorderShape: initialEyeBorderShape !== undefined ? initialEyeBorderShape : prev.eyeBorderShape,
-      eyeDotShape: initialEyeDotShape !== undefined ? initialEyeDotShape : prev.eyeDotShape
+      eyeDotShape: initialEyeDotShape !== undefined ? initialEyeDotShape : prev.eyeDotShape,
+      cornerDots: initialDotsStyle !== undefined ? initialDotsStyle : prev.cornerDots
     }));
-  }, [initialLogo, initialCenterType, initialCenterText, initialEyeBorderColor, initialEyeDotColor, initialEyeBorderShape, initialEyeDotShape]);
+  }, [initialLogo, initialCenterType, initialCenterText, initialEyeBorderColor, initialEyeDotColor, initialEyeBorderShape, initialEyeDotShape, initialDotsStyle]);
 
   // Initialize and update QR code whenever design changes
   useEffect(() => {
@@ -532,9 +537,10 @@ export default function QRCodeDesigner({
                   <label className="text-sm font-medium">Dots Style</label>
                   <Select
                     value={currentDesign.cornerDots || 'square'}
-                    onValueChange={(value) =>
-                      setCurrentDesign({ ...currentDesign, cornerDots: value })
-                    }
+                    onValueChange={(value) => {
+                      setCurrentDesign({ ...currentDesign, cornerDots: value });
+                      onDotsStyleChange?.(value);
+                    }}
                   >
                     <SelectTrigger data-testid="select-qr-corner-dots">
                       <SelectValue />

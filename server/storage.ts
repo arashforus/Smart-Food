@@ -188,6 +188,7 @@ export interface StorageSetting {
   qrEyeDotColor?: string;
   qrEyeBorderShape?: string;
   qrEyeDotShape?: string;
+  qrDotsStyle?: string;
   qrCenterType?: string;
   qrCenterText?: string;
   qrShowCallWaiter?: boolean;
