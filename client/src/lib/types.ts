@@ -229,6 +229,8 @@ export interface Settings {
   showFoodType?: boolean;
   showSearchBar?: boolean;
   showViewSwitcher?: boolean;
+  showBuyButton?: boolean;
+  showMoreInformationPopup?: boolean;
 }
 
 export interface DashboardMetrics {

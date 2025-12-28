@@ -42,6 +42,8 @@ const settingsSchema = z.object({
   showImages: z.boolean(),
   showMaterials: z.boolean(),
   showTypes: z.boolean(),
+  showBuyButton: z.boolean(),
+  showMoreInformationPopup: z.boolean(),
   defaultLanguage: z.string().min(1, 'Default language is required'),
   currency: z.string().min(1, 'Currency is required'),
   currencySymbol: z.string().min(1, 'Currency symbol is required'),
@@ -179,6 +181,8 @@ export default function SettingsPage() {
         showImages: dbSettings.showImages,
         showMaterials: dbSettings.showMaterials,
         showTypes: dbSettings.showTypes,
+        showBuyButton: dbSettings.showBuyButton !== false,
+        showMoreInformationPopup: dbSettings.showMoreInformationPopup !== false,
         defaultLanguage: dbSettings.defaultLanguage,
         currency: dbSettings.currency || 'USD',
         currencySymbol: dbSettings.currencySymbol || '$',
@@ -405,6 +409,8 @@ export default function SettingsPage() {
       showImages: settings.showImages,
       showMaterials: settings.showMaterials,
       showTypes: settings.showTypes,
+      showBuyButton: settings.showBuyButton !== false,
+      showMoreInformationPopup: settings.showMoreInformationPopup !== false,
       defaultLanguage: settings.defaultLanguage,
       currency: settings.currency || 'USD',
       currencySymbol: settings.currencySymbol || '$',
@@ -439,6 +445,8 @@ export default function SettingsPage() {
       showImages: data.showImages,
       showMaterials: data.showMaterials,
       showTypes: data.showTypes,
+      showBuyButton: data.showBuyButton,
+      showMoreInformationPopup: data.showMoreInformationPopup,
       defaultLanguage: data.defaultLanguage,
       currency: data.currency,
       currencySymbol: data.currencySymbol,
@@ -1997,23 +2005,6 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Menu Display Settings</CardTitle>
-                  <CardDescription>Configure how the menu page appears to customers</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <FormField control={form.control} name="menuTitle" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Menu Page Title</FormLabel>
-                      <FormControl><Input {...field} placeholder="Our Menu" data-testid="input-settings-title" /></FormControl>
-                      <FormDescription>Displayed at the top of the menu page</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
                   <CardTitle className="text-lg">Menu Items Section</CardTitle>
                   <CardDescription>Control what information in the menu items section shown to customers</CardDescription>
                 </CardHeader>
@@ -2059,6 +2050,28 @@ export default function SettingsPage() {
                       </div>
                       <FormControl>
                         <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-types" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="showBuyButton" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show Buy Button</FormLabel>
+                        <FormDescription>Display the buy/order button on menu items</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-buy-button" />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="showMoreInformationPopup" render={({ field }) => (
+                    <FormItem className="flex items-center justify-between">
+                      <div>
+                        <FormLabel>Show More Information Popup</FormLabel>
+                        <FormDescription>Display details popup when viewing item information</FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-more-info" />
                       </FormControl>
                     </FormItem>
                   )} />
