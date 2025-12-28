@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code, Tv2 } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code, Tv2, Banknote } from 'lucide-react';
 import { SiInstagram, SiTelegram } from 'react-icons/si';
 import { useLocation } from 'wouter';
 import {
@@ -2316,22 +2316,68 @@ export default function SettingsPage() {
                   <CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" />Payment Methods</CardTitle>
                   <CardDescription>Configure payment options for your customers</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <FormField control={form.control} name="paymentMethod" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Payment Method</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-payment-method">
-                            <SelectValue placeholder="Select payment method" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="cash">Cash Only</SelectItem>
-                          <SelectItem value="card">Card Only</SelectItem>
-                          <SelectItem value="both">Cash & Card</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormLabel className="text-base mb-4">Select Payment Method</FormLabel>
+                      <div className="grid grid-cols-3 gap-4">
+                        {/* Cash Only */}
+                        <button
+                          type="button"
+                          onClick={() => field.onChange('cash')}
+                          data-testid="button-payment-cash"
+                          className={`relative flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
+                            field.value === 'cash'
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border bg-card hover-elevate'
+                          }`}
+                        >
+                          <div className={`mb-3 p-3 rounded-lg ${field.value === 'cash' ? 'bg-primary/10' : 'bg-muted'}`}>
+                            <Banknote className={`h-6 w-6 ${field.value === 'cash' ? 'text-primary' : 'text-muted-foreground'}`} />
+                          </div>
+                          <span className={`text-sm font-medium ${field.value === 'cash' ? 'text-primary' : 'text-foreground'}`}>
+                            Cash Only
+                          </span>
+                          {field.value === 'cash' && (
+                            <div className="absolute top-2 right-2 w-3 h-3 bg-primary rounded-full"></div>
+                          )}
+                        </button>
+
+                        {/* Card Only */}
+                        <button
+                          type="button"
+                          disabled
+                          data-testid="button-payment-card"
+                          className="relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-border bg-muted/30 opacity-60 cursor-not-allowed"
+                        >
+                          <div className="mb-3 p-3 rounded-lg bg-muted">
+                            <CreditCard className="h-6 w-6 text-muted-foreground" />
+                          </div>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Card Only
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-1">Coming Soon</span>
+                        </button>
+
+                        {/* Cash & Card */}
+                        <button
+                          type="button"
+                          disabled
+                          data-testid="button-payment-both"
+                          className="relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-border bg-muted/30 opacity-60 cursor-not-allowed"
+                        >
+                          <div className="mb-3 p-3 rounded-lg bg-muted">
+                            <div className="flex gap-1">
+                              <Banknote className="h-5 w-5 text-muted-foreground" />
+                              <CreditCard className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          </div>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Cash & Card
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-1">Coming Soon</span>
+                        </button>
+                      </div>
                       <FormDescription>Choose which payment methods customers can use</FormDescription>
                       <FormMessage />
                     </FormItem>
