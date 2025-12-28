@@ -29,7 +29,6 @@ interface QRDesign {
   backgroundColor: string;
   foregroundColor: string;
   cornerDots: string;
-  cornerSquares: string;
   createdAt: Date;
 }
 
@@ -89,7 +88,6 @@ export default function QRCodeDesigner({
     backgroundColor: '#FFFFFF',
     foregroundColor: '#000000',
     cornerDots: 'square',
-    cornerSquares: 'square',
   });
 
   useEffect(() => {
@@ -248,7 +246,6 @@ export default function QRCodeDesigner({
       backgroundColor: currentDesign.backgroundColor || '#FFFFFF',
       foregroundColor: currentDesign.foregroundColor || '#000000',
       cornerDots: currentDesign.cornerDots as 'square' | 'rounded' | 'circle',
-      cornerSquares: currentDesign.cornerSquares as 'square' | 'rounded' | 'circle',
       createdAt: new Date(),
     };
 
@@ -412,6 +409,7 @@ export default function QRCodeDesigner({
                       <SelectItem value="square">Square</SelectItem>
                       <SelectItem value="extra-rounded">Extra Rounded</SelectItem>
                       <SelectItem value="dot">Dot</SelectItem>
+                      <SelectItem value="eye">Eye</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -431,6 +429,8 @@ export default function QRCodeDesigner({
                     <SelectContent>
                       <SelectItem value="square">Square</SelectItem>
                       <SelectItem value="dot">Dot</SelectItem>
+                      <SelectItem value="eye">Eye</SelectItem>
+                      <SelectItem value="star">Star</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -488,25 +488,6 @@ export default function QRCodeDesigner({
                     }
                   >
                     <SelectTrigger data-testid="select-qr-corner-dots">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="square">Square</SelectItem>
-                      <SelectItem value="rounded">Rounded</SelectItem>
-                      <SelectItem value="circle">Circle</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">Corner Squares</label>
-                  <Select
-                    value={currentDesign.cornerSquares || 'square'}
-                    onValueChange={(value) =>
-                      setCurrentDesign({ ...currentDesign, cornerSquares: value as 'square' | 'rounded' | 'circle' })
-                    }
-                  >
-                    <SelectTrigger data-testid="select-qr-corner-squares">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

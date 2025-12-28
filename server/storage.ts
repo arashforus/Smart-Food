@@ -174,6 +174,8 @@ export interface StorageSetting {
   restaurantGoogleMapsUrl?: string;
   loginBackgroundImage?: string;
   loginTitle?: string;
+  showLoginTitle?: boolean;
+  showLoginResetPassword?: boolean;
   qrShowLogo?: boolean;
   qrShowTitle?: boolean;
   qrShowDescription?: boolean;
