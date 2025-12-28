@@ -139,7 +139,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
   phone: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export const insertSettingsSchema = createInsertSchema(settings).omit({ 
+  id: true,
+  createdAt: true 
+});
 
 export const settings = pgTable("settings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -198,14 +201,19 @@ export const settings = pgTable("settings", {
   menuGradientStart: text("menu_gradient_start"),
   menuGradientEnd: text("menu_gradient_end"),
   menuBackgroundImage: text("menu_background_image"),
+  kdShowTableNumber: boolean("kd_show_table_number").notNull().default(true),
+  kdShowOrderTime: boolean("kd_show_order_time").notNull().default(true),
+  kdShowClock: boolean("kd_show_clock").notNull().default(true),
+  kdShowNotes: boolean("kd_show_notes").notNull().default(true),
+  kdHasPendingStatus: boolean("kd_has_pending_status").notNull().default(true),
+  kdShowRecentlyCompleted: boolean("kd_show_recently_completed").notNull().default(true),
+  kdPendingColor: text("kd_pending_color").notNull().default("#FF9800"),
+  kdPreparingColor: text("kd_preparing_color").notNull().default("#2196F3"),
+  kdReadyColor: text("kd_ready_color").notNull().default("#4CAF50"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertSettingsSchema = createInsertSchema(settings).omit({ 
-  id: true,
-  createdAt: true 
-});
-
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
 export type Setting = typeof settings.$inferSelect;
 export type User = typeof users.$inferSelect;
