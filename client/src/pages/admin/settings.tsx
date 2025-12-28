@@ -2541,9 +2541,21 @@ export default function SettingsPage() {
                   <FormField control={form.control} name="licenseKey" render={({ field }) => (
                     <FormItem>
                       <FormLabel>License Key</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter your license key" data-testid="input-license-key" />
-                      </FormControl>
+                      <div className="flex gap-2">
+                        <FormControl className="flex-1">
+                          <Input {...field} placeholder="Enter your license key" data-testid="input-license-key" />
+                        </FormControl>
+                        <Button 
+                          type="button" 
+                          variant="default"
+                          onClick={handleCheckLicense}
+                          disabled={isCheckingLicense || !field.value}
+                          data-testid="button-check-license-inline"
+                          className="min-w-fit"
+                        >
+                          {isCheckingLicense ? 'Checking...' : 'Check'}
+                        </Button>
+                      </div>
                       <FormDescription>Your unique license key for this installation</FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -2571,16 +2583,6 @@ export default function SettingsPage() {
                         </p>
                       </div>
 
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        className="w-full mt-2"
-                        onClick={handleCheckLicense}
-                        disabled={isCheckingLicense}
-                        data-testid="button-check-license"
-                      >
-                        {isCheckingLicense ? 'Checking...' : 'Check License Key'}
-                      </Button>
                     </div>
                   )}
 
