@@ -47,6 +47,7 @@ const settingsSchema = z.object({
   defaultLanguage: z.string().min(1, 'Default language is required'),
   currency: z.string().min(1, 'Currency is required'),
   currencySymbol: z.string().min(1, 'Currency symbol is required'),
+  currencyPosition: z.enum(['before', 'after']).default('before'),
   paymentMethod: z.enum(['cash', 'card', 'both']),
   licenseKey: z.string().optional(),
   licenseExpiry: z.string().optional(),
@@ -204,6 +205,7 @@ export default function SettingsPage() {
         defaultLanguage: dbSettings.defaultLanguage,
         currency: dbSettings.currency || 'USD',
         currencySymbol: dbSettings.currencySymbol || '$',
+        currencyPosition: dbSettings.currencyPosition as 'before' | 'after' || 'before',
         paymentMethod: dbSettings.paymentSettings?.paymentMethod || 'both',
         licenseKey: dbSettings.licenseKey || '',
         licenseExpiry: dbSettings.licenseExpiry || '',
@@ -218,15 +220,6 @@ export default function SettingsPage() {
         restaurantWhatsapp: dbSettings.restaurantWhatsapp || localStorage.getItem('restaurantWhatsapp') || '',
         restaurantTelegram: dbSettings.restaurantTelegram || localStorage.getItem('restaurantTelegram') || '',
         restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || localStorage.getItem('restaurantGoogleMapsUrl') || '',
-        kdShowTableNumber: dbSettings.kdShowTableNumber ?? true,
-        kdShowOrderTime: dbSettings.kdShowOrderTime ?? true,
-        kdShowClock: dbSettings.kdShowClock ?? true,
-        kdShowNotes: dbSettings.kdShowNotes ?? true,
-        kdHasPendingStatus: dbSettings.kdHasPendingStatus ?? true,
-        kdShowRecentlyCompleted: dbSettings.kdShowRecentlyCompleted ?? true,
-        kdPendingColor: dbSettings.kdPendingColor || '#FF9800',
-        kdPreparingColor: dbSettings.kdPreparingColor || '#2196F3',
-        kdReadyColor: dbSettings.kdReadyColor || '#4CAF50',
       });
     }
   }, [dbSettings]);
@@ -2246,7 +2239,7 @@ export default function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Currency Settings</CardTitle>
-                  <CardDescription>Set the currency for all prices displayed throughout the site</CardDescription>
+                
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField control={form.control} name="currency" render={({ field }) => (
@@ -2282,14 +2275,35 @@ export default function SettingsPage() {
                     </FormItem>
                   )} />
 
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="text-sm font-medium mb-2">Current Currency:</p>
-                    <p className="text-2xl font-bold">
-                      {form.watch('currencySymbol')} (
-                      {currencies.find((c) => c.code === form.watch('currency'))?.name || 'Unknown'}
-                      )
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-2">All prices will be displayed with this currency symbol throughout your site.</p>
+                  <FormField control={form.control} name="currencyPosition" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Currency Position</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-currency-position">
+                            <SelectValue placeholder="Select position" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="before">Before Price (e.g., $ 100)</SelectItem>
+                          <SelectItem value="after">After Price (e.g., 100 $)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Choose where the currency symbol appears relative to the price</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  <div className="p-4 bg-muted rounded-lg border">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Current Currency:</span>
+                      <p className="text-lg font-bold">
+                        {form.watch('currencyPosition') === 'before' 
+                          ? `${form.watch('currencySymbol')} 100`
+                          : `100 ${form.watch('currencySymbol')}`
+                        } ({currencies.find((c) => c.code === form.watch('currency'))?.name || 'Unknown'})
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

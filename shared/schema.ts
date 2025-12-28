@@ -137,6 +137,7 @@ export const settings = pgTable("settings", {
   favicon: text("favicon"),
   currencyName: text("currency_name").notNull().default("US Dollar"),
   currencySymbol: text("currency_symbol").notNull().default("$"),
+  currencyPosition: text("currency_position").notNull().default("before"),
   licenseKey: text("license_key"),
   licenseExpiryDate: timestamp("license_expiry_date"),
   defaultLanguage: text("default_language").notNull().default("en"),
