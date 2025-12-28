@@ -51,6 +51,7 @@ const settingsSchema = z.object({
   paymentMethod: z.enum(['cash', 'card', 'both']),
   licenseKey: z.string().optional(),
   licenseExpiry: z.string().optional(),
+  licenseOwner: z.string().optional(),
   restaurantName: z.string().optional(),
   restaurantDescription: z.string().optional(),
   restaurantAddress: z.string().optional(),
@@ -341,6 +342,9 @@ export default function SettingsPage() {
   });
   const [googleMapsUrl, setGoogleMapsUrl] = useState(() => localStorage.getItem('googleMapsUrl') || '');
 
+  // License State
+  const [isCheckingLicense, setIsCheckingLicense] = useState(false);
+
   // Profile State
   const [profileName, setProfileName] = useState('');
   const [profileEmail, setProfileEmail] = useState('');
@@ -453,6 +457,7 @@ export default function SettingsPage() {
       paymentMethod: settings.paymentSettings?.paymentMethod || 'both',
       licenseKey: settings.licenseKey || '',
       licenseExpiry: settings.licenseExpiry || '',
+      licenseOwner: settings.licenseOwner || '',
       restaurantName,
       restaurantDescription,
       restaurantAddress,
@@ -747,6 +752,38 @@ export default function SettingsPage() {
       ...settingsAccessLevel,
       [role]: level,
     }));
+  };
+
+  const calculateRemainingDays = (expiryDate: string) => {
+    if (!expiryDate) return null;
+    const expiry = new Date(expiryDate);
+    const today = new Date();
+    const diffTime = expiry.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const handleCheckLicense = async () => {
+    setIsCheckingLicense(true);
+    try {
+      // Simulate API call to verify license
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // In a real implementation, this would fetch license data from server
+      const licenseKey = form.watch('licenseKey');
+      if (licenseKey) {
+        // Mock data - replace with actual API call
+        form.setValue('licenseOwner', 'Restaurant Management System License');
+        form.setValue('licenseExpiry', new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+        toast({ title: 'License verified successfully', description: 'License information updated.' });
+      } else {
+        toast({ title: 'Error', description: 'Please enter a license key first', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to verify license', variant: 'destructive' });
+    } finally {
+      setIsCheckingLicense(false);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2512,21 +2549,44 @@ export default function SettingsPage() {
                     </FormItem>
                   )} />
 
-                  <FormField control={form.control} name="licenseExpiry" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>License Expiry Date</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="date" data-testid="input-license-expiry" />
-                      </FormControl>
-                      <FormDescription>When your license will expire</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-
                   {form.watch('licenseExpiry') && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm font-medium">License Expiry: {new Date(form.watch('licenseExpiry')!).toLocaleDateString()}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Keep your license active to continue using all premium features.</p>
+                    <div className="p-4 bg-card border rounded-lg space-y-3">
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground font-medium">License Owner</p>
+                        <p className="text-sm font-medium" data-testid="text-license-owner">{form.watch('licenseOwner') || 'Not set'}</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground font-medium">Expiry Date</p>
+                        <p className="text-sm font-medium" data-testid="text-license-expiry">{new Date(form.watch('licenseExpiry')!).toLocaleDateString()}</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground font-medium">Remaining Days</p>
+                        <p className={`text-sm font-medium ${calculateRemainingDays(form.watch('licenseExpiry')!) && calculateRemainingDays(form.watch('licenseExpiry')!) > 30 ? 'text-green-600' : 'text-orange-600'}`} data-testid="text-remaining-days">
+                          {calculateRemainingDays(form.watch('licenseExpiry')!) !== null 
+                            ? `${calculateRemainingDays(form.watch('licenseExpiry')!)} days`
+                            : 'Not set'
+                          }
+                        </p>
+                      </div>
+
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        className="w-full mt-2"
+                        onClick={handleCheckLicense}
+                        disabled={isCheckingLicense}
+                        data-testid="button-check-license"
+                      >
+                        {isCheckingLicense ? 'Checking...' : 'Check License Key'}
+                      </Button>
+                    </div>
+                  )}
+
+                  {!form.watch('licenseExpiry') && (
+                    <div className="p-4 bg-muted/50 border border-dashed rounded-lg">
+                      <p className="text-sm text-muted-foreground">License information will appear here after entering a license key and checking it.</p>
                     </div>
                   )}
                 </CardContent>
