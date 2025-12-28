@@ -78,13 +78,20 @@ type SettingsFormData = z.infer<typeof settingsSchema>;
 
 const adminSections = [
   'Dashboard',
-  'Menu Management',
+  'Categories',
+  'Menu Items',
+  'QR Codes',
+  'New Order',
   'Orders',
   'Kitchen Display',
-  'Reports',
-  'Users',
+  'Order Status Screen',
   'Branches',
-  'Analytics',
+  'Tables',
+  'Roles',
+  'Users',
+  'Languages',
+  'Materials',
+  'Food Types',
 ];
 
 const currencies = [
