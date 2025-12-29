@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Utensils, Clock, MapPin, Star, Award, Coffee, Pizza, ChefHat, Heart, Users, Calendar, Instagram, Facebook, Twitter } from "lucide-react";
-import { mockRestaurant, mockMenuItems } from "@/lib/mockData";
+import persianFoodHero from "@assets/Gemini_Generated_Image_b29a2b29a2b29a2b_(1)_1766976174528.png";
 
 export default function LandingPage() {
   const signatureDishes = mockMenuItems.filter(item => item.suggested).slice(0, 3);
@@ -32,7 +32,7 @@ export default function LandingPage() {
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
-              backgroundImage: "url('https://images.unsplash.com/photo-1550966842-2849a2830a28?w=1600&q=80')",
+              backgroundImage: `url(${persianFoodHero})`,
             }}
           >
             <div className="absolute inset-0 bg-[#00A5B5]/20 mix-blend-multiply" />
