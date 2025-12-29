@@ -170,7 +170,7 @@ export default function LandingPage() {
               <p className="text-muted-foreground">
                 {mockRestaurant.address}
               </p>
-              <Button variant="link" className="mt-2 text-primary">Get Directions</Button>
+              <Button variant="ghost" className="mt-2 text-primary">Get Directions</Button>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
