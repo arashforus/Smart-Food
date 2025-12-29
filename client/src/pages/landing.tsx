@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Utensils, Clock, MapPin, Star, Award, Coffee, Pizza, ChefHat, Heart, Users, Calendar, Instagram, Facebook, Twitter } from "lucide-react";
+import { mockRestaurant, mockMenuItems } from "@/lib/mockData";
 import persianFoodHero from "@assets/Gemini_Generated_Image_b29a2b29a2b29a2b_(1)_1766976174528.png";
 
 export default function LandingPage() {
