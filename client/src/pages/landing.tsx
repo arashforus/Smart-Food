@@ -88,47 +88,55 @@ export default function LandingPage() {
         <div className="lg:w-1/2 flex flex-col bg-white relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[radial-gradient(circle_at_top_right,_#00A5B51a,_transparent)] pointer-events-none" />
           
-          <header className="p-8 flex items-center justify-between relative z-10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#00A5B5] rounded-lg flex items-center justify-center shadow-lg shadow-[#00A5B5]/20">
-                <Utensils className="text-white w-6 h-6" />
+          <div className="flex-1 flex flex-col items-center justify-center px-8 lg:px-16 py-12 lg:py-0 relative z-10">
+            {/* Centered Logo - Positioned lower for luxury feel */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex flex-col items-center gap-6 mb-16 mt-20"
+            >
+              <div className="w-24 h-24 bg-[#00A5B5] rounded-3xl flex items-center justify-center shadow-2xl shadow-[#00A5B5]/30 rotate-3 hover:rotate-0 transition-transform duration-500">
+                <Utensils className="text-white w-12 h-12" />
               </div>
-              <span className="text-2xl font-bold tracking-tighter uppercase text-[#00A5B5]">{mockRestaurant.name}</span>
-            </div>
-            
-            <nav className="hidden xl:flex items-center gap-6">
+              <h1 className="text-5xl font-black tracking-[0.25em] uppercase text-[#00A5B5] text-center leading-none">{mockRestaurant.name}</h1>
+              <div className="w-20 h-[1px] bg-[#00A5B5]/30 mt-4" />
+            </motion.div>
+
+            {/* Vertical Luxury Menu items */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="flex flex-col items-center gap-10 mb-20"
+            >
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="text-sm font-semibold text-[#00A5B5]/70 hover:text-[#00A5B5] transition-colors uppercase tracking-widest relative group"
+                  className="text-[10px] font-bold text-[#00A5B5]/60 hover:text-[#00A5B5] transition-all uppercase tracking-[1em] group relative flex flex-col items-center pl-[1em]"
                 >
-                  {item.title}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00A5B5] transition-all group-hover:w-full" />
+                  <span className="mb-2 transition-transform group-hover:scale-110">{item.title}</span>
+                  <span className="w-0 h-[1px] bg-[#00A5B5] transition-all duration-500 group-hover:w-full opacity-50" />
                 </button>
               ))}
-            </nav>
-          </header>
+            </motion.div>
 
-          <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 py-12 lg:py-0 relative z-10">
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
             >
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" asChild className="text-lg px-10 h-14 rounded-full bg-[#00A5B5] hover:bg-[#007A87] text-white shadow-xl shadow-[#00A5B5]/20">
+              <div className="flex flex-col sm:flex-row gap-6">
+                <Button size="lg" asChild className="text-[10px] font-bold uppercase tracking-[0.3em] px-14 h-14 rounded-full bg-[#00A5B5] hover:bg-[#007A87] text-white shadow-2xl shadow-[#00A5B5]/20 border-none">
                   <Link href="/menu">Explore Menu</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-10 h-14 rounded-full border-[#00A5B5]/20 text-[#00A5B5] hover:bg-[#00A5B5]/5" onClick={() => scrollToSection('visit-us')}>
+                <Button size="lg" variant="outline" className="text-[10px] font-bold uppercase tracking-[0.3em] px-14 h-14 rounded-full border-[#00A5B5]/20 text-[#00A5B5] hover:bg-[#00A5B5]/5" onClick={() => scrollToSection('visit-us')}>
                   Book A Table
                 </Button>
               </div>
             </motion.div>
           </div>
-
-          
         </div>
       </section>
 
@@ -269,7 +277,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col items-center text-center group">
               <div className="w-24 h-24 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-8 -rotate-3 group-hover:rotate-0 transition-transform shadow-lg border border-white/20">
-                <Users className="w-10 h-10" />
+                <Utensils className="w-10 h-10" />
               </div>
               <h4 className="text-2xl font-bold mb-4">Warm Hospitality</h4>
               <p className="opacity-80 font-light leading-relaxed">In Persian culture, the guest is a gift from God. We treat every visitor with unparalleled honor.</p>
