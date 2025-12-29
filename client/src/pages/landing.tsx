@@ -75,6 +75,8 @@ export default function LandingPage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${persianFoodHero})`,
+              backgroundPosition: 'center',
+              backgroundSize: 'cover'
             }}
           >
             <div className="absolute inset-0 bg-[#00A5B5]/20 mix-blend-multiply" />
