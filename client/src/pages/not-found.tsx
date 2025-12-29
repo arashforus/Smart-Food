@@ -1,10 +1,48 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, ArrowLeft, Utensils, Pizza, Coffee, Beef, IceCream, Sandwich, Soup, Apple, Carrot, Cookie } from "lucide-react";
+import { 
+  AlertCircle, 
+  ArrowLeft, 
+  Utensils, 
+  Pizza, 
+  Coffee, 
+  Beef, 
+  IceCream, 
+  Sandwich, 
+  Soup, 
+  Apple, 
+  Carrot, 
+  Cookie,
+  Ham,
+  Salad,
+  Dog,
+  CupSoda,
+  Wine,
+  FlameKindling,
+  ConciergeBell
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 
-const icons = [Utensils, Pizza, Coffee, Beef, IceCream, Sandwich, Soup, Apple, Carrot, Cookie];
+const icons = [
+  Utensils, 
+  Pizza, 
+  Coffee, 
+  Beef, 
+  IceCream, 
+  Sandwich, 
+  Soup, 
+  Apple, 
+  Carrot, 
+  Cookie,
+  Ham,
+  Salad,
+  Dog,
+  CupSoda,
+  Wine,
+  FlameKindling,
+  ConciergeBell
+];
 
 const MarqueeRow = ({ reverse = false, speed = 20 }: { reverse?: boolean; speed?: number }) => {
   const rowIcons = [...Array(20)].map(() => icons[Math.floor(Math.random() * icons.length)]);
