@@ -872,6 +872,10 @@ export default function SettingsPage() {
                     <Code className="h-5 w-5" />
                     <span className="text-xs">OSS</span>
                   </TabsTrigger>
+                  <TabsTrigger value="about" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Sliders className="h-5 w-5" />
+                    <span className="text-xs">About</span>
+                  </TabsTrigger>
                 </TabsList>
               </CardContent>
             </Card>
@@ -2898,6 +2902,85 @@ export default function SettingsPage() {
                   >
                     Save OSS Settings
                   </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="about" className="space-y-6 animate-in fade-in duration-300">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">About Application</CardTitle>
+                  <CardDescription>System information and company details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col items-center justify-center p-6 bg-muted/30 rounded-xl border border-border/50">
+                    <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+                      <Building2 className="h-10 w-10 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold">{restaurantName || "Our Restaurant"}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Professional Menu Management System</p>
+                    <div className="mt-4 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                      Version 1.0.0
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-sm flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-primary" />
+                        Company Information
+                      </h4>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Company Name</p>
+                          <p className="text-sm font-medium">{restaurantName || "Replit Inc."}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Address</p>
+                          <p className="text-sm font-medium">{restaurantAddress || "177 Townsend St, San Francisco, CA 94107"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Support Email</p>
+                          <p className="text-sm font-medium">{restaurantEmail || "support@replit.com"}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-sm flex items-center gap-2">
+                        <Sliders className="h-4 w-4 text-primary" />
+                        System Status
+                      </h4>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Environment</p>
+                          <p className="text-sm font-medium">Production</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Last Updated</p>
+                          <p className="text-sm font-medium">{new Date().toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Framework</p>
+                          <p className="text-sm font-medium">React + Express + Drizzle</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t flex flex-col items-center gap-2">
+                    <p className="text-xs text-muted-foreground text-center">
+                      {copyrightText}
+                    </p>
+                    <div className="flex gap-4">
+                      <Button variant="link" className="text-xs h-auto p-0" asChild>
+                        <a href="#" target="_blank">Terms of Service</a>
+                      </Button>
+                      <Button variant="link" className="text-xs h-auto p-0" asChild>
+                        <a href="#" target="_blank">Privacy Policy</a>
+                      </Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
