@@ -318,53 +318,68 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Visit Us Section */}
-      <section id="visit-us" className="py-32 bg-[#00A5B5]/5 border-t border-[#00A5B5]/10">
+      {/* Visit Us Section - Simple Luxury Design */}
+      <section id="visit-us" className="py-24 bg-white border-t border-[#00A5B5]/5">
         <div className="container px-4 mx-auto">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="bg-white p-12 rounded-3xl border-2 border-[#00A5B5]/10 text-center shadow-lg hover:shadow-[#00A5B5]/5 transition-all">
-              <MapPin className="w-12 h-12 text-[#00A5B5] mx-auto mb-6" />
-              <h4 className="text-2xl font-bold mb-4 text-slate-900">Location</h4>
-              <p className="text-slate-500 font-light">{mockRestaurant.address}</p>
-              <Button variant="ghost" className="mt-4 text-[#00A5B5] font-bold hover:bg-[#00A5B5]/10">GET DIRECTIONS</Button>
-            </div>
-            
-            <div className="bg-white p-12 rounded-3xl border-2 border-[#00A5B5]/10 text-center shadow-lg hover:shadow-[#00A5B5]/5 transition-all">
-              <Clock className="w-12 h-12 text-[#00A5B5] mx-auto mb-6" />
-              <h4 className="text-2xl font-bold mb-4 text-slate-900">Working Hours</h4>
-              <p className="text-slate-500 font-light whitespace-pre-line leading-relaxed">{mockRestaurant.hours.replace(/\|/g, '\n')}</p>
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12 text-slate-800">
+            {/* Location */}
+            <div className="flex-1 space-y-4">
+              <h4 className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#00A5B5]">Location</h4>
+              <p className="text-sm font-light leading-relaxed max-w-[200px]">
+                {mockRestaurant.address}
+              </p>
             </div>
 
-            <div className="bg-white p-12 rounded-3xl border-2 border-[#00A5B5]/10 text-center shadow-lg hover:shadow-[#00A5B5]/5 transition-all">
-              <Calendar className="w-12 h-12 text-[#00A5B5] mx-auto mb-6" />
-              <h4 className="text-2xl font-bold mb-4 text-slate-900">Reservations</h4>
-              <p className="text-slate-500 font-light mb-4">Book your Persian experience today.</p>
-              <p className="text-3xl font-bold text-[#00A5B5] mb-8">{mockRestaurant.phone}</p>
-              <Button size="lg" className="rounded-full w-full bg-[#00A5B5] text-white shadow-xl shadow-[#00A5B5]/20">Book Now</Button>
+            <div className="hidden md:block w-[1px] h-32 bg-[#00A5B5]/10" />
+
+            {/* Hours */}
+            <div className="flex-1 space-y-4">
+              <h4 className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#00A5B5]">Hours</h4>
+              <div className="text-sm font-light leading-relaxed whitespace-pre-line">
+                {mockRestaurant.hours.replace(/\|/g, '\n')}
+              </div>
+            </div>
+
+            <div className="hidden md:block w-[1px] h-32 bg-[#00A5B5]/10" />
+
+            {/* Contact */}
+            <div className="flex-1 space-y-4">
+              <h4 className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#00A5B5]">Inquiries</h4>
+              <div className="space-y-1">
+                <p className="text-xl font-bold tracking-tight text-[#00A5B5]">{mockRestaurant.phone}</p>
+                <p className="text-xs font-light opacity-60 italic">Advanced reservations recommended</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <footer className="py-20 border-t-8 border-[#00A5B5] bg-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none" />
-        <div className="container px-4 mx-auto text-center relative z-10">
-          <div className="flex items-center justify-center gap-3 mb-10">
-            <div className="w-10 h-10 bg-[#00A5B5] rounded-lg flex items-center justify-center">
-              <Utensils className="text-white w-5 h-5" />
+      {/* Footer CTA & Copyright */}
+      <footer className="bg-white border-t border-[#00A5B5]/5">
+        <div className="container px-4 mx-auto py-16 text-center">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="w-8 h-8 bg-[#00A5B5] rounded flex items-center justify-center shadow-lg shadow-[#00A5B5]/20">
+              <Utensils className="text-white w-4 h-4" />
             </div>
-            <span className="text-2xl font-bold tracking-tighter uppercase text-[#00A5B5]">{mockRestaurant.name}</span>
+            <span className="text-xl font-bold tracking-tighter uppercase text-[#00A5B5]">{mockRestaurant.name}</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-8 lg:gap-12 mb-10">
+          
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
             {navItems.map(item => (
-              <button key={item.id} onClick={() => scrollToSection(item.id)} className="text-xs uppercase tracking-[0.4em] font-bold text-slate-400 hover:text-[#00A5B5] transition-colors">
+              <button key={item.id} onClick={() => scrollToSection(item.id)} className="text-[9px] uppercase tracking-[0.4em] font-bold text-slate-400 hover:text-[#00A5B5] transition-colors">
                 {item.title}
               </button>
             ))}
           </div>
-          <div className="w-full max-w-md mx-auto h-[1px] bg-[#00A5B5]/10 mb-10" />
-          <p className="text-[10px] text-slate-400 uppercase tracking-[0.6em] font-bold">© 2025 {mockRestaurant.name} • Iranian Elegance • All Rights Reserved.</p>
+        </div>
+
+        {/* Copyright Bar */}
+        <div className="bg-[#007A87] py-6">
+          <div className="container px-4 mx-auto text-center">
+            <p className="text-[9px] text-white/60 uppercase tracking-[0.5em] font-bold">
+              © 2025 {mockRestaurant.name} • Iranian Elegance • All Rights Reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
