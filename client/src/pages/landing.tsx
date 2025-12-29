@@ -1,13 +1,23 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Utensils, Clock, MapPin, Star, Award, Coffee, Pizza, ChefHat, Heart, Users, Calendar, Instagram, Facebook, Twitter } from "lucide-react";
 import { mockRestaurant, mockMenuItems } from "@/lib/mockData";
 import persianFoodHero from "@assets/Gemini_Generated_Image_b29a2b29a2b29a2b_(1)_1766976174528.png";
 import japanesePattern from "@assets/japanese_pattern_1766977216734.png";
+import { useState, useEffect } from "react";
 
 export default function LandingPage() {
   const signatureDishes = mockMenuItems.filter(item => item.suggested).slice(0, 3);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > window.innerHeight * 0.5);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -27,6 +37,36 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white selection:bg-[#00A5B5]/30">
+      {/* Sticky Navigation Bar */}
+      <motion.nav 
+        initial={{ y: -100 }}
+        animate={{ y: isScrolled ? 0 : -100 }}
+        transition={{ duration: 0.3 }}
+        className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-md border-b border-[#00A5B5]/10 shadow-sm px-8 py-4 flex items-center justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#00A5B5] rounded flex items-center justify-center">
+            <Utensils className="text-white w-5 h-5" />
+          </div>
+          <span className="text-lg font-bold tracking-tighter uppercase text-[#00A5B5]">{mockRestaurant.name}</span>
+        </div>
+        
+        <div className="hidden lg:flex items-center gap-8">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => scrollToSection(item.id)}
+              className="text-xs font-bold text-[#00A5B5]/70 hover:text-[#00A5B5] transition-colors uppercase tracking-widest"
+            >
+              {item.title}
+            </button>
+          ))}
+          <Button size="sm" asChild className="rounded-full bg-[#00A5B5] hover:bg-[#007A87] text-white">
+            <Link href="/menu">Menu</Link>
+          </Button>
+        </div>
+      </motion.nav>
+
       {/* Hero Section - Split Layout */}
       <section className="relative h-screen flex flex-col lg:flex-row overflow-hidden border-b-8 border-[#00A5B5]">
         {/* Left Side - Image with Geometric Pattern Overlay */}
