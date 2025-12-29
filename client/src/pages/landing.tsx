@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Utensils, Clock, MapPin, Star, Award, Coffee, Pizza, ChefHat, Heart, Users, Calendar, Instagram, Facebook, Twitter } from "lucide-react";
 import { mockRestaurant, mockMenuItems } from "@/lib/mockData";
 import persianFoodHero from "@assets/Gemini_Generated_Image_b29a2b29a2b29a2b_(1)_1766976174528.png";
+import japanesePattern from "@assets/japanese_pattern_1766977216734.png";
 
 export default function LandingPage() {
   const signatureDishes = mockMenuItems.filter(item => item.suggested).slice(0, 3);
@@ -91,7 +92,14 @@ export default function LandingPage() {
 
       {/* Our Story Section - Pattern Background */}
       <section id="story" className="py-32 overflow-hidden bg-white relative">
-        <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/shattered.png')] pointer-events-none" />
+        <div 
+          className="absolute inset-y-0 right-0 w-1/2 opacity-10 pointer-events-none mix-blend-multiply" 
+          style={{ 
+            backgroundImage: `url(${japanesePattern})`,
+            backgroundSize: '300px',
+            backgroundColor: '#00A5B5'
+          }} 
+        />
         <div className="container px-4 mx-auto relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <div className="lg:w-1/2">
@@ -163,8 +171,16 @@ export default function LandingPage() {
       </section>
 
       {/* Chef Section */}
-      <section id="chef" className="py-32 bg-white">
-        <div className="container px-4 mx-auto">
+      <section id="chef" className="py-32 bg-white relative">
+        <div 
+          className="absolute inset-y-0 left-0 w-1/2 opacity-10 pointer-events-none mix-blend-multiply" 
+          style={{ 
+            backgroundImage: `url(${japanesePattern})`,
+            backgroundSize: '300px',
+            backgroundColor: '#00A5B5'
+          }} 
+        />
+        <div className="container px-4 mx-auto relative z-10">
           <div className="flex flex-col lg:flex-row-reverse items-center gap-20">
             <div className="lg:w-1/2 relative group">
               <div className="absolute -inset-4 border-2 border-[#00A5B5]/20 rounded-[44px] group-hover:scale-105 transition-transform duration-500" />
@@ -228,8 +244,16 @@ export default function LandingPage() {
       </section>
 
       {/* Meet Us Section */}
-      <section id="meet-us" className="py-32 bg-white">
-        <div className="container px-4 mx-auto">
+      <section id="meet-us" className="py-32 bg-white relative">
+        <div 
+          className="absolute inset-y-0 left-0 w-1/2 opacity-10 pointer-events-none mix-blend-multiply" 
+          style={{ 
+            backgroundImage: `url(${japanesePattern})`,
+            backgroundSize: '300px',
+            backgroundColor: '#00A5B5'
+          }} 
+        />
+        <div className="container px-4 mx-auto relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <div className="lg:w-1/2">
               <h2 className="text-sm uppercase tracking-[0.4em] text-[#00A5B5] font-bold mb-4">The Atmosphere</h2>
