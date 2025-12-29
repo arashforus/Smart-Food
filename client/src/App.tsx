@@ -10,13 +10,12 @@ import MenuPage from "@/pages/menu";
 import QRLandingPage from "@/pages/qr-landing";
 import LoginPage from "@/pages/login";
 import AdminLayout from "@/pages/admin/index";
+import LandingPage from "@/pages/landing";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/">
-        <Redirect to="/qr" />
-      </Route>
+      <Route path="/" component={LandingPage} />
       <Route path="/qr" component={QRLandingPage} />
       <Route path="/menu" component={MenuPage} />
       <Route path="/login" component={LoginPage} />
