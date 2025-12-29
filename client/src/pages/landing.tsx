@@ -73,17 +73,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="inline-block px-4 py-1.5 rounded-full bg-[#00A5B5]/10 text-[#00A5B5] text-xs font-bold tracking-[0.3em] uppercase mb-6">
-                Marhaba • Welcome
-              </div>
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight text-slate-900">
-                Authentic <br />
-                <span className="text-[#00A5B5] italic font-serif">Fine Persian</span> <br />
-                Dining
-              </h1>
-              <p className="text-xl text-slate-600 mb-10 max-w-xl font-light leading-relaxed">
-                Experience the art of Iranian cuisine, where ancient geometric patterns meet contemporary turquoise elegance.
-              </p>
+              
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" asChild className="text-lg px-10 h-14 rounded-full bg-[#00A5B5] hover:bg-[#007A87] text-white shadow-xl shadow-[#00A5B5]/20">
                   <Link href="/menu">Explore Menu</Link>
@@ -95,13 +85,7 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
-          <div className="p-8 flex items-center gap-6 text-[#00A5B5]/60 relative z-10">
-            <Facebook className="w-5 h-5 cursor-pointer hover:text-[#00A5B5] transition-colors" />
-            <Instagram className="w-5 h-5 cursor-pointer hover:text-[#00A5B5] transition-colors" />
-            <Twitter className="w-5 h-5 cursor-pointer hover:text-[#00A5B5] transition-colors" />
-            <div className="h-[1px] w-12 bg-[#00A5B5]/20 ml-2" />
-            <span className="text-xs font-bold uppercase tracking-[0.3em]">Iranian Heritage</span>
-          </div>
+          
         </div>
       </section>
 
