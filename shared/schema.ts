@@ -168,11 +168,11 @@ export const settings = pgTable("settings", {
   qrShowTitle: boolean("qr_show_title").notNull().default(true),
   qrShowDescription: boolean("qr_show_description").notNull().default(true),
   qrShowAnimatedText: boolean("qr_show_animated_text").notNull().default(true),
-  qrAnimatedTexts: text("qr_animated_texts").array().notNull().default(sql`ARRAY['Welcome', 'Discover our Menu']::text[]`),
+  qrAnimatedTexts: text("qr_animated_texts").array().notNull().default(sql`ARRAY['Welcome', 'Hoş geldiniz', 'خوش آمدید', 'أهلاً وسهلاً']::text[]`),
   qrShowCallWaiter: boolean("qr_show_call_waiter").notNull().default(true),
   qrShowAddressPhone: boolean("qr_show_address_phone").notNull().default(true),
-  qrPageTitle: text("qr_page_title").notNull().default("Scan to Order"),
-  qrPageDescription: text("qr_page_description").notNull().default(""),
+  qrPageTitle: text("qr_page_title").notNull().default("Welcome"),
+  qrPageDescription: text("qr_page_description").notNull().default("Please select your language to continue view the menu"),
   qrTextColor: text("qr_text_color").notNull().default("#000000"),
   
   // QR Design

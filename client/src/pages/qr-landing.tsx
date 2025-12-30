@@ -165,18 +165,18 @@ export default function QRLandingPage() {
         {showTitle && (
           <h1 
             className="text-4xl font-bold text-white mb-2" 
-            data-testid="text-restaurant-name"
+            data-testid="text-qr-page-title"
           >
-            {settings?.restaurantName || 'Restaurant'}
+            {settings?.qrPageTitle || 'Welcome'}
           </h1>
         )}
 
         {showDescription && (
           <p 
             className="text-white/70 mb-6" 
-            data-testid="text-restaurant-description"
+            data-testid="text-qr-page-description"
           >
-            {settings?.restaurantDescription || ''}
+            {settings?.qrPageDescription || 'Please select your language to continue view the menu'}
           </p>
         )}
 
