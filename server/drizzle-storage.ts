@@ -225,6 +225,11 @@ export class DrizzleStorage implements IStorage {
     return mapSettings(result[0]);
   }
 
+  async resetSettings(): Promise<StorageSetting> {
+    const { DEFAULT_SETTINGS } = require('../config/defaults');
+    return this.updateSettings(DEFAULT_SETTINGS);
+  }
+
   async getUser(id: string): Promise<StorageUser | undefined> {
     const db = getDb();
     const user = await db.select().from(users).where(eq(users.id, id)).limit(1);

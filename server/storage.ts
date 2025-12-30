@@ -194,6 +194,7 @@ export interface StorageSetting {
   qrBackgroundColor?: string;
   qrCenterType?: string;
   qrCenterText?: string;
+  qrLogo?: string;
   qrPageTitle?: string;
   qrPageDescription?: string;
   qrShowCallWaiter?: boolean;
@@ -225,6 +226,16 @@ export interface StorageSetting {
   menuGradientStart?: string;
   menuGradientEnd?: string;
   menuBackgroundImage?: string;
+  kdShowTableNumber?: boolean;
+  kdShowOrderTime?: boolean;
+  kdShowClock?: boolean;
+  kdShowNotes?: boolean;
+  kdHasPendingStatus?: boolean;
+  kdShowRecentlyCompleted?: boolean;
+  kdPendingColor?: string;
+  kdPreparingColor?: string;
+  kdReadyColor?: string;
+  currencyPosition?: string;
   paymentMethod?: string;
   rolesAdminPermissions?: string;
   rolesAdminSettingAccess?: string;
@@ -390,16 +401,37 @@ export class MemStorage implements IStorage {
   }
 
   async resetSettings(): Promise<StorageSetting> {
-    // Import defaults from config file
+    // Import defaults from config file based on schema.ts
     const { DEFAULT_SETTINGS } = require('../config/defaults');
     
     this.settings = {
       id: '1',
+      // General
       primaryColor: DEFAULT_SETTINGS.primaryColor,
       timezone: DEFAULT_SETTINGS.timezone,
-      currencyName: DEFAULT_SETTINGS.currencyName,
-      currencySymbol: DEFAULT_SETTINGS.currencySymbol,
+      favicon: DEFAULT_SETTINGS.favicon,
       defaultLanguage: DEFAULT_SETTINGS.defaultLanguage,
+      // Restaurant
+      restaurantLogo: DEFAULT_SETTINGS.restaurantLogo,
+      restaurantName: DEFAULT_SETTINGS.restaurantName,
+      restaurantDescription: DEFAULT_SETTINGS.restaurantDescription,
+      restaurantAddress: DEFAULT_SETTINGS.restaurantAddress,
+      restaurantPhone: DEFAULT_SETTINGS.restaurantPhone,
+      restaurantEmail: DEFAULT_SETTINGS.restaurantEmail,
+      restaurantHours: DEFAULT_SETTINGS.restaurantHours,
+      restaurantBackgroundImage: DEFAULT_SETTINGS.restaurantBackgroundImage,
+      restaurantInstagram: DEFAULT_SETTINGS.restaurantInstagram,
+      restaurantWhatsapp: DEFAULT_SETTINGS.restaurantWhatsapp,
+      restaurantTelegram: DEFAULT_SETTINGS.restaurantTelegram,
+      restaurantGoogleMapsUrl: DEFAULT_SETTINGS.restaurantGoogleMapsUrl,
+      // Login Page
+      loginBackgroundImage: DEFAULT_SETTINGS.loginBackgroundImage,
+      showLoginTitle: DEFAULT_SETTINGS.showLoginTitle,
+      loginTitle: DEFAULT_SETTINGS.loginTitle,
+      showLoginResetPassword: DEFAULT_SETTINGS.showLoginResetPassword,
+      // QR Page Content
+      qrMediaUrl: DEFAULT_SETTINGS.qrMediaUrl,
+      qrMediaType: DEFAULT_SETTINGS.qrMediaType,
       qrShowLogo: DEFAULT_SETTINGS.qrShowLogo,
       qrShowTitle: DEFAULT_SETTINGS.qrShowTitle,
       qrShowDescription: DEFAULT_SETTINGS.qrShowDescription,
@@ -410,6 +442,62 @@ export class MemStorage implements IStorage {
       qrPageTitle: DEFAULT_SETTINGS.qrPageTitle,
       qrPageDescription: DEFAULT_SETTINGS.qrPageDescription,
       qrTextColor: DEFAULT_SETTINGS.qrTextColor,
+      // QR Design
+      qrEyeBorderColor: DEFAULT_SETTINGS.qrEyeBorderColor,
+      qrEyeDotColor: DEFAULT_SETTINGS.qrEyeDotColor,
+      qrEyeBorderShape: DEFAULT_SETTINGS.qrEyeBorderShape,
+      qrEyeDotShape: DEFAULT_SETTINGS.qrEyeDotShape,
+      qrDotsStyle: DEFAULT_SETTINGS.qrDotsStyle,
+      qrForegroundColor: DEFAULT_SETTINGS.qrForegroundColor,
+      qrBackgroundColor: DEFAULT_SETTINGS.qrBackgroundColor,
+      qrCenterType: DEFAULT_SETTINGS.qrCenterType,
+      qrCenterText: DEFAULT_SETTINGS.qrCenterText,
+      qrLogo: DEFAULT_SETTINGS.qrLogo,
+      // Menu Page
+      menuDefaultTheme: DEFAULT_SETTINGS.menuDefaultTheme,
+      menuBackgroundType: DEFAULT_SETTINGS.menuBackgroundType,
+      menuBackgroundColor: DEFAULT_SETTINGS.menuBackgroundColor,
+      menuGradientStart: DEFAULT_SETTINGS.menuGradientStart,
+      menuGradientEnd: DEFAULT_SETTINGS.menuGradientEnd,
+      menuBackgroundImage: DEFAULT_SETTINGS.menuBackgroundImage,
+      showMenuInstagram: DEFAULT_SETTINGS.showMenuInstagram,
+      showMenuWhatsapp: DEFAULT_SETTINGS.showMenuWhatsapp,
+      showMenuTelegram: DEFAULT_SETTINGS.showMenuTelegram,
+      showMenuLanguageSelector: DEFAULT_SETTINGS.showMenuLanguageSelector,
+      showMenuThemeSwitcher: DEFAULT_SETTINGS.showMenuThemeSwitcher,
+      menuShowRestaurantLogo: DEFAULT_SETTINGS.menuShowRestaurantLogo,
+      menuShowRestaurantName: DEFAULT_SETTINGS.menuShowRestaurantName,
+      menuShowRestaurantDescription: DEFAULT_SETTINGS.menuShowRestaurantDescription,
+      menuShowOperationHours: DEFAULT_SETTINGS.menuShowOperationHours,
+      menuShowMenu: DEFAULT_SETTINGS.menuShowMenu,
+      menuShowAllMenuItems: DEFAULT_SETTINGS.menuShowAllMenuItems,
+      menuShowRecommendedMenuItems: DEFAULT_SETTINGS.menuShowRecommendedMenuItems,
+      menuShowFoodType: DEFAULT_SETTINGS.menuShowFoodType,
+      menuShowSearchBar: DEFAULT_SETTINGS.menuShowSearchBar,
+      menuShowViewSwitcher: DEFAULT_SETTINGS.menuShowViewSwitcher,
+      menuShowPrices: DEFAULT_SETTINGS.menuShowPrices,
+      menuShowImages: DEFAULT_SETTINGS.menuShowImages,
+      menuShowIngredients: DEFAULT_SETTINGS.menuShowIngredients,
+      menuShowFoodTypes: DEFAULT_SETTINGS.menuShowFoodTypes,
+      menuShowBuyButton: DEFAULT_SETTINGS.menuShowBuyButton,
+      menuShowMoreInformationPopup: DEFAULT_SETTINGS.menuShowMoreInformationPopup,
+      // KD (Kitchen Display)
+      kdShowTableNumber: DEFAULT_SETTINGS.kdShowTableNumber,
+      kdShowOrderTime: DEFAULT_SETTINGS.kdShowOrderTime,
+      kdShowClock: DEFAULT_SETTINGS.kdShowClock,
+      kdShowNotes: DEFAULT_SETTINGS.kdShowNotes,
+      kdHasPendingStatus: DEFAULT_SETTINGS.kdHasPendingStatus,
+      kdShowRecentlyCompleted: DEFAULT_SETTINGS.kdShowRecentlyCompleted,
+      kdPendingColor: DEFAULT_SETTINGS.kdPendingColor,
+      kdPreparingColor: DEFAULT_SETTINGS.kdPreparingColor,
+      kdReadyColor: DEFAULT_SETTINGS.kdReadyColor,
+      // Currency
+      currencyName: DEFAULT_SETTINGS.currencyName,
+      currencySymbol: DEFAULT_SETTINGS.currencySymbol,
+      currencyPosition: DEFAULT_SETTINGS.currencyPosition,
+      // License
+      licenseKey: DEFAULT_SETTINGS.licenseKey,
+      licenseExpiryDate: DEFAULT_SETTINGS.licenseExpiryDate,
     };
     return this.settings;
   }
