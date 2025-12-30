@@ -173,6 +173,31 @@ export default function SettingsPage() {
       if (dbSettings.qrBackgroundColor) setQrBackgroundColor(dbSettings.qrBackgroundColor);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
+      
+      // Load Payment, Roles, and OSS settings from DB
+      if (dbSettings.paymentMethod) setPaymentMethod(dbSettings.paymentMethod);
+      if (dbSettings.rolesAdminPermissions) setRolesAdminPermissions(dbSettings.rolesAdminPermissions);
+      if (dbSettings.rolesAdminSettingAccess) setRolesAdminSettingAccess(dbSettings.rolesAdminSettingAccess);
+      if (dbSettings.rolesManagerPermissions) setRolesManagerPermissions(dbSettings.rolesManagerPermissions);
+      if (dbSettings.rolesManagerSettingAccess) setRolesManagerSettingAccess(dbSettings.rolesManagerSettingAccess);
+      if (dbSettings.rolesChefPermissions) setRolesChefPermissions(dbSettings.rolesChefPermissions);
+      if (dbSettings.rolesChefSettingAccess) setRolesChefSettingAccess(dbSettings.rolesChefSettingAccess);
+      if (dbSettings.rolesAccountantPermissions) setRolesAccountantPermissions(dbSettings.rolesAccountantPermissions);
+      if (dbSettings.rolesAccountantSettingAccess) setRolesAccountantSettingAccess(dbSettings.rolesAccountantSettingAccess);
+      if (dbSettings.ossPendingColor) setOssPendingColor(dbSettings.ossPendingColor);
+      if (dbSettings.ossPreparingColor) setOssPreparingColor(dbSettings.ossPreparingColor);
+      if (dbSettings.ossReadyColor) setOssReadyColor(dbSettings.ossReadyColor);
+      if (dbSettings.ossBackgroundType) setOssBackgroundType(dbSettings.ossBackgroundType);
+      if (dbSettings.ossBackgroundColor) setOssBackgroundColor(dbSettings.ossBackgroundColor);
+      if (dbSettings.ossBackgroundImage) setOssBackgroundImage(dbSettings.ossBackgroundImage);
+      if (dbSettings.ossCardTextColor) setOssCardTextColor(dbSettings.ossCardTextColor);
+      if (dbSettings.ossCardBorderColor) setOssCardBorderColor(dbSettings.ossCardBorderColor);
+      if (dbSettings.ossCardBoxStyle) setOssCardBoxStyle(dbSettings.ossCardBoxStyle);
+      if (dbSettings.ossHeaderText) setOssHeaderText(dbSettings.ossHeaderText);
+      if (dbSettings.ossNumberLabel) setOssNumberLabel(dbSettings.ossNumberLabel);
+      if (dbSettings.ossTableLabel) setOssTableLabel(dbSettings.ossTableLabel);
+      if (dbSettings.ossShowTableInformation !== undefined) setOssShowTableInformation(dbSettings.ossShowTableInformation);
+      if (dbSettings.ossShowStatusIcon !== undefined) setOssShowStatusIcon(dbSettings.ossShowStatusIcon);
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
       
@@ -374,6 +399,35 @@ export default function SettingsPage() {
   const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
   const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
   const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
+  
+  // Payment Settings
+  const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'both');
+  
+  // Roles Settings
+  const [rolesAdminPermissions, setRolesAdminPermissions] = useState(() => localStorage.getItem('rolesAdminPermissions') || '');
+  const [rolesAdminSettingAccess, setRolesAdminSettingAccess] = useState(() => localStorage.getItem('rolesAdminSettingAccess') || '');
+  const [rolesManagerPermissions, setRolesManagerPermissions] = useState(() => localStorage.getItem('rolesManagerPermissions') || '');
+  const [rolesManagerSettingAccess, setRolesManagerSettingAccess] = useState(() => localStorage.getItem('rolesManagerSettingAccess') || '');
+  const [rolesChefPermissions, setRolesChefPermissions] = useState(() => localStorage.getItem('rolesChefPermissions') || '');
+  const [rolesChefSettingAccess, setRolesChefSettingAccess] = useState(() => localStorage.getItem('rolesChefSettingAccess') || '');
+  const [rolesAccountantPermissions, setRolesAccountantPermissions] = useState(() => localStorage.getItem('rolesAccountantPermissions') || '');
+  const [rolesAccountantSettingAccess, setRolesAccountantSettingAccess] = useState(() => localStorage.getItem('rolesAccountantSettingAccess') || '');
+  
+  // OSS (Order Status Styling) Settings
+  const [ossPendingColor, setOssPendingColor] = useState(() => localStorage.getItem('ossPendingColor') || '#FFA500');
+  const [ossPreparingColor, setOssPreparingColor] = useState(() => localStorage.getItem('ossPreparingColor') || '#1E90FF');
+  const [ossReadyColor, setOssReadyColor] = useState(() => localStorage.getItem('ossReadyColor') || '#32CD32');
+  const [ossBackgroundType, setOssBackgroundType] = useState(() => localStorage.getItem('ossBackgroundType') || 'solid');
+  const [ossBackgroundColor, setOssBackgroundColor] = useState(() => localStorage.getItem('ossBackgroundColor') || '#FFFFFF');
+  const [ossBackgroundImage, setOssBackgroundImage] = useState(() => localStorage.getItem('ossBackgroundImage') || '');
+  const [ossCardTextColor, setOssCardTextColor] = useState(() => localStorage.getItem('ossCardTextColor') || '#000000');
+  const [ossCardBorderColor, setOssCardBorderColor] = useState(() => localStorage.getItem('ossCardBorderColor') || '#CCCCCC');
+  const [ossCardBoxStyle, setOssCardBoxStyle] = useState(() => localStorage.getItem('ossCardBoxStyle') || 'flat');
+  const [ossHeaderText, setOssHeaderText] = useState(() => localStorage.getItem('ossHeaderText') || '');
+  const [ossNumberLabel, setOssNumberLabel] = useState(() => localStorage.getItem('ossNumberLabel') || '');
+  const [ossTableLabel, setOssTableLabel] = useState(() => localStorage.getItem('ossTableLabel') || '');
+  const [ossShowTableInformation, setOssShowTableInformation] = useState(() => localStorage.getItem('ossShowTableInformation') !== 'false');
+  const [ossShowStatusIcon, setOssShowStatusIcon] = useState(() => localStorage.getItem('ossShowStatusIcon') !== 'false');
   
   const [showChangePassword, setShowChangePassword] = useState(() => location.includes('action=changePassword'));
   const [currentPassword, setCurrentPassword] = useState('');
@@ -581,6 +635,29 @@ export default function SettingsPage() {
       menuGradientStart,
       menuGradientEnd,
       menuBackgroundImage,
+      paymentMethod,
+      rolesAdminPermissions,
+      rolesAdminSettingAccess,
+      rolesManagerPermissions,
+      rolesManagerSettingAccess,
+      rolesChefPermissions,
+      rolesChefSettingAccess,
+      rolesAccountantPermissions,
+      rolesAccountantSettingAccess,
+      ossPendingColor,
+      ossPreparingColor,
+      ossReadyColor,
+      ossBackgroundType,
+      ossBackgroundColor,
+      ossBackgroundImage,
+      ossCardTextColor,
+      ossCardBorderColor,
+      ossCardBoxStyle,
+      ossHeaderText,
+      ossNumberLabel,
+      ossTableLabel,
+      ossShowTableInformation,
+      ossShowStatusIcon,
     });
 
     // Also update local storage for fallback
@@ -630,6 +707,29 @@ export default function SettingsPage() {
     localStorage.setItem('menuShowFoodTypes', showFoodTypes.toString());
     localStorage.setItem('menuShowBuyButton', showBuyButton.toString());
     localStorage.setItem('menuShowMoreInformationPopup', showMoreInformationPopup.toString());
+    localStorage.setItem('paymentMethod', paymentMethod);
+    localStorage.setItem('rolesAdminPermissions', rolesAdminPermissions);
+    localStorage.setItem('rolesAdminSettingAccess', rolesAdminSettingAccess);
+    localStorage.setItem('rolesManagerPermissions', rolesManagerPermissions);
+    localStorage.setItem('rolesManagerSettingAccess', rolesManagerSettingAccess);
+    localStorage.setItem('rolesChefPermissions', rolesChefPermissions);
+    localStorage.setItem('rolesChefSettingAccess', rolesChefSettingAccess);
+    localStorage.setItem('rolesAccountantPermissions', rolesAccountantPermissions);
+    localStorage.setItem('rolesAccountantSettingAccess', rolesAccountantSettingAccess);
+    localStorage.setItem('ossPendingColor', ossPendingColor);
+    localStorage.setItem('ossPreparingColor', ossPreparingColor);
+    localStorage.setItem('ossReadyColor', ossReadyColor);
+    localStorage.setItem('ossBackgroundType', ossBackgroundType);
+    localStorage.setItem('ossBackgroundColor', ossBackgroundColor);
+    localStorage.setItem('ossBackgroundImage', ossBackgroundImage);
+    localStorage.setItem('ossCardTextColor', ossCardTextColor);
+    localStorage.setItem('ossCardBorderColor', ossCardBorderColor);
+    localStorage.setItem('ossCardBoxStyle', ossCardBoxStyle);
+    localStorage.setItem('ossHeaderText', ossHeaderText);
+    localStorage.setItem('ossNumberLabel', ossNumberLabel);
+    localStorage.setItem('ossTableLabel', ossTableLabel);
+    localStorage.setItem('ossShowTableInformation', ossShowTableInformation.toString());
+    localStorage.setItem('ossShowStatusIcon', ossShowStatusIcon.toString());
     localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
     localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
     localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
