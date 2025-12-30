@@ -157,8 +157,8 @@ export const settings = pgTable("settings", {
   
   // Login Page
   loginBackgroundImage: text("login_background_image"),
-  showLoginTitle: boolean("show_login_title").notNull().default(true),
-  loginTitle: text("login_title").notNull().default(""),
+  showLoginTitle: boolean("show_login_title").notNull().default(false),
+  loginTitle: text("login_title").notNull().default("Welcome"),
   showLoginResetPassword: boolean("show_login_reset_password").notNull().default(true),
   
   // QR Page
@@ -183,7 +183,7 @@ export const settings = pgTable("settings", {
   qrDotsStyle: text("qr_dots_style").notNull().default("square"),
   qrForegroundColor: text("qr_foreground_color").notNull().default("#000000"),
   qrBackgroundColor: text("qr_background_color").notNull().default("#FFFFFF"),
-  qrCenterType: text("qr_center_type").notNull().default("logo"), // 'none' | 'logo' | 'text'
+  qrCenterType: text("qr_center_type").notNull().default("none"), // 'none' | 'logo' | 'text'
   qrCenterText: text("qr_center_text"),
   qrLogo: text("qr_logo"),
   
@@ -230,7 +230,7 @@ export const settings = pgTable("settings", {
   // Currency
   currencyName: text("currency_name").notNull().default("US Dollar"),
   currencySymbol: text("currency_symbol").notNull().default("$"),
-  currencyPosition: text("currency_position").notNull().default("before"),
+  currencyPosition: text("currency_position").notNull().default("after"),
 
   // Payment
   

@@ -27,8 +27,8 @@ export const DEFAULT_SETTINGS = {
 
   // Login Page
   loginBackgroundImage: null,
-  showLoginTitle: true,
-  loginTitle: '',
+  showLoginTitle: false,
+  loginTitle: 'Welcome',
   showLoginResetPassword: true,
 
   // QR Page Content
@@ -53,7 +53,7 @@ export const DEFAULT_SETTINGS = {
   qrDotsStyle: 'square',
   qrForegroundColor: '#000000',
   qrBackgroundColor: '#FFFFFF',
-  qrCenterType: 'logo',
+  qrCenterType: 'none',
   qrCenterText: null,
   qrLogo: null,
 
@@ -100,7 +100,7 @@ export const DEFAULT_SETTINGS = {
   // Currency
   currencyName: 'US Dollar',
   currencySymbol: '$',
-  currencyPosition: 'before',
+  currencyPosition: 'after',
 
   // License
   licenseKey: null,
