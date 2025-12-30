@@ -157,6 +157,7 @@ export interface StorageSetting {
   currencySymbol: string;
   licenseKey?: string;
   licenseExpiryDate?: Date;
+  licenseOwner?: string;
   defaultLanguage: string;
   restaurantName?: string;
   restaurantDescription?: string;
@@ -224,6 +225,29 @@ export interface StorageSetting {
   menuGradientStart?: string;
   menuGradientEnd?: string;
   menuBackgroundImage?: string;
+  paymentMethod?: string;
+  rolesAdminPermissions?: string;
+  rolesAdminSettingAccess?: string;
+  rolesManagerPermissions?: string;
+  rolesManagerSettingAccess?: string;
+  rolesChefPermissions?: string;
+  rolesChefSettingAccess?: string;
+  rolesAccountantPermissions?: string;
+  rolesAccountantSettingAccess?: string;
+  ossPendingColor?: string;
+  ossPreparingColor?: string;
+  ossReadyColor?: string;
+  ossBackgroundType?: string;
+  ossBackgroundColor?: string;
+  ossBackgroundImage?: string;
+  ossCardTextColor?: string;
+  ossCardBorderColor?: string;
+  ossCardBoxStyle?: string;
+  ossHeaderText?: string;
+  ossNumberLabel?: string;
+  ossTableLabel?: string;
+  ossShowTableInformation?: boolean;
+  ossShowStatusIcon?: boolean;
   createdAt?: Date;
 }
 
