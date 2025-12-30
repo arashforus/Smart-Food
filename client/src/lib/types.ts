@@ -208,6 +208,9 @@ export interface Settings {
   qrEyeBorderShape?: string;
   qrEyeDotShape?: string;
   qrDotsStyle?: string;
+  qrForegroundColor?: string;
+  qrBackgroundColor?: string;
+  operatingHours?: string;
   showMenuInstagram?: boolean;
   showMenuWhatsapp?: boolean;
   showMenuTelegram?: boolean;
@@ -223,14 +226,41 @@ export interface Settings {
   showRestaurantName?: boolean;
   showRestaurantDescription?: boolean;
   showRestaurantHours?: boolean;
+  menuShowRestaurantLogo?: boolean;
+  menuShowRestaurantName?: boolean;
+  menuShowRestaurantDescription?: boolean;
+  menuShowOperationHours?: boolean;
   showMenu?: boolean;
+  menuShowMenu?: boolean;
   showAllMenuItem?: boolean;
+  menuShowAllMenuItems?: boolean;
   showRecommendedMenuItem?: boolean;
+  menuShowRecommendedMenuItems?: boolean;
   showFoodType?: boolean;
+  menuShowFoodType?: boolean;
   showSearchBar?: boolean;
+  menuShowSearchBar?: boolean;
   showViewSwitcher?: boolean;
+  menuShowViewSwitcher?: boolean;
+  menuShowPrices?: boolean;
+  menuShowImages?: boolean;
+  menuShowIngredients?: boolean;
+  menuShowFoodTypes?: boolean;
   showBuyButton?: boolean;
+  menuShowBuyButton?: boolean;
   showMoreInformationPopup?: boolean;
+  menuShowMoreInformationPopup?: boolean;
+  kdShowTableNumber?: boolean;
+  kdShowOrderTime?: boolean;
+  kdShowClock?: boolean;
+  kdShowNotes?: boolean;
+  kdHasPendingStatus?: boolean;
+  kdShowRecentlyCompleted?: boolean;
+  kdPendingColor?: string;
+  kdPreparingColor?: string;
+  kdReadyColor?: string;
+  currencyPosition?: 'before' | 'after';
+  licenseOwner?: string;
 }
 
 export interface DashboardMetrics {

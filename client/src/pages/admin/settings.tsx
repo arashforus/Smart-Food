@@ -504,7 +504,7 @@ export default function SettingsPage() {
       showBuyButton: data.showBuyButton,
       showMoreInformationPopup: data.showMoreInformationPopup,
       defaultLanguage: data.defaultLanguage,
-      currencyName: data.currency,
+      currency: data.currency,
       currencySymbol: data.currencySymbol,
       currencyPosition: (data as any).currencyPosition as 'before' | 'after' || 'before',
       restaurantName: data.restaurantName,
@@ -621,7 +621,15 @@ export default function SettingsPage() {
     localStorage.setItem('qrShowCallWaiter', qrShowCallWaiter.toString());
     localStorage.setItem('qrShowAddressPhone', qrShowAddressPhone.toString());
     localStorage.setItem('qrTextColor', qrTextColor);
+    localStorage.setItem('qrForegroundColor', qrForegroundColor);
+    localStorage.setItem('qrBackgroundColor', qrBackgroundColor);
     localStorage.setItem('menuPageTitle', menuPageTitle);
+    localStorage.setItem('menuShowPrices', showPrices.toString());
+    localStorage.setItem('menuShowImages', showImages.toString());
+    localStorage.setItem('menuShowIngredients', showIngredients.toString());
+    localStorage.setItem('menuShowFoodTypes', showFoodTypes.toString());
+    localStorage.setItem('menuShowBuyButton', showBuyButton.toString());
+    localStorage.setItem('menuShowMoreInformationPopup', showMoreInformationPopup.toString());
     localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
     localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
     localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
@@ -2597,7 +2605,7 @@ export default function SettingsPage() {
 
                       <div className="space-y-2">
                         <p className="text-xs text-muted-foreground font-medium">Remaining Days</p>
-                        <p className={`text-sm font-medium ${calculateRemainingDays(form.watch('licenseExpiry')!) && calculateRemainingDays(form.watch('licenseExpiry')!) > 30 ? 'text-green-600' : 'text-orange-600'}`} data-testid="text-remaining-days">
+                        <p className={`text-sm font-medium ${(calculateRemainingDays(form.watch('licenseExpiry')!) ?? 0) > 30 ? 'text-green-600' : 'text-orange-600'}`} data-testid="text-remaining-days">
                           {calculateRemainingDays(form.watch('licenseExpiry')!) !== null 
                             ? `${calculateRemainingDays(form.watch('licenseExpiry')!)} days`
                             : 'Not set'
@@ -2991,10 +2999,10 @@ export default function SettingsPage() {
                       {copyrightText}
                     </p>
                     <div className="flex gap-4">
-                      <Button variant="link" className="text-xs h-auto p-0" asChild>
+                      <Button variant="ghost" className="text-xs h-auto p-0" asChild>
                         <a href="#" target="_blank">Terms of Service</a>
                       </Button>
-                      <Button variant="link" className="text-xs h-auto p-0" asChild>
+                      <Button variant="ghost" className="text-xs h-auto p-0" asChild>
                         <a href="#" target="_blank">Privacy Policy</a>
                       </Button>
                     </div>
