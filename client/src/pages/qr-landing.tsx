@@ -1,29 +1,32 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { mockLanguages, mockRestaurant, mockSettings } from '@/lib/mockData';
-import { translations, type Language } from '@/lib/types';
+import { translations } from '@/lib/types';
 import { apiRequest } from '@/lib/queryClient';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const welcomeMessages = [
-  { text: 'Welcome', lang: 'English' },
-  { text: 'خوش آمدید', lang: 'Persian' },
-  { text: 'Hoş geldiniz', lang: 'Turkish' },
-  { text: 'أهلاً وسهلاً', lang: 'Arabic' },
-];
+interface AnimatedWelcomeProps {
+  texts: string[];
+  isVisible: boolean;
+}
 
-function AnimatedWelcome() {
+function AnimatedWelcome({ texts, isVisible }: AnimatedWelcomeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const animatedTexts = texts && texts.length > 0 ? texts : ['Welcome'];
 
   useEffect(() => {
+    if (!isVisible || animatedTexts.length === 0) return;
+    
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % welcomeMessages.length);
+      setCurrentIndex((prev) => (prev + 1) % animatedTexts.length);
     }, 2500);
     return () => clearInterval(interval);
-  }, []);
+  }, [isVisible, animatedTexts.length]);
+
+  if (!isVisible) return null;
 
   return (
     <div className="h-20 flex items-center justify-center mb-8">
@@ -53,9 +56,9 @@ function AnimatedWelcome() {
           style={{
             fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif',
           }}
-          data-testid={`text-welcome-${welcomeMessages[currentIndex].lang.toLowerCase()}`}
+          data-testid={`text-welcome-${currentIndex}`}
         >
-          {welcomeMessages[currentIndex].text}
+          {animatedTexts[currentIndex]}
         </motion.h2>
       </AnimatePresence>
     </div>
@@ -67,7 +70,15 @@ export default function QRLandingPage() {
   const { toast } = useToast();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
 
-  const activeLanguages = mockLanguages.filter(lang => lang.isActive);
+  const { data: settings, isLoading: settingsLoading } = useQuery({
+    queryKey: ['/api/settings'],
+  });
+
+  const { data: languages = [], isLoading: languagesLoading } = useQuery({
+    queryKey: ['/api/languages'],
+  });
+
+  const activeLanguages = languages.filter((lang: any) => lang.isActive);
 
   const handleLanguageSelect = (langCode: string) => {
     localStorage.setItem('menuLanguage', langCode);
@@ -92,19 +103,34 @@ export default function QRLandingPage() {
     }
   };
 
+  if (settingsLoading || languagesLoading) {
+    return (
+      <div className="min-h-screen relative flex flex-col items-center justify-center bg-black">
+        <div className="text-white text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  const animatedTexts = settings?.qrAnimatedTexts || ['Welcome'];
+  const backgroundImage = settings?.qrMediaUrl || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80';
+  const showLogo = settings?.qrShowLogo !== false;
+  const showTitle = settings?.qrShowTitle !== false;
+  const showDescription = settings?.qrShowDescription !== false;
+  const showAnimatedText = settings?.qrShowAnimatedText !== false;
+  const showCallWaiter = settings?.qrShowCallWaiter !== false;
+  const showAddressPhone = settings?.qrShowAddressPhone !== false;
+
   return (
     <div className="min-h-screen relative flex flex-col">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: mockSettings.backgroundImage 
-            ? `url(${mockSettings.backgroundImage})`
-            : 'url(https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80)',
+          backgroundImage: `url(${backgroundImage})`,
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
-      {mockSettings.backgroundVideo && (
+      {settings?.qrMediaType === 'video' && settings?.qrMediaUrl && (
         <video
           autoPlay
           muted
@@ -112,37 +138,55 @@ export default function QRLandingPage() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src={mockSettings.backgroundVideo} type="video/mp4" />
+          <source src={settings.qrMediaUrl} type="video/mp4" />
         </video>
       )}
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center w-full max-w-lg mx-auto px-6 py-12 text-center">
-        {mockRestaurant.logo ? (
-          <img 
-            src={mockRestaurant.logo} 
-            alt={mockRestaurant.name}
-            className="w-24 h-24 mx-auto mb-6 rounded-full object-cover border-2 border-white/30"
-          />
-        ) : (
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
-            <span className="text-3xl font-bold text-white">
-              {mockRestaurant.name.charAt(0)}
-            </span>
-          </div>
+        {showLogo && (
+          <>
+            {settings?.restaurantLogo ? (
+              <img 
+                src={settings.restaurantLogo} 
+                alt="Restaurant Logo"
+                className="w-24 h-24 mx-auto mb-6 rounded-full object-cover border-2 border-white/30"
+                data-testid="img-restaurant-logo"
+              />
+            ) : (
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+                <span className="text-3xl font-bold text-white">
+                  {(settings?.restaurantName || 'R').charAt(0)}
+                </span>
+              </div>
+            )}
+          </>
         )}
 
-        <h1 className="text-4xl font-bold text-white mb-2" data-testid="text-restaurant-name">
-          {mockRestaurant.name}
-        </h1>
-        <p className="text-white/70 mb-6" data-testid="text-restaurant-description">
-          {mockRestaurant.description}
-        </p>
+        {showTitle && (
+          <h1 
+            className="text-4xl font-bold text-white mb-2" 
+            data-testid="text-restaurant-name"
+          >
+            {settings?.restaurantName || 'Restaurant'}
+          </h1>
+        )}
 
-        <AnimatedWelcome />
+        {showDescription && (
+          <p 
+            className="text-white/70 mb-6" 
+            data-testid="text-restaurant-description"
+          >
+            {settings?.restaurantDescription || ''}
+          </p>
+        )}
+
+        {showAnimatedText && (
+          <AnimatedWelcome texts={animatedTexts} isVisible={showAnimatedText} />
+        )}
 
         <div className="space-y-4 w-full">
           <div className="grid grid-cols-2 gap-3">
-            {activeLanguages.map((lang) => (
+            {activeLanguages.map((lang: any) => (
               <Button
                 key={lang.id}
                 variant="outline"
@@ -165,24 +209,30 @@ export default function QRLandingPage() {
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-lg mx-auto px-6 pb-8 text-center">
-        <Button
-          variant="default"
-          size="lg"
-          onClick={handleCallWaiter}
-          disabled={isCallingWaiter}
-          className="gap-2 mb-6"
-          data-testid="button-call-waiter"
-        >
-          <Bell className="h-5 w-5" />
-          {translations.en.callWaiter}
-        </Button>
+      {(showCallWaiter || showAddressPhone) && (
+        <div className="relative z-10 w-full max-w-lg mx-auto px-6 pb-8 text-center">
+          {showCallWaiter && (
+            <Button
+              variant="default"
+              size="lg"
+              onClick={handleCallWaiter}
+              disabled={isCallingWaiter}
+              className="gap-2 mb-6"
+              data-testid="button-call-waiter"
+            >
+              <Bell className="h-5 w-5" />
+              {translations.en.callWaiter}
+            </Button>
+          )}
 
-        <div className="text-white/50 text-sm">
-          <p>{mockRestaurant.address}</p>
-          <p>{mockRestaurant.phone}</p>
+          {showAddressPhone && (
+            <div className="text-white/50 text-sm">
+              {settings?.restaurantAddress && <p>{settings.restaurantAddress}</p>}
+              {settings?.restaurantPhone && <p>{settings.restaurantPhone}</p>}
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
