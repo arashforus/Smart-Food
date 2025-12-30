@@ -199,8 +199,6 @@ export const settings = pgTable("settings", {
   showMenuTelegram: boolean("show_menu_telegram").notNull().default(true),
   showMenuLanguageSelector: boolean("show_menu_language_selector").notNull().default(true),
   showMenuThemeSwitcher: boolean("show_menu_theme_switcher").notNull().default(true),
-  
-  // Menu_ display options
   menuShowRestaurantLogo: boolean("menu_show_restaurant_logo").notNull().default(true),
   menuShowRestaurantName: boolean("menu_show_restaurant_name").notNull().default(true),
   menuShowRestaurantDescription: boolean("menu_show_restaurant_description").notNull().default(true),
