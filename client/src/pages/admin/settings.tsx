@@ -159,6 +159,21 @@ export default function SettingsPage() {
     }
   });
 
+  const resetSettingsMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest('POST', '/api/settings/reset', {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
+      toast({ title: 'Settings Reset', description: 'All settings have been restored to their default values.' });
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: 'Failed to reset settings', variant: 'destructive' });
+    }
+  });
+
   const [settings, setSettings] = useState<SettingsType>(mockSettings);
   
   useEffect(() => {
@@ -3106,7 +3121,7 @@ export default function SettingsPage() {
                   <CardTitle className="text-lg">About Application</CardTitle>
                   <CardDescription>System information and company details</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 flex flex-col">
                   <div className="flex flex-col items-center justify-center p-6 bg-muted/30 rounded-xl border border-border/50">
                     <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
                       <Building2 className="h-10 w-10 text-primary" />
@@ -3172,6 +3187,27 @@ export default function SettingsPage() {
                       </Button>
                       <Button variant="ghost" className="text-xs h-auto p-0" asChild>
                         <a href="#" target="_blank">Privacy Policy</a>
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t mt-auto">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <h4 className="font-semibold text-sm">Reset Settings</h4>
+                        <p className="text-xs text-muted-foreground mt-1">Restore all settings to their default values</p>
+                      </div>
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => {
+                          if (window.confirm('Are you sure you want to reset all settings to their default values? This action cannot be undone.')) {
+                            resetSettingsMutation.mutate();
+                          }
+                        }}
+                        disabled={resetSettingsMutation.isPending}
+                        data-testid="button-reset-settings"
+                      >
+                        {resetSettingsMutation.isPending ? 'Resetting...' : 'Reset Settings'}
                       </Button>
                     </div>
                   </div>

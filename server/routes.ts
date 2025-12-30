@@ -49,6 +49,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/settings/reset", async (_req: Request, res: Response) => {
+    try {
+      const resetSettings = await storage.resetSettings();
+      res.json(resetSettings);
+    } catch (error) {
+      console.error("Reset settings error:", error);
+      res.status(500).json({ message: "Failed to reset settings" });
+    }
+  });
+
   // Users routes
   app.get("/api/users", async (_req: Request, res: Response) => {
     try {

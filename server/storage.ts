@@ -256,6 +256,7 @@ export interface IStorage {
   // Settings
   getSettings(): Promise<StorageSetting | undefined>;
   updateSettings(data: Partial<Omit<StorageSetting, 'id' | 'createdAt'>>): Promise<StorageSetting>;
+  resetSettings(): Promise<StorageSetting>;
   
   getUser(id: string): Promise<StorageUser | undefined>;
   getUserByUsername(username: string): Promise<StorageUser | undefined>;
@@ -385,6 +386,28 @@ export class MemStorage implements IStorage {
     } else {
       this.settings = { ...this.settings, ...data };
     }
+    return this.settings;
+  }
+
+  async resetSettings(): Promise<StorageSetting> {
+    this.settings = {
+      id: '1',
+      primaryColor: '#4CAF50',
+      timezone: 'UTC',
+      currencyName: 'US Dollar',
+      currencySymbol: '$',
+      defaultLanguage: 'en',
+      qrShowLogo: true,
+      qrShowTitle: true,
+      qrShowDescription: true,
+      qrShowAnimatedText: true,
+      qrAnimatedTexts: ['Welcome', 'Hoş geldiniz', 'خوش آمدید', 'أهلاً وسهلاً'],
+      qrShowCallWaiter: true,
+      qrShowAddressPhone: true,
+      qrPageTitle: 'Welcome',
+      qrPageDescription: 'Please select your language to continue view the menu',
+      qrTextColor: '#000000',
+    };
     return this.settings;
   }
 
