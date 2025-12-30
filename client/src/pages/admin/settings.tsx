@@ -149,6 +149,8 @@ export default function SettingsPage() {
       setRestaurantEmail(dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '');
       setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
+      if (dbSettings.restaurantHours) setOperatingHours(dbSettings.restaurantHours);
+      
       // Load login settings from DB
       if (dbSettings.loginBackgroundImage) setLoginBackgroundImage(dbSettings.loginBackgroundImage);
       if (dbSettings.showLoginTitle !== undefined) setShowLoginTitle(dbSettings.showLoginTitle);
@@ -167,29 +169,34 @@ export default function SettingsPage() {
       if (dbSettings.qrEyeBorderShape) setQrEyeBorderShape(dbSettings.qrEyeBorderShape);
       if (dbSettings.qrEyeDotShape) setQrEyeDotShape(dbSettings.qrEyeDotShape);
       if (dbSettings.qrDotsStyle) setQrDotsStyle(dbSettings.qrDotsStyle);
+      if (dbSettings.qrForegroundColor) setQrForegroundColor(dbSettings.qrForegroundColor);
+      if (dbSettings.qrBackgroundColor) setQrBackgroundColor(dbSettings.qrBackgroundColor);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
-      if (dbSettings.qrShowTitle !== undefined) setQrShowTitle(dbSettings.qrShowTitle);
-      if (dbSettings.qrShowDescription !== undefined) setQrShowDescription(dbSettings.qrShowDescription);
-      if (dbSettings.qrShowAnimatedText !== undefined) setQrShowAnimatedText(dbSettings.qrShowAnimatedText);
-      if (dbSettings.qrAnimatedTexts) setQrAnimatedTexts(dbSettings.qrAnimatedTexts);
-      if (dbSettings.showMenu !== undefined) setShowMenu(dbSettings.showMenu);
-      if (dbSettings.showAllMenuItem !== undefined) setShowAllMenuItem(dbSettings.showAllMenuItem);
-      if (dbSettings.showRecommendedMenuItem !== undefined) setShowRecommendedMenuItem(dbSettings.showRecommendedMenuItem);
-      if (dbSettings.showFoodType !== undefined) setShowFoodType(dbSettings.showFoodType);
-      if (dbSettings.showSearchBar !== undefined) setShowSearchBar(dbSettings.showSearchBar);
-      if (dbSettings.showViewSwitcher !== undefined) setShowViewSwitcher(dbSettings.showViewSwitcher);
-      if (dbSettings.qrLogo) {
-        setQrLogo(dbSettings.qrLogo);
-      }
-      if (dbSettings.qrCenterType) {
-        setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
-      }
-      if (dbSettings.qrCenterText) {
-        setQrCenterText(dbSettings.qrCenterText);
-      }
+      
+      // Menu Display Settings
+      if (dbSettings.menuShowRestaurantLogo !== undefined) setShowRestaurantLogo(dbSettings.menuShowRestaurantLogo);
+      if (dbSettings.menuShowRestaurantName !== undefined) setShowRestaurantName(dbSettings.menuShowRestaurantName);
+      if (dbSettings.menuShowRestaurantDescription !== undefined) setShowRestaurantDescription(dbSettings.menuShowRestaurantDescription);
+      if (dbSettings.menuShowOperationHours !== undefined) setShowRestaurantHours(dbSettings.menuShowOperationHours);
+      if (dbSettings.menuShowMenu !== undefined) setShowMenu(dbSettings.menuShowMenu);
+      if (dbSettings.menuShowAllMenuItems !== undefined) setShowAllMenuItem(dbSettings.menuShowAllMenuItems);
+      if (dbSettings.menuShowRecommendedMenuItems !== undefined) setShowRecommendedMenuItem(dbSettings.menuShowRecommendedMenuItems);
+      if (dbSettings.menuShowFoodType !== undefined) setShowFoodType(dbSettings.menuShowFoodType);
+      if (dbSettings.menuShowSearchBar !== undefined) setShowSearchBar(dbSettings.menuShowSearchBar);
+      if (dbSettings.menuShowViewSwitcher !== undefined) setShowViewSwitcher(dbSettings.menuShowViewSwitcher);
+      if (dbSettings.menuShowPrices !== undefined) setShowPrices(dbSettings.menuShowPrices);
+      if (dbSettings.menuShowImages !== undefined) setShowImages(dbSettings.menuShowImages);
+      if (dbSettings.menuShowIngredients !== undefined) setShowIngredients(dbSettings.menuShowIngredients);
+      if (dbSettings.menuShowFoodTypes !== undefined) setShowFoodTypes(dbSettings.menuShowFoodTypes);
+      if (dbSettings.menuShowBuyButton !== undefined) setShowBuyButton(dbSettings.menuShowBuyButton);
+      if (dbSettings.menuShowMoreInformationPopup !== undefined) setShowMoreInformationPopup(dbSettings.menuShowMoreInformationPopup);
+
+      if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
+      if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
+      if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
       // Update form values when DB settings load
       form.reset({
       kdShowTableNumber: dbSettings.kdShowTableNumber ?? true,
@@ -289,7 +296,15 @@ export default function SettingsPage() {
   const [qrEyeBorderShape, setQrEyeBorderShape] = useState(() => dbSettings?.qrEyeBorderShape || localStorage.getItem('qrEyeBorderShape') || 'square');
   const [qrEyeDotShape, setQrEyeDotShape] = useState(() => dbSettings?.qrEyeDotShape || localStorage.getItem('qrEyeDotShape') || 'square');
   const [qrDotsStyle, setQrDotsStyle] = useState(() => dbSettings?.qrDotsStyle || localStorage.getItem('qrDotsStyle') || 'square');
+  const [qrForegroundColor, setQrForegroundColor] = useState(() => dbSettings?.qrForegroundColor || localStorage.getItem('qrForegroundColor') || '#000000');
+  const [qrBackgroundColor, setQrBackgroundColor] = useState(() => dbSettings?.qrBackgroundColor || localStorage.getItem('qrBackgroundColor') || '#FFFFFF');
   const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
+  const [showPrices, setShowPrices] = useState(true);
+  const [showImages, setShowImages] = useState(true);
+  const [showIngredients, setShowIngredients] = useState(true);
+  const [showFoodTypes, setShowFoodTypes] = useState(true);
+  const [showBuyButton, setShowBuyButton] = useState(true);
+  const [showMoreInformationPopup, setShowMoreInformationPopup] = useState(true);
   const [rolePermissions, setRolePermissions] = useState(() => {
     const stored = localStorage.getItem('rolePermissions');
     return stored ? JSON.parse(stored) : {
@@ -522,47 +537,30 @@ export default function SettingsPage() {
       qrEyeBorderShape: qrEyeBorderShape,
       qrEyeDotShape: qrEyeDotShape,
       qrDotsStyle: qrDotsStyle,
+      qrForegroundColor: qrForegroundColor,
+      qrBackgroundColor: qrBackgroundColor,
       qrLogo: qrLogo,
       qrCenterType: qrCenterType,
       qrCenterText: qrCenterText,
       qrShowCallWaiter: qrShowCallWaiter,
       qrShowAddressPhone: qrShowAddressPhone,
-      kdShowTableNumber: data.kdShowTableNumber,
-    kdShowOrderTime: data.kdShowOrderTime,
-    kdShowClock: data.kdShowClock,
-    kdShowNotes: data.kdShowNotes,
-    kdHasPendingStatus: data.kdHasPendingStatus,
-    kdShowRecentlyCompleted: data.kdShowRecentlyCompleted,
-    kdPendingColor: data.kdPendingColor,
-    kdPreparingColor: data.kdPreparingColor,
-    kdReadyColor: data.kdReadyColor,
-    showMenuInstagram: showMenuInstagram,
-      showMenuWhatsapp: showMenuWhatsapp,
-      showMenuTelegram: showMenuTelegram,
-      showMenuLanguageSelector: showMenuLanguageSelector,
-      showMenuThemeSwitcher: showMenuThemeSwitcher,
-      menuDefaultTheme: menuDefaultTheme,
-      menuBackgroundType: menuBackgroundType,
-      menuBackgroundColor: menuBackgroundColor,
-      menuGradientStart: menuGradientStart,
-      menuGradientEnd: menuGradientEnd,
-      menuBackgroundImage: menuBackgroundImage,
-      kdShowTableNumber: showMenu, // Using existing state as reference for placement
-      kdShowOrderTime: showMenu,
-      kdShowClock: showMenu,
-      kdShowNotes: showMenu,
-      kdHasPendingStatus: showMenu,
-      kdShowRecentlyCompleted: showMenu,
-      showRestaurantLogo: showRestaurantLogo,
-      showRestaurantName: showRestaurantName,
-      showRestaurantDescription: showRestaurantDescription,
-      showRestaurantHours: showRestaurantHours,
-      showMenu: showMenu,
-      showAllMenuItem: showAllMenuItem,
-      showRecommendedMenuItem: showRecommendedMenuItem,
-      showFoodType: showFoodType,
-      showSearchBar: showSearchBar,
-      showViewSwitcher: showViewSwitcher,
+      restaurantHours: operatingHours,
+      menuShowRestaurantLogo: showRestaurantLogo,
+      menuShowRestaurantName: showRestaurantName,
+      menuShowRestaurantDescription: showRestaurantDescription,
+      menuShowOperationHours: showRestaurantHours,
+      menuShowMenu: showMenu,
+      menuShowAllMenuItems: showAllMenuItem,
+      menuShowRecommendedMenuItems: showRecommendedMenuItem,
+      menuShowFoodType: showFoodType,
+      menuShowSearchBar: showSearchBar,
+      menuShowViewSwitcher: showViewSwitcher,
+      menuShowPrices: showPrices,
+      menuShowImages: showImages,
+      menuShowIngredients: showIngredients,
+      menuShowFoodTypes: showFoodTypes,
+      menuShowBuyButton: showBuyButton,
+      menuShowMoreInformationPopup: showMoreInformationPopup,
     });
 
     // Also update local storage for fallback

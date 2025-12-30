@@ -40,7 +40,7 @@ export class DrizzleStorage implements IStorage {
     const result = await db.select().from(settings).limit(1);
     if (result.length === 0) return undefined;
     const s = result[0];
-    return {
+    const mapSettings = (s: any): StorageSetting => ({
       ...s,
       favicon: s.favicon ?? undefined,
       licenseKey: s.licenseKey ?? undefined,
@@ -65,59 +65,49 @@ export class DrizzleStorage implements IStorage {
       qrEyeDotColor: s.qrEyeDotColor ?? '#000000',
       qrEyeBorderShape: s.qrEyeBorderShape ?? 'square',
       qrEyeDotShape: s.qrEyeDotShape ?? 'square',
-      qrDotsStyle: (s as any).qrDotsStyle ?? 'square',
+      qrDotsStyle: s.qrDotsStyle ?? 'square',
+      qrForegroundColor: s.qrForegroundColor ?? '#000000',
+      qrBackgroundColor: s.qrBackgroundColor ?? '#FFFFFF',
       qrCenterType: s.qrCenterType ?? 'logo',
       qrCenterText: s.qrCenterText ?? undefined,
+      qrPageTitle: s.qrPageTitle ?? 'Scan to Order',
+      qrPageDescription: s.qrPageDescription ?? '',
       qrShowCallWaiter: s.qrShowCallWaiter ?? true,
       qrShowAddressPhone: s.qrShowAddressPhone ?? true,
       qrLogo: s.qrLogo ?? undefined,
+      showMenuInstagram: s.showMenuInstagram ?? true,
+      showMenuWhatsapp: s.showMenuWhatsapp ?? true,
+      showMenuTelegram: s.showMenuTelegram ?? true,
+      showMenuLanguageSelector: s.showMenuLanguageSelector ?? true,
+      showMenuThemeSwitcher: s.showMenuThemeSwitcher ?? true,
+      menuShowRestaurantLogo: s.menuShowRestaurantLogo ?? true,
+      menuShowRestaurantName: s.menuShowRestaurantName ?? true,
+      menuShowRestaurantDescription: s.menuShowRestaurantDescription ?? true,
+      menuShowOperationHours: s.menuShowOperationHours ?? true,
+      menuShowMenu: s.menuShowMenu ?? true,
+      menuShowAllMenuItems: s.menuShowAllMenuItems ?? true,
+      menuShowRecommendedMenuItems: s.menuShowRecommendedMenuItems ?? true,
+      menuShowFoodType: s.menuShowFoodType ?? true,
+      menuShowSearchBar: s.menuShowSearchBar ?? true,
+      menuShowViewSwitcher: s.menuShowViewSwitcher ?? true,
+      menuShowPrices: s.menuShowPrices ?? true,
+      menuShowImages: s.menuShowImages ?? true,
+      menuShowIngredients: s.menuShowIngredients ?? true,
+      menuShowFoodTypes: s.menuShowFoodTypes ?? true,
+      menuShowBuyButton: s.menuShowBuyButton ?? true,
+      menuShowMoreInformationPopup: s.menuShowMoreInformationPopup ?? true,
+      menuDefaultTheme: s.menuDefaultTheme ?? 'light',
+      menuBackgroundType: s.menuBackgroundType ?? 'default',
       createdAt: s.createdAt ?? undefined,
-    };
+    });
+    return mapSettings(s);
   }
 
   async updateSettings(data: Partial<Omit<StorageSetting, "id" | "createdAt">>): Promise<StorageSetting> {
     const db = getDb();
     const existing = await this.getSettings();
     
-    if (!existing) {
-      const result = await db.insert(settings).values(data as any).returning();
-      const s = result[0];
-      return {
-        ...s,
-        favicon: s.favicon ?? undefined,
-        licenseKey: s.licenseKey ?? undefined,
-        licenseExpiryDate: s.licenseExpiryDate ?? undefined,
-        restaurantLogo: s.restaurantLogo ?? undefined,
-        restaurantBackgroundImage: s.restaurantBackgroundImage ?? undefined,
-        restaurantHours: s.restaurantHours ?? undefined,
-        restaurantInstagram: s.restaurantInstagram ?? undefined,
-        restaurantWhatsapp: s.restaurantWhatsapp ?? undefined,
-        restaurantTelegram: s.restaurantTelegram ?? undefined,
-        restaurantGoogleMapsUrl: s.restaurantGoogleMapsUrl ?? undefined,
-        loginBackgroundImage: s.loginBackgroundImage ?? undefined,
-        loginTitle: s.loginTitle ?? undefined,
-        qrShowLogo: s.qrShowLogo ?? true,
-        qrShowTitle: s.qrShowTitle ?? true,
-        qrShowDescription: s.qrShowDescription ?? true,
-        qrShowAnimatedText: s.qrShowAnimatedText ?? true,
-        qrAnimatedTexts: s.qrAnimatedTexts ?? ['Welcome', 'Discover our Menu'],
-        qrMediaUrl: s.qrMediaUrl ?? undefined,
-        qrMediaType: s.qrMediaType ?? undefined,
-        qrTextColor: s.qrTextColor ?? '#000000',
-        qrEyeBorderColor: s.qrEyeBorderColor ?? '#000000',
-        qrEyeDotColor: s.qrEyeDotColor ?? '#000000',
-        qrEyeBorderShape: s.qrEyeBorderShape ?? 'square',
-        qrEyeDotShape: s.qrEyeDotShape ?? 'square',
-        qrShowCallWaiter: s.qrShowCallWaiter ?? true,
-        qrShowAddressPhone: s.qrShowAddressPhone ?? true,
-        qrLogo: s.qrLogo ?? undefined,
-        createdAt: s.createdAt ?? undefined,
-      };
-    }
-
-    const result = await db.update(settings).set(data as any).where(eq(settings.id, existing.id)).returning();
-    const s = result[0];
-    return {
+    const mapSettings = (s: any): StorageSetting => ({
       ...s,
       favicon: s.favicon ?? undefined,
       licenseKey: s.licenseKey ?? undefined,
@@ -142,14 +132,49 @@ export class DrizzleStorage implements IStorage {
       qrEyeDotColor: s.qrEyeDotColor ?? '#000000',
       qrEyeBorderShape: s.qrEyeBorderShape ?? 'square',
       qrEyeDotShape: s.qrEyeDotShape ?? 'square',
-      qrDotsStyle: (s as any).qrDotsStyle ?? 'square',
+      qrDotsStyle: s.qrDotsStyle ?? 'square',
+      qrForegroundColor: s.qrForegroundColor ?? '#000000',
+      qrBackgroundColor: s.qrBackgroundColor ?? '#FFFFFF',
       qrCenterType: s.qrCenterType ?? 'logo',
       qrCenterText: s.qrCenterText ?? undefined,
+      qrPageTitle: s.qrPageTitle ?? 'Scan to Order',
+      qrPageDescription: s.qrPageDescription ?? '',
       qrShowCallWaiter: s.qrShowCallWaiter ?? true,
       qrShowAddressPhone: s.qrShowAddressPhone ?? true,
       qrLogo: s.qrLogo ?? undefined,
+      showMenuInstagram: s.showMenuInstagram ?? true,
+      showMenuWhatsapp: s.showMenuWhatsapp ?? true,
+      showMenuTelegram: s.showMenuTelegram ?? true,
+      showMenuLanguageSelector: s.showMenuLanguageSelector ?? true,
+      showMenuThemeSwitcher: s.showMenuThemeSwitcher ?? true,
+      menuShowRestaurantLogo: s.menuShowRestaurantLogo ?? true,
+      menuShowRestaurantName: s.menuShowRestaurantName ?? true,
+      menuShowRestaurantDescription: s.menuShowRestaurantDescription ?? true,
+      menuShowOperationHours: s.menuShowOperationHours ?? true,
+      menuShowMenu: s.menuShowMenu ?? true,
+      menuShowAllMenuItems: s.menuShowAllMenuItems ?? true,
+      menuShowRecommendedMenuItems: s.menuShowRecommendedMenuItems ?? true,
+      menuShowFoodType: s.menuShowFoodType ?? true,
+      menuShowSearchBar: s.menuShowSearchBar ?? true,
+      menuShowViewSwitcher: s.menuShowViewSwitcher ?? true,
+      menuShowPrices: s.menuShowPrices ?? true,
+      menuShowImages: s.menuShowImages ?? true,
+      menuShowIngredients: s.menuShowIngredients ?? true,
+      menuShowFoodTypes: s.menuShowFoodTypes ?? true,
+      menuShowBuyButton: s.menuShowBuyButton ?? true,
+      menuShowMoreInformationPopup: s.menuShowMoreInformationPopup ?? true,
+      menuDefaultTheme: s.menuDefaultTheme ?? 'light',
+      menuBackgroundType: s.menuBackgroundType ?? 'default',
       createdAt: s.createdAt ?? undefined,
-    };
+    });
+
+    if (!existing) {
+      const result = await db.insert(settings).values(data as any).returning();
+      return mapSettings(result[0]);
+    }
+
+    const result = await db.update(settings).set(data as any).where(eq(settings.id, existing.id)).returning();
+    return mapSettings(result[0]);
   }
 
   async getUser(id: string): Promise<StorageUser | undefined> {
