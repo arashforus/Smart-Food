@@ -132,41 +132,46 @@ export const materials = pgTable("materials", {
 
 export const settings = pgTable("settings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  
+  // General
   primaryColor: text("primary_color").notNull().default("#4CAF50"),
   timezone: text("timezone").notNull().default("UTC"),
   favicon: text("favicon"),
-  currencyName: text("currency_name").notNull().default("US Dollar"),
-  currencySymbol: text("currency_symbol").notNull().default("$"),
-  currencyPosition: text("currency_position").notNull().default("before"),
-  licenseKey: text("license_key"),
-  licenseExpiryDate: timestamp("license_expiry_date"),
   defaultLanguage: text("default_language").notNull().default("en"),
+  
+  // Restaurant
   restaurantName: text("restaurant_name"),
-  restaurantDescription: text("restaurant_description"),
-  restaurantAddress: text("restaurant_address"),
-  restaurantPhone: text("restaurant_phone"),
-  restaurantEmail: text("restaurant_email"),
-  restaurantHours: text("restaurant_hours"),
-  restaurantLogo: text("restaurant_logo"),
-  restaurantBackgroundImage: text("restaurant_background_image"),
-  restaurantMapLat: numeric("restaurant_map_lat"),
-  restaurantMapLng: numeric("restaurant_map_lng"),
-  restaurantInstagram: text("restaurant_instagram"),
-  restaurantWhatsapp: text("restaurant_whatsapp"),
-  restaurantTelegram: text("restaurant_telegram"),
-  restaurantGoogleMapsUrl: text("restaurant_google_maps_url"),
+    restaurantDescription: text("restaurant_description"),
+    restaurantAddress: text("restaurant_address"),
+    restaurantPhone: text("restaurant_phone"),
+    restaurantEmail: text("restaurant_email"),
+    //restaurantHours: text("restaurant_hours"),
+    restaurantLogo: text("restaurant_logo"),
+    //restaurantBackgroundImage: text("restaurant_background_image"),
+    //restaurantMapLat: numeric("restaurant_map_lat"),
+    //restaurantMapLng: numeric("restaurant_map_lng"),
+    restaurantInstagram: text("restaurant_instagram"),
+    restaurantWhatsapp: text("restaurant_whatsapp"),
+    restaurantTelegram: text("restaurant_telegram"),
+    restaurantGoogleMapsUrl: text("restaurant_google_maps_url"),
+  
+  // Login Page
   loginBackgroundImage: text("login_background_image"),
   showLoginTitle: boolean("show_login_title").notNull().default(true),
   loginTitle: text("login_title").notNull().default("Welcome"),
   showLoginResetPassword: boolean("show_login_reset_password").notNull().default(true),
+  
+  // QR Page
   qrShowLogo: boolean("qr_show_logo").notNull().default(true),
-  qrLogo: text("qr_logo"),
+  //qrLogo: text("qr_logo"),
+  qrMediaUrl: text("qr_media_url"),
+  qrMediaType: text("qr_media_type"), // 'image' | 'video'
   qrShowTitle: boolean("qr_show_title").notNull().default(true),
   qrShowDescription: boolean("qr_show_description").notNull().default(true),
   qrShowAnimatedText: boolean("qr_show_animated_text").notNull().default(true),
   qrAnimatedTexts: text("qr_animated_texts").array().notNull().default(sql`ARRAY['Welcome', 'Discover our Menu']::text[]`),
-  qrMediaUrl: text("qr_media_url"),
-  qrMediaType: text("qr_media_type"), // 'image' | 'video'
+
+  // QR Design
   qrTextColor: text("qr_text_color").notNull().default("#000000"),
   qrEyeBorderColor: text("qr_eye_border_color").notNull().default("#000000"),
   qrEyeDotColor: text("qr_eye_dot_color").notNull().default("#000000"),
@@ -177,6 +182,8 @@ export const settings = pgTable("settings", {
   qrCenterText: text("qr_center_text"),
   qrShowCallWaiter: boolean("qr_show_call_waiter").notNull().default(true),
   qrShowAddressPhone: boolean("qr_show_address_phone").notNull().default(true),
+  
+  // Menu Page
   showMenuInstagram: boolean("show_menu_instagram").notNull().default(true),
   showMenuWhatsapp: boolean("show_menu_whatsapp").notNull().default(true),
   showMenuTelegram: boolean("show_menu_telegram").notNull().default(true),
@@ -188,6 +195,8 @@ export const settings = pgTable("settings", {
   menuGradientStart: text("menu_gradient_start"),
   menuGradientEnd: text("menu_gradient_end"),
   menuBackgroundImage: text("menu_background_image"),
+  
+  // KD
   kdShowTableNumber: boolean("kd_show_table_number").notNull().default(true),
   kdShowOrderTime: boolean("kd_show_order_time").notNull().default(true),
   kdShowClock: boolean("kd_show_clock").notNull().default(true),
@@ -197,6 +206,25 @@ export const settings = pgTable("settings", {
   kdPendingColor: text("kd_pending_color").notNull().default("#FF9800"),
   kdPreparingColor: text("kd_preparing_color").notNull().default("#2196F3"),
   kdReadyColor: text("kd_ready_color").notNull().default("#4CAF50"),
+  
+  // Currency
+  currencyName: text("currency_name").notNull().default("US Dollar"),
+  currencySymbol: text("currency_symbol").notNull().default("$"),
+  currencyPosition: text("currency_position").notNull().default("before"),
+
+  // Payment
+  
+  // Roles
+
+  // License
+  licenseKey: text("license_key"),
+  licenseExpiryDate: timestamp("license_expiry_date"),
+
+  // OSS
+
+  //About
+
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
