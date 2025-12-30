@@ -390,23 +390,26 @@ export class MemStorage implements IStorage {
   }
 
   async resetSettings(): Promise<StorageSetting> {
+    // Import defaults from config file
+    const { DEFAULT_SETTINGS } = require('../config/defaults');
+    
     this.settings = {
       id: '1',
-      primaryColor: '#4CAF50',
-      timezone: 'UTC',
-      currencyName: 'US Dollar',
-      currencySymbol: '$',
-      defaultLanguage: 'en',
-      qrShowLogo: true,
-      qrShowTitle: true,
-      qrShowDescription: true,
-      qrShowAnimatedText: true,
-      qrAnimatedTexts: ['Welcome', 'Hoş geldiniz', 'خوش آمدید', 'أهلاً وسهلاً'],
-      qrShowCallWaiter: true,
-      qrShowAddressPhone: true,
-      qrPageTitle: 'Welcome',
-      qrPageDescription: 'Please select your language to continue view the menu',
-      qrTextColor: '#000000',
+      primaryColor: DEFAULT_SETTINGS.primaryColor,
+      timezone: DEFAULT_SETTINGS.timezone,
+      currencyName: DEFAULT_SETTINGS.currencyName,
+      currencySymbol: DEFAULT_SETTINGS.currencySymbol,
+      defaultLanguage: DEFAULT_SETTINGS.defaultLanguage,
+      qrShowLogo: DEFAULT_SETTINGS.qrShowLogo,
+      qrShowTitle: DEFAULT_SETTINGS.qrShowTitle,
+      qrShowDescription: DEFAULT_SETTINGS.qrShowDescription,
+      qrShowAnimatedText: DEFAULT_SETTINGS.qrShowAnimatedText,
+      qrAnimatedTexts: DEFAULT_SETTINGS.qrAnimatedTexts,
+      qrShowCallWaiter: DEFAULT_SETTINGS.qrShowCallWaiter,
+      qrShowAddressPhone: DEFAULT_SETTINGS.qrShowAddressPhone,
+      qrPageTitle: DEFAULT_SETTINGS.qrPageTitle,
+      qrPageDescription: DEFAULT_SETTINGS.qrPageDescription,
+      qrTextColor: DEFAULT_SETTINGS.qrTextColor,
     };
     return this.settings;
   }
