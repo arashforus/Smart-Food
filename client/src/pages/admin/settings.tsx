@@ -646,20 +646,22 @@ export default function SettingsPage() {
   }, [form.watch('primaryColor')]);
 
   const handleSubmit = (data: SettingsFormData) => {
-    console.log('Form submission started', data);
+    console.log("Form submission started", data);
     const updatedSettings = {
       ...data,
+      timezone,
       restaurantName,
       restaurantDescription,
       restaurantAddress,
       restaurantPhone,
       restaurantEmail,
       restaurantLogo,
-      restaurantBackgroundImage: menuBackgroundImage, // Corrected from restaurantBackgroundImage
+      restaurantBackgroundImage,
       restaurantInstagram,
       restaurantWhatsapp,
       restaurantTelegram,
       restaurantGoogleMapsUrl,
+      restaurantHours: operatingHours,
       loginBackgroundImage,
       showLoginTitle,
       loginTitle,
@@ -723,6 +725,8 @@ export default function SettingsPage() {
       kdPreparingColor: data.kdPreparingColor,
       kdReadyColor: data.kdReadyColor,
       paymentMethod: data.paymentMethod,
+      licenseKey: data.licenseKey,
+      licenseExpiry: data.licenseExpiry,
       licenseOwner: data.licenseOwner,
       rolesAdminPermissions: data.rolesAdminPermissions,
       rolesAdminSettingAccess: data.rolesAdminSettingAccess,
@@ -747,95 +751,36 @@ export default function SettingsPage() {
       ossShowTableInformation: ossForm.showTableInfo,
       ossShowStatusIcon: ossForm.showIcon,
     };
-    console.log('Sending updated settings to mutation', updatedSettings);
+    console.log("Sending updated settings to mutation", updatedSettings);
     updateSettingsMutation.mutate(updatedSettings as any);
 
-    // Also update local storage for fallback
-    localStorage.setItem('restaurantName', updatedSettings.restaurantName || '');
-    localStorage.setItem('restaurantDescription', updatedSettings.restaurantDescription || '');
-    localStorage.setItem('restaurantAddress', updatedSettings.restaurantAddress || '');
-    localStorage.setItem('restaurantPhone', updatedSettings.restaurantPhone || '');
-    localStorage.setItem('restaurantEmail', updatedSettings.restaurantEmail || '');
-    localStorage.setItem('restaurantLogo', updatedSettings.restaurantLogo || '');
-    localStorage.setItem('qrLogo', updatedSettings.qrLogo || '');
-    localStorage.setItem('qrCenterType', updatedSettings.qrCenterType || 'none');
-    localStorage.setItem('qrCenterText', updatedSettings.qrCenterText || '');
-    localStorage.setItem('restaurantInstagram', updatedSettings.restaurantInstagram || '');
-    localStorage.setItem('restaurantWhatsapp', updatedSettings.restaurantWhatsapp || '');
-    localStorage.setItem('restaurantTelegram', updatedSettings.restaurantTelegram || '');
-    localStorage.setItem('restaurantGoogleMapsUrl', updatedSettings.restaurantGoogleMapsUrl || '');
-    
-    if (updatedSettings.loginBackgroundImage) {
-      localStorage.setItem('loginBackgroundImage', updatedSettings.loginBackgroundImage);
-    }
-    localStorage.setItem('showLoginTitle', updatedSettings.showLoginTitle.toString());
-    localStorage.setItem('loginTitle', updatedSettings.loginTitle || '');
-    localStorage.setItem('showLoginResetPassword', updatedSettings.showLoginResetPassword.toString());
-    localStorage.setItem('qrPageTitle', updatedSettings.qrPageTitle || '');
-    localStorage.setItem('qrPageDescription', updatedSettings.qrPageDescription || '');
-    localStorage.setItem('qrShowTitle', updatedSettings.qrShowTitle.toString());
-    localStorage.setItem('qrShowLogo', updatedSettings.qrShowLogo.toString());
-    localStorage.setItem('qrShowDescription', updatedSettings.qrShowDescription.toString());
-    localStorage.setItem('qrShowAnimatedText', updatedSettings.qrShowAnimatedText.toString());
-    localStorage.setItem('qrAnimatedTexts', JSON.stringify(updatedSettings.qrAnimatedTexts || []));
-    localStorage.setItem('qrMediaUrl', updatedSettings.qrMediaUrl || '');
-    localStorage.setItem('qrMediaType', updatedSettings.qrMediaType || 'image');
-    localStorage.setItem('qrEyeBorderColor', updatedSettings.qrEyeBorderColor || '');
-    localStorage.setItem('qrEyeDotColor', updatedSettings.qrEyeDotColor || '');
-    localStorage.setItem('qrEyeBorderShape', updatedSettings.qrEyeBorderShape || 'square');
-    localStorage.setItem('qrEyeDotShape', updatedSettings.qrEyeDotShape || 'square');
-    localStorage.setItem('qrDotsStyle', updatedSettings.qrDotsStyle || 'square');
-    localStorage.setItem('qrShowCallWaiter', updatedSettings.qrShowCallWaiter.toString());
-    localStorage.setItem('qrShowAddressPhone', updatedSettings.qrShowAddressPhone.toString());
-    localStorage.setItem('qrTextColor', updatedSettings.qrTextColor || '');
-    localStorage.setItem('qrForegroundColor', updatedSettings.qrForegroundColor || '');
-    localStorage.setItem('qrBackgroundColor', updatedSettings.qrBackgroundColor || '');
-    localStorage.setItem('menuShowPrices', updatedSettings.menuShowPrices.toString());
-    localStorage.setItem('menuShowImages', updatedSettings.menuShowImages.toString());
-    localStorage.setItem('menuShowIngredients', updatedSettings.menuShowIngredients.toString());
-    localStorage.setItem('menuShowFoodTypes', updatedSettings.menuShowFoodTypes.toString());
-    localStorage.setItem('menuShowBuyButton', updatedSettings.menuShowBuyButton.toString());
-    localStorage.setItem('menuShowMoreInformationPopup', updatedSettings.menuShowMoreInformationPopup.toString());
-    localStorage.setItem('paymentMethod', updatedSettings.paymentMethod || 'cash');
-    localStorage.setItem('ossPendingColor', updatedSettings.ossPendingColor);
-    localStorage.setItem('ossPreparingColor', updatedSettings.ossPreparingColor);
-    localStorage.setItem('ossReadyColor', updatedSettings.ossReadyColor);
-    localStorage.setItem('ossBackgroundType', updatedSettings.ossBackgroundType);
-    localStorage.setItem('ossBackgroundColor', updatedSettings.ossBackgroundColor);
-    localStorage.setItem('ossBackgroundImage', updatedSettings.ossBackgroundImage || '');
-    localStorage.setItem('ossCardTextColor', updatedSettings.ossCardTextColor);
-    localStorage.setItem('ossCardBorderColor', updatedSettings.ossCardBorderColor);
-    localStorage.setItem('ossCardBoxStyle', updatedSettings.ossCardBoxStyle);
-    localStorage.setItem('ossHeaderText', updatedSettings.ossHeaderText);
-    localStorage.setItem('ossNumberLabel', updatedSettings.ossNumberLabel);
-    localStorage.setItem('ossTableLabel', updatedSettings.ossTableLabel);
-    localStorage.setItem('ossShowTableInformation', updatedSettings.ossShowTableInformation.toString());
-    localStorage.setItem('ossShowStatusIcon', updatedSettings.ossShowStatusIcon.toString());
-    localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
-    localStorage.setItem('appTimezone', timezone);
-    localStorage.setItem('copyrightText', copyrightText);
-    localStorage.setItem('showMenuInstagram', showMenuInstagram.toString());
-    localStorage.setItem('showMenuWhatsapp', showMenuWhatsapp.toString());
-    localStorage.setItem('showMenuTelegram', showMenuTelegram.toString());
-    localStorage.setItem('showMenuLanguageSelector', showMenuLanguageSelector.toString());
-    localStorage.setItem('showMenuThemeSwitcher', showMenuThemeSwitcher.toString());
-    localStorage.setItem('menuDefaultTheme', menuDefaultTheme);
-    localStorage.setItem('menuBackgroundType', menuBackgroundType);
-    localStorage.setItem('menuBackgroundColor', menuBackgroundColor);
-    localStorage.setItem('menuGradientStart', menuGradientStart);
-    localStorage.setItem('menuGradientEnd', menuGradientEnd);
-    localStorage.setItem('menuBackgroundImage', menuBackgroundImage);
-    localStorage.setItem('showRestaurantLogo', showRestaurantLogo.toString());
-    localStorage.setItem('showRestaurantName', showRestaurantName.toString());
-    localStorage.setItem('showRestaurantDescription', showRestaurantDescription.toString());
-    localStorage.setItem('showRestaurantHours', showRestaurantHours.toString());
-    localStorage.setItem('showMenu', showMenu.toString());
-    localStorage.setItem('showAllMenuItem', showAllMenuItem.toString());
-    localStorage.setItem('showRecommendedMenuItem', showRecommendedMenuItem.toString());
-    localStorage.setItem('showFoodType', showFoodType.toString());
-    localStorage.setItem('showSearchBar', showSearchBar.toString());
-    localStorage.setItem('showViewSwitcher', showViewSwitcher.toString());
-  };
+    localStorage.setItem("restaurantName", restaurantName || "");
+    localStorage.setItem("restaurantDescription", restaurantDescription || "");
+    localStorage.setItem("restaurantAddress", restaurantAddress || "");
+    localStorage.setItem("restaurantPhone", restaurantPhone || "");
+    localStorage.setItem("restaurantEmail", restaurantEmail || "");
+    localStorage.setItem("restaurantLogo", restaurantLogo || "");
+    localStorage.setItem("qrLogo", qrLogo || "");
+    localStorage.setItem("qrCenterType", qrCenterType || "none");
+    localStorage.setItem("qrCenterText", qrCenterText || "");
+    localStorage.setItem("restaurantInstagram", restaurantInstagram || "");
+    localStorage.setItem("restaurantWhatsapp", restaurantWhatsapp || "");
+    localStorage.setItem("restaurantTelegram", restaurantTelegram || "");
+    localStorage.setItem("restaurantGoogleMapsUrl", restaurantGoogleMapsUrl || "");
+    localStorage.setItem("qrPageTitle", qrPageTitle || "");
+    localStorage.setItem("qrPageDescription", qrPageDescription || "");
+    localStorage.setItem("qrShowLogo", String(qrShowLogo));
+    localStorage.setItem("qrShowTitle", String(qrShowTitle));
+    localStorage.setItem("qrShowDescription", String(qrShowDescription));
+    localStorage.setItem("qrShowAnimatedText", String(qrShowAnimatedText));
+    localStorage.setItem("qrAnimatedTexts", JSON.stringify(qrAnimatedTexts));
+    localStorage.setItem("qrMediaUrl", qrMediaUrl || "");
+    localStorage.setItem("qrMediaType", qrMediaType);
+    localStorage.setItem("qrTextColor", qrTextColor);
+    localStorage.setItem("showMenuInstagram", String(showMenuInstagram));
+    localStorage.setItem("showMenuWhatsapp", String(showMenuWhatsapp));
+    localStorage.setItem("showMenuTelegram", String(showMenuTelegram));
+    localStorage.setItem(
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
