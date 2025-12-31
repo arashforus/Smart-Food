@@ -727,20 +727,20 @@ export default function SettingsPage() {
       rolesChefSettingAccess: data.rolesChefSettingAccess,
       rolesAccountantPermissions: data.rolesAccountantPermissions,
       rolesAccountantSettingAccess: data.rolesAccountantSettingAccess,
-      ossPendingColor: data.ossPendingColor,
-      ossPreparingColor: data.ossPreparingColor,
-      ossReadyColor: data.ossReadyColor,
-      ossBackgroundType: data.ossBackgroundType,
-      ossBackgroundColor: data.ossBackgroundColor,
-      ossBackgroundImage: data.ossBackgroundImage,
-      ossCardTextColor: data.ossCardTextColor,
-      ossCardBorderColor: data.ossCardBorderColor,
-      ossCardBoxStyle: data.ossCardBoxStyle,
-      ossHeaderText: data.ossHeaderText,
-      ossNumberLabel: data.ossNumberLabel,
-      ossTableLabel: data.ossTableLabel,
-      ossShowTableInformation: data.ossShowTableInformation,
-      ossShowStatusIcon: data.ossShowStatusIcon,
+      ossPendingColor: ossForm.pendingColor,
+      ossPreparingColor: ossForm.preparingColor,
+      ossReadyColor: ossForm.readyColor,
+      ossBackgroundType: ossForm.backgroundType,
+      ossBackgroundColor: ossForm.backgroundColor,
+      ossBackgroundImage: ossForm.backgroundImage,
+      ossCardTextColor: ossForm.textColor,
+      ossCardBorderColor: ossForm.borderColor,
+      ossCardBoxStyle: ossForm.boxStyle,
+      ossHeaderText: ossForm.headerText,
+      ossNumberLabel: ossForm.numberLabel,
+      ossTableLabel: ossForm.tableLabel,
+      ossShowTableInformation: ossForm.showTableInfo,
+      ossShowStatusIcon: ossForm.showIcon,
     });
 
     // Also update local storage for fallback
@@ -799,20 +799,20 @@ export default function SettingsPage() {
     localStorage.setItem('rolesChefSettingAccess', rolesChefSettingAccess);
     localStorage.setItem('rolesAccountantPermissions', rolesAccountantPermissions);
     localStorage.setItem('rolesAccountantSettingAccess', rolesAccountantSettingAccess);
-    localStorage.setItem('ossPendingColor', ossPendingColor);
-    localStorage.setItem('ossPreparingColor', ossPreparingColor);
-    localStorage.setItem('ossReadyColor', ossReadyColor);
-    localStorage.setItem('ossBackgroundType', ossBackgroundType);
-    localStorage.setItem('ossBackgroundColor', ossBackgroundColor);
-    localStorage.setItem('ossBackgroundImage', ossBackgroundImage);
-    localStorage.setItem('ossCardTextColor', ossCardTextColor);
-    localStorage.setItem('ossCardBorderColor', ossCardBorderColor);
-    localStorage.setItem('ossCardBoxStyle', ossCardBoxStyle);
-    localStorage.setItem('ossHeaderText', ossHeaderText);
-    localStorage.setItem('ossNumberLabel', ossNumberLabel);
-    localStorage.setItem('ossTableLabel', ossTableLabel);
-    localStorage.setItem('ossShowTableInformation', ossShowTableInformation.toString());
-    localStorage.setItem('ossShowStatusIcon', ossShowStatusIcon.toString());
+    localStorage.setItem('ossPendingColor', ossForm.pendingColor);
+    localStorage.setItem('ossPreparingColor', ossForm.preparingColor);
+    localStorage.setItem('ossReadyColor', ossForm.readyColor);
+    localStorage.setItem('ossBackgroundType', ossForm.backgroundType);
+    localStorage.setItem('ossBackgroundColor', ossForm.backgroundColor);
+    localStorage.setItem('ossBackgroundImage', ossForm.backgroundImage || '');
+    localStorage.setItem('ossCardTextColor', ossForm.textColor);
+    localStorage.setItem('ossCardBorderColor', ossForm.borderColor);
+    localStorage.setItem('ossCardBoxStyle', ossForm.boxStyle);
+    localStorage.setItem('ossHeaderText', ossForm.headerText);
+    localStorage.setItem('ossNumberLabel', ossForm.numberLabel);
+    localStorage.setItem('ossTableLabel', ossForm.tableLabel);
+    localStorage.setItem('ossShowTableInformation', ossForm.showTableInfo.toString());
+    localStorage.setItem('ossShowStatusIcon', ossForm.showIcon.toString());
     localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
     localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
     localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
