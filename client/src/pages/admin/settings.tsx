@@ -432,6 +432,7 @@ export default function SettingsPage() {
   const [restaurantEmail, setRestaurantEmail] = useState(() => localStorage.getItem('restaurantEmail') || '');
   const [restaurantLogo, setRestaurantLogo] = useState(() => localStorage.getItem('restaurantLogo') || '');
   const [restaurantLogoPreview, setRestaurantLogoPreview] = useState(() => localStorage.getItem('restaurantLogo') || '');
+  const [restaurantBackgroundImage, setRestaurantBackgroundImage] = useState(() => localStorage.getItem('restaurantBackgroundImage') || '');
   const [restaurantInstagram, setRestaurantInstagram] = useState(() => localStorage.getItem('restaurantInstagram') || '');
   const [restaurantWhatsapp, setRestaurantWhatsapp] = useState(() => localStorage.getItem('restaurantWhatsapp') || '');
   const [restaurantTelegram, setRestaurantTelegram] = useState(() => localStorage.getItem('restaurantTelegram') || '');
@@ -780,7 +781,7 @@ export default function SettingsPage() {
     localStorage.setItem("showMenuInstagram", String(showMenuInstagram));
     localStorage.setItem("showMenuWhatsapp", String(showMenuWhatsapp));
     localStorage.setItem("showMenuTelegram", String(showMenuTelegram));
-    localStorage.setItem(
+  };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
