@@ -147,14 +147,21 @@ export default function SettingsPage() {
 
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: Partial<SettingsType>) => {
+      console.log('Mutation function started with data:', data);
       const res = await apiRequest('PATCH', '/api/settings', data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to update settings');
+      }
       return res.json();
     },
     onSuccess: () => {
+      console.log('Mutation successful');
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
       toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
     },
     onError: (error: any) => {
+      console.error('Mutation error:', error);
       let errorMessage = 'Failed to update settings';
       if (error && typeof error === 'object' && error.message) {
         errorMessage = error.message;
