@@ -158,7 +158,7 @@ export default function SettingsPage() {
     onSuccess: () => {
       console.log('Mutation successful');
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
-      toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
+      toast({ title: 'Success', description: 'All settings have been updated successfully.', variant: 'default' });
     },
     onError: (error: any) => {
       console.error('Mutation error:', error);
