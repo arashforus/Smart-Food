@@ -226,8 +226,12 @@ export class DrizzleStorage implements IStorage {
   }
 
   async resetSettings(): Promise<StorageSetting> {
-    const { DEFAULT_SETTINGS } = require('../config/defaults');
-    return this.updateSettings(DEFAULT_SETTINGS);
+    const { DEFAULT_SETTINGS } = await import('../config/defaults');
+    // Map null to undefined for compatibility with updateSettings
+    const data = Object.fromEntries(
+      Object.entries(DEFAULT_SETTINGS).map(([k, v]) => [k, v === null ? undefined : v])
+    );
+    return this.updateSettings(data as any);
   }
 
   async getUser(id: string): Promise<StorageUser | undefined> {
