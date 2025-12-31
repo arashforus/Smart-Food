@@ -167,7 +167,12 @@ export default function SettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
       toast({ title: 'Settings Reset', description: 'All settings have been restored to their default values.' });
-      window.location.reload();
+      // Invalidate all related queries to ensure UI updates
+      queryClient.invalidateQueries();
+      // Force a full page reload to reset all local states and local storage fallbacks
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     },
     onError: (error) => {
       toast({ title: 'Error', description: 'Failed to reset settings', variant: 'destructive' });
