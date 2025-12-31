@@ -635,57 +635,56 @@ export default function SettingsPage() {
   }, [form.watch('primaryColor')]);
 
   const handleSubmit = (data: SettingsFormData) => {
-    updateSettingsMutation.mutate({
-      primaryColor: data.primaryColor,
-      menuTitle: data.menuTitle,
-      showPrices: data.showPrices,
-      showImages: data.showImages,
-      showMaterials: data.showMaterials,
-      showTypes: data.showTypes,
-      showBuyButton: data.showBuyButton,
-      showMoreInformationPopup: data.showMoreInformationPopup,
-      defaultLanguage: data.defaultLanguage,
-      currency: data.currency,
-      currencySymbol: data.currencySymbol,
-      currencyPosition: (data as any).currencyPosition as 'before' | 'after' || 'before',
-      restaurantName: data.restaurantName,
-      restaurantDescription: data.restaurantDescription,
-      restaurantAddress: data.restaurantAddress,
-      restaurantPhone: data.restaurantPhone,
-      restaurantEmail: data.restaurantEmail,
-      restaurantLogo: restaurantLogo,
-      restaurantBackgroundImage: data.restaurantBackgroundImage,
-      restaurantInstagram: data.restaurantInstagram,
-      restaurantWhatsapp: data.restaurantWhatsapp,
-      restaurantTelegram: data.restaurantTelegram,
-      restaurantGoogleMapsUrl: data.restaurantGoogleMapsUrl,
-      loginBackgroundImage: loginBackgroundImage,
-      showLoginTitle: showLoginTitle,
-      loginTitle: loginTitle,
-      showLoginResetPassword: showLoginResetPassword,
-      qrShowLogo: qrShowLogo,
-      qrShowTitle: qrShowTitle,
-      qrPageTitle: qrPageTitle,
-      qrShowDescription: qrShowDescription,
-      qrPageDescription: qrPageDescription,
-      qrShowAnimatedText: qrShowAnimatedText,
-      qrAnimatedTexts: qrAnimatedTexts,
-      qrMediaUrl: qrMediaUrl,
-      qrMediaType: qrMediaType,
-      qrTextColor: qrTextColor,
-      qrEyeBorderColor: qrEyeBorderColor,
-      qrEyeDotColor: qrEyeDotColor,
-      qrEyeBorderShape: qrEyeBorderShape,
-      qrEyeDotShape: qrEyeDotShape,
-      qrDotsStyle: qrDotsStyle,
-      qrForegroundColor: qrForegroundColor,
-      qrBackgroundColor: qrBackgroundColor,
-      qrLogo: qrLogo,
-      qrCenterType: qrCenterType,
-      qrCenterText: qrCenterText,
-      qrShowCallWaiter: qrShowCallWaiter,
-      qrShowAddressPhone: qrShowAddressPhone,
-      restaurantHours: operatingHours,
+    const updatedSettings = {
+      ...data,
+      restaurantName,
+      restaurantDescription,
+      restaurantAddress,
+      restaurantPhone,
+      restaurantEmail,
+      restaurantLogo,
+      restaurantBackgroundImage: menuBackgroundImage, // Corrected from restaurantBackgroundImage
+      restaurantInstagram,
+      restaurantWhatsapp,
+      restaurantTelegram,
+      restaurantGoogleMapsUrl,
+      loginBackgroundImage,
+      showLoginTitle,
+      loginTitle,
+      showLoginResetPassword,
+      qrShowLogo,
+      qrShowTitle,
+      qrShowDescription,
+      qrShowAnimatedText,
+      qrAnimatedTexts,
+      qrMediaUrl,
+      qrMediaType,
+      qrTextColor,
+      qrEyeBorderColor,
+      qrEyeDotColor,
+      qrEyeBorderShape,
+      qrEyeDotShape,
+      qrDotsStyle,
+      qrForegroundColor,
+      qrBackgroundColor,
+      qrCenterType,
+      qrCenterText,
+      qrLogo,
+      qrPageTitle,
+      qrPageDescription,
+      qrShowCallWaiter,
+      qrShowAddressPhone,
+      menuDefaultTheme,
+      menuBackgroundType,
+      menuBackgroundColor,
+      menuGradientStart,
+      menuGradientEnd,
+      menuBackgroundImage,
+      showMenuInstagram,
+      showMenuWhatsapp,
+      showMenuTelegram,
+      showMenuLanguageSelector,
+      showMenuThemeSwitcher,
       menuShowRestaurantLogo: showRestaurantLogo,
       menuShowRestaurantName: showRestaurantName,
       menuShowRestaurantDescription: showRestaurantDescription,
@@ -711,17 +710,6 @@ export default function SettingsPage() {
       kdPendingColor: data.kdPendingColor,
       kdPreparingColor: data.kdPreparingColor,
       kdReadyColor: data.kdReadyColor,
-      showMenuInstagram,
-      showMenuWhatsapp,
-      showMenuTelegram,
-      showMenuLanguageSelector,
-      showMenuThemeSwitcher,
-      menuDefaultTheme,
-      menuBackgroundType,
-      menuBackgroundColor,
-      menuGradientStart,
-      menuGradientEnd,
-      menuBackgroundImage,
       paymentMethod: data.paymentMethod,
       licenseOwner: data.licenseOwner,
       rolesAdminPermissions: data.rolesAdminPermissions,
@@ -746,82 +734,71 @@ export default function SettingsPage() {
       ossTableLabel: ossForm.tableLabel,
       ossShowTableInformation: ossForm.showTableInfo,
       ossShowStatusIcon: ossForm.showIcon,
-    });
+    };
+    updateSettingsMutation.mutate(updatedSettings as any);
 
     // Also update local storage for fallback
-    localStorage.setItem('restaurantName', data.restaurantName || '');
-    localStorage.setItem('restaurantDescription', data.restaurantDescription || '');
-    localStorage.setItem('restaurantAddress', data.restaurantAddress || '');
-    localStorage.setItem('restaurantPhone', data.restaurantPhone || '');
-    localStorage.setItem('restaurantEmail', data.restaurantEmail || '');
-    localStorage.setItem('restaurantLogo', restaurantLogo);
-    localStorage.setItem('qrLogo', qrLogo);
-    localStorage.setItem('qrCenterType', qrCenterType);
-    localStorage.setItem('qrCenterText', qrCenterText);
-    localStorage.setItem('restaurantInstagram', data.restaurantInstagram || '');
-    localStorage.setItem('restaurantWhatsapp', data.restaurantWhatsapp || '');
-    localStorage.setItem('restaurantTelegram', data.restaurantTelegram || '');
-    localStorage.setItem('restaurantGoogleMapsUrl', data.restaurantGoogleMapsUrl || '');
+    localStorage.setItem('restaurantName', updatedSettings.restaurantName || '');
+    localStorage.setItem('restaurantDescription', updatedSettings.restaurantDescription || '');
+    localStorage.setItem('restaurantAddress', updatedSettings.restaurantAddress || '');
+    localStorage.setItem('restaurantPhone', updatedSettings.restaurantPhone || '');
+    localStorage.setItem('restaurantEmail', updatedSettings.restaurantEmail || '');
+    localStorage.setItem('restaurantLogo', updatedSettings.restaurantLogo || '');
+    localStorage.setItem('qrLogo', updatedSettings.qrLogo || '');
+    localStorage.setItem('qrCenterType', updatedSettings.qrCenterType || 'none');
+    localStorage.setItem('qrCenterText', updatedSettings.qrCenterText || '');
+    localStorage.setItem('restaurantInstagram', updatedSettings.restaurantInstagram || '');
+    localStorage.setItem('restaurantWhatsapp', updatedSettings.restaurantWhatsapp || '');
+    localStorage.setItem('restaurantTelegram', updatedSettings.restaurantTelegram || '');
+    localStorage.setItem('restaurantGoogleMapsUrl', updatedSettings.restaurantGoogleMapsUrl || '');
     
-    if (loginBackgroundImage) {
-      localStorage.setItem('loginBackgroundImage', loginBackgroundImage);
+    if (updatedSettings.loginBackgroundImage) {
+      localStorage.setItem('loginBackgroundImage', updatedSettings.loginBackgroundImage);
     }
-    localStorage.setItem('showLoginTitle', showLoginTitle.toString());
-    localStorage.setItem('loginTitle', loginTitle);
-    localStorage.setItem('showLoginResetPassword', showLoginResetPassword.toString());
-    localStorage.setItem('qrPageTitle', qrPageTitle);
-    localStorage.setItem('qrPageDescription', qrPageDescription);
-    localStorage.setItem('qrShowTitle', qrShowTitle.toString());
-    localStorage.setItem('qrShowLogo', qrShowLogo.toString());
-    localStorage.setItem('qrShowDescription', qrShowDescription.toString());
-    localStorage.setItem('qrShowAnimatedText', qrShowAnimatedText.toString());
-    localStorage.setItem('qrAnimatedTexts', JSON.stringify(qrAnimatedTexts));
-    localStorage.setItem('qrMediaUrl', qrMediaUrl);
-    localStorage.setItem('qrMediaType', qrMediaType);
-    localStorage.setItem('qrEyeBorderColor', qrEyeBorderColor);
-    localStorage.setItem('qrEyeDotColor', qrEyeDotColor);
-    localStorage.setItem('qrEyeBorderShape', qrEyeBorderShape);
-    localStorage.setItem('qrEyeDotShape', qrEyeDotShape);
-    localStorage.setItem('qrDotsStyle', qrDotsStyle);
-    localStorage.setItem('qrShowCallWaiter', qrShowCallWaiter.toString());
-    localStorage.setItem('qrShowAddressPhone', qrShowAddressPhone.toString());
-    localStorage.setItem('qrTextColor', qrTextColor);
-    localStorage.setItem('qrForegroundColor', qrForegroundColor);
-    localStorage.setItem('qrBackgroundColor', qrBackgroundColor);
-    localStorage.setItem('menuPageTitle', menuPageTitle);
-    localStorage.setItem('menuShowPrices', showPrices.toString());
-    localStorage.setItem('menuShowImages', showImages.toString());
-    localStorage.setItem('menuShowIngredients', showIngredients.toString());
-    localStorage.setItem('menuShowFoodTypes', showFoodTypes.toString());
-    localStorage.setItem('menuShowBuyButton', showBuyButton.toString());
-    localStorage.setItem('menuShowMoreInformationPopup', showMoreInformationPopup.toString());
-    localStorage.setItem('paymentMethod', paymentMethod);
-    localStorage.setItem('rolesAdminPermissions', rolesAdminPermissions);
-    localStorage.setItem('rolesAdminSettingAccess', rolesAdminSettingAccess);
-    localStorage.setItem('rolesManagerPermissions', rolesManagerPermissions);
-    localStorage.setItem('rolesManagerSettingAccess', rolesManagerSettingAccess);
-    localStorage.setItem('rolesChefPermissions', rolesChefPermissions);
-    localStorage.setItem('rolesChefSettingAccess', rolesChefSettingAccess);
-    localStorage.setItem('rolesAccountantPermissions', rolesAccountantPermissions);
-    localStorage.setItem('rolesAccountantSettingAccess', rolesAccountantSettingAccess);
-    localStorage.setItem('ossPendingColor', ossForm.pendingColor);
-    localStorage.setItem('ossPreparingColor', ossForm.preparingColor);
-    localStorage.setItem('ossReadyColor', ossForm.readyColor);
-    localStorage.setItem('ossBackgroundType', ossForm.backgroundType);
-    localStorage.setItem('ossBackgroundColor', ossForm.backgroundColor);
-    localStorage.setItem('ossBackgroundImage', ossForm.backgroundImage || '');
-    localStorage.setItem('ossCardTextColor', ossForm.textColor);
-    localStorage.setItem('ossCardBorderColor', ossForm.borderColor);
-    localStorage.setItem('ossCardBoxStyle', ossForm.boxStyle);
-    localStorage.setItem('ossHeaderText', ossForm.headerText);
-    localStorage.setItem('ossNumberLabel', ossForm.numberLabel);
-    localStorage.setItem('ossTableLabel', ossForm.tableLabel);
-    localStorage.setItem('ossShowTableInformation', ossForm.showTableInfo.toString());
-    localStorage.setItem('ossShowStatusIcon', ossForm.showIcon.toString());
-    localStorage.setItem('rolePermissions', JSON.stringify(rolePermissions));
+    localStorage.setItem('showLoginTitle', updatedSettings.showLoginTitle.toString());
+    localStorage.setItem('loginTitle', updatedSettings.loginTitle || '');
+    localStorage.setItem('showLoginResetPassword', updatedSettings.showLoginResetPassword.toString());
+    localStorage.setItem('qrPageTitle', updatedSettings.qrPageTitle || '');
+    localStorage.setItem('qrPageDescription', updatedSettings.qrPageDescription || '');
+    localStorage.setItem('qrShowTitle', updatedSettings.qrShowTitle.toString());
+    localStorage.setItem('qrShowLogo', updatedSettings.qrShowLogo.toString());
+    localStorage.setItem('qrShowDescription', updatedSettings.qrShowDescription.toString());
+    localStorage.setItem('qrShowAnimatedText', updatedSettings.qrShowAnimatedText.toString());
+    localStorage.setItem('qrAnimatedTexts', JSON.stringify(updatedSettings.qrAnimatedTexts || []));
+    localStorage.setItem('qrMediaUrl', updatedSettings.qrMediaUrl || '');
+    localStorage.setItem('qrMediaType', updatedSettings.qrMediaType || 'image');
+    localStorage.setItem('qrEyeBorderColor', updatedSettings.qrEyeBorderColor || '');
+    localStorage.setItem('qrEyeDotColor', updatedSettings.qrEyeDotColor || '');
+    localStorage.setItem('qrEyeBorderShape', updatedSettings.qrEyeBorderShape || 'square');
+    localStorage.setItem('qrEyeDotShape', updatedSettings.qrEyeDotShape || 'square');
+    localStorage.setItem('qrDotsStyle', updatedSettings.qrDotsStyle || 'square');
+    localStorage.setItem('qrShowCallWaiter', updatedSettings.qrShowCallWaiter.toString());
+    localStorage.setItem('qrShowAddressPhone', updatedSettings.qrShowAddressPhone.toString());
+    localStorage.setItem('qrTextColor', updatedSettings.qrTextColor || '');
+    localStorage.setItem('qrForegroundColor', updatedSettings.qrForegroundColor || '');
+    localStorage.setItem('qrBackgroundColor', updatedSettings.qrBackgroundColor || '');
+    localStorage.setItem('menuShowPrices', updatedSettings.menuShowPrices.toString());
+    localStorage.setItem('menuShowImages', updatedSettings.menuShowImages.toString());
+    localStorage.setItem('menuShowIngredients', updatedSettings.menuShowIngredients.toString());
+    localStorage.setItem('menuShowFoodTypes', updatedSettings.menuShowFoodTypes.toString());
+    localStorage.setItem('menuShowBuyButton', updatedSettings.menuShowBuyButton.toString());
+    localStorage.setItem('menuShowMoreInformationPopup', updatedSettings.menuShowMoreInformationPopup.toString());
+    localStorage.setItem('paymentMethod', updatedSettings.paymentMethod || 'cash');
+    localStorage.setItem('ossPendingColor', updatedSettings.ossPendingColor);
+    localStorage.setItem('ossPreparingColor', updatedSettings.ossPreparingColor);
+    localStorage.setItem('ossReadyColor', updatedSettings.ossReadyColor);
+    localStorage.setItem('ossBackgroundType', updatedSettings.ossBackgroundType);
+    localStorage.setItem('ossBackgroundColor', updatedSettings.ossBackgroundColor);
+    localStorage.setItem('ossBackgroundImage', updatedSettings.ossBackgroundImage || '');
+    localStorage.setItem('ossCardTextColor', updatedSettings.ossCardTextColor);
+    localStorage.setItem('ossCardBorderColor', updatedSettings.ossCardBorderColor);
+    localStorage.setItem('ossCardBoxStyle', updatedSettings.ossCardBoxStyle);
+    localStorage.setItem('ossHeaderText', updatedSettings.ossHeaderText);
+    localStorage.setItem('ossNumberLabel', updatedSettings.ossNumberLabel);
+    localStorage.setItem('ossTableLabel', updatedSettings.ossTableLabel);
+    localStorage.setItem('ossShowTableInformation', updatedSettings.ossShowTableInformation.toString());
+    localStorage.setItem('ossShowStatusIcon', updatedSettings.ossShowStatusIcon.toString());
     localStorage.setItem('operatingHours', JSON.stringify(operatingHours));
-    localStorage.setItem('socialMedia', JSON.stringify(socialMedia));
-    localStorage.setItem('googleMapsUrl', googleMapsUrl);
     localStorage.setItem('appTimezone', timezone);
     localStorage.setItem('copyrightText', copyrightText);
     localStorage.setItem('showMenuInstagram', showMenuInstagram.toString());
@@ -845,9 +822,6 @@ export default function SettingsPage() {
     localStorage.setItem('showFoodType', showFoodType.toString());
     localStorage.setItem('showSearchBar', showSearchBar.toString());
     localStorage.setItem('showViewSwitcher', showViewSwitcher.toString());
-    if (favicon) {
-      localStorage.setItem('favicon', favicon);
-    }
   };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
