@@ -154,8 +154,12 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
       toast({ title: 'Settings Saved', description: 'All settings have been updated successfully.' });
     },
-    onError: (error) => {
-      toast({ title: 'Error', description: 'Failed to update settings', variant: 'destructive' });
+    onError: (error: any) => {
+      let errorMessage = 'Failed to update settings';
+      if (error && typeof error === 'object' && error.message) {
+        errorMessage = error.message;
+      }
+      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
     }
   });
 
