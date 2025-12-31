@@ -639,6 +639,7 @@ export default function SettingsPage() {
   }, [form.watch('primaryColor')]);
 
   const handleSubmit = (data: SettingsFormData) => {
+    console.log('Form submission started', data);
     const updatedSettings = {
       ...data,
       restaurantName,
@@ -739,6 +740,7 @@ export default function SettingsPage() {
       ossShowTableInformation: ossForm.showTableInfo,
       ossShowStatusIcon: ossForm.showIcon,
     };
+    console.log('Sending updated settings to mutation', updatedSettings);
     updateSettingsMutation.mutate(updatedSettings as any);
 
     // Also update local storage for fallback
