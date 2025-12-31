@@ -2252,50 +2252,34 @@ export default function SettingsPage() {
                   <CardDescription>Control what information in the menu items section shown to customers</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FormField control={form.control} name="showPrices" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Prices</FormLabel>
-                        <FormDescription>Display prices on menu items</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-prices" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="showImages" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Images</FormLabel>
-                        <FormDescription>Display item images on the menu</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-images" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="showMaterials" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Ingredients</FormLabel>
-                        <FormDescription>Display ingredient tags on items</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-materials" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="showTypes" render={({ field }) => (
-                    <FormItem className="flex items-center justify-between">
-                      <div>
-                        <FormLabel>Show Food Types</FormLabel>
-                        <FormDescription>Display dietary tags like vegan, spicy</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-types" />
-                      </FormControl>
-                    </FormItem>
-                  )} />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Show Prices</FormLabel>
+                      <FormDescription>Display prices on menu items</FormDescription>
+                    </div>
+                    <Switch checked={showPrices} onCheckedChange={setShowPrices} data-testid="switch-settings-prices" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Show Images</FormLabel>
+                      <FormDescription>Display item images on the menu</FormDescription>
+                    </div>
+                    <Switch checked={showImages} onCheckedChange={setShowImages} data-testid="switch-settings-images" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Show Ingredients</FormLabel>
+                      <FormDescription>Display ingredient tags on items</FormDescription>
+                    </div>
+                    <Switch checked={showIngredients} onCheckedChange={setShowIngredients} data-testid="switch-settings-materials" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Show Food Types</FormLabel>
+                      <FormDescription>Display dietary tags like vegan, spicy</FormDescription>
+                    </div>
+                    <Switch checked={showFoodTypes} onCheckedChange={setShowFoodTypes} data-testid="switch-settings-types" />
+                  </div>
                   <FormField control={form.control} name="showBuyButton" render={({ field }) => (
                     <FormItem className="flex items-center justify-between">
                       <div>
