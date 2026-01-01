@@ -218,6 +218,7 @@ export default function SettingsPage() {
       if (dbSettings.ossShowStatusIcon !== undefined) setOssShowStatusIcon(dbSettings.ossShowStatusIcon);
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
+      if (dbSettings.timezone) setTimezone(dbSettings.timezone);
 
       // Menu Display Settings
       if (dbSettings.menuShowRestaurantLogo !== undefined) setShowRestaurantLogo(dbSettings.menuShowRestaurantLogo);
@@ -640,7 +641,10 @@ export default function SettingsPage() {
       licenseOwner: data.licenseOwner,
     };
     console.log("Sending updated settings to mutation", updatedSettings);
-    updateSettingsMutation.mutate(updatedSettings as any);
+    updateSettingsMutation.mutate({
+      ...updatedSettings,
+      timezone: timezone,
+    } as any);
 
     localStorage.setItem("restaurantName", restaurantName || "");
     localStorage.setItem("restaurantDescription", restaurantDescription || "");
