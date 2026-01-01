@@ -669,6 +669,7 @@ export default function SettingsPage() {
     localStorage.setItem("showMenuInstagram", String(showMenuInstagram));
     localStorage.setItem("showMenuWhatsapp", String(showMenuWhatsapp));
     localStorage.setItem("showMenuTelegram", String(showMenuTelegram));
+    localStorage.setItem("timezone", timezone);
   };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
