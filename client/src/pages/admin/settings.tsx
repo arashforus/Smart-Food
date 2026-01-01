@@ -647,10 +647,6 @@ export default function SettingsPage() {
       licenseKey: data.licenseKey,
       licenseExpiry: data.licenseExpiry,
       licenseOwner: data.licenseOwner,
-      restaurantInstagram,
-      restaurantWhatsapp,
-      restaurantTelegram,
-      restaurantGoogleMapsUrl,
       favicon: favicon,
     };
     console.log("Sending updated settings to mutation", updatedSettings);
