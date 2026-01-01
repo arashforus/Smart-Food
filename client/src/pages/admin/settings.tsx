@@ -167,7 +167,21 @@ export default function SettingsPage() {
       setRestaurantEmail(dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '');
       setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
-      if (dbSettings.restaurantHours) setOperatingHours(dbSettings.restaurantHours);
+      if (dbSettings.restaurantHours) {
+        try {
+          const hours = typeof dbSettings.restaurantHours === 'string' 
+            ? JSON.parse(dbSettings.restaurantHours) 
+            : dbSettings.restaurantHours;
+          
+          if (hours && typeof hours === 'object' && Object.keys(hours).length > 0) {
+            setOperatingHours(hours);
+          } else {
+            setOperatingHours(defaultOperatingHours);
+          }
+        } catch (e) {
+          setOperatingHours(defaultOperatingHours);
+        }
+      }
 
       // Load login settings from DB
       if (dbSettings.loginBackgroundImage) setLoginBackgroundImage(dbSettings.loginBackgroundImage);
@@ -377,17 +391,29 @@ export default function SettingsPage() {
   const [restaurantWhatsapp, setRestaurantWhatsapp] = useState(() => localStorage.getItem('restaurantWhatsapp') || '');
   const [restaurantTelegram, setRestaurantTelegram] = useState(() => localStorage.getItem('restaurantTelegram') || '');
   const [restaurantGoogleMapsUrl, setRestaurantGoogleMapsUrl] = useState(() => localStorage.getItem('restaurantGoogleMapsUrl') || '');
+  const defaultOperatingHours = {
+    Monday: { start: '09:00', end: '22:00', closed: false },
+    Tuesday: { start: '09:00', end: '22:00', closed: false },
+    Wednesday: { start: '09:00', end: '22:00', closed: false },
+    Thursday: { start: '09:00', end: '22:00', closed: false },
+    Friday: { start: '09:00', end: '23:00', closed: false },
+    Saturday: { start: '10:00', end: '23:00', closed: false },
+    Sunday: { start: '10:00', end: '21:00', closed: false },
+  };
+
   const [operatingHours, setOperatingHours] = useState(() => {
     const stored = localStorage.getItem('operatingHours');
-    return stored ? JSON.parse(stored) : {
-      Monday: { start: '09:00', end: '22:00', closed: false },
-      Tuesday: { start: '09:00', end: '22:00', closed: false },
-      Wednesday: { start: '09:00', end: '22:00', closed: false },
-      Thursday: { start: '09:00', end: '22:00', closed: false },
-      Friday: { start: '09:00', end: '23:00', closed: false },
-      Saturday: { start: '10:00', end: '23:00', closed: false },
-      Sunday: { start: '10:00', end: '21:00', closed: false },
-    };
+    if (!stored) return defaultOperatingHours;
+    try {
+      const parsed = JSON.parse(stored);
+      // Ensure it's not an empty array or null which the user reported causing issues
+      if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+        return parsed;
+      }
+    } catch (e) {
+      console.error("Error parsing operating hours", e);
+    }
+    return defaultOperatingHours;
   });
   const [socialMedia, setSocialMedia] = useState(() => {
     const stored = localStorage.getItem('socialMedia');
