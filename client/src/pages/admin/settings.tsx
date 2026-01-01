@@ -237,6 +237,7 @@ export default function SettingsPage() {
       if (dbSettings.menuShowBuyButton !== undefined) setShowBuyButton(dbSettings.menuShowBuyButton);
       if (dbSettings.menuShowMoreInformationPopup !== undefined) setShowMoreInformationPopup(dbSettings.menuShowMoreInformationPopup);
 
+      if (dbSettings.timezone) setTimezone(dbSettings.timezone);
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
