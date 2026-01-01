@@ -36,7 +36,6 @@ import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 import { useOrders, type OSSSettings } from '@/lib/orderContext';
 
 const settingsSchema = z.object({
-  timezone: z.string().min(1, 'Timezone is required'),
   primaryColor: z.string().min(1, 'Primary color is required'),
   showBuyButton: z.boolean(),
   showMoreInformationPopup: z.boolean(),
@@ -111,39 +110,6 @@ export default function SettingsPage() {
     queryKey: ['/api/settings'],
   });
 
-  // Form definition
-  const form = useForm<SettingsFormData>({
-    resolver: zodResolver(settingsSchema),
-    defaultValues: {
-      primaryColor: '#0079F2',
-      showBuyButton: true,
-      showMoreInformationPopup: true,
-      defaultLanguage: 'en',
-      currency: 'USD',
-      currencySymbol: '$',
-      currencyPosition: 'before',
-      paymentMethod: 'both',
-      licenseKey: '',
-      licenseExpiry: '',
-      licenseOwner: '',
-      kdShowTableNumber: true,
-      kdShowOrderTime: true,
-      kdShowClock: true,
-      kdShowNotes: true,
-      kdHasPendingStatus: true,
-      kdShowRecentlyCompleted: true,
-      kdPendingColor: '#FF9800',
-      kdPreparingColor: '#2196F3',
-      kdReadyColor: '#4CAF50',
-      restaurantInstagram: '',
-      restaurantWhatsapp: '',
-      restaurantTelegram: '',
-      restaurantGoogleMapsUrl: '',
-      timezone: localStorage.getItem('appTimezone') || 'UTC',
-    },
-  });
-
-
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: Partial<SettingsType>) => {
       console.log('Mutation function started with data:', data);
@@ -154,11 +120,8 @@ export default function SettingsPage() {
       }
       return res.json();
     },
-    onSuccess: (data) => {
-      console.log('Mutation successful', data);
-      if (data.timezone) {
-        localStorage.setItem('appTimezone', data.timezone);
-      }
+    onSuccess: () => {
+      console.log('Mutation successful');
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
       toast({ title: 'Success', description: 'All settings have been updated successfully.', variant: 'default' });
     },
@@ -193,7 +156,7 @@ export default function SettingsPage() {
   });
 
   const [settings, setSettings] = useState<SettingsType>(mockSettings);
-  
+
   useEffect(() => {
     if (dbSettings) {
       setSettings(dbSettings);
@@ -205,7 +168,7 @@ export default function SettingsPage() {
       setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
       if (dbSettings.restaurantHours) setOperatingHours(dbSettings.restaurantHours);
-      
+
       // Load login settings from DB
       if (dbSettings.loginBackgroundImage) setLoginBackgroundImage(dbSettings.loginBackgroundImage);
       if (dbSettings.showLoginTitle !== undefined) setShowLoginTitle(dbSettings.showLoginTitle);
@@ -228,7 +191,7 @@ export default function SettingsPage() {
       if (dbSettings.qrBackgroundColor) setQrBackgroundColor(dbSettings.qrBackgroundColor);
       if (dbSettings.qrShowCallWaiter !== undefined) setQrShowCallWaiter(dbSettings.qrShowCallWaiter);
       if (dbSettings.qrShowAddressPhone !== undefined) setQrShowAddressPhone(dbSettings.qrShowAddressPhone);
-      
+
       // Load Payment, Roles, and OSS settings from DB
       if (dbSettings.paymentMethod) setPaymentMethod(dbSettings.paymentMethod);
       if (dbSettings.rolesAdminPermissions) setRolesAdminPermissions(dbSettings.rolesAdminPermissions);
@@ -255,7 +218,7 @@ export default function SettingsPage() {
       if (dbSettings.ossShowStatusIcon !== undefined) setOssShowStatusIcon(dbSettings.ossShowStatusIcon);
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
-      
+
       // Menu Display Settings
       if (dbSettings.menuShowRestaurantLogo !== undefined) setShowRestaurantLogo(dbSettings.menuShowRestaurantLogo);
       if (dbSettings.menuShowRestaurantName !== undefined) setShowRestaurantName(dbSettings.menuShowRestaurantName);
@@ -274,13 +237,6 @@ export default function SettingsPage() {
       if (dbSettings.menuShowBuyButton !== undefined) setShowBuyButton(dbSettings.menuShowBuyButton);
       if (dbSettings.menuShowMoreInformationPopup !== undefined) setShowMoreInformationPopup(dbSettings.menuShowMoreInformationPopup);
 
-      if (dbSettings.timezone) {
-        form.setValue('timezone', dbSettings.timezone);
-        localStorage.setItem('appTimezone', dbSettings.timezone);
-      } else {
-        const storedTz = localStorage.getItem('appTimezone') || 'UTC';
-        form.setValue('timezone', storedTz);
-      }
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
@@ -310,10 +266,9 @@ export default function SettingsPage() {
         restaurantWhatsapp: dbSettings.restaurantWhatsapp || localStorage.getItem('restaurantWhatsapp') || '',
         restaurantTelegram: dbSettings.restaurantTelegram || localStorage.getItem('restaurantTelegram') || '',
         restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || localStorage.getItem('restaurantGoogleMapsUrl') || '',
-        timezone: dbSettings.timezone || localStorage.getItem('appTimezone') || 'UTC',
       });
     }
-  }, [dbSettings, form]);
+  }, [dbSettings]);
   const [ossForm, setOSSForm] = useState<OSSSettings>(ossSettings);
   const [isPending, setIsPending] = useState(false);
   const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>(() => {
@@ -339,7 +294,7 @@ export default function SettingsPage() {
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
   const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
   const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
-  
+
   // Menu Page Settings
   const [showMenuInstagram, setShowMenuInstagram] = useState(() => localStorage.getItem('showMenuInstagram') !== 'false');
   const [showMenuWhatsapp, setShowMenuWhatsapp] = useState(() => localStorage.getItem('showMenuWhatsapp') !== 'false');
@@ -357,7 +312,7 @@ export default function SettingsPage() {
   const [showRestaurantName, setShowRestaurantName] = useState(() => localStorage.getItem('showRestaurantName') !== 'false');
   const [showRestaurantDescription, setShowRestaurantDescription] = useState(() => localStorage.getItem('showRestaurantDescription') !== 'false');
   const [showRestaurantHours, setShowRestaurantHours] = useState(() => localStorage.getItem('showRestaurantHours') !== 'false');
-  
+
   // Menu Display Settings
   const [showMenu, setShowMenu] = useState(() => localStorage.getItem('showMenu') !== 'false');
   const [showAllMenuItem, setShowAllMenuItem] = useState(() => localStorage.getItem('showAllMenuItem') !== 'false');
@@ -448,12 +403,14 @@ export default function SettingsPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
   // General Settings State
+  const [timezone, setTimezone] = useState(() => localStorage.getItem('appTimezone') || 'UTC');
   const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
-      const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
-      const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
-      
+  const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
+  const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
+
+  // Payment Settings
   const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'both');
-  
+
   // Roles Settings
   const [rolesAdminPermissions, setRolesAdminPermissions] = useState(() => localStorage.getItem('rolesAdminPermissions') || '');
   const [rolesAdminSettingAccess, setRolesAdminSettingAccess] = useState(() => localStorage.getItem('rolesAdminSettingAccess') || '');
@@ -463,7 +420,7 @@ export default function SettingsPage() {
   const [rolesChefSettingAccess, setRolesChefSettingAccess] = useState(() => localStorage.getItem('rolesChefSettingAccess') || '');
   const [rolesAccountantPermissions, setRolesAccountantPermissions] = useState(() => localStorage.getItem('rolesAccountantPermissions') || '');
   const [rolesAccountantSettingAccess, setRolesAccountantSettingAccess] = useState(() => localStorage.getItem('rolesAccountantSettingAccess') || '');
-  
+
   // OSS (Order Status Styling) Settings
   const [ossPendingColor, setOssPendingColor] = useState(() => localStorage.getItem('ossPendingColor') || '#FFA500');
   const [ossPreparingColor, setOssPreparingColor] = useState(() => localStorage.getItem('ossPreparingColor') || '#1E90FF');
@@ -479,7 +436,7 @@ export default function SettingsPage() {
   const [ossTableLabel, setOssTableLabel] = useState(() => localStorage.getItem('ossTableLabel') || '');
   const [ossShowTableInformation, setOssShowTableInformation] = useState(() => localStorage.getItem('ossShowTableInformation') !== 'false');
   const [ossShowStatusIcon, setOssShowStatusIcon] = useState(() => localStorage.getItem('ossShowStatusIcon') !== 'false');
-  
+
   const [showChangePassword, setShowChangePassword] = useState(() => location.includes('action=changePassword'));
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -563,7 +520,6 @@ export default function SettingsPage() {
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      timezone: settings.timezone || 'UTC',
       primaryColor: settings.primaryColor,
       showBuyButton: settings.showBuyButton !== false,
       showMoreInformationPopup: settings.showMoreInformationPopup !== false,
@@ -601,8 +557,9 @@ export default function SettingsPage() {
 
   const handleSubmit = (data: SettingsFormData) => {
     console.log("Form submission started", data);
-    const updatedSettings: Partial<SettingsType> = {
+    const updatedSettings = {
       ...data,
+      timezone,
       restaurantName,
       restaurantDescription,
       restaurantAddress,
@@ -711,7 +668,6 @@ export default function SettingsPage() {
     localStorage.setItem("showMenuInstagram", String(showMenuInstagram));
     localStorage.setItem("showMenuWhatsapp", String(showMenuWhatsapp));
     localStorage.setItem("showMenuTelegram", String(showMenuTelegram));
-    localStorage.setItem("appTimezone", data.timezone);
   };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -846,7 +802,7 @@ export default function SettingsPage() {
     try {
       // Simulate API call to verify license
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // In a real implementation, this would fetch license data from server
       const licenseKey = form.watch('licenseKey');
       if (licenseKey) {
@@ -1274,10 +1230,7 @@ export default function SettingsPage() {
                   {/* Timezone Section */}
                   <div className="space-y-2">
                     <FormLabel htmlFor="timezone">Timezone</FormLabel>
-                    <Select value={form.watch('timezone')} onValueChange={(val) => {
-                      form.setValue('timezone', val);
-                      localStorage.setItem('appTimezone', val);
-                    }}>
+                    <Select value={timezone} onValueChange={setTimezone}>
                       <SelectTrigger id="timezone" data-testid="select-timezone">
                         <SelectValue placeholder="Select timezone" />
                       </SelectTrigger>
@@ -1705,7 +1658,7 @@ export default function SettingsPage() {
                 <CardContent className="space-y-6">
                   {/* Content Settings */}
                   <div className="space-y-4 pb-6 border-b">
-                  
+
                     <div className="space-y-2">
                       <FormLabel htmlFor="qr-title">Page Title</FormLabel>
                       <Input
@@ -1716,7 +1669,7 @@ export default function SettingsPage() {
                         disabled={!qrShowTitle}
                         data-testid="input-qr-page-title"
                       />
-                      
+
                     </div>
                     <div className="space-y-2">
                       <FormLabel htmlFor="qr-description">Page Description</FormLabel>
@@ -1728,7 +1681,7 @@ export default function SettingsPage() {
                         disabled={!qrShowDescription}
                         data-testid="input-qr-page-description"
                       />
-                    
+
                     </div>
 
                     <div className="space-y-4 pt-4">
@@ -1948,7 +1901,7 @@ export default function SettingsPage() {
                         <SelectItem value="dark">Dark</SelectItem>
                       </SelectContent>
                     </Select>
-                  
+
                   </div>
 
                   <div className="space-y-2">
@@ -2378,7 +2331,7 @@ export default function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Currency Settings</CardTitle>
-                
+
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField control={form.control} name="currency" render={({ field }) => (
@@ -2536,7 +2489,7 @@ export default function SettingsPage() {
                   {(['admin', 'manager', 'chef', 'accountant'] as const).map((role) => (
                     <div key={role} className="space-y-4 pb-8 border-b last:border-0">
                       <h3 className="font-semibold capitalize text-sm">{role} Permissions</h3>
-                      
+
                       {/* Menu Sections */}
                       <div className="space-y-3">
                         <p className="text-xs text-muted-foreground font-medium">Menu Sections</p>
@@ -2636,7 +2589,7 @@ export default function SettingsPage() {
                         <p className="text-xs text-muted-foreground font-medium">License Owner</p>
                         <p className="text-sm font-medium" data-testid="text-license-owner">{form.watch('licenseOwner') || 'Not set'}</p>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <p className="text-xs text-muted-foreground font-medium">Expiry Date</p>
                         <p className="text-sm font-medium" data-testid="text-license-expiry">{new Date(form.watch('licenseExpiry')!).toLocaleDateString()}</p>
