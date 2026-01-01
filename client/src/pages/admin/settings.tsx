@@ -268,6 +268,7 @@ export default function SettingsPage() {
         restaurantWhatsapp: dbSettings.restaurantWhatsapp || localStorage.getItem('restaurantWhatsapp') || '',
         restaurantTelegram: dbSettings.restaurantTelegram || localStorage.getItem('restaurantTelegram') || '',
         restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || localStorage.getItem('restaurantGoogleMapsUrl') || '',
+        timezone: dbSettings.timezone || localStorage.getItem('appTimezone') || 'UTC',
       });
     }
   }, [dbSettings]);
@@ -404,12 +405,12 @@ export default function SettingsPage() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   
-  // General Settings State
-  const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
-  const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
-  const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
-  
-  // Payment Settings
+      // General Settings State
+      const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
+      const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
+      const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
+      
+      const timezone = form.watch('timezone');
   const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'both');
   
   // Roles Settings
@@ -559,7 +560,7 @@ export default function SettingsPage() {
 
   const handleSubmit = (data: SettingsFormData) => {
     console.log("Form submission started", data);
-    const updatedSettings = {
+    const updatedSettings: Partial<SettingsType> = {
       ...data,
       restaurantName,
       restaurantDescription,

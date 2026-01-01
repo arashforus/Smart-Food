@@ -260,6 +260,7 @@ export interface Settings {
   kdPreparingColor?: string;
   kdReadyColor?: string;
   currencyPosition?: 'before' | 'after';
+  timezone?: string;
   licenseOwner?: string;
   paymentMethod?: string;
   rolesAdminPermissions?: string;
