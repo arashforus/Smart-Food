@@ -216,6 +216,10 @@ export default function SettingsPage() {
       if (dbSettings.ossTableLabel) setOssTableLabel(dbSettings.ossTableLabel);
       if (dbSettings.ossShowTableInformation !== undefined) setOssShowTableInformation(dbSettings.ossShowTableInformation);
       if (dbSettings.ossShowStatusIcon !== undefined) setOssShowStatusIcon(dbSettings.ossShowStatusIcon);
+      if (dbSettings.favicon) {
+        setFavicon(dbSettings.favicon);
+        setFaviconPreview(dbSettings.favicon);
+      }
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
       if (dbSettings.timezone) setTimezone(dbSettings.timezone);
@@ -639,6 +643,7 @@ export default function SettingsPage() {
       licenseKey: data.licenseKey,
       licenseExpiry: data.licenseExpiry,
       licenseOwner: data.licenseOwner,
+      favicon: favicon,
     };
     console.log("Sending updated settings to mutation", updatedSettings);
     updateSettingsMutation.mutate({
