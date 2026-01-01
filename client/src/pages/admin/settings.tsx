@@ -36,6 +36,7 @@ import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 import { useOrders, type OSSSettings } from '@/lib/orderContext';
 
 const settingsSchema = z.object({
+  timezone: z.string().min(1, 'Timezone is required'),
   primaryColor: z.string().min(1, 'Primary color is required'),
   showBuyButton: z.boolean(),
   showMoreInformationPopup: z.boolean(),
@@ -237,7 +238,7 @@ export default function SettingsPage() {
       if (dbSettings.menuShowBuyButton !== undefined) setShowBuyButton(dbSettings.menuShowBuyButton);
       if (dbSettings.menuShowMoreInformationPopup !== undefined) setShowMoreInformationPopup(dbSettings.menuShowMoreInformationPopup);
 
-      if (dbSettings.timezone) setTimezone(dbSettings.timezone);
+      if (dbSettings.timezone) form.setValue('timezone', dbSettings.timezone);
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
@@ -404,7 +405,6 @@ export default function SettingsPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   
   // General Settings State
-  const [timezone, setTimezone] = useState(() => localStorage.getItem('appTimezone') || 'UTC');
   const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
   const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
   const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
@@ -521,6 +521,7 @@ export default function SettingsPage() {
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
+      timezone: settings.timezone || 'UTC',
       primaryColor: settings.primaryColor,
       showBuyButton: settings.showBuyButton !== false,
       showMoreInformationPopup: settings.showMoreInformationPopup !== false,
@@ -560,7 +561,6 @@ export default function SettingsPage() {
     console.log("Form submission started", data);
     const updatedSettings = {
       ...data,
-      timezone,
       restaurantName,
       restaurantDescription,
       restaurantAddress,
@@ -1232,7 +1232,7 @@ export default function SettingsPage() {
                   {/* Timezone Section */}
                   <div className="space-y-2">
                     <FormLabel htmlFor="timezone">Timezone</FormLabel>
-                    <Select value={timezone} onValueChange={setTimezone}>
+                    <Select value={form.watch('timezone')} onValueChange={(val) => form.setValue('timezone', val)}>
                       <SelectTrigger id="timezone" data-testid="select-timezone">
                         <SelectValue placeholder="Select timezone" />
                       </SelectTrigger>
