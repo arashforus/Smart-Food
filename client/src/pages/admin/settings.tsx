@@ -121,8 +121,11 @@ export default function SettingsPage() {
       }
       return res.json();
     },
-    onSuccess: () => {
-      console.log('Mutation successful');
+    onSuccess: (data) => {
+      console.log('Mutation successful', data);
+      if (data.timezone) {
+        localStorage.setItem('appTimezone', data.timezone);
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
       toast({ title: 'Success', description: 'All settings have been updated successfully.', variant: 'default' });
     },
@@ -238,7 +241,13 @@ export default function SettingsPage() {
       if (dbSettings.menuShowBuyButton !== undefined) setShowBuyButton(dbSettings.menuShowBuyButton);
       if (dbSettings.menuShowMoreInformationPopup !== undefined) setShowMoreInformationPopup(dbSettings.menuShowMoreInformationPopup);
 
-      if (dbSettings.timezone) form.setValue('timezone', dbSettings.timezone);
+      if (dbSettings.timezone) {
+        form.setValue('timezone', dbSettings.timezone);
+        localStorage.setItem('appTimezone', dbSettings.timezone);
+      } else {
+        const storedTz = localStorage.getItem('appTimezone') || 'UTC';
+        form.setValue('timezone', storedTz);
+      }
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
@@ -271,7 +280,7 @@ export default function SettingsPage() {
         timezone: dbSettings.timezone || localStorage.getItem('appTimezone') || 'UTC',
       });
     }
-  }, [dbSettings]);
+  }, [dbSettings, form]);
   const [ossForm, setOSSForm] = useState<OSSSettings>(ossSettings);
   const [isPending, setIsPending] = useState(false);
   const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>(() => {
