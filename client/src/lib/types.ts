@@ -155,6 +155,7 @@ export interface PaymentSettings {
 export interface Settings {
   id: string;
   primaryColor: string;
+  favicon?: string;
   logoUrl?: string;
   backgroundImage?: string;
   backgroundVideo?: string;
