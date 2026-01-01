@@ -220,6 +220,10 @@ export default function SettingsPage() {
         setFavicon(dbSettings.favicon);
         setFaviconPreview(dbSettings.favicon);
       }
+      if (dbSettings.restaurantInstagram) setRestaurantInstagram(dbSettings.restaurantInstagram);
+      if (dbSettings.restaurantWhatsapp) setRestaurantWhatsapp(dbSettings.restaurantWhatsapp);
+      if (dbSettings.restaurantTelegram) setRestaurantTelegram(dbSettings.restaurantTelegram);
+      if (dbSettings.restaurantGoogleMapsUrl) setRestaurantGoogleMapsUrl(dbSettings.restaurantGoogleMapsUrl);
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
       if (dbSettings.timezone) setTimezone(dbSettings.timezone);
@@ -410,8 +414,8 @@ export default function SettingsPage() {
   // General Settings State
   const [timezone, setTimezone] = useState(() => localStorage.getItem('appTimezone') || 'UTC');
   const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
-  const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
-  const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
+  const [favicon, setFavicon] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
+  const [faviconPreview, setFaviconPreview] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
 
   // Payment Settings
   const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'both');
@@ -643,6 +647,10 @@ export default function SettingsPage() {
       licenseKey: data.licenseKey,
       licenseExpiry: data.licenseExpiry,
       licenseOwner: data.licenseOwner,
+      restaurantInstagram: restaurantInstagram,
+      restaurantWhatsapp: restaurantWhatsapp,
+      restaurantTelegram: restaurantTelegram,
+      restaurantGoogleMapsUrl: restaurantGoogleMapsUrl,
       favicon: favicon,
     };
     console.log("Sending updated settings to mutation", updatedSettings);
