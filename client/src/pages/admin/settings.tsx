@@ -111,6 +111,39 @@ export default function SettingsPage() {
     queryKey: ['/api/settings'],
   });
 
+  // Form definition
+  const form = useForm<SettingsFormData>({
+    resolver: zodResolver(settingsSchema),
+    defaultValues: {
+      primaryColor: '#0079F2',
+      showBuyButton: true,
+      showMoreInformationPopup: true,
+      defaultLanguage: 'en',
+      currency: 'USD',
+      currencySymbol: '$',
+      currencyPosition: 'before',
+      paymentMethod: 'both',
+      licenseKey: '',
+      licenseExpiry: '',
+      licenseOwner: '',
+      kdShowTableNumber: true,
+      kdShowOrderTime: true,
+      kdShowClock: true,
+      kdShowNotes: true,
+      kdHasPendingStatus: true,
+      kdShowRecentlyCompleted: true,
+      kdPendingColor: '#FF9800',
+      kdPreparingColor: '#2196F3',
+      kdReadyColor: '#4CAF50',
+      restaurantInstagram: '',
+      restaurantWhatsapp: '',
+      restaurantTelegram: '',
+      restaurantGoogleMapsUrl: '',
+      timezone: localStorage.getItem('appTimezone') || 'UTC',
+    },
+  });
+
+
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: Partial<SettingsType>) => {
       console.log('Mutation function started with data:', data);
@@ -413,13 +446,12 @@ export default function SettingsPage() {
   const [profileAvatarPreview, setProfileAvatarPreview] = useState('');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  
-      // General Settings State
-      const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
+
+  // General Settings State
+  const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
       const [favicon, setFavicon] = useState(() => localStorage.getItem('favicon') || '');
       const [faviconPreview, setFaviconPreview] = useState(() => localStorage.getItem('favicon') || '');
       
-      const timezone = form.watch('timezone');
   const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'both');
   
   // Roles Settings
@@ -679,7 +711,7 @@ export default function SettingsPage() {
     localStorage.setItem("showMenuInstagram", String(showMenuInstagram));
     localStorage.setItem("showMenuWhatsapp", String(showMenuWhatsapp));
     localStorage.setItem("showMenuTelegram", String(showMenuTelegram));
-    localStorage.setItem("timezone", timezone);
+    localStorage.setItem("appTimezone", data.timezone);
   };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1242,7 +1274,10 @@ export default function SettingsPage() {
                   {/* Timezone Section */}
                   <div className="space-y-2">
                     <FormLabel htmlFor="timezone">Timezone</FormLabel>
-                    <Select value={form.watch('timezone')} onValueChange={(val) => form.setValue('timezone', val)}>
+                    <Select value={form.watch('timezone')} onValueChange={(val) => {
+                      form.setValue('timezone', val);
+                      localStorage.setItem('appTimezone', val);
+                    }}>
                       <SelectTrigger id="timezone" data-testid="select-timezone">
                         <SelectValue placeholder="Select timezone" />
                       </SelectTrigger>
