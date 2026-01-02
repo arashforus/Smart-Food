@@ -3005,10 +3005,10 @@ export default function SettingsPage() {
                     <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
                       <Building2 className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold">{restaurantName || "Our Restaurant"}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Professional Menu Management System</p>
+                    <h3 className="text-xl font-bold">Smart Food</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Professional Foody Places Management System</p>
                     <div className="mt-4 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                      Version 1.0.0
+                      Version 1.5.0
                     </div>
                   </div>
 
@@ -3021,15 +3021,15 @@ export default function SettingsPage() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-xs text-muted-foreground">Company Name</p>
-                          <p className="text-sm font-medium">{restaurantName || "Replit Inc."}</p>
+                          <p className="text-sm font-medium">Arashforus</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Address</p>
-                          <p className="text-sm font-medium">{restaurantAddress || "177 Townsend St, San Francisco, CA 94107"}</p>
+                          <p className="text-sm font-medium">Istanbul, Turkiye</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Support Email</p>
-                          <p className="text-sm font-medium">{restaurantEmail || "support@replit.com"}</p>
+                          <p className="text-sm font-medium">arashforus@yahoo.com</p>
                         </div>
                       </div>
                     </div>
@@ -3046,11 +3046,11 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Last Updated</p>
-                          <p className="text-sm font-medium">{new Date().toLocaleDateString()}</p>
+                          <p className="text-sm font-medium">10/01/2026</p>
                         </div>
                         <div>
-                          <p className="text-xs text-muted-foreground">Framework</p>
-                          <p className="text-sm font-medium">React + Express + Drizzle</p>
+                          <p className="text-xs text-muted-foreground">Website</p>
+                          <p className="text-sm font-medium">https://smartfood.com</p>
                         </div>
                       </div>
                     </div>
@@ -3058,7 +3058,7 @@ export default function SettingsPage() {
 
                   <div className="pt-6 border-t flex flex-col items-center gap-2">
                     <p className="text-xs text-muted-foreground text-center">
-                      {copyrightText}
+                      2026 Smart Food. All rights reserved.
                     </p>
                     <div className="flex gap-4">
                       <Button variant="ghost" className="text-xs h-auto p-0" asChild>
