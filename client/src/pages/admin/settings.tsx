@@ -2456,17 +2456,12 @@ export default function SettingsPage() {
                         )}
                       />
 
-                      <div className="p-4 bg-muted rounded-lg border">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Current Currency:</span>
                           <p className="text-lg font-bold">
                             {form.watch('currencyPosition') === 'before' 
                               ? `${form.watch('currencySymbol')} 100`
                               : `100 ${form.watch('currencySymbol')}`
                             } ({currencies.find((c) => c.code === form.watch('currencySelect'))?.name || 'Unknown'})
                           </p>
-                        </div>
-                      </div>
                 </CardContent>
               </Card>
             </TabsContent>
