@@ -231,6 +231,7 @@ export const settings = pgTable("settings", {
   currencyName: text("currency_name").notNull().default("US Dollar"),
   currencySymbol: text("currency_symbol").notNull().default("$"),
   currencyPosition: text("currency_position").notNull().default("after"),
+  currencySelect: text("currency_select").notNull().default("USD"),
 
   // Payment
   

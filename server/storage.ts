@@ -236,6 +236,7 @@ export interface StorageSetting {
   kdPreparingColor?: string;
   kdReadyColor?: string;
   currencyPosition?: string;
+  currencySelect?: string;
   paymentMethod?: string;
   rolesAdminPermissions?: string;
   rolesAdminSettingAccess?: string;
@@ -495,6 +496,7 @@ export class MemStorage implements IStorage {
       currencyName: DEFAULT_SETTINGS.currencyName,
       currencySymbol: DEFAULT_SETTINGS.currencySymbol,
       currencyPosition: DEFAULT_SETTINGS.currencyPosition,
+      currencySelect: DEFAULT_SETTINGS.currencySelect || 'USD',
       // License
       licenseKey: DEFAULT_SETTINGS.licenseKey,
       licenseExpiryDate: DEFAULT_SETTINGS.licenseExpiryDate,
