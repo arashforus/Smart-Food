@@ -40,9 +40,10 @@ const settingsSchema = z.object({
   showBuyButton: z.boolean(),
   showMoreInformationPopup: z.boolean(),
   defaultLanguage: z.string().min(1, 'Default language is required'),
-  currency: z.string().min(1, 'Currency is required'),
+  currencyName: z.string().min(1, 'Currency name is required'),
   currencySymbol: z.string().min(1, 'Currency symbol is required'),
   currencyPosition: z.enum(['before', 'after']).default('before'),
+  currencySelect: z.string().min(1, 'Currency is required'),
   paymentMethod: z.enum(['cash', 'card', 'both']),
   licenseKey: z.string().optional(),
   licenseExpiry: z.string().optional(),
@@ -106,12 +107,12 @@ export default function SettingsPage() {
   const [location] = useLocation();
   const { ossSettings, updateOSSSettings } = useOrders();
 
-  const { data: dbSettings, isLoading: isLoadingSettings } = useQuery<SettingsType>({
+  const { data: dbSettings, isLoading: isLoadingSettings } = useQuery<any>({
     queryKey: ['/api/settings'],
   });
 
   const updateSettingsMutation = useMutation({
-    mutationFn: async (data: Partial<SettingsType>) => {
+    mutationFn: async (data: any) => {
       console.log('Mutation function started with data:', data);
       const res = await apiRequest('PATCH', '/api/settings', data);
       if (!res.ok) {
@@ -264,32 +265,35 @@ export default function SettingsPage() {
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
       // Update form values when DB settings load
-      form.reset({
-        primaryColor: dbSettings.primaryColor,
-        showBuyButton: dbSettings.showBuyButton !== false,
-        showMoreInformationPopup: dbSettings.showMoreInformationPopup !== false,
-        defaultLanguage: dbSettings.defaultLanguage,
-        currency: dbSettings.currency || 'USD',
-        currencySymbol: dbSettings.currencySymbol || '$',
-        currencyPosition: dbSettings.currencyPosition as 'before' | 'after' || 'before',
-        paymentMethod: dbSettings.paymentSettings?.paymentMethod || 'both',
-        licenseKey: dbSettings.licenseKey || '',
-        licenseExpiry: dbSettings.licenseExpiry || '',
-        licenseOwner: dbSettings.licenseOwner || '',
-        kdShowTableNumber: dbSettings.kdShowTableNumber ?? true,
-        kdShowOrderTime: dbSettings.kdShowOrderTime ?? true,
-        kdShowClock: dbSettings.kdShowClock ?? true,
-        kdShowNotes: dbSettings.kdShowNotes ?? true,
-        kdHasPendingStatus: dbSettings.kdHasPendingStatus ?? true,
-        kdShowRecentlyCompleted: dbSettings.kdShowRecentlyCompleted ?? true,
-        kdPendingColor: dbSettings.kdPendingColor || '#FF9800',
-        kdPreparingColor: dbSettings.kdPreparingColor || '#2196F3',
-        kdReadyColor: dbSettings.kdReadyColor || '#4CAF50',
-        restaurantInstagram: dbSettings.restaurantInstagram || localStorage.getItem('restaurantInstagram') || '',
-        restaurantWhatsapp: dbSettings.restaurantWhatsapp || localStorage.getItem('restaurantWhatsapp') || '',
-        restaurantTelegram: dbSettings.restaurantTelegram || localStorage.getItem('restaurantTelegram') || '',
-        restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || localStorage.getItem('restaurantGoogleMapsUrl') || '',
-      });
+      if (dbSettings) {
+        form.reset({
+          primaryColor: dbSettings.primaryColor,
+          showBuyButton: dbSettings.showBuyButton !== false,
+          showMoreInformationPopup: dbSettings.showMoreInformationPopup !== false,
+          defaultLanguage: dbSettings.defaultLanguage,
+          currencySelect: dbSettings.currencySelect || 'USD',
+          currencyName: dbSettings.currencyName || 'US Dollar',
+          currencySymbol: dbSettings.currencySymbol || '$',
+          currencyPosition: (dbSettings.currencyPosition as 'before' | 'after') || 'before',
+          paymentMethod: (dbSettings.paymentMethod as 'cash' | 'card' | 'both') || 'both',
+          licenseKey: dbSettings.licenseKey || '',
+          licenseExpiry: dbSettings.licenseExpiry || '',
+          licenseOwner: dbSettings.licenseOwner || '',
+          kdShowTableNumber: dbSettings.kdShowTableNumber ?? true,
+          kdShowOrderTime: dbSettings.kdShowOrderTime ?? true,
+          kdShowClock: dbSettings.kdShowClock ?? true,
+          kdShowNotes: dbSettings.kdShowNotes ?? true,
+          kdHasPendingStatus: dbSettings.kdHasPendingStatus ?? true,
+          kdShowRecentlyCompleted: dbSettings.kdShowRecentlyCompleted ?? true,
+          kdPendingColor: dbSettings.kdPendingColor || '#FF9800',
+          kdPreparingColor: dbSettings.kdPreparingColor || '#2196F3',
+          kdReadyColor: dbSettings.kdReadyColor || '#4CAF50',
+          restaurantInstagram: dbSettings.restaurantInstagram || '',
+          restaurantWhatsapp: dbSettings.restaurantWhatsapp || '',
+          restaurantTelegram: dbSettings.restaurantTelegram || '',
+          restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || '',
+        });
+      }
     }
   }, [dbSettings]);
   const [ossForm, setOSSForm] = useState<OSSSettings>(ossSettings);
@@ -2373,74 +2377,96 @@ export default function SettingsPage() {
 
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <FormField control={form.control} name="currency" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Select Currency</FormLabel>
-                      <Select onValueChange={handleCurrencyChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-currency">
-                            <SelectValue placeholder="Select currency" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {currencies.map((curr) => (
-                            <SelectItem key={curr.code} value={curr.code}>
-                              {curr.name} ({curr.code})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>Choose the currency for your restaurant's prices</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                      <FormField
+                        control={form.control}
+                        name="currencySelect"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select Currency</FormLabel>
+                            <Select 
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                const selected = currencies.find(c => c.code === value);
+                                if (selected) {
+                                  form.setValue('currencyName', selected.name);
+                                  form.setValue('currencySymbol', selected.symbol);
+                                }
+                              }} 
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger data-testid="select-currency">
+                                  <SelectValue placeholder="Select currency" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {currencies.map((curr) => (
+                                  <SelectItem key={curr.code} value={curr.code}>
+                                    {curr.name} ({curr.code})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>Choose the currency for your restaurant's prices</FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField control={form.control} name="currencySymbol" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Currency Symbol</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          placeholder="$" 
-                          maxLength={3} 
-                          data-testid="input-currency-symbol" 
-                          />
-                      </FormControl>
-                      <FormDescription>The symbol displayed next to prices (automatically set when changing currency)</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                      <FormField
+                        control={form.control}
+                        name="currencySymbol"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Currency Symbol</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                placeholder="$" 
+                                maxLength={3} 
+                                data-testid="input-currency-symbol" 
+                              />
+                            </FormControl>
+                            <FormDescription>The symbol displayed next to prices (automatically set when changing currency)</FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField control={form.control} name="currencyPosition" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Currency Position</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-currency-position">
-                            <SelectValue placeholder="Select position" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="before">Before Price (e.g., $ 100)</SelectItem>
-                          <SelectItem value="after">After Price (e.g., 100 $)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>Choose where the currency symbol appears relative to the price</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                      <FormField
+                        control={form.control}
+                        name="currencyPosition"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Currency Position</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-currency-position">
+                                  <SelectValue placeholder="Select position" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="before">Before Price (e.g., $ 100)</SelectItem>
+                                <SelectItem value="after">After Price (e.g., 100 $)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>Choose where the currency symbol appears relative to the price</FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <div className="p-4 bg-muted rounded-lg border">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Current Currency:</span>
-                      <p className="text-lg font-bold">
-                        {form.watch('currencyPosition') === 'before' 
-                          ? `${form.watch('currencySymbol')} 100`
-                          : `100 ${form.watch('currencySymbol')}`
-                        } ({currencies.find((c) => c.code === form.watch('currency'))?.name || 'Unknown'})
-                      </p>
-                    </div>
-                  </div>
+                      <div className="p-4 bg-muted rounded-lg border">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Current Currency:</span>
+                          <p className="text-lg font-bold">
+                            {form.watch('currencyPosition') === 'before' 
+                              ? `${form.watch('currencySymbol')} 100`
+                              : `100 ${form.watch('currencySymbol')}`
+                            } ({currencies.find((c) => c.code === form.watch('currencySelect'))?.name || 'Unknown'})
+                          </p>
+                        </div>
+                      </div>
                 </CardContent>
               </Card>
             </TabsContent>

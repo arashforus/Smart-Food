@@ -167,6 +167,9 @@ export interface Settings {
   defaultLanguage: string;
   currency?: string;
   currencySymbol?: string;
+  currencyPosition?: 'before' | 'after';
+  currencyName?: string;
+  currencySelect?: string;
   licenseKey?: string;
   licenseExpiry?: string;
   paymentSettings?: PaymentSettings;
