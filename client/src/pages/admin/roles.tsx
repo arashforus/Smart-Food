@@ -44,7 +44,7 @@ import DataTable from '@/components/admin/DataTable';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/lib/auth';
 import { mockUsers } from '@/lib/mockData';
-import { roleLabels, rolePermissions } from '@/lib/types';
+import { roleLabels, rolePermissions, type Settings } from '@/lib/types';
 import type { User, Role } from '@/lib/types';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
@@ -173,6 +173,25 @@ export default function RolesPage() {
     return branches.find((b) => b.id === branchId)?.name || 'Unknown';
   };
 
+  const { data: settings } = useQuery<Settings>({
+    queryKey: ['/api/settings'],
+  });
+
+  const getRolePermissions = (role: Role): string[] => {
+    if (!settings) return rolePermissions[role];
+    
+    let permissionsStr = '';
+    switch (role) {
+      case 'admin': permissionsStr = settings.rolesAdminPermissions || ''; break;
+      case 'manager': permissionsStr = settings.rolesManagerPermissions || ''; break;
+      case 'chef': permissionsStr = settings.rolesChefPermissions || ''; break;
+      case 'accountant': permissionsStr = settings.rolesAccountantPermissions || ''; break;
+    }
+    
+    if (!permissionsStr) return rolePermissions[role];
+    return permissionsStr.split(',').map(p => p.trim()).filter(Boolean);
+  };
+
   const roles: Role[] = ['admin', 'manager', 'chef', 'accountant'];
 
   if (branchesLoading || usersLoading) {
@@ -197,23 +216,26 @@ export default function RolesPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {roles.map((role) => (
-          <Card key={role}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {rolePermissions[role][0] === 'all'
-                  ? 'Full access to all features'
-                  : `Access: ${rolePermissions[role].join(', ')}`}
-              </p>
-              <p className="text-sm mt-2">
-                {users.filter((u) => u.role === role).length} user(s)
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {roles.map((role) => {
+          const permissions = getRolePermissions(role);
+          return (
+            <Card key={role}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {permissions[0] === 'all'
+                    ? 'Full access to all features'
+                    : `Access: ${permissions.join(', ')}`}
+                </p>
+                <p className="text-sm mt-2">
+                  {users.filter((u) => u.role === role).length} user(s)
+                </p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <DataTable
