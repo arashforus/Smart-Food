@@ -226,28 +226,11 @@ export const settings = pgTable("settings", {
   kdPendingColor: text("kd_pending_color").notNull().default("#FF9800"),
   kdPreparingColor: text("kd_preparing_color").notNull().default("#2196F3"),
   kdReadyColor: text("kd_ready_color").notNull().default("#4CAF50"),
-  
-  // Currency
   currencyName: text("currency_name").notNull().default("US Dollar"),
   currencySymbol: text("currency_symbol").notNull().default("$"),
   currencyPosition: text("currency_position").notNull().default("after"),
   currencySelect: text("currency_select").notNull().default("USD"),
-
-  // Payment
-  
-  // Roles
-
-  // License
-  licenseKey: text("license_key"),
-  licenseExpiryDate: timestamp("license_expiry_date"),
-
-  // OSS
-
-  //About
-
-  
-  createdAt: timestamp("created_at").defaultNow(),
-});
+  timezone: text("timezone").notNull().default("UTC"),
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
