@@ -230,7 +230,7 @@ export const settings = pgTable("settings", {
   currencySymbol: text("currency_symbol").notNull().default("$"),
   currencyPosition: text("currency_position").notNull().default("after"),
   currencySelect: text("currency_select").notNull().default("USD"),
-  
+  createdAt: timestamp("created_at").defaultNow(),
   });
 
 export const insertUserSchema = createInsertSchema(users).pick({

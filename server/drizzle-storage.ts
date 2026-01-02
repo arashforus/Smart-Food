@@ -122,6 +122,10 @@ export class DrizzleStorage implements IStorage {
       ossTableLabel: s.ossTableLabel ?? undefined,
       ossShowTableInformation: s.ossShowTableInformation ?? true,
       ossShowStatusIcon: s.ossShowStatusIcon ?? true,
+      currencySelect: s.currencySelect ?? 'USD',
+      currencyName: s.currencyName ?? 'US Dollar',
+      currencySymbol: s.currencySymbol ?? '$',
+      currencyPosition: s.currencyPosition ?? 'after',
       createdAt: s.createdAt ?? undefined,
     });
     return mapSettings(s);
@@ -213,11 +217,27 @@ export class DrizzleStorage implements IStorage {
       ossTableLabel: s.ossTableLabel ?? undefined,
       ossShowTableInformation: s.ossShowTableInformation ?? true,
       ossShowStatusIcon: s.ossShowStatusIcon ?? true,
+      currencySelect: s.currencySelect ?? 'USD',
+      currencyName: s.currencyName ?? 'US Dollar',
+      currencySymbol: s.currencySymbol ?? '$',
+      currencyPosition: s.currencyPosition ?? 'after',
       createdAt: s.createdAt ?? undefined,
     });
 
     if (!existing) {
-      const result = await db.insert(settings).values(data as any).returning();
+      const { id: _id, createdAt: _createdAt, ...insertData } = data as any;
+      // Ensure default values for required fields if they are missing
+      const finalData = {
+        primaryColor: insertData.primaryColor ?? '#4CAF50',
+        timezone: insertData.timezone ?? 'UTC',
+        defaultLanguage: insertData.defaultLanguage ?? 'en',
+        currencyName: insertData.currencyName ?? 'US Dollar',
+        currencySymbol: insertData.currencySymbol ?? '$',
+        currencyPosition: insertData.currencyPosition ?? 'after',
+        currencySelect: insertData.currencySelect ?? 'USD',
+        ...insertData
+      };
+      const result = await db.insert(settings).values(finalData).returning();
       return mapSettings(result[0]);
     }
 
