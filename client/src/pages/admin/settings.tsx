@@ -2482,7 +2482,7 @@ export default function SettingsPage() {
                   <FormField control={form.control} name="paymentMethod" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-base mb-4">Select Payment Method</FormLabel>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Cash Only */}
                         <button
                           type="button"
@@ -2508,36 +2508,48 @@ export default function SettingsPage() {
                         {/* Card Only */}
                         <button
                           type="button"
-                          disabled
+                          onClick={() => field.onChange('card')}
                           data-testid="button-payment-card"
-                          className="relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-border bg-muted/30 opacity-60 cursor-not-allowed"
+                          className={`relative flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
+                            field.value === 'card'
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border bg-card hover-elevate'
+                          }`}
                         >
-                          <div className="mb-3 p-3 rounded-lg bg-muted">
-                            <CreditCard className="h-6 w-6 text-muted-foreground" />
+                          <div className={`mb-3 p-3 rounded-lg ${field.value === 'card' ? 'bg-primary/10' : 'bg-muted'}`}>
+                            <CreditCard className={`h-6 w-6 ${field.value === 'card' ? 'text-primary' : 'text-muted-foreground'}`} />
                           </div>
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className={`text-sm font-medium ${field.value === 'card' ? 'text-primary' : 'text-foreground'}`}>
                             Card Only
                           </span>
-                          <span className="text-xs text-muted-foreground mt-1">Coming Soon</span>
+                          {field.value === 'card' && (
+                            <div className="absolute top-2 right-2 w-3 h-3 bg-primary rounded-full"></div>
+                          )}
                         </button>
 
                         {/* Cash & Card */}
                         <button
                           type="button"
-                          disabled
+                          onClick={() => field.onChange('both')}
                           data-testid="button-payment-both"
-                          className="relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-border bg-muted/30 opacity-60 cursor-not-allowed"
+                          className={`relative flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
+                            field.value === 'both'
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border bg-card hover-elevate'
+                          }`}
                         >
-                          <div className="mb-3 p-3 rounded-lg bg-muted">
+                          <div className={`mb-3 p-3 rounded-lg ${field.value === 'both' ? 'bg-primary/10' : 'bg-muted'}`}>
                             <div className="flex gap-1">
-                              <Banknote className="h-5 w-5 text-muted-foreground" />
-                              <CreditCard className="h-5 w-5 text-muted-foreground" />
+                              <Banknote className={`h-5 w-5 ${field.value === 'both' ? 'text-primary' : 'text-muted-foreground'}`} />
+                              <CreditCard className={`h-5 w-5 ${field.value === 'both' ? 'text-primary' : 'text-muted-foreground'}`} />
                             </div>
                           </div>
-                          <span className="text-sm font-medium text-muted-foreground">
+                          <span className={`text-sm font-medium ${field.value === 'both' ? 'text-primary' : 'text-foreground'}`}>
                             Cash & Card
                           </span>
-                          <span className="text-xs text-muted-foreground mt-1">Coming Soon</span>
+                          {field.value === 'both' && (
+                            <div className="absolute top-2 right-2 w-3 h-3 bg-primary rounded-full"></div>
+                          )}
                         </button>
                       </div>
                       <FormDescription>Choose which payment methods customers can use</FormDescription>
