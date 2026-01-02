@@ -563,7 +563,7 @@ export default function SettingsPage() {
       showBuyButton: settings.showBuyButton !== false,
       showMoreInformationPopup: settings.showMoreInformationPopup !== false,
       defaultLanguage: settings.defaultLanguage,
-      currency: settings.currency || 'USD',
+      currencyName: settings.currency || 'USD',
       currencySymbol: settings.currencySymbol || '$',
       currencyPosition: settings.currencyPosition || 'before',
       paymentMethod: settings.paymentSettings?.paymentMethod || 'both',
@@ -879,7 +879,7 @@ export default function SettingsPage() {
   const handleCurrencyChange = (code: string) => {
     const selected = currencies.find((c) => c.code === code);
     if (selected) {
-      form.setValue('currency', selected.code);
+      form.setValue('currencyName', selected.code);
       form.setValue('currencySymbol', selected.symbol);
     }
   };
