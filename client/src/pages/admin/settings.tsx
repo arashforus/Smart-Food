@@ -1521,8 +1521,8 @@ export default function SettingsPage() {
                         <FormControl>
                           <Input
                             id="rest-instagram"
-                            {...field}
-                            value={field.value || ''}
+                            value={restaurantInstagram}
+                            onChange={(e) => setRestaurantInstagram(e.target.value)}
                             placeholder="https://instagram.com/yourrestaurant"
                             data-testid="input-restaurant-instagram"
                           />
@@ -1538,8 +1538,8 @@ export default function SettingsPage() {
                         <FormControl>
                           <Input
                             id="rest-whatsapp"
-                            {...field}
-                            value={field.value || ''}
+                            value={restaurantWhatsapp}
+                            onChange={(e) => setRestaurantWhatsapp(e.target.value)}
                             placeholder="+1234567890 or https://wa.me/1234567890"
                             data-testid="input-restaurant-whatsapp"
                           />
@@ -1555,8 +1555,8 @@ export default function SettingsPage() {
                         <FormControl>
                           <Input
                             id="rest-telegram"
-                            {...field}
-                            value={field.value || ''}
+                            value={restaurantTelegram}
+                            onChange={(e) => setRestaurantTelegram(e.target.value)}
                             placeholder="https://t.me/yourrestaurant"
                             data-testid="input-restaurant-telegram"
                           />
@@ -1572,8 +1572,8 @@ export default function SettingsPage() {
                         <FormControl>
                           <Input
                             id="rest-gmaps"
-                            {...field}
-                            value={field.value || ''}
+                            value={restaurantGoogleMapsUrl}
+                            onChange={(e) => setRestaurantGoogleMapsUrl(e.target.value)}
                             placeholder="https://maps.google.com/?q=..."
                             data-testid="input-restaurant-google-maps"
                           />
@@ -2399,7 +2399,12 @@ export default function SettingsPage() {
                     <FormItem>
                       <FormLabel>Currency Symbol</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="$" maxLength={3} data-testid="input-currency-symbol" />
+                        <Input 
+                          {...field} 
+                          placeholder="$" 
+                          maxLength={3} 
+                          data-testid="input-currency-symbol" 
+                          />
                       </FormControl>
                       <FormDescription>The symbol displayed next to prices (automatically set when changing currency)</FormDescription>
                       <FormMessage />
