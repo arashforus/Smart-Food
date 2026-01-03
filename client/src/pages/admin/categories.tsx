@@ -252,12 +252,26 @@ export default function CategoriesPage() {
                             <img src={field.value} alt="Category preview" className="h-48 w-48 rounded-lg object-cover border" />
                           </div>
                         )}
-                        <input type="file" ref={fileInputRefEdit} onChange={(e) => {
+                        <input type="file" ref={fileInputRefEdit} onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => field.onChange(event.target?.result as string);
-                            reader.readAsDataURL(file);
+                            try {
+                              const formData = new FormData();
+                              formData.append('file', file);
+                              const response = await fetch('/api/upload', {
+                                method: 'POST',
+                                body: formData,
+                              });
+                              if (response.ok) {
+                                const data = await response.json();
+                                field.onChange(data.url);
+                                toast({ title: 'Image uploaded successfully' });
+                              } else {
+                                throw new Error('Upload failed');
+                              }
+                            } catch (error) {
+                              toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
+                            }
                           }
                         }} accept="image/*" className="hidden" data-testid="input-file-category-image-edit" />
                         <Button type="button" variant="outline" className="w-full" onClick={() => fileInputRefEdit.current?.click()} data-testid="button-upload-image-edit">
