@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from "@/components/ui/switch";
+import ImageUpload from "@/components/admin/ImageUpload";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code, Tv2, Banknote } from 'lucide-react';
 import { SiInstagram, SiTelegram } from 'react-icons/si';
@@ -529,6 +530,12 @@ export default function SettingsPage() {
     { value: 'UTC+14', label: 'UTC+14:00 (Line Islands)' },
   ];
 
+  const profileAvatarInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const qrMediaInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     setShowChangePassword(location.includes('action=changePassword'));
   }, [location]);
@@ -711,141 +718,6 @@ export default function SettingsPage() {
     form.handleSubmit(handleSubmit)();
   };
 
-  const handleProfileAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setProfileAvatar(data.url);
-          setProfileAvatarPreview(data.url);
-          toast({ title: 'Image uploaded successfully' });
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
-      }
-    }
-  };
-
-  const handleClearProfileAvatar = () => {
-    setProfileAvatar('');
-    setProfileAvatarPreview('');
-    if (profileAvatarInputRef.current) {
-      profileAvatarInputRef.current.value = '';
-    }
-  };
-
-  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setFavicon(data.url);
-          setFaviconPreview(data.url);
-          toast({ title: 'Image uploaded successfully' });
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
-      }
-    }
-  };
-
-  const handleClearFavicon = () => {
-    setFavicon('');
-    setFaviconPreview('');
-    if (faviconInputRef.current) {
-      faviconInputRef.current.value = '';
-    }
-  };
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setRestaurantLogo(data.url);
-          setRestaurantLogoPreview(data.url);
-          toast({ title: 'Image uploaded successfully' });
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
-      }
-    }
-  };
-
-  const handleClearLogo = () => {
-    setRestaurantLogo('');
-    setRestaurantLogoPreview('');
-    if (logoInputRef.current) {
-      logoInputRef.current.value = '';
-    }
-  };
-
-  const handleClearImage = () => {
-    setLoginBackgroundImage('');
-    setLoginBackgroundPreview('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleQrMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const isVideo = file.type.startsWith('video/');
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setQrMediaUrl(data.url);
-          setQrMediaType(isVideo ? 'video' : 'image');
-          toast({ title: 'Media uploaded successfully' });
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to upload media', variant: 'destructive' });
-      }
-    }
-  };
-
-  const handleClearQrMedia = () => {
-    setQrMediaUrl('');
-    if (qrMediaInputRef.current) {
-      qrMediaInputRef.current.value = '';
-    }
-  };
 
   const toggleRoleSection = (role: 'admin' | 'manager' | 'chef' | 'accountant', section: string) => {
     setRolePermissions((prev) => ({
@@ -895,29 +767,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setLoginBackgroundImage(data.url);
-          setLoginBackgroundPreview(data.url);
-          toast({ title: 'Image uploaded successfully' });
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
-      }
-    }
-  };
 
   const handleCurrencyChange = (code: string) => {
     const selected = currencies.find((c) => c.code === code);
@@ -1053,30 +902,15 @@ export default function SettingsPage() {
                       </div>
                       <div className="space-y-2">
                         <FormLabel>Profile Picture</FormLabel>
-                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                          onClick={() => profileAvatarInputRef.current?.click()}
-                        >
-                          {profileAvatarPreview ? (
-                            <div className="space-y-2">
-                              <img src={profileAvatarPreview} alt="Profile Preview" className="max-h-32 mx-auto rounded-lg object-cover" />
-                              <p className="text-sm text-muted-foreground">Click to change</p>
-                            </div>
-                          ) : (
-                            <div className="space-y-2 py-4">
-                              <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                              <p className="text-sm text-muted-foreground">Click to upload profile picture</p>
-                              <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
-                            </div>
-                          )}
-                          <input
-                            ref={profileAvatarInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleProfileAvatarUpload}
-                            className="hidden"
-                            data-testid="input-profile-avatar"
+                          <ImageUpload
+                            value={profileAvatar || ''}
+                            onChange={(url) => {
+                              setProfileAvatar(url);
+                              setProfileAvatarPreview(url);
+                            }}
+                            placeholder="Upload profile picture"
+                            testId="input-profile-avatar"
                           />
-                        </div>
                         {profileAvatar && (
                           <Button
                             type="button"
@@ -1349,30 +1183,15 @@ export default function SettingsPage() {
                   {/* Favicon Section */}
                   <div className="space-y-2">
                     <FormLabel htmlFor="favicon">Favicon</FormLabel>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                      onClick={() => faviconInputRef.current?.click()}
-                    >
-                      {faviconPreview ? (
-                        <div className="space-y-2">
-                          <img src={faviconPreview} alt="Favicon Preview" className="h-16 w-16 mx-auto rounded" />
-                          <p className="text-sm text-muted-foreground">Click to change</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2 py-4">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">Click to upload favicon</p>
-                          <p className="text-xs text-muted-foreground">PNG, ICO up to 1MB</p>
-                        </div>
-                      )}
-                      <input
-                        ref={faviconInputRef}
-                        type="file"
-                        accept="image/png,image/x-icon,.ico"
-                        onChange={handleFaviconUpload}
-                        className="hidden"
-                        data-testid="input-favicon"
-                      />
-                    </div>
+                          <ImageUpload
+                            value={favicon || ''}
+                            onChange={(url) => {
+                              setFavicon(url);
+                              setFaviconPreview(url);
+                            }}
+                            placeholder="Upload favicon"
+                            testId="input-favicon"
+                          />
                     {favicon && (
                       <Button
                         type="button"
@@ -1401,30 +1220,15 @@ export default function SettingsPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <FormLabel htmlFor="rest-logo">Restaurant Logo</FormLabel>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                      onClick={() => logoInputRef.current?.click()}
-                    >
-                      {restaurantLogoPreview ? (
-                        <div className="space-y-2">
-                          <img src={restaurantLogoPreview} alt="Logo" className="max-h-24 mx-auto rounded-lg object-cover" />
-                          <p className="text-sm text-muted-foreground">Click to change</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2 py-4">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">Click to upload logo</p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
-                        </div>
-                      )}
-                      <input
-                        ref={logoInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="hidden"
-                        data-testid="input-restaurant-logo"
-                      />
-                    </div>
+                          <ImageUpload
+                            value={restaurantLogo || ''}
+                            onChange={(url) => {
+                              setRestaurantLogo(url);
+                              setRestaurantLogoPreview(url);
+                            }}
+                            placeholder="Upload logo"
+                            testId="input-restaurant-logo"
+                          />
                     {restaurantLogo && (
                       <Button type="button" variant="outline" size="sm" onClick={handleClearLogo} className="w-full" data-testid="button-clear-logo">
                         <X className="h-4 w-4 mr-2" />
@@ -1644,47 +1448,19 @@ export default function SettingsPage() {
                 <CardContent className="space-y-6">
                   {/* Background Image Section */}
                   <div className="space-y-4 pb-6 border-b">
-                    <div className="space-y-2">
-                      <FormLabel>Background Image</FormLabel>
-                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        {loginBackgroundPreview ? (
-                          <div className="space-y-2">
-                            <img src={loginBackgroundPreview} alt="Preview" className="max-h-48 mx-auto rounded" />
-                            <p className="text-sm text-muted-foreground">Click to change or scroll down to clear</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-2 py-4">
-                            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                            <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                            <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
-                          </div>
-                        )}
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                          data-testid="input-login-background"
-                        />
+                      <div className="space-y-2">
+                        <FormLabel>Background Image</FormLabel>
+                          <ImageUpload
+                            value={loginBackgroundImage || ''}
+                            onChange={(url) => {
+                              setLoginBackgroundImage(url);
+                              setLoginBackgroundPreview(url);
+                            }}
+                            placeholder="Upload background image"
+                            testId="input-login-background"
+                          />
+                        <FormDescription>Recommended size: 1920x1080px or larger. The image will be used as a background with a dark overlay for better text visibility.</FormDescription>
                       </div>
-                      {loginBackgroundImage && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleClearImage}
-                          className="w-full"
-                          data-testid="button-clear-background"
-                        >
-                          <X className="h-4 w-4 mr-2" />
-                          Clear Image
-                        </Button>
-                      )}
-                      <FormDescription>Recommended size: 1920x1080px or larger. The image will be used as a background with a dark overlay for better text visibility.</FormDescription>
-                    </div>
                   </div>
 
                   {/* Display Options */}
@@ -1773,38 +1549,16 @@ export default function SettingsPage() {
                     <div className="space-y-4 pt-4">
                       <FormLabel>QR Page Media (Photo or Video)</FormLabel>
                       <div className="flex flex-col gap-4">
-                        {qrMediaUrl ? (
-                          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted border">
-                            {qrMediaType === 'video' ? (
-                              <video src={qrMediaUrl} controls className="w-full h-full object-cover" />
-                            ) : (
-                              <img src={qrMediaUrl} alt="QR Media Preview" className="w-full h-full object-cover" />
-                            )}
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-2 right-2 h-8 w-8"
-                              onClick={handleClearQrMedia}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div
-                            onClick={() => qrMediaInputRef.current?.click()}
-                            className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
-                          >
-                            <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                            <p className="text-sm text-muted-foreground">Click to upload photo or video</p>
-                          </div>
-                        )}
-                        <input
-                          type="file"
-                          ref={qrMediaInputRef}
-                          onChange={handleQrMediaUpload}
-                          accept="image/*,video/*"
-                          className="hidden"
-                        />
+                          <ImageUpload
+                            value={qrMediaUrl || ''}
+                            onChange={(url) => {
+                              setQrMediaUrl(url);
+                              const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
+                              setQrMediaType(isVideo ? 'video' : 'image');
+                            }}
+                            placeholder="Upload QR media"
+                            testId="input-qr-media"
+                          />
                       </div>
                       <FormDescription>Upload a photo or video to be displayed on your QR landing page</FormDescription>
                     </div>

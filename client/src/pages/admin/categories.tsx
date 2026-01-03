@@ -38,6 +38,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { Category } from '@/lib/types';
@@ -241,45 +242,16 @@ export default function CategoriesPage() {
               
               <FormField control={form.control} name="image" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isCreate ? 'Image URL (optional)' : 'Image'}</FormLabel>
+                  <FormLabel>Image</FormLabel>
                   <FormControl>
-                    {isCreate ? (
-                      <Input {...field} placeholder="https://..." data-testid="input-category-image" />
-                    ) : (
-                      <div className="space-y-3">
-                        {field.value && typeof field.value === 'string' && (
-                          <div className="flex justify-center">
-                            <img src={field.value} alt="Category preview" className="h-48 w-48 rounded-lg object-cover border" />
-                          </div>
-                        )}
-                        <input type="file" ref={fileInputRefEdit} onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              const formData = new FormData();
-                              formData.append('file', file);
-                              const response = await fetch('/api/upload', {
-                                method: 'POST',
-                                body: formData,
-                              });
-                              if (response.ok) {
-                                const data = await response.json();
-                                field.onChange(data.url);
-                                toast({ title: 'Image uploaded successfully' });
-                              } else {
-                                throw new Error('Upload failed');
-                              }
-                            } catch (error) {
-                              toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
-                            }
-                          }
-                        }} accept="image/*" className="hidden" data-testid="input-file-category-image-edit" />
-                        <Button type="button" variant="outline" className="w-full" onClick={() => fileInputRefEdit.current?.click()} data-testid="button-upload-image-edit">
-                          <Upload className="w-4 h-4 mr-2" />
-                          {field.value ? 'Change Image' : 'Upload Image'}
-                        </Button>
-                      </div>
-                    )}
+                    <div className="space-y-3">
+                      <ImageUpload
+                        value={field.value || ''}
+                        onChange={(url) => field.onChange(url)}
+                        placeholder="Upload category image"
+                        testId="input-category-image"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
