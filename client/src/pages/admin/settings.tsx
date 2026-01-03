@@ -2474,7 +2474,10 @@ export default function SettingsPage() {
                         {/* Cash Only */}
                         <button
                           type="button"
-                          onClick={() => field.onChange('cash')}
+                          onClick={() => {
+                            field.onChange('cash')
+                            setPaymentMethod('cash')
+                          }}
                           data-testid="button-payment-cash"
                           className={`relative flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
                             field.value === 'cash'

@@ -230,6 +230,20 @@ export const settings = pgTable("settings", {
   currencySymbol: text("currency_symbol").notNull().default("$"),
   currencyPosition: text("currency_position").notNull().default("after"),
   currencySelect: text("currency_select").notNull().default("USD"),
+
+  // Payment
+  paymentMethod: text("payment_method").notNull().default("cash"),
+
+  // Roles
+  rolesAdminPermissions: text("roles_admin_permissions").notNull().default("all"),
+  rolesAdminSettingAccess: text("roles_admin_setting_access").notNull().default("all"),
+  rolesManagerPermissions: text("roles_manager_permissions").notNull().default("all"),
+  rolesManagerSettingAccess: text("roles_manager_setting_access").notNull().default("all"),
+  rolesChefPermissions: text("roles_chef_permissions").notNull().default("all"),
+  rolesChefSettingAccess: text("roles_chef_setting_access").notNull().default("none"),
+  rolesAccountantPermissions: text("roles_accountant_permissions").notNull().default("all"),
+  rolesAccountantSettingAccess: text("roles_accountant_setting_access").notNull().default("none"),
+    
   createdAt: timestamp("created_at").defaultNow(),
   });
 
