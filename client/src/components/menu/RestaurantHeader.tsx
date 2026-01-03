@@ -27,7 +27,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <motion.div
           key="header-content"
           layout
-          className={`flex flex-col items-center transition-all duration-500 ${isOpen ? (isRtl ? 'md:items-end' : 'md:items-start') : 'items-center'}`}
+          className="flex flex-col items-center transition-all duration-500"
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
             <div className="flex justify-center mb-4">
@@ -40,12 +40,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </div>
           )}
           {settings?.menuShowRestaurantName && (
-            <h1 className={`text-3xl font-bold mb-2 tracking-tight ${isOpen ? (isRtl ? 'text-right' : 'text-left md:text-left') : 'text-center'}`} data-testid="text-restaurant-name">
+            <h1 className="text-3xl font-bold mb-2 tracking-tight text-center" data-testid="text-restaurant-name">
               {restaurant.name}
             </h1>
           )}
           {settings?.menuShowRestaurantDescription && (
-            <p className={`text-base text-muted-foreground leading-relaxed max-w-lg ${isOpen ? (isRtl ? 'text-right' : 'text-left') : 'text-center'}`}>
+            <p className="text-base text-muted-foreground leading-relaxed max-w-lg text-center">
               {restaurant.description}
             </p>
           )}
