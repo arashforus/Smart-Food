@@ -2499,7 +2499,10 @@ export default function SettingsPage() {
                         {/* Card Only */}
                         <button
                           type="button"
-                          onClick={() => field.onChange('card')}
+                          onClick={() => {
+                            field.onChange('card')
+                            setPaymentMethod('card')
+                          }}
                           data-testid="button-payment-card"
                           className={`relative flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
                             field.value === 'card'
@@ -2521,7 +2524,10 @@ export default function SettingsPage() {
                         {/* Cash & Card */}
                         <button
                           type="button"
-                          onClick={() => field.onChange('both')}
+                          onClick={() => {
+                            field.onChange('both')
+                            setPaymentMethod('both')
+                          }}
                           data-testid="button-payment-both"
                           className={`relative flex flex-col items-center justify-center p-6 rounded-lg border-2 transition-all ${
                             field.value === 'both'
