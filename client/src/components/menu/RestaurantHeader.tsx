@@ -51,7 +51,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
     },
     open: {
       x: isRtl ? '-100%' : '100%',
-      textAlign: isRtl ? 'right' : 'left' as const,
+      textAlign: (isRtl ? 'right' : 'left') as 'right' | 'left',
       transition: {
         type: "spring",
         stiffness: 300,
