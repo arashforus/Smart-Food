@@ -75,29 +75,29 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             >
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md min-w-[300px] md:min-w-[400px]">
                 <CardContent className="p-6">
-                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${isRtl ? 'md:divide-x-reverse md:divide-x' : 'md:divide-x'} divide-border`}>
+                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${isRtl ? 'md:divide-x-reverse md:divide-x' : 'md:divide-x'} divide-border`}>
                     {/* Left Column: Hours */}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {settings?.menuShowOperationHours && restaurant.hours && (
-                        <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                            <Clock className="h-5 w-5 text-primary" />
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
+                        <div className={`flex flex-col gap-2 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 mb-0.5 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                            <Clock className="h-4 w-4 text-primary" />
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.hours}</p>
                           </div>
-                          <div className="grid grid-cols-1 gap-1">
+                          <div className="grid grid-cols-1 gap-0.5">
                             {(() => {
                               try {
                                 const hours = JSON.parse(restaurant.hours);
                                 return Object.entries(hours).map(([day, config]: [string, any]) => (
-                                  <div key={day} className={`flex items-center justify-between py-0.5 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                                    <span className="text-xs font-medium">{day}</span>
-                                    <span className={`text-xs ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
+                                  <div key={day} className={`flex items-center justify-between py-0 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                                    <span className="text-[11px] font-medium">{day}</span>
+                                    <span className={`text-[11px] ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
                                       {config.closed ? 'Closed' : `${config.start} - ${config.end}`}
                                     </span>
                                   </div>
                                 ));
                               } catch (e) {
-                                return <p className="text-xs">{restaurant.hours}</p>;
+                                return <p className="text-[11px]">{restaurant.hours}</p>;
                               }
                             })()}
                           </div>
@@ -106,25 +106,25 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                     </div>
 
                     {/* Right Column: Address and Phone */}
-                    <div className={`space-y-6 ${isRtl ? 'md:pr-8' : 'md:pl-8'}`}>
-                      <div className="space-y-6">
-                        <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                            <MapPin className="h-5 w-5 text-primary" />
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
+                    <div className={`space-y-4 ${isRtl ? 'md:pr-6' : 'md:pl-6'}`}>
+                      <div className="space-y-3">
+                        <div className={`flex flex-col gap-1.5 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                            <MapPin className="h-4 w-4 text-primary" />
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.address}</p>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
+                            <p className="text-[12px] font-medium leading-tight" data-testid="text-restaurant-address">{restaurant.address}</p>
                             {settings?.restaurantGoogleMapsUrl && (
-                              <div className="mt-3">
+                              <div className="mt-1.5">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-9 px-4 text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5"
+                                  className="h-7 px-3 text-[11px] text-primary hover-elevate gap-1.5 rounded-full border-primary/20 bg-primary/5 font-medium"
                                   onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
                                   data-testid="button-show-on-map"
                                 >
-                                  <MapPin className="h-4 w-4" />
+                                  <MapPin className="h-3 w-3" />
                                   Show on Map
                                 </Button>
                               </div>
@@ -132,19 +132,19 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           </div>
                         </div>
 
-                        <div className="border-t border-border my-4" />
+                        <div className="border-t border-border/50 my-2" />
 
-                        <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                            <Phone className="h-5 w-5 text-primary" />
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
+                        <div className={`flex flex-col gap-1.5 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                            <Phone className="h-4 w-4 text-primary" />
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.phone}</p>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                            <p className="text-[12px] font-medium leading-tight" data-testid="text-restaurant-phone">{restaurant.phone}</p>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-auto p-0 mt-2 text-primary hover-elevate no-underline hover:no-underline"
+                              className="h-6 px-0 mt-1 text-[11px] text-primary hover-elevate no-underline hover:no-underline font-medium"
                               onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
                               data-testid="button-call-now"
                             >
