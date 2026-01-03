@@ -233,6 +233,22 @@ export default function QRLandingPage() {
           )}
         </div>
       )}
+
+      <footer className="py-4 mt-auto relative z-10 border-t border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-[10px] text-white/40 flex items-center justify-center gap-1.5 uppercase tracking-widest font-medium">
+            <span>Powered by</span>
+            <a 
+              href="https://smartfood.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-bold text-white/60 hover:text-white transition-all hover:underline"
+            >
+              Smart Food
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
