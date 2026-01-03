@@ -117,9 +117,9 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                             <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
                             {settings?.restaurantGoogleMapsUrl && (
                               <Button
-                                variant="link"
+                                variant="ghost"
                                 size="sm"
-                                className="h-auto p-0 mt-2 text-primary hover-elevate"
+                                className="h-auto p-0 mt-2 text-primary hover-elevate no-underline hover:no-underline"
                                 onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
                                 data-testid="button-show-on-map"
                               >
@@ -137,9 +137,9 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
                             <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
                             <Button
-                              variant="link"
+                              variant="ghost"
                               size="sm"
-                              className="h-auto p-0 mt-2 text-primary hover-elevate"
+                              className="h-auto p-0 mt-2 text-primary hover-elevate no-underline hover:no-underline"
                               onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
                               data-testid="button-call-now"
                             >
