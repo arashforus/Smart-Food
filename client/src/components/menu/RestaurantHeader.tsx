@@ -113,18 +113,18 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                             <MapPin className="h-4 w-4 text-primary" />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.address}</p>
                           </div>
-                          <div className="flex-1">
+                          <div className="flex-1 flex flex-col items-center">
                             <p className="text-[12px] font-medium leading-tight" data-testid="text-restaurant-address">{restaurant.address}</p>
                             {settings?.restaurantGoogleMapsUrl && (
-                              <div className="mt-1.5">
+                              <div className="mt-2 w-full flex justify-center">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="h-7 px-3 text-[11px] text-primary hover-elevate gap-1.5 rounded-full border-primary/20 bg-primary/5 font-medium"
+                                  className="h-8 px-4 text-[11px] text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5 font-medium w-full max-w-[160px]"
                                   onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
                                   data-testid="button-show-on-map"
                                 >
-                                  <MapPin className="h-3 w-3" />
+                                  <MapPin className="h-3.5 w-3.5" />
                                   Show on Map
                                 </Button>
                               </div>
@@ -134,22 +134,25 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
                         <div className="border-t border-border/50 my-2" />
 
-                        <div className={`flex flex-col gap-1.5 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                        <div className={`flex flex-col gap-2 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''} justify-center md:justify-start`}>
                             <Phone className="h-4 w-4 text-primary" />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.phone}</p>
                           </div>
-                          <div className="flex-1">
+                          <div className="flex-1 flex flex-col items-center">
                             <p className="text-[12px] font-medium leading-tight" data-testid="text-restaurant-phone">{restaurant.phone}</p>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 px-0 mt-1 text-[11px] text-primary hover-elevate no-underline hover:no-underline font-medium"
-                              onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
-                              data-testid="button-call-now"
-                            >
-                              Call Now
-                            </Button>
+                            <div className="mt-2 w-full flex justify-center">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 px-4 text-[11px] text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5 font-medium w-full max-w-[160px]"
+                                onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
+                                data-testid="button-call-now"
+                              >
+                                <Phone className="h-3.5 w-3.5" />
+                                Call Now
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
