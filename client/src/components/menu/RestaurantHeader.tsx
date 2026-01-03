@@ -84,20 +84,20 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           <Clock className="h-5 w-5 text-primary" />
                           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
                         </div>
-                        <div className="grid grid-cols-1 gap-2">
+                        <div className="grid grid-cols-1 gap-1">
                           {(() => {
                             try {
                               const hours = JSON.parse(restaurant.hours);
                               return Object.entries(hours).map(([day, config]: [string, any]) => (
-                                <div key={day} className={`flex items-center justify-between py-1 border-b border-primary/5 last:border-0 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                                  <span className="text-sm font-medium">{day}</span>
-                                  <span className={`text-sm ${config.closed ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
+                                <div key={day} className={`flex items-center justify-between py-0.5 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                                  <span className="text-xs font-medium">{day}</span>
+                                  <span className={`text-xs ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
                                     {config.closed ? 'Closed' : `${config.start} - ${config.end}`}
                                   </span>
                                 </div>
                               ));
                             } catch (e) {
-                              return <p className="text-sm">{restaurant.hours}</p>;
+                              return <p className="text-xs">{restaurant.hours}</p>;
                             }
                           })()}
                         </div>
