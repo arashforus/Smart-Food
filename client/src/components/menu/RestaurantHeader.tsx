@@ -1,7 +1,8 @@
-import { MapPin, Phone, Clock, ChevronRight, X } from 'lucide-react';
+import { MapPin, Phone, Clock, ChevronRight, X, Circle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Restaurant, Language, Settings } from '@/lib/types';
 import { translations } from '@/lib/types';
@@ -14,8 +15,54 @@ interface RestaurantHeaderProps {
 
 export default function RestaurantHeader({ restaurant, language, settings }: RestaurantHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isRestaurantOpen, setIsRestaurantOpen] = useState<boolean | null>(null);
   const t = translations[language] || translations.en;
   const isRtl = language === 'fa' || language === 'ar';
+
+  useEffect(() => {
+    const checkOpenStatus = () => {
+      try {
+        if (!restaurant.hours) {
+          setIsRestaurantOpen(null);
+          return;
+        }
+
+        const hours = JSON.parse(restaurant.hours);
+        const now = new Date();
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const currentDay = days[now.getDay()];
+        const dayConfig = hours[currentDay];
+
+        if (!dayConfig || dayConfig.closed) {
+          setIsRestaurantOpen(false);
+          return;
+        }
+
+        const [startHours, startMinutes] = dayConfig.start.split(':').map(Number);
+        const [endHours, endMinutes] = dayConfig.end.split(':').map(Number);
+        
+        const startTime = new Date(now);
+        startTime.setHours(startHours, startMinutes, 0);
+        
+        const endTime = new Date(now);
+        endTime.setHours(endHours, endMinutes, 0);
+
+        // Handle case where closing time is after midnight (e.g., 02:00)
+        if (endTime < startTime) {
+          endTime.setDate(endTime.getDate() + 1);
+        }
+
+        setIsRestaurantOpen(now >= startTime && now <= endTime);
+      } catch (e) {
+        console.error('Error parsing restaurant hours:', e);
+        setIsRestaurantOpen(null);
+      }
+    };
+
+    checkOpenStatus();
+    const interval = setInterval(checkOpenStatus, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, [restaurant.hours]);
 
   if (!settings?.menuShowRestaurantName && !settings?.menuShowRestaurantDescription && !settings?.menuShowRestaurantLogo) {
     return null;
@@ -40,9 +87,24 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </div>
           )}
           {settings?.menuShowRestaurantName && (
-            <h1 className="text-3xl font-bold mb-2 tracking-tight text-center" data-testid="text-restaurant-name">
-              {restaurant.name}
-            </h1>
+            <div className="flex flex-col items-center gap-2 mb-2">
+              <h1 className="text-3xl font-bold tracking-tight text-center" data-testid="text-restaurant-name">
+                {restaurant.name}
+              </h1>
+              {isRestaurantOpen !== null && (
+                <Badge 
+                  variant={isRestaurantOpen ? "default" : "destructive"}
+                  className={`flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold ${
+                    isRestaurantOpen 
+                      ? "bg-emerald-500/15 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20" 
+                      : "bg-destructive/15 text-destructive border-destructive/20 hover:bg-destructive/20"
+                  }`}
+                >
+                  <Circle className={`h-2 w-2 fill-current ${isRestaurantOpen ? "animate-pulse" : ""}`} />
+                  {isRestaurantOpen ? (language === 'fa' ? 'باز است' : 'OPEN') : (language === 'fa' ? 'بسته است' : 'CLOSED')}
+                </Badge>
+              )}
+            </div>
           )}
           {settings?.menuShowRestaurantDescription && (
             <p className="text-base text-muted-foreground leading-relaxed max-w-lg text-center">
