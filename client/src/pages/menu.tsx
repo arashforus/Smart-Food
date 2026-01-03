@@ -224,9 +224,9 @@ export default function MenuPage() {
         onPlaceOrder={handlePlaceOrder}
       />
 
-      <footer className="py-8 mt-auto border-t bg-background/50 backdrop-blur-sm">
+      <footer className="py-4 mt-auto border-t bg-background/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+          <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1.5 uppercase tracking-widest font-medium">
             <span>Powered by</span>
             <a 
               href="https://smartfood.com" 
