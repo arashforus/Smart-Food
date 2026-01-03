@@ -22,12 +22,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
   }
 
   return (
-    <div className="bg-background/40 backdrop-blur-sm py-8 px-4">
-      <div className="max-w-4xl mx-auto flex flex-col items-center gap-8 text-center">
+    <div className="bg-background/40 backdrop-blur-sm py-8 px-4 overflow-hidden">
+      <div className={`max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 transition-all duration-500`}>
         <motion.div
           key="header-content"
           layout
-          className="w-full flex flex-col items-center"
+          className={`flex flex-col items-center transition-all duration-500 ${isOpen ? (isRtl ? 'md:items-end' : 'md:items-start') : 'items-center'}`}
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
             <div className="flex justify-center mb-4">
@@ -40,12 +40,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </div>
           )}
           {settings?.menuShowRestaurantName && (
-            <h1 className="text-3xl font-bold mb-2 tracking-tight" data-testid="text-restaurant-name">
+            <h1 className={`text-3xl font-bold mb-2 tracking-tight ${isOpen ? (isRtl ? 'text-right' : 'text-left md:text-left') : 'text-center'}`} data-testid="text-restaurant-name">
               {restaurant.name}
             </h1>
           )}
           {settings?.menuShowRestaurantDescription && (
-            <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
+            <p className={`text-base text-muted-foreground leading-relaxed max-w-lg ${isOpen ? (isRtl ? 'text-right' : 'text-left') : 'text-center'}`}>
               {restaurant.description}
             </p>
           )}
@@ -59,7 +59,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               data-testid="button-toggle-info"
             >
               {t.aboutUs}
-              <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? 'rotate-90' : 'rotate-0'}`} />
+              <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'}`} />
             </Button>
           </div>
         </motion.div>
@@ -67,20 +67,20 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="w-full"
+              initial={{ opacity: 0, width: 0, x: isRtl ? -20 : 20 }}
+              animate={{ opacity: 1, width: 'auto', x: 0 }}
+              exit={{ opacity: 0, width: 0, x: isRtl ? -20 : 20 }}
+              transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+              className="overflow-hidden"
             >
-              <Card className="border-none shadow-none bg-card/40 backdrop-blur-md overflow-hidden">
+              <Card className="border-none shadow-none bg-card/40 backdrop-blur-md min-w-[300px] md:min-w-[400px]">
                 <CardContent className="p-6 space-y-6">
                   <h2 className="text-xl font-bold mb-4">{t.aboutUs}</h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-4">
                     {settings?.menuShowOperationHours && restaurant.hours && (
-                      <div className="flex flex-col items-center gap-2 text-center">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                      <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <Clock className="h-5 w-5 text-primary" />
                         </div>
                         <div>
@@ -90,8 +90,8 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                       </div>
                     )}
                     
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                    <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <MapPin className="h-5 w-5 text-primary" />
                       </div>
                       <div>
@@ -100,8 +100,8 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-2 text-center">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                    <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <Phone className="h-5 w-5 text-primary" />
                       </div>
                       <div>
