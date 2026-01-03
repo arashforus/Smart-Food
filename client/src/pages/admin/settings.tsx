@@ -161,13 +161,13 @@ export default function SettingsPage() {
   useEffect(() => {
     if (dbSettings) {
       setSettings(dbSettings);
-      setRestaurantName(dbSettings.restaurantName || localStorage.getItem('restaurantName') || '');
-      setRestaurantDescription(dbSettings.restaurantDescription || localStorage.getItem('restaurantDescription') || '');
-      setRestaurantAddress(dbSettings.restaurantAddress || localStorage.getItem('restaurantAddress') || '');
-      setRestaurantPhone(dbSettings.restaurantPhone || localStorage.getItem('restaurantPhone') || '');
-      setRestaurantEmail(dbSettings.restaurantEmail || localStorage.getItem('restaurantEmail') || '');
-      setRestaurantLogo(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
-      setRestaurantLogoPreview(dbSettings.restaurantLogo || localStorage.getItem('restaurantLogo') || '');
+      setRestaurantName(dbSettings.restaurantName || '');
+      setRestaurantDescription(dbSettings.restaurantDescription || '');
+      setRestaurantAddress(dbSettings.restaurantAddress || '');
+      setRestaurantPhone(dbSettings.restaurantPhone || '');
+      setRestaurantEmail(dbSettings.restaurantEmail || '');
+      setRestaurantLogo(dbSettings.restaurantLogo || '');
+      setRestaurantLogoPreview(dbSettings.restaurantLogo || '');
       if (dbSettings.restaurantHours) {
         try {
           const hours = typeof dbSettings.restaurantHours === 'string' 
@@ -298,103 +298,92 @@ export default function SettingsPage() {
   }, [dbSettings]);
   const [ossForm, setOSSForm] = useState<OSSSettings>(ossSettings);
   const [isPending, setIsPending] = useState(false);
-  const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>(() => {
-    return localStorage.getItem('loginBackgroundImage') || '';
-  });
-  const [loginBackgroundPreview, setLoginBackgroundPreview] = useState<string>(loginBackgroundImage);
-  const [showLoginTitle, setShowLoginTitle] = useState(() => localStorage.getItem('showLoginTitle') !== 'false');
-  const [loginTitle, setLoginTitle] = useState(() => localStorage.getItem('loginTitle') || 'Welcome');
-  const [showLoginResetPassword, setShowLoginResetPassword] = useState(() => localStorage.getItem('showLoginResetPassword') !== 'false');
-  const [qrPageTitle, setQrPageTitle] = useState(() => localStorage.getItem('qrPageTitle') || 'Scan to Order');
-  const [qrPageDescription, setQrPageDescription] = useState(() => localStorage.getItem('qrPageDescription') || '');
-  const [qrShowTitle, setQrShowTitle] = useState(() => localStorage.getItem('qrShowTitle') !== 'false');
-  const [qrShowLogo, setQrShowLogo] = useState(() => localStorage.getItem('qrShowLogo') !== 'false');
-  const [qrShowDescription, setQrShowDescription] = useState(() => localStorage.getItem('qrShowDescription') !== 'false');
-  const [qrShowAnimatedText, setQrShowAnimatedText] = useState(() => localStorage.getItem('qrShowAnimatedText') !== 'false');
-  const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(() => {
-    const stored = localStorage.getItem('qrAnimatedTexts');
-    return stored ? JSON.parse(stored) : ['Welcome', 'Discover our Menu'];
-  });
-  const [qrMediaUrl, setQrMediaUrl] = useState(() => localStorage.getItem('qrMediaUrl') || '');
-  const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>(() => (localStorage.getItem('qrMediaType') as 'image' | 'video') || 'image');
+  const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>('');
+  const [loginBackgroundPreview, setLoginBackgroundPreview] = useState<string>('');
+  const [showLoginTitle, setShowLoginTitle] = useState(true);
+  const [loginTitle, setLoginTitle] = useState('Welcome');
+  const [showLoginResetPassword, setShowLoginResetPassword] = useState(true);
+  const [qrPageTitle, setQrPageTitle] = useState('Scan to Order');
+  const [qrPageDescription, setQrPageDescription] = useState('');
+  const [qrShowTitle, setQrShowTitle] = useState(true);
+  const [qrShowLogo, setQrShowLogo] = useState(true);
+  const [qrShowDescription, setQrShowDescription] = useState(true);
+  const [qrShowAnimatedText, setQrShowAnimatedText] = useState(true);
+  const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(['Welcome', 'Discover our Menu']);
+  const [qrMediaUrl, setQrMediaUrl] = useState('');
+  const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>('image');
   const qrMediaInputRef = useRef<HTMLInputElement>(null);
-  const [qrShowAddressPhone, setQrShowAddressPhone] = useState(() => localStorage.getItem('qrShowAddressPhone') !== 'false');
-  const [qrShowCallWaiter, setQrShowCallWaiter] = useState(() => localStorage.getItem('qrShowCallWaiter') !== 'false');
-  const [qrTextColor, setQrTextColor] = useState(() => localStorage.getItem('qrTextColor') || '#000000');
+  const [qrShowAddressPhone, setQrShowAddressPhone] = useState(true);
+  const [qrShowCallWaiter, setQrShowCallWaiter] = useState(true);
+  const [qrTextColor, setQrTextColor] = useState('#000000');
 
   // Menu Page Settings
-  const [showMenuInstagram, setShowMenuInstagram] = useState(() => localStorage.getItem('showMenuInstagram') !== 'false');
-  const [showMenuWhatsapp, setShowMenuWhatsapp] = useState(() => localStorage.getItem('showMenuWhatsapp') !== 'false');
-  const [showMenuTelegram, setShowMenuTelegram] = useState(() => localStorage.getItem('showMenuTelegram') !== 'false');
-  const [showMenuLanguageSelector, setShowMenuLanguageSelector] = useState(() => localStorage.getItem('showMenuLanguageSelector') !== 'false');
-  const [showMenuThemeSwitcher, setShowMenuThemeSwitcher] = useState(() => localStorage.getItem('showMenuThemeSwitcher') !== 'false');
-  const [menuDefaultTheme, setMenuDefaultTheme] = useState(() => localStorage.getItem('menuDefaultTheme') || 'light');
-  const [menuBackgroundType, setMenuBackgroundType] = useState(() => localStorage.getItem('menuBackgroundType') || 'default');
-  const [menuBackgroundColor, setMenuBackgroundColor] = useState(() => localStorage.getItem('menuBackgroundColor') || '#ffffff');
-  const [menuGradientStart, setMenuGradientStart] = useState(() => localStorage.getItem('menuGradientStart') || '#ffffff');
-  const [menuGradientEnd, setMenuGradientEnd] = useState(() => localStorage.getItem('menuGradientEnd') || '#f0f0f0');
-  const [menuBackgroundImage, setMenuBackgroundImage] = useState(() => localStorage.getItem('menuBackgroundImage') || '');
+  const [showMenuInstagram, setShowMenuInstagram] = useState(true);
+  const [showMenuWhatsapp, setShowMenuWhatsapp] = useState(true);
+  const [showMenuTelegram, setShowMenuTelegram] = useState(true);
+  const [showMenuLanguageSelector, setShowMenuLanguageSelector] = useState(true);
+  const [showMenuThemeSwitcher, setShowMenuThemeSwitcher] = useState(true);
+  const [menuDefaultTheme, setMenuDefaultTheme] = useState('light');
+  const [menuBackgroundType, setMenuBackgroundType] = useState('default');
+  const [menuBackgroundColor, setMenuBackgroundColor] = useState('#ffffff');
+  const [menuGradientStart, setMenuGradientStart] = useState('#ffffff');
+  const [menuGradientEnd, setMenuGradientEnd] = useState('#f0f0f0');
+  const [menuBackgroundImage, setMenuBackgroundImage] = useState('');
   const menuBackgroundImageRef = useRef<HTMLInputElement>(null);
-  const [showRestaurantLogo, setShowRestaurantLogo] = useState(() => localStorage.getItem('showRestaurantLogo') !== 'false');
-  const [showRestaurantName, setShowRestaurantName] = useState(() => localStorage.getItem('showRestaurantName') !== 'false');
-  const [showRestaurantDescription, setShowRestaurantDescription] = useState(() => localStorage.getItem('showRestaurantDescription') !== 'false');
-  const [showRestaurantHours, setShowRestaurantHours] = useState(() => localStorage.getItem('showRestaurantHours') !== 'false');
+  const [showRestaurantLogo, setShowRestaurantLogo] = useState(true);
+  const [showRestaurantName, setShowRestaurantName] = useState(true);
+  const [showRestaurantDescription, setShowRestaurantDescription] = useState(true);
+  const [showRestaurantHours, setShowRestaurantHours] = useState(true);
 
   // Menu Display Settings
-  const [showMenu, setShowMenu] = useState(() => localStorage.getItem('showMenu') !== 'false');
-  const [showAllMenuItem, setShowAllMenuItem] = useState(() => localStorage.getItem('showAllMenuItem') !== 'false');
-  const [showRecommendedMenuItem, setShowRecommendedMenuItem] = useState(() => localStorage.getItem('showRecommendedMenuItem') !== 'false');
-  const [showFoodType, setShowFoodType] = useState(() => localStorage.getItem('showFoodType') !== 'false');
-  const [showSearchBar, setShowSearchBar] = useState(() => localStorage.getItem('showSearchBar') !== 'false');
-  const [showViewSwitcher, setShowViewSwitcher] = useState(() => localStorage.getItem('showViewSwitcher') !== 'false');
-  const [qrLogo, setQrLogo] = useState(() => dbSettings?.qrLogo || localStorage.getItem('qrLogo') || '');
-  const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>(() => (localStorage.getItem('qrCenterType') as 'none' | 'logo' | 'text') || 'logo');
-  const [qrCenterText, setQrCenterText] = useState(() => localStorage.getItem('qrCenterText') || '');
-  const [qrEyeBorderColor, setQrEyeBorderColor] = useState(() => dbSettings?.qrEyeBorderColor || localStorage.getItem('qrEyeBorderColor') || '#000000');
-  const [qrEyeDotColor, setQrEyeDotColor] = useState(() => dbSettings?.qrEyeDotColor || localStorage.getItem('qrEyeDotColor') || '#000000');
-  const [qrEyeBorderShape, setQrEyeBorderShape] = useState(() => dbSettings?.qrEyeBorderShape || localStorage.getItem('qrEyeBorderShape') || 'square');
-  const [qrEyeDotShape, setQrEyeDotShape] = useState(() => dbSettings?.qrEyeDotShape || localStorage.getItem('qrEyeDotShape') || 'square');
-  const [qrDotsStyle, setQrDotsStyle] = useState(() => dbSettings?.qrDotsStyle || localStorage.getItem('qrDotsStyle') || 'square');
-  const [qrForegroundColor, setQrForegroundColor] = useState(() => dbSettings?.qrForegroundColor || localStorage.getItem('qrForegroundColor') || '#000000');
-  const [qrBackgroundColor, setQrBackgroundColor] = useState(() => dbSettings?.qrBackgroundColor || localStorage.getItem('qrBackgroundColor') || '#FFFFFF');
-  const [menuPageTitle, setMenuPageTitle] = useState(() => localStorage.getItem('menuPageTitle') || 'Our Menu');
+  const [showMenu, setShowMenu] = useState(true);
+  const [showAllMenuItem, setShowAllMenuItem] = useState(true);
+  const [showRecommendedMenuItem, setShowRecommendedMenuItem] = useState(true);
+  const [showFoodType, setShowFoodType] = useState(true);
+  const [showSearchBar, setShowSearchBar] = useState(true);
+  const [showViewSwitcher, setShowViewSwitcher] = useState(true);
+  const [qrLogo, setQrLogo] = useState('');
+  const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>('logo');
+  const [qrCenterText, setQrCenterText] = useState('');
+  const [qrEyeBorderColor, setQrEyeBorderColor] = useState('#000000');
+  const [qrEyeDotColor, setQrEyeDotColor] = useState('#000000');
+  const [qrEyeBorderShape, setQrEyeBorderShape] = useState('square');
+  const [qrEyeDotShape, setQrEyeDotShape] = useState('square');
+  const [qrDotsStyle, setQrDotsStyle] = useState('square');
+  const [qrForegroundColor, setQrForegroundColor] = useState('#000000');
+  const [qrBackgroundColor, setQrBackgroundColor] = useState('#FFFFFF');
+  const [menuPageTitle, setMenuPageTitle] = useState('Our Menu');
   const [showPrices, setShowPrices] = useState(true);
   const [showImages, setShowImages] = useState(true);
   const [showIngredients, setShowIngredients] = useState(true);
   const [showFoodTypes, setShowFoodTypes] = useState(true);
   const [showBuyButton, setShowBuyButton] = useState(true);
   const [showMoreInformationPopup, setShowMoreInformationPopup] = useState(true);
-  const [rolePermissions, setRolePermissions] = useState(() => {
-    const stored = localStorage.getItem('rolePermissions');
-    return stored ? JSON.parse(stored) : {
-      admin: adminSections,
-      manager: adminSections,
-      chef: adminSections,
-      accountant: adminSections,
-    };
+  const [rolePermissions, setRolePermissions] = useState({
+    admin: adminSections,
+    manager: adminSections,
+    chef: adminSections,
+    accountant: adminSections,
   });
 
-  const [settingsAccessLevel, setSettingsAccessLevel] = useState(() => {
-    const stored = localStorage.getItem('settingsAccessLevel');
-    return stored ? JSON.parse(stored) : {
-      admin: 'all',
-      manager: 'profile',
-      chef: 'profile',
-      accountant: 'profile',
-    };
+  const [settingsAccessLevel, setSettingsAccessLevel] = useState({
+    admin: 'all',
+    manager: 'profile',
+    chef: 'profile',
+    accountant: 'profile',
   });
-  const [restaurantName, setRestaurantName] = useState(() => localStorage.getItem('restaurantName') || '');
-  const [restaurantDescription, setRestaurantDescription] = useState(() => localStorage.getItem('restaurantDescription') || '');
-  const [restaurantAddress, setRestaurantAddress] = useState(() => localStorage.getItem('restaurantAddress') || '');
-  const [restaurantPhone, setRestaurantPhone] = useState(() => localStorage.getItem('restaurantPhone') || '');
-  const [restaurantEmail, setRestaurantEmail] = useState(() => localStorage.getItem('restaurantEmail') || '');
-  const [restaurantLogo, setRestaurantLogo] = useState(() => localStorage.getItem('restaurantLogo') || '');
-  const [restaurantLogoPreview, setRestaurantLogoPreview] = useState(() => localStorage.getItem('restaurantLogo') || '');
-  const [restaurantBackgroundImage, setRestaurantBackgroundImage] = useState(() => localStorage.getItem('restaurantBackgroundImage') || '');
-  const [restaurantInstagram, setRestaurantInstagram] = useState(() => localStorage.getItem('restaurantInstagram') || '');
-  const [restaurantWhatsapp, setRestaurantWhatsapp] = useState(() => localStorage.getItem('restaurantWhatsapp') || '');
-  const [restaurantTelegram, setRestaurantTelegram] = useState(() => localStorage.getItem('restaurantTelegram') || '');
-  const [restaurantGoogleMapsUrl, setRestaurantGoogleMapsUrl] = useState(() => localStorage.getItem('restaurantGoogleMapsUrl') || '');
+  const [restaurantName, setRestaurantName] = useState('');
+  const [restaurantDescription, setRestaurantDescription] = useState('');
+  const [restaurantAddress, setRestaurantAddress] = useState('');
+  const [restaurantPhone, setRestaurantPhone] = useState('');
+  const [restaurantEmail, setRestaurantEmail] = useState('');
+  const [restaurantLogo, setRestaurantLogo] = useState('');
+  const [restaurantLogoPreview, setRestaurantLogoPreview] = useState('');
+  const [restaurantBackgroundImage, setRestaurantBackgroundImage] = useState('');
+  const [restaurantInstagram, setRestaurantInstagram] = useState('');
+  const [restaurantWhatsapp, setRestaurantWhatsapp] = useState('');
+  const [restaurantTelegram, setRestaurantTelegram] = useState('');
+  const [restaurantGoogleMapsUrl, setRestaurantGoogleMapsUrl] = useState('');
   const defaultOperatingHours = {
     Monday: { start: '09:00', end: '22:00', closed: false },
     Tuesday: { start: '09:00', end: '22:00', closed: false },
