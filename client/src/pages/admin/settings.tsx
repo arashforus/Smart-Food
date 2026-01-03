@@ -275,7 +275,7 @@ export default function SettingsPage() {
           currencyName: dbSettings.currencyName || 'US Dollar',
           currencySymbol: dbSettings.currencySymbol || '$',
           currencyPosition: (dbSettings.currencyPosition as 'before' | 'after') || 'before',
-          paymentMethod: (dbSettings.paymentMethod as 'cash' | 'card' | 'both') || 'both',
+          paymentMethod: (dbSettings.paymentMethod as 'cash' | 'card' | 'both') || 'cash',
           licenseKey: dbSettings.licenseKey || '',
           licenseExpiry: dbSettings.licenseExpiry || '',
           licenseOwner: dbSettings.licenseOwner || '',
@@ -301,15 +301,15 @@ export default function SettingsPage() {
   const [loginBackgroundImage, setLoginBackgroundImage] = useState<string>('');
   const [loginBackgroundPreview, setLoginBackgroundPreview] = useState<string>('');
   const [showLoginTitle, setShowLoginTitle] = useState(true);
-  const [loginTitle, setLoginTitle] = useState('Welcome');
+  const [loginTitle, setLoginTitle] = useState('Login');
   const [showLoginResetPassword, setShowLoginResetPassword] = useState(true);
-  const [qrPageTitle, setQrPageTitle] = useState('Scan to Order');
+  const [qrPageTitle, setQrPageTitle] = useState('Menu');
   const [qrPageDescription, setQrPageDescription] = useState('');
   const [qrShowTitle, setQrShowTitle] = useState(true);
   const [qrShowLogo, setQrShowLogo] = useState(true);
   const [qrShowDescription, setQrShowDescription] = useState(true);
   const [qrShowAnimatedText, setQrShowAnimatedText] = useState(true);
-  const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(['Welcome', 'Discover our Menu']);
+  const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(['Welcome', 'Hello']);
   const [qrMediaUrl, setQrMediaUrl] = useState('');
   const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>('image');
   const qrMediaInputRef = useRef<HTMLInputElement>(null);
@@ -343,7 +343,7 @@ export default function SettingsPage() {
   const [showSearchBar, setShowSearchBar] = useState(true);
   const [showViewSwitcher, setShowViewSwitcher] = useState(true);
   const [qrLogo, setQrLogo] = useState('');
-  const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>('logo');
+  const [qrCenterType, setQrCenterType] = useState<'none' | 'logo' | 'text'>('none');
   const [qrCenterText, setQrCenterText] = useState('');
   const [qrEyeBorderColor, setQrEyeBorderColor] = useState('#000000');
   const [qrEyeDotColor, setQrEyeDotColor] = useState('#000000');
@@ -359,14 +359,24 @@ export default function SettingsPage() {
   const [showFoodTypes, setShowFoodTypes] = useState(true);
   const [showBuyButton, setShowBuyButton] = useState(true);
   const [showMoreInformationPopup, setShowMoreInformationPopup] = useState(true);
-  const [rolePermissions, setRolePermissions] = useState({
+  const [rolePermissions, setRolePermissions] = useState<{
+    admin: string[];
+    manager: string[];
+    chef: string[];
+    accountant: string[];
+  }>({
     admin: adminSections,
     manager: adminSections,
     chef: adminSections,
     accountant: adminSections,
   });
 
-  const [settingsAccessLevel, setSettingsAccessLevel] = useState({
+  const [settingsAccessLevel, setSettingsAccessLevel] = useState<{
+    admin: string;
+    manager: string;
+    chef: string;
+    accountant: string;
+  }>({
     admin: 'all',
     manager: 'profile',
     chef: 'profile',
@@ -437,7 +447,7 @@ export default function SettingsPage() {
   const [faviconPreview, setFaviconPreview] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
 
   // Payment Settings
-  const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'both');
+  const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'cash');
 
   // Roles Settings
   const [rolesAdminPermissions, setRolesAdminPermissions] = useState(() => localStorage.getItem('rolesAdminPermissions') || '');
@@ -595,11 +605,11 @@ export default function SettingsPage() {
       restaurantEmail,
       restaurantLogo,
       restaurantBackgroundImage,
-      restaurantInstagram,
-      restaurantWhatsapp,
-      restaurantTelegram,
-      restaurantGoogleMapsUrl,
-      restaurantHours: operatingHours,
+      restaurantInstagram: data.restaurantInstagram,
+      restaurantWhatsapp: data.restaurantWhatsapp,
+      restaurantTelegram: data.restaurantTelegram,
+      restaurantGoogleMapsUrl: data.restaurantGoogleMapsUrl,
+      restaurantHours: JSON.stringify(operatingHours),
       loginBackgroundImage,
       showLoginTitle,
       loginTitle,
@@ -667,39 +677,38 @@ export default function SettingsPage() {
       licenseExpiry: data.licenseExpiry,
       licenseOwner: data.licenseOwner,
       favicon: favicon,
+      rolesAdminPermissions: JSON.stringify(rolePermissions.admin),
+      rolesAdminSettingAccess: settingsAccessLevel.admin,
+      rolesManagerPermissions: JSON.stringify(rolePermissions.manager),
+      rolesManagerSettingAccess: settingsAccessLevel.manager,
+      rolesChefPermissions: JSON.stringify(rolePermissions.chef),
+      rolesChefSettingAccess: settingsAccessLevel.chef,
+      rolesAccountantPermissions: JSON.stringify(rolePermissions.accountant),
+      rolesAccountantSettingAccess: settingsAccessLevel.accountant,
+      ossPendingColor,
+      ossPreparingColor,
+      ossReadyColor,
+      ossBackgroundType,
+      ossBackgroundColor,
+      ossBackgroundImage,
+      ossCardTextColor,
+      ossCardBorderColor,
+      ossCardBoxStyle,
+      ossHeaderText,
+      ossNumberLabel,
+      ossTableLabel,
+      ossShowTableInformation,
+      ossShowStatusIcon,
     };
     console.log("Sending updated settings to mutation", updatedSettings);
     updateSettingsMutation.mutate({
       ...updatedSettings,
       timezone: timezone,
     } as any);
+  };
 
-    localStorage.setItem("restaurantName", restaurantName || "");
-    localStorage.setItem("restaurantDescription", restaurantDescription || "");
-    localStorage.setItem("restaurantAddress", restaurantAddress || "");
-    localStorage.setItem("restaurantPhone", restaurantPhone || "");
-    localStorage.setItem("restaurantEmail", restaurantEmail || "");
-    localStorage.setItem("restaurantLogo", restaurantLogo || "");
-    localStorage.setItem("qrLogo", qrLogo || "");
-    localStorage.setItem("qrCenterType", qrCenterType || "none");
-    localStorage.setItem("qrCenterText", qrCenterText || "");
-    localStorage.setItem("restaurantInstagram", restaurantInstagram || "");
-    localStorage.setItem("restaurantWhatsapp", restaurantWhatsapp || "");
-    localStorage.setItem("restaurantTelegram", restaurantTelegram || "");
-    localStorage.setItem("restaurantGoogleMapsUrl", restaurantGoogleMapsUrl || "");
-    localStorage.setItem("qrPageTitle", qrPageTitle || "");
-    localStorage.setItem("qrPageDescription", qrPageDescription || "");
-    localStorage.setItem("qrShowLogo", String(qrShowLogo));
-    localStorage.setItem("qrShowTitle", String(qrShowTitle));
-    localStorage.setItem("qrShowDescription", String(qrShowDescription));
-    localStorage.setItem("qrShowAnimatedText", String(qrShowAnimatedText));
-    localStorage.setItem("qrAnimatedTexts", JSON.stringify(qrAnimatedTexts));
-    localStorage.setItem("qrMediaUrl", qrMediaUrl || "");
-    localStorage.setItem("qrMediaType", qrMediaType);
-    localStorage.setItem("qrTextColor", qrTextColor);
-    localStorage.setItem("showMenuInstagram", String(showMenuInstagram));
-    localStorage.setItem("showMenuWhatsapp", String(showMenuWhatsapp));
-    localStorage.setItem("showMenuTelegram", String(showMenuTelegram));
+  const handleSaveAll = () => {
+    form.handleSubmit(handleSubmit)();
   };
 
   const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -795,27 +804,17 @@ export default function SettingsPage() {
   };
 
   const toggleRoleSection = (role: 'admin' | 'manager' | 'chef' | 'accountant', section: string) => {
-    setRolePermissions((prev: Record<string, string[]>) => ({
+    setRolePermissions((prev) => ({
       ...prev,
       [role]: prev[role].includes(section)
         ? prev[role].filter((s: string) => s !== section)
         : [...prev[role], section],
     }));
-    localStorage.setItem('rolePermissions', JSON.stringify({
-      ...rolePermissions,
-      [role]: rolePermissions[role].includes(section)
-        ? rolePermissions[role].filter((s: string) => s !== section)
-        : [...rolePermissions[role], section],
-    }));
   };
 
   const updateSettingsAccessLevel = (role: 'admin' | 'manager' | 'chef' | 'accountant', level: 'profile' | 'all') => {
-    setSettingsAccessLevel((prev: Record<string, string>) => ({
+    setSettingsAccessLevel((prev) => ({
       ...prev,
-      [role]: level,
-    }));
-    localStorage.setItem('settingsAccessLevel', JSON.stringify({
-      ...settingsAccessLevel,
       [role]: level,
     }));
   };
