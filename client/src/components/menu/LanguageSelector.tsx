@@ -30,8 +30,12 @@ export default function LanguageSelector({ language, onLanguageChange }: Languag
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" data-testid="button-language-selector">
-          <Globe className="h-4 w-4 mr-2" />
+        <Button variant="ghost" size="sm" data-testid="button-language-selector" className="gap-2">
+          {currentLang?.flagImage ? (
+            <img src={currentLang.flagImage} alt="" className="w-4 h-3 object-cover rounded-sm" />
+          ) : (
+            <Globe className="h-4 w-4" />
+          )}
           <span className="text-sm font-medium">{currentLang?.code?.toUpperCase() || language.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
@@ -41,8 +45,16 @@ export default function LanguageSelector({ language, onLanguageChange }: Languag
             key={lang.id}
             onClick={() => onLanguageChange(lang.code as Language)}
             data-testid={`menu-item-language-${lang.code}`}
+            className="flex items-center gap-2"
           >
-            <span className="mr-2 text-xs font-medium text-muted-foreground">{lang.code.toUpperCase()}</span> {lang.name}
+            {lang.flagImage ? (
+              <img src={lang.flagImage} alt="" className="w-4 h-3 object-cover rounded-sm" />
+            ) : (
+              <span className="text-xs font-medium text-muted-foreground w-4 text-center">
+                {lang.code.toUpperCase()}
+              </span>
+            )}
+            <span>{lang.name}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
