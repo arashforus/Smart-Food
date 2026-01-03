@@ -224,6 +224,22 @@ export default function MenuPage() {
         onPlaceOrder={handlePlaceOrder}
       />
 
+      <footer className="py-8 mt-auto border-t bg-background/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+            <span>Powered by</span>
+            <a 
+              href="https://smartfood.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-bold text-primary hover:underline transition-all"
+            >
+              Smart Food
+            </a>
+          </p>
+        </div>
+      </footer>
+
       {cartItems.length > 0 && settings?.menuShowBuyButton && (
         <div className="fixed bottom-6 right-6 z-40" dir={isRtl ? 'rtl' : 'ltr'}>
           <Button
