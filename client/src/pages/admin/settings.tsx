@@ -711,16 +711,27 @@ export default function SettingsPage() {
     form.handleSubmit(handleSubmit)();
   };
 
-  const handleProfileAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setProfileAvatar(imageData);
-        setProfileAvatarPreview(imageData);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setProfileAvatar(data.url);
+          setProfileAvatarPreview(data.url);
+          toast({ title: 'Image uploaded successfully' });
+        } else {
+          throw new Error('Upload failed');
+        }
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
+      }
     }
   };
 
@@ -732,16 +743,27 @@ export default function SettingsPage() {
     }
   };
 
-  const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setFavicon(imageData);
-        setFaviconPreview(imageData);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setFavicon(data.url);
+          setFaviconPreview(data.url);
+          toast({ title: 'Image uploaded successfully' });
+        } else {
+          throw new Error('Upload failed');
+        }
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
+      }
     }
   };
 
@@ -753,16 +775,27 @@ export default function SettingsPage() {
     }
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setRestaurantLogo(imageData);
-        setRestaurantLogoPreview(imageData);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setRestaurantLogo(data.url);
+          setRestaurantLogoPreview(data.url);
+          toast({ title: 'Image uploaded successfully' });
+        } else {
+          throw new Error('Upload failed');
+        }
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
+      }
     }
   };
 
@@ -782,17 +815,28 @@ export default function SettingsPage() {
     }
   };
 
-  const handleQrMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQrMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const isVideo = file.type.startsWith('video/');
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const mediaData = event.target?.result as string;
-        setQrMediaUrl(mediaData);
-        setQrMediaType(isVideo ? 'video' : 'image');
-      };
-      reader.readAsDataURL(file);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setQrMediaUrl(data.url);
+          setQrMediaType(isVideo ? 'video' : 'image');
+          toast({ title: 'Media uploaded successfully' });
+        } else {
+          throw new Error('Upload failed');
+        }
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to upload media', variant: 'destructive' });
+      }
     }
   };
 
@@ -851,16 +895,27 @@ export default function SettingsPage() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        setLoginBackgroundImage(imageData);
-        setLoginBackgroundPreview(imageData);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setLoginBackgroundImage(data.url);
+          setLoginBackgroundPreview(data.url);
+          toast({ title: 'Image uploaded successfully' });
+        } else {
+          throw new Error('Upload failed');
+        }
+      } catch (error) {
+        toast({ title: 'Error', description: 'Failed to upload image', variant: 'destructive' });
+      }
     }
   };
 
