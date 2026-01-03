@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import en from '@/locales/en.json';
 import fa from '@/locales/fa.json';
 import tr from '@/locales/tr.json';
@@ -98,12 +99,21 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     { code: 'ar', name: 'العربية' },
   ];
 
+  const { data: dbLanguages } = useQuery<any[]>({
+    queryKey: ['/api/languages'],
+    staleTime: Infinity,
+  });
+
+  const availableLanguages = dbLanguages 
+    ? dbLanguages.filter(l => l.isActive).map(l => ({ code: l.code as Language, name: l.name }))
+    : languages;
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, languages, dir }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, languages: availableLanguages, dir }}>
       {children}
     </LanguageContext.Provider>
   );

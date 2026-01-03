@@ -8,40 +8,41 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { Language } from '@/lib/types';
 import { translations } from '@/lib/types';
+import { useQuery } from '@tanstack/react-query';
 
 interface LanguageSelectorProps {
   language: Language;
   onLanguageChange: (lang: Language) => void;
 }
 
-const languageOptions: { code: Language; shortCode: string; name: string }[] = [
-  { code: 'en', shortCode: 'EN', name: 'English' },
-  { code: 'es', shortCode: 'ES', name: 'Español' },
-  { code: 'fr', shortCode: 'FR', name: 'Français' },
-  { code: 'fa', shortCode: 'FA', name: 'فارسی' },
-  { code: 'tr', shortCode: 'TR', name: 'Türkçe' },
-];
-
 export default function LanguageSelector({ language, onLanguageChange }: LanguageSelectorProps) {
   const t = translations[language];
-  const currentLang = languageOptions.find((l) => l.code === language);
+
+  const { data: languages = [] } = useQuery<any[]>({
+    queryKey: ['/api/languages'],
+  });
+
+  const activeLanguages = languages.filter(l => l.isActive);
+  const currentLang = activeLanguages.find((l) => l.code === language);
+
+  if (activeLanguages.length <= 1) return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" data-testid="button-language-selector">
           <Globe className="h-4 w-4 mr-2" />
-          <span className="text-sm font-medium">{currentLang?.shortCode}</span>
+          <span className="text-sm font-medium">{currentLang?.code?.toUpperCase() || language.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {languageOptions.map((lang) => (
+        {activeLanguages.map((lang) => (
           <DropdownMenuItem
-            key={lang.code}
-            onClick={() => onLanguageChange(lang.code)}
+            key={lang.id}
+            onClick={() => onLanguageChange(lang.code as Language)}
             data-testid={`menu-item-language-${lang.code}`}
           >
-            <span className="mr-2 text-xs font-medium text-muted-foreground">{lang.shortCode}</span> {lang.name}
+            <span className="mr-2 text-xs font-medium text-muted-foreground">{lang.code.toUpperCase()}</span> {lang.name}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

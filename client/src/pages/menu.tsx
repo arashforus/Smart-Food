@@ -141,7 +141,7 @@ export default function MenuPage() {
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => window.open(`https://wa.me/${settings.restaurantWhatsapp.replace(/\D/g, '')}`, '_blank')}
+                onClick={() => window.open(`https://wa.me/${settings.restaurantWhatsapp?.replace(/\D/g, '')}`, '_blank')}
                 data-testid="button-whatsapp"
               >
                 <MessageCircle className="w-4 h-4" />
