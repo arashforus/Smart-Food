@@ -107,14 +107,14 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
                     {/* Right Column: Address and Phone */}
                     <div className={`space-y-6 ${isRtl ? 'md:pr-8' : 'md:pl-8'}`}>
-                      <div className="space-y-4">
-                        <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="space-y-6">
+                        <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
                             <MapPin className="h-5 w-5 text-primary" />
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
-                            <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
+                            <p className="text-sm font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
                             {settings?.restaurantGoogleMapsUrl && (
                               <Button
                                 variant="ghost"
@@ -129,13 +129,15 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           </div>
                         </div>
 
-                        <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <div className="border-t border-border my-4" />
+
+                        <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
                             <Phone className="h-5 w-5 text-primary" />
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
-                            <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                            <p className="text-sm font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
                             <Button
                               variant="ghost"
                               size="sm"
