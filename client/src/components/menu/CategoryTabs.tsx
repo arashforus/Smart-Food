@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Star, LayoutGrid, LayoutList, Leaf, Salad, WheatOff, Flame, Heart, Search, X } from 'lucide-react';
-import type { Category, FoodType, Language } from '@/lib/types';
+import type { Category, FoodType, Language, Settings } from '@/lib/types';
 import { translations } from '@/lib/types';
 
 interface CategoryTabsProps {
@@ -20,6 +20,7 @@ interface CategoryTabsProps {
   onShowSuggestedChange: (show: boolean) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  settings?: Settings;
 }
 
 const iconMap: Record<string, typeof Leaf> = {
@@ -44,46 +45,47 @@ export default function CategoryTabs({
   onShowSuggestedChange,
   searchQuery,
   onSearchChange,
+  settings,
 }: CategoryTabsProps) {
-  const t = translations[language];
-  const isRtl = language === 'fa';
+  const t = translations[language] || translations.en;
+  const isRtl = language === 'fa' || language === 'ar';
 
   const getCategoryName = (category: Category) => {
-    return category.name[language] || category.name.en || Object.values(category.name)[0] || '';
+    return category.name[language as keyof typeof category.name] || category.name.en || Object.values(category.name)[0] || '';
   };
 
   const getTypeName = (type: FoodType) => {
-    return type.name[language] || type.name.en || Object.values(type.name)[0] || '';
+    return type.name[language as keyof typeof type.name] || type.name.en || Object.values(type.name)[0] || '';
   };
 
   return (
-    <div className="sticky top-[49px] z-40 bg-background border-b">
+    <div className="sticky top-[49px] z-40 bg-background/80 backdrop-blur-md border-b shadow-sm">
       <ScrollArea className="w-full">
-        <div className="flex gap-3 p-3">
+        <div className="flex gap-4 p-4">
           <button
             onClick={() => {
               onSelectCategory(null);
               onShowSuggestedChange(false);
             }}
-            className={`flex flex-col items-center flex-shrink-0 transition-all ${
+            className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
               selectedCategory === null && !showSuggested
-                ? 'opacity-100'
-                : 'opacity-60 hover:opacity-80'
+                ? 'scale-105'
+                : 'opacity-60 hover:opacity-100'
             }`}
             data-testid="button-category-all"
           >
             <div
-              className={`w-16 h-16 rounded-xl overflow-hidden mb-1.5 border-2 transition-all ${
+              className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
                 selectedCategory === null && !showSuggested
-                  ? 'border-primary ring-2 ring-primary/30'
-                  : 'border-border'
+                  ? 'border-primary shadow-lg ring-4 ring-primary/10'
+                  : 'border-transparent bg-muted/50'
               }`}
             >
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
-                <LayoutGrid className="w-6 h-6 text-primary" />
+              <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/30 flex items-center justify-center">
+                <LayoutGrid className="w-7 h-7 text-primary" />
               </div>
             </div>
-            <span className="text-xs font-medium text-center max-w-16 truncate">
+            <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${selectedCategory === null && !showSuggested ? 'text-primary' : 'text-muted-foreground'}`}>
               {t.all}
             </span>
           </button>
@@ -95,18 +97,18 @@ export default function CategoryTabs({
                 onSelectCategory(category.id);
                 onShowSuggestedChange(false);
               }}
-              className={`flex flex-col items-center flex-shrink-0 transition-all ${
+              className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
                 selectedCategory === category.id
-                  ? 'opacity-100'
-                  : 'opacity-60 hover:opacity-80'
+                  ? 'scale-105'
+                  : 'opacity-60 hover:opacity-100'
               }`}
               data-testid={`button-category-${category.id}`}
             >
               <div
-                className={`w-16 h-16 rounded-xl overflow-hidden mb-1.5 border-2 transition-all ${
+                className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
                   selectedCategory === category.id
-                    ? 'border-primary ring-2 ring-primary/30'
-                    : 'border-border'
+                    ? 'border-primary shadow-lg ring-4 ring-primary/10'
+                    : 'border-transparent bg-muted/50'
                 }`}
               >
                 {category.image ? (
@@ -117,121 +119,131 @@ export default function CategoryTabs({
                   />
                 ) : (
                   <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <span className="text-lg font-semibold text-muted-foreground">
+                    <span className="text-xl font-bold text-muted-foreground/50">
                       {getCategoryName(category).charAt(0)}
                     </span>
                   </div>
                 )}
               </div>
-              <span className="text-xs font-medium text-center max-w-16 truncate">
+              <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}>
                 {getCategoryName(category)}
               </span>
             </button>
           ))}
 
-          <button
-            onClick={() => {
-              onSelectCategory(null);
-              onShowSuggestedChange(true);
-            }}
-            className={`flex flex-col items-center flex-shrink-0 transition-all ${
-              showSuggested
-                ? 'opacity-100'
-                : 'opacity-60 hover:opacity-80'
-            }`}
-            data-testid="button-category-suggested"
-          >
-            <div
-              className={`w-16 h-16 rounded-xl overflow-hidden mb-1.5 border-2 transition-all ${
+          {settings?.menuShowRecommendedMenuItems && (
+            <button
+              onClick={() => {
+                onSelectCategory(null);
+                onShowSuggestedChange(true);
+              }}
+              className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
                 showSuggested
-                  ? 'border-amber-500 ring-2 ring-amber-500/30'
-                  : 'border-border'
+                  ? 'scale-105'
+                  : 'opacity-60 hover:opacity-100'
               }`}
+              data-testid="button-category-suggested"
             >
-              <div className="w-full h-full bg-gradient-to-br from-amber-400/30 to-amber-500/50 flex items-center justify-center">
-                <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
+              <div
+                className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
+                  showSuggested
+                    ? 'border-amber-500 shadow-lg ring-4 ring-amber-500/10'
+                    : 'border-transparent bg-muted/50'
+                }`}
+              >
+                <div className="w-full h-full bg-gradient-to-br from-amber-400/20 to-amber-500/40 flex items-center justify-center">
+                  <Star className="w-7 h-7 text-amber-500 fill-amber-500" />
+                </div>
               </div>
-            </div>
-            <span className="text-xs font-medium text-center max-w-16 truncate">
-              {t.suggested}
-            </span>
-          </button>
+              <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}>
+                {t.suggested}
+              </span>
+            </button>
+          )}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
-      <div className="flex items-center justify-between gap-2 px-3 pb-3">
-        <ScrollArea className="flex-1">
-          <div className="flex gap-2">
-            {foodTypes.map((type) => {
-              const IconComponent = iconMap[type.icon || ''] || Leaf;
-              const isSelected = selectedTypes.includes(type.id);
-              return (
-                <Badge
-                  key={type.id}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className="cursor-pointer flex-shrink-0 gap-1"
-                  style={{
-                    backgroundColor: isSelected ? type.color : undefined,
-                    borderColor: type.color,
-                    color: isSelected ? 'white' : type.color,
-                  }}
-                  onClick={() => onSelectType(type.id)}
-                  data-testid={`badge-type-${type.id}`}
-                >
-                  <IconComponent className="w-3 h-3" />
-                  {getTypeName(type)}
-                </Badge>
-              );
-            })}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+      <div className="flex items-center justify-between gap-3 px-4 pb-4">
+        {settings?.menuShowFoodType && (
+          <ScrollArea className="flex-1">
+            <div className="flex gap-2">
+              {foodTypes.map((type) => {
+                const IconComponent = iconMap[type.icon || ''] || Leaf;
+                const isSelected = selectedTypes.includes(type.id);
+                return (
+                  <Badge
+                    key={type.id}
+                    variant={isSelected ? 'default' : 'outline'}
+                    className="cursor-pointer flex-shrink-0 gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium transition-all"
+                    style={{
+                      backgroundColor: isSelected ? type.color : undefined,
+                      borderColor: type.color,
+                      color: isSelected ? 'white' : type.color,
+                    }}
+                    onClick={() => onSelectType(type.id)}
+                    data-testid={`badge-type-${type.id}`}
+                  >
+                    <IconComponent className="w-3.5 h-3.5" />
+                    {getTypeName(type)}
+                  </Badge>
+                );
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
 
-        <div className={`flex gap-1 flex-shrink-0 border-l pl-2 ml-2 ${isRtl ? 'border-r pr-2 mr-2 border-l-0 pl-0 ml-0' : ''}`}>
-          <Button
-            size="icon"
-            variant={viewMode === 'list' ? 'default' : 'ghost'}
-            onClick={() => onViewModeChange('list')}
-            data-testid="button-view-list"
-          >
-            <LayoutList className="w-4 h-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant={viewMode === 'grid' ? 'default' : 'ghost'}
-            onClick={() => onViewModeChange('grid')}
-            data-testid="button-view-grid"
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="px-3 pb-3">
-        <div className="relative">
-          <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground ${isRtl ? 'right-3' : 'left-3'}`} />
-          <Input
-            type="text"
-            placeholder={t.search}
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className={`${isRtl ? 'pr-9 pl-9' : 'pl-9 pr-9'}`}
-            data-testid="input-search"
-          />
-          {searchQuery && (
+        {settings?.menuShowViewSwitcher && (
+          <div className={`flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg ${isRtl ? 'border-r pr-2 mr-2 border-l-0 pl-0 ml-0' : 'border-l pl-2 ml-2'}`}>
             <Button
               size="icon"
-              variant="ghost"
-              className={`absolute top-1/2 -translate-y-1/2 h-7 w-7 ${isRtl ? 'left-1' : 'right-1'}`}
-              onClick={() => onSearchChange('')}
-              data-testid="button-clear-search"
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              onClick={() => onViewModeChange('list')}
+              className="h-8 w-8 rounded-md"
+              data-testid="button-view-list"
             >
-              <X className="w-4 h-4" />
+              <LayoutList className="w-4 h-4" />
             </Button>
-          )}
-        </div>
+            <Button
+              size="icon"
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              onClick={() => onViewModeChange('grid')}
+              className="h-8 w-8 rounded-md"
+              data-testid="button-view-grid"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
       </div>
+
+      {settings?.menuShowSearchBar && (
+        <div className="px-4 pb-4">
+          <div className="relative">
+            <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors ${isRtl ? 'right-3' : 'left-3'}`} />
+            <Input
+              type="text"
+              placeholder={t.search}
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className={`rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all ${isRtl ? 'pr-10 pl-10 text-right' : 'pl-10 pr-10'}`}
+              data-testid="input-search"
+            />
+            {searchQuery && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className={`absolute top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-transparent ${isRtl ? 'left-1' : 'right-1'}`}
+                onClick={() => onSearchChange('')}
+                data-testid="button-clear-search"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

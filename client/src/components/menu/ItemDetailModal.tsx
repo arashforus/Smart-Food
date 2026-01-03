@@ -9,9 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { UtensilsCrossed, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
-import type { MenuItem, Language } from '@/lib/types';
+import type { MenuItem, Language, Settings } from '@/lib/types';
 import { translations } from '@/lib/types';
-import { mockMaterials, mockFoodTypes } from '@/lib/mockData';
+import { useQuery } from '@tanstack/react-query';
 
 interface ItemDetailModalProps {
   item: MenuItem | null;
@@ -19,38 +19,60 @@ interface ItemDetailModalProps {
   onClose: () => void;
   language: Language;
   onAddToCart?: (item: MenuItem, quantity: number, notes: string) => void;
+  settings?: Settings;
 }
 
-export default function ItemDetailModal({ item, open, onClose, language, onAddToCart }: ItemDetailModalProps) {
+export default function ItemDetailModal({ item, open, onClose, language, onAddToCart, settings }: ItemDetailModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+
+  const { data: allMaterials = [] } = useQuery<any[]>({
+    queryKey: ['/api/materials'],
+    enabled: !!item,
+  });
+
+  const { data: allFoodTypes = [] } = useQuery<any[]>({
+    queryKey: ['/api/food-types'],
+    enabled: !!item,
+  });
 
   if (!item) return null;
 
   const getName = () => {
-    return item.name[language] || item.name.en || Object.values(item.name)[0] || '';
+    return item.name[language as keyof typeof item.name] || item.name.en || Object.values(item.name)[0] || '';
   };
 
   const getLongDescription = () => {
-    return item.longDescription[language] || item.longDescription.en || Object.values(item.longDescription)[0] || '';
+    return item.longDescription[language as keyof typeof item.longDescription] || item.longDescription.en || Object.values(item.longDescription)[0] || '';
   };
 
   const getMaterials = () => {
-    return item.materials.map(id => {
-      const material = mockMaterials.find(m => m.id === id);
-      return material ? (material.name[language] || material.name.en) : '';
+    return (item.materials || []).map(id => {
+      const material = allMaterials.find(m => m.id === id);
+      return material ? (material.name[language as keyof typeof material.name] || material.name.en) : '';
     }).filter(Boolean);
   };
 
   const getTypes = () => {
-    return item.types.map(id => {
-      const type = mockFoodTypes.find(t => t.id === id);
-      return type ? { name: type.name[language] || type.name.en, color: type.color } : null;
+    return (item.types || []).map(id => {
+      const type = allFoodTypes.find(t => t.id === id);
+      return type ? { name: type.name[language as keyof typeof type.name] || type.name.en, color: type.color } : null;
     }).filter(Boolean);
   };
 
   const t = translations[language] || translations.en;
-  const isRtl = language === 'fa';
+  const isRtl = language === 'fa' || language === 'ar';
+
+  const price = Number(item.price);
+  const discountedPrice = item.discountedPrice ? Number(item.discountedPrice) : null;
+  const hasDiscount = discountedPrice !== null && discountedPrice < price;
+
+  const currencySymbol = settings?.currencySymbol || '$';
+  const currencyPosition = settings?.currencyPosition || 'after';
+
+  const formatPrice = (p: number) => {
+    return currencyPosition === 'before' ? `${currencySymbol}${p.toFixed(2)}` : `${p.toFixed(2)}${currencySymbol}`;
+  };
 
   const handleAddToCart = () => {
     onAddToCart?.(item, quantity, notes);
@@ -62,7 +84,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
   const handleQuantityChange = (delta: number) => {
     const newQty = Math.max(1, quantity + delta);
     if (item.maxSelect) {
-      setQuantity(Math.min(newQty, item.maxSelect));
+      setQuantity(Math.min(newQty, Number(item.maxSelect)));
     } else {
       setQuantity(newQty);
     }
@@ -78,20 +100,20 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
         </DialogHeader>
         <div className="space-y-4 max-h-[70vh] overflow-y-auto">
           <div className="w-full aspect-video rounded-xl bg-muted flex items-center justify-center overflow-hidden">
-            {item.image ? (
+            {settings?.menuShowImages && item.image ? (
               <img
                 src={item.image}
                 alt={getName()}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-12 h-12 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+              <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
             )}
           </div>
           
           <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
           
-          {getTypes().length > 0 && (
+          {settings?.menuShowFoodTypes && getTypes().length > 0 && (
             <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
               {getTypes().map((type, idx) => (
                 <Badge 
@@ -106,7 +128,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             </div>
           )}
           
-          {getMaterials().length > 0 && (
+          {settings?.menuShowIngredients && getMaterials().length > 0 && (
             <div className={isRtl ? 'text-right' : ''}>
               <p className="text-xs text-muted-foreground font-medium mb-1">{t.materials}:</p>
               <p className="text-sm text-muted-foreground">
@@ -115,22 +137,24 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             </div>
           )}
           
-          <div className={`flex items-center gap-3 ${isRtl ? 'justify-end' : ''}`}>
-            {item.discountedPrice ? (
-              <>
+          {settings?.menuShowPrices && (
+            <div className={`flex items-center gap-3 ${isRtl ? 'justify-end' : ''}`}>
+              {hasDiscount ? (
+                <>
+                  <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
+                    {formatPrice(discountedPrice!)}
+                  </span>
+                  <span className="text-lg text-muted-foreground line-through">
+                    {formatPrice(price)}
+                  </span>
+                </>
+              ) : (
                 <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                  ${item.discountedPrice.toFixed(2)}
+                  {formatPrice(price)}
                 </span>
-                <span className="text-lg text-muted-foreground line-through">
-                  ${item.price.toFixed(2)}
-                </span>
-              </>
-            ) : (
-              <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                ${item.price.toFixed(2)}
-              </span>
-            )}
-          </div>
+              )}
+            </div>
+          )}
           
           <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <span className="text-sm font-medium">{t.quantity}:</span>
@@ -153,7 +177,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                 variant="ghost"
                 className="h-8 w-8"
                 onClick={() => handleQuantityChange(1)}
-                disabled={item.maxSelect ? quantity >= item.maxSelect : false}
+                disabled={item.maxSelect ? quantity >= Number(item.maxSelect) : false}
                 data-testid="button-quantity-increase"
               >
                 <Plus className="h-4 w-4" />
@@ -175,15 +199,17 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             />
           </div>
           
-          <Button
-            onClick={handleAddToCart}
-            className="w-full gap-2 rounded-lg"
-            size="lg"
-            data-testid="button-add-to-cart"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            {t.addToCart}
-          </Button>
+          {settings?.menuShowBuyButton && (
+            <Button
+              onClick={handleAddToCart}
+              className="w-full gap-2 rounded-lg"
+              size="lg"
+              data-testid="button-add-to-cart"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              {t.addToCart}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

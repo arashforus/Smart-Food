@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ShoppingCart } from 'lucide-react';
-import { SiInstagram, SiWhatsapp, SiTelegram } from 'react-icons/si';
+import { ArrowLeft, ArrowRight, ShoppingCart, Instagram, MessageCircle, Send } from 'lucide-react';
 import RestaurantHeader from '@/components/menu/RestaurantHeader';
 import CategoryTabs from '@/components/menu/CategoryTabs';
 import MenuList from '@/components/menu/MenuList';
@@ -10,9 +10,8 @@ import ItemDetailModal from '@/components/menu/ItemDetailModal';
 import CartView from '@/components/menu/CartView';
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
-import { mockRestaurant, mockCategories, mockMenuItems, mockFoodTypes } from '@/lib/mockData';
 import { translations } from '@/lib/types';
-import type { MenuItem, Language, CartItem } from '@/lib/types';
+import type { MenuItem, Language, CartItem, Category, FoodType, Settings } from '@/lib/types';
 
 export default function MenuPage() {
   const [, setLocation] = useLocation();
@@ -20,6 +19,27 @@ export default function MenuPage() {
     const stored = localStorage.getItem('menuLanguage') as Language;
     return stored || 'en';
   });
+
+  const { data: settings } = useQuery<Settings>({
+    queryKey: ['/api/settings'],
+  });
+
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
+
+  const { data: menuItems = [] } = useQuery<MenuItem[]>({
+    queryKey: ['/api/items'],
+  });
+
+  const { data: foodTypes = [] } = useQuery<FoodType[]>({
+    queryKey: ['/api/food-types'],
+  });
+
+  const { data: allLanguages = [] } = useQuery<any[]>({
+    queryKey: ['/api/languages'],
+  });
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -33,13 +53,8 @@ export default function MenuPage() {
     localStorage.setItem('menuLanguage', language);
   }, [language]);
 
-  const restaurant = mockRestaurant;
-  const categories = mockCategories;
-  const menuItems = mockMenuItems;
-  const foodTypes = mockFoodTypes;
   const t = translations[language] || translations.en;
-
-  const isRtl = language === 'fa';
+  const isRtl = language === 'fa' || language === 'ar';
   const BackArrow = isRtl ? ArrowRight : ArrowLeft;
 
   const handleSelectType = (typeId: string) => {
@@ -79,13 +94,29 @@ export default function MenuPage() {
   };
 
   const cartTotal = cartItems.reduce(
-    (sum, ci) => sum + (ci.item.discountedPrice || ci.item.price) * ci.quantity,
+    (sum, ci) => sum + (Number(ci.item.discountedPrice) || Number(ci.item.price)) * ci.quantity,
     0
   );
 
+  const restaurantData = {
+    name: settings?.restaurantName || '',
+    description: settings?.restaurantDescription || '',
+    address: settings?.restaurantAddress || '',
+    phone: settings?.restaurantPhone || '',
+    hours: settings?.restaurantHours ? JSON.stringify(settings.restaurantHours) : '',
+  };
+
+  const backgroundStyle = settings?.menuBackgroundType === 'color' 
+    ? { backgroundColor: settings.menuBackgroundColor }
+    : settings?.menuBackgroundType === 'gradient'
+    ? { background: `linear-gradient(to bottom, ${settings.menuGradientStart}, ${settings.menuGradientEnd})` }
+    : settings?.menuBackgroundType === 'image'
+    ? { backgroundImage: `url(${settings.menuBackgroundImage})`, backgroundSize: 'cover', backgroundAttachment: 'fixed' }
+    : {};
+
   return (
-    <div className="min-h-screen bg-background" dir={isRtl ? 'rtl' : 'ltr'}>
-      <div className="sticky top-0 z-50 bg-background border-b">
+    <div className="min-h-screen bg-background" dir={isRtl ? 'rtl' : 'ltr'} style={backgroundStyle}>
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
         <div className={`flex items-center justify-between gap-2 p-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
           <div className={`flex items-center gap-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <Button
@@ -96,55 +127,70 @@ export default function MenuPage() {
             >
               <BackArrow className="w-5 h-5" />
             </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => window.open('https://instagram.com', '_blank')}
-              data-testid="button-instagram"
-            >
-              <SiInstagram className="w-4 h-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => window.open('https://wa.me/', '_blank')}
-              data-testid="button-whatsapp"
-            >
-              <SiWhatsapp className="w-4 h-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => window.open('https://t.me/', '_blank')}
-              data-testid="button-telegram"
-            >
-              <SiTelegram className="w-4 h-4" />
-            </Button>
+            {settings?.showMenuInstagram && settings?.restaurantInstagram && (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => window.open(settings.restaurantInstagram, '_blank')}
+                data-testid="button-instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </Button>
+            )}
+            {settings?.showMenuWhatsapp && settings?.restaurantWhatsapp && (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => window.open(`https://wa.me/${settings.restaurantWhatsapp.replace(/\D/g, '')}`, '_blank')}
+                data-testid="button-whatsapp"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </Button>
+            )}
+            {settings?.showMenuTelegram && settings?.restaurantTelegram && (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => window.open(settings.restaurantTelegram, '_blank')}
+                data-testid="button-telegram"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            )}
           </div>
           <div className={`flex items-center gap-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
-            <LanguageSelector language={language} onLanguageChange={setLanguage} />
-            <ThemeToggle />
+            {settings?.showMenuLanguageSelector && (
+              <LanguageSelector language={language} onLanguageChange={setLanguage} />
+            )}
+            {settings?.showMenuThemeSwitcher && <ThemeToggle />}
           </div>
         </div>
       </div>
 
-      <RestaurantHeader restaurant={restaurant} language={language} />
-
-      <CategoryTabs
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        language={language}
-        foodTypes={foodTypes}
-        selectedTypes={selectedTypes}
-        onSelectType={handleSelectType}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        showSuggested={showSuggested}
-        onShowSuggestedChange={setShowSuggested}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+      <RestaurantHeader 
+        restaurant={restaurantData as any} 
+        language={language} 
+        settings={settings}
       />
+
+      {settings?.menuShowMenu && (
+        <CategoryTabs
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+          language={language}
+          foodTypes={foodTypes}
+          selectedTypes={selectedTypes}
+          onSelectType={handleSelectType}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          showSuggested={showSuggested}
+          onShowSuggestedChange={setShowSuggested}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          settings={settings}
+        />
+      )}
 
       <MenuList
         items={menuItems}
@@ -157,6 +203,7 @@ export default function MenuPage() {
         viewMode={viewMode}
         showSuggested={showSuggested}
         searchQuery={searchQuery}
+        settings={settings}
       />
 
       <ItemDetailModal
@@ -165,6 +212,7 @@ export default function MenuPage() {
         onClose={() => setSelectedItem(null)}
         language={language}
         onAddToCart={handleAddToCart}
+        settings={settings}
       />
 
       <CartView
@@ -176,7 +224,7 @@ export default function MenuPage() {
         onPlaceOrder={handlePlaceOrder}
       />
 
-      {cartItems.length > 0 && (
+      {cartItems.length > 0 && settings?.menuShowBuyButton && (
         <div className="fixed bottom-6 right-6 z-40" dir={isRtl ? 'rtl' : 'ltr'}>
           <Button
             size="lg"
@@ -186,7 +234,11 @@ export default function MenuPage() {
           >
             <ShoppingCart className="h-5 w-5" />
             <span>{cartItems.length} {t.cart}</span>
-            <span className="font-semibold">${cartTotal.toFixed(2)}</span>
+            <span className="font-semibold">
+              {settings?.currencyPosition === 'before' ? settings?.currencySymbol : ''}
+              {cartTotal.toFixed(2)}
+              {settings?.currencyPosition === 'after' ? settings?.currencySymbol : ''}
+            </span>
           </Button>
         </div>
       )}
