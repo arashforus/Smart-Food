@@ -67,25 +67,39 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, width: 0, x: isRtl ? -20 : 20 }}
-              animate={{ opacity: 1, width: 'auto', x: 0 }}
-              exit={{ opacity: 0, width: 0, x: isRtl ? -20 : 20 }}
+              initial={{ opacity: 0, width: 0, height: 0,x: isRtl ? -100 : 100 }}
+              animate={{ opacity: 1, width: '50%', height: 'auto', x: 0 }}
+              exit={{ opacity: 0, width: 0, height: 0, x: isRtl ? -100 : 100 }}
               transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="overflow-hidden"
             >
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md min-w-[300px] md:min-w-[400px]">
                 <CardContent className="p-6 space-y-6">
-                  <h2 className="text-xl font-bold mb-4">{t.aboutUs}</h2>
+                  
                   
                   <div className="space-y-4">
                     {settings?.menuShowOperationHours && restaurant.hours && (
-                      <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
+                        <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
                           <Clock className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
                           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
-                          <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-hours">{restaurant.hours}</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-2">
+                          {(() => {
+                            try {
+                              const hours = JSON.parse(restaurant.hours);
+                              return Object.entries(hours).map(([day, config]: [string, any]) => (
+                                <div key={day} className={`flex items-center justify-between py-1 border-b border-primary/5 last:border-0 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                                  <span className="text-sm font-medium">{day}</span>
+                                  <span className={`text-sm ${config.closed ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
+                                    {config.closed ? 'Closed' : `${config.start} - ${config.end}`}
+                                  </span>
+                                </div>
+                              ));
+                            } catch (e) {
+                              return <p className="text-sm">{restaurant.hours}</p>;
+                            }
+                          })()}
                         </div>
                       </div>
                     )}
