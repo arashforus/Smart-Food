@@ -23,11 +23,11 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
   const panelVariants = {
     closed: {
-      x: isRtl ? '100%' : '-100%',
+      width: 0,
       opacity: 0,
     },
     open: {
-      x: 0,
+      width: "60%",
       opacity: 1,
       transition: {
         type: "spring",
@@ -36,7 +36,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
       }
     },
     exit: {
-      x: isRtl ? '100%' : '-100%',
+      width: 0,
       opacity: 0,
       transition: {
         duration: 0.3
@@ -50,7 +50,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
       textAlign: 'center' as const,
     },
     open: {
-      x: isRtl ? '-100%' : '100%',
+      x: isRtl ? "-30%" : "30%",
       textAlign: (isRtl ? 'right' : 'left') as 'right' | 'left',
       transition: {
         type: "spring",
@@ -67,7 +67,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
           key="header-content"
           variants={contentVariants}
           animate={isOpen ? "open" : "closed"}
-          className={`z-10 w-full max-w-lg transition-all duration-500 ${isOpen ? (isRtl ? 'pr-8' : 'pl-8') : ''}`}
+          className="z-10 w-full max-w-lg"
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
             <div className={`flex mb-4 ${isOpen ? (isRtl ? 'justify-end' : 'justify-start') : 'justify-center'}`}>
@@ -90,20 +90,18 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </p>
           )}
 
-          {!isOpen && (
-            <div className="flex justify-center mt-6">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="rounded-full px-6 group"
-                onClick={() => setIsOpen(true)}
-                data-testid="button-toggle-info"
-              >
-                {t.aboutUs}
-                <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isRtl ? 'rotate-180' : ''} group-hover:translate-x-1`} />
-              </Button>
-            </div>
-          )}
+          <div className={`flex mt-6 ${isOpen ? (isRtl ? 'justify-end' : 'justify-start') : 'justify-center'}`}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="rounded-full px-6 group"
+              onClick={() => setIsOpen(!isOpen)}
+              data-testid="button-toggle-info"
+            >
+              {t.aboutUs}
+              <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? (isRtl ? 'rotate-180' : 'rotate-180') : (isRtl ? 'rotate-180' : 'rotate-0')} group-hover:translate-x-1`} />
+            </Button>
+          </div>
         </motion.div>
       </AnimatePresence>
 
@@ -114,18 +112,10 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             initial="closed"
             animate="open"
             exit="exit"
-            className={`absolute top-0 bottom-0 ${isRtl ? 'left-0 border-r' : 'right-0 border-l'} w-[80%] md:w-[60%] bg-card/95 backdrop-blur-xl shadow-2xl z-20 flex flex-col p-6`}
+            className={`absolute top-0 bottom-0 ${isRtl ? 'right-0 border-l' : 'left-0 border-r'} bg-card/95 backdrop-blur-xl shadow-2xl z-20 flex flex-col p-6 overflow-hidden`}
           >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">{t.aboutUs}</h2>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setIsOpen(false)}
-                className="rounded-full"
-              >
-                <X className="h-5 w-5" />
-              </Button>
+            <div className="flex justify-between items-center mb-6 min-w-[200px]">
+              <h2 className="text-xl font-bold whitespace-nowrap">{t.aboutUs}</h2>
             </div>
 
             <div className="space-y-6 overflow-y-auto pr-2">
