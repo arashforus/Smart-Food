@@ -23,14 +23,14 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
   return (
     <div className="bg-background/40 backdrop-blur-sm py-8 px-4">
-      <div className={`max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 ${isRtl ? 'md:flex-row-reverse text-right' : 'text-left'}`}>
+      <div className="max-w-4xl mx-auto flex flex-col items-center gap-8 text-center">
         <motion.div
           key="header-content"
           layout
-          className="flex-1 w-full"
+          className="w-full flex flex-col items-center"
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
-            <div className={`flex mb-4 ${isRtl ? 'justify-end' : 'justify-start'}`}>
+            <div className="flex justify-center mb-4">
               <img 
                 src={settings.restaurantLogo} 
                 alt={restaurant.name} 
@@ -45,12 +45,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </h1>
           )}
           {settings?.menuShowRestaurantDescription && (
-            <p className="text-base text-muted-foreground leading-relaxed max-w-md">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
               {restaurant.description}
             </p>
           )}
 
-          <div className="flex mt-6">
+          <div className="flex justify-center mt-6">
             <Button 
               variant="outline" 
               size="sm" 
@@ -67,44 +67,47 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, height: 0 }}
-              animate={{ opacity: 1, scale: 1, height: 'auto' }}
-              exit={{ opacity: 0, scale: 0.95, height: 0 }}
-              className="flex-1 w-full"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="w-full"
             >
-              <Card className="border-none shadow-xl bg-card/80 backdrop-blur-md overflow-hidden">
-                <CardContent className="p-6 space-y-5">
+              <Card className="border-none shadow-none bg-card/40 backdrop-blur-md overflow-hidden">
+                <CardContent className="p-6 space-y-6">
                   <h2 className="text-xl font-bold mb-4">{t.aboutUs}</h2>
                   
-                  {settings?.menuShowOperationHours && restaurant.hours && (
-                    <div className="flex items-start gap-4">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Clock className="h-4 w-4 text-primary" />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {settings?.menuShowOperationHours && restaurant.hours && (
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                          <Clock className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
+                          <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-hours">{restaurant.hours}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                        <MapPin className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
-                        <p className="text-sm mt-1" data-testid="text-restaurant-hours">{restaurant.hours}</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
+                        <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
                       </div>
                     </div>
-                  )}
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <MapPin className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
-                      <p className="text-sm mt-1" data-testid="text-restaurant-address">{restaurant.address}</p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Phone className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
-                      <p className="text-sm mt-1" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                        <Phone className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
+                        <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
