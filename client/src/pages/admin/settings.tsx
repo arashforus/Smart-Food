@@ -313,7 +313,6 @@ export default function SettingsPage() {
   const [qrAnimatedTexts, setQrAnimatedTexts] = useState<string[]>(['Welcome', 'Hello']);
   const [qrMediaUrl, setQrMediaUrl] = useState('');
   const [qrMediaType, setQrMediaType] = useState<'image' | 'video'>('image');
-  const qrMediaInputRef = useRef<HTMLInputElement>(null);
   const [qrShowAddressPhone, setQrShowAddressPhone] = useState(true);
   const [qrShowCallWaiter, setQrShowCallWaiter] = useState(true);
   const [qrTextColor, setQrTextColor] = useState('#000000');
@@ -484,12 +483,6 @@ export default function SettingsPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const profileAvatarInputRef = useRef<HTMLInputElement>(null);
-  const faviconInputRef = useRef<HTMLInputElement>(null);
-  const logoInputRef = useRef<HTMLInputElement>(null);
-  const languages = mockLanguages.filter((l) => l.isActive);
-
   const timezones = [
     { value: 'UTC-12', label: 'UTC-12:00 (Baker Island)' },
     { value: 'UTC-11', label: 'UTC-11:00 (Samoa, Midway Island)' },
@@ -540,7 +533,29 @@ export default function SettingsPage() {
     setShowChangePassword(location.includes('action=changePassword'));
   }, [location]);
 
-  // Load user profile data from API
+  const handleClearProfileAvatar = () => {
+    setProfileAvatar('');
+    setProfileAvatarPreview('');
+  };
+
+  const handleClearFavicon = () => {
+    setFavicon('');
+    setFaviconPreview('');
+  };
+
+  const handleClearLogo = () => {
+    setRestaurantLogo('');
+    setRestaurantLogoPreview('');
+  };
+
+  const handleClearQrMedia = () => {
+    setQrMediaUrl('');
+  };
+
+  const handleClearImage = () => {
+    setLoginBackgroundImage('');
+    setLoginBackgroundPreview('');
+  };
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
