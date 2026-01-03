@@ -116,15 +116,18 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           <div className="flex-1">
                             <p className="text-sm font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
                             {settings?.restaurantGoogleMapsUrl && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-auto p-0 mt-2 text-primary hover-elevate no-underline hover:no-underline"
-                                onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
-                                data-testid="button-show-on-map"
-                              >
-                                Show on Map
-                              </Button>
+                              <div className="mt-3">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 px-4 text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5"
+                                  onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
+                                  data-testid="button-show-on-map"
+                                >
+                                  <MapPin className="h-4 w-4" />
+                                  Show on Map
+                                </Button>
+                              </div>
                             )}
                           </div>
                         </div>
