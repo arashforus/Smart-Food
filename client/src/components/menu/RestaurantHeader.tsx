@@ -21,56 +21,16 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
     return null;
   }
 
-  const panelVariants = {
-    closed: {
-      width: 0,
-      opacity: 0,
-    },
-    open: {
-      width: "60%",
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-      }
-    },
-    exit: {
-      width: 0,
-      opacity: 0,
-      transition: {
-        duration: 0.3
-      }
-    }
-  };
-
-  const contentVariants = {
-    closed: {
-      x: 0,
-      textAlign: 'center' as const,
-    },
-    open: {
-      x: isRtl ? "-30%" : "30%",
-      textAlign: (isRtl ? 'right' : 'left') as 'right' | 'left',
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-      }
-    }
-  };
-
   return (
-    <div className="relative overflow-hidden bg-background/40 backdrop-blur-sm min-h-[250px] flex items-center justify-center py-8 px-4">
-      <AnimatePresence mode="wait">
+    <div className="bg-background/40 backdrop-blur-sm py-8 px-4">
+      <div className={`max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 ${isRtl ? 'md:flex-row-reverse text-right' : 'text-left'}`}>
         <motion.div
           key="header-content"
-          variants={contentVariants}
-          animate={isOpen ? "open" : "closed"}
-          className="z-10 w-full max-w-lg"
+          layout
+          className="flex-1 w-full"
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
-            <div className={`flex mb-4 ${isOpen ? (isRtl ? 'justify-end' : 'justify-start') : 'justify-center'}`}>
+            <div className={`flex mb-4 ${isRtl ? 'justify-end' : 'justify-start'}`}>
               <img 
                 src={settings.restaurantLogo} 
                 alt={restaurant.name} 
@@ -85,12 +45,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </h1>
           )}
           {settings?.menuShowRestaurantDescription && (
-            <p className="text-base text-muted-foreground leading-relaxed">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-md">
               {restaurant.description}
             </p>
           )}
 
-          <div className={`flex mt-6 ${isOpen ? (isRtl ? 'justify-end' : 'justify-start') : 'justify-center'}`}>
+          <div className="flex mt-6">
             <Button 
               variant="outline" 
               size="sm" 
@@ -99,61 +59,60 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               data-testid="button-toggle-info"
             >
               {t.aboutUs}
-              <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? (isRtl ? 'rotate-180' : 'rotate-180') : (isRtl ? 'rotate-180' : 'rotate-0')} group-hover:translate-x-1`} />
+              <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? 'rotate-90' : 'rotate-0'}`} />
             </Button>
           </div>
         </motion.div>
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            variants={panelVariants}
-            initial="closed"
-            animate="open"
-            exit="exit"
-            className={`absolute top-0 bottom-0 ${isRtl ? 'right-0 border-l' : 'left-0 border-r'} bg-card/95 backdrop-blur-xl shadow-2xl z-20 flex flex-col p-6 overflow-hidden`}
-          >
-            <div className="flex justify-between items-center mb-6 min-w-[200px]">
-              <h2 className="text-xl font-bold whitespace-nowrap">{t.aboutUs}</h2>
-            </div>
-
-            <div className="space-y-6 overflow-y-auto pr-2">
-              {settings?.menuShowOperationHours && restaurant.hours && (
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-5 w-5 text-primary" />
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, height: 0 }}
+              animate={{ opacity: 1, scale: 1, height: 'auto' }}
+              exit={{ opacity: 0, scale: 0.95, height: 0 }}
+              className="flex-1 w-full"
+            >
+              <Card className="border-none shadow-xl bg-card/80 backdrop-blur-md overflow-hidden">
+                <CardContent className="p-6 space-y-5">
+                  <h2 className="text-xl font-bold mb-4">{t.aboutUs}</h2>
+                  
+                  {settings?.menuShowOperationHours && restaurant.hours && (
+                    <div className="flex items-start gap-4">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Clock className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
+                        <p className="text-sm mt-1" data-testid="text-restaurant-hours">{restaurant.hours}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <MapPin className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
+                      <p className="text-sm mt-1" data-testid="text-restaurant-address">{restaurant.address}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
-                    <p className="text-sm mt-1 font-medium leading-snug" data-testid="text-restaurant-hours">{restaurant.hours}</p>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
-                  <p className="text-sm mt-1 font-medium leading-snug" data-testid="text-restaurant-address">{restaurant.address}</p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Phone className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
-                  <p className="text-sm mt-1 font-medium leading-snug" data-testid="text-restaurant-phone">{restaurant.phone}</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <div className="flex items-start gap-4">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Phone className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
+                      <p className="text-sm mt-1" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
