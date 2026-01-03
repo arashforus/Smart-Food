@@ -74,53 +74,79 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               className="overflow-hidden"
             >
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md min-w-[300px] md:min-w-[400px]">
-                <CardContent className="p-6 space-y-6">
-                  
-                  
-                  <div className="space-y-4">
-                    {settings?.menuShowOperationHours && restaurant.hours && (
-                      <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
-                        <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                          <Clock className="h-5 w-5 text-primary" />
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
+                <CardContent className="p-6">
+                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${isRtl ? 'md:divide-x-reverse md:divide-x' : 'md:divide-x'} divide-border`}>
+                    {/* Left Column: Hours */}
+                    <div className="space-y-4">
+                      {settings?.menuShowOperationHours && restaurant.hours && (
+                        <div className={`flex flex-col gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 mb-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                            <Clock className="h-5 w-5 text-primary" />
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.hours}</p>
+                          </div>
+                          <div className="grid grid-cols-1 gap-1">
+                            {(() => {
+                              try {
+                                const hours = JSON.parse(restaurant.hours);
+                                return Object.entries(hours).map(([day, config]: [string, any]) => (
+                                  <div key={day} className={`flex items-center justify-between py-0.5 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                                    <span className="text-xs font-medium">{day}</span>
+                                    <span className={`text-xs ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
+                                      {config.closed ? 'Closed' : `${config.start} - ${config.end}`}
+                                    </span>
+                                  </div>
+                                ));
+                              } catch (e) {
+                                return <p className="text-xs">{restaurant.hours}</p>;
+                              }
+                            })()}
+                          </div>
                         </div>
-                        <div className="grid grid-cols-1 gap-1">
-                          {(() => {
-                            try {
-                              const hours = JSON.parse(restaurant.hours);
-                              return Object.entries(hours).map(([day, config]: [string, any]) => (
-                                <div key={day} className={`flex items-center justify-between py-0.5 ${isRtl ? 'flex-row-reverse' : ''}`}>
-                                  <span className="text-xs font-medium">{day}</span>
-                                  <span className={`text-xs ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
-                                    {config.closed ? 'Closed' : `${config.start} - ${config.end}`}
-                                  </span>
-                                </div>
-                              ));
-                            } catch (e) {
-                              return <p className="text-xs">{restaurant.hours}</p>;
-                            }
-                          })()}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
-                        <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
-                      </div>
+                      )}
                     </div>
 
-                    <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Phone className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
-                        <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                    {/* Right Column: Address and Phone */}
+                    <div className={`space-y-6 ${isRtl ? 'md:pr-8' : 'md:pl-8'}`}>
+                      <div className="space-y-4">
+                        <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <MapPin className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.address}</p>
+                            <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-address">{restaurant.address}</p>
+                            {settings?.restaurantGoogleMapsUrl && (
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="h-auto p-0 mt-2 text-primary hover-elevate"
+                                onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
+                                data-testid="button-show-on-map"
+                              >
+                                Show on Map
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className={`flex items-start gap-4 ${isRtl ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Phone className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t.phone}</p>
+                            <p className="text-sm mt-1 font-medium" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="h-auto p-0 mt-2 text-primary hover-elevate"
+                              onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
+                              data-testid="button-call-now"
+                            >
+                              Call Now
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
