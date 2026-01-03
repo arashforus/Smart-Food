@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { translations } from '@/lib/types';
 import { apiRequest } from '@/lib/queryClient';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { Settings, AppLanguage } from '@/lib/types';
 
 interface AnimatedWelcomeProps {
   texts: string[];
@@ -70,15 +71,15 @@ export default function QRLandingPage() {
   const { toast } = useToast();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
 
-  const { data: settings, isLoading: settingsLoading } = useQuery({
+  const { data: settings, isLoading: settingsLoading } = useQuery<Settings>({
     queryKey: ['/api/settings'],
   });
 
-  const { data: languages = [], isLoading: languagesLoading } = useQuery({
+  const { data: languages = [], isLoading: languagesLoading } = useQuery<AppLanguage[]>({
     queryKey: ['/api/languages'],
   });
 
-  const activeLanguages = languages.filter((lang: any) => lang.isActive);
+  const activeLanguages = languages.filter((lang) => lang.isActive);
 
   const handleLanguageSelect = (langCode: string) => {
     localStorage.setItem('menuLanguage', langCode);
