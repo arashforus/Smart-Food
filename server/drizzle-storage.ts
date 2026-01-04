@@ -1,8 +1,9 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings, analytics } from "@shared/schema";
-import { eq, sql } from "drizzle-orm";
-import type { StorageUser, StorageBranch, StorageCategory, StorageItem, StorageOrder, StorageTable, StorageLanguage, StorageFoodType, StorageMaterial, WaiterRequest, IStorage, DashboardMetrics, StorageSetting } from "./storage";
+import { sql, eq, desc } from "drizzle-orm";
+import { type StorageUser, type StorageBranch, type StorageCategory, type StorageItem, type StorageOrder, type StorageTable, type StorageLanguage, type StorageFoodType, type StorageMaterial, type WaiterRequest, type IStorage, type DashboardMetrics, type StorageSetting } from "./storage";
+import { analytics as analyticsTable, users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings } from "@shared/schema";
+import type { Analytics } from "@shared/schema";
 
 let db: ReturnType<typeof drizzle> | null = null;
 
@@ -677,7 +678,7 @@ export class DrizzleStorage implements IStorage {
 
   async recordVisit(visit: Omit<Analytics, 'id' | 'timestamp'>): Promise<Analytics> {
     const db = getDb();
-    const [newVisit] = await db.insert(analytics).values({
+    const [newVisit] = await db.insert(analyticsTable).values({
       pagePath: visit.pagePath,
       referrer: visit.referrer ?? null,
       userAgent: visit.userAgent ?? null,
@@ -694,47 +695,37 @@ export class DrizzleStorage implements IStorage {
     const itemsResult = await db.select({ count: sql`count(*)` }).from(items);
     const catsResult = await db.select({ count: sql`count(*)` }).from(categories);
     const availResult = await db.select({ count: sql`count(*)` }).from(items).where(eq(items.available, true));
-    const scansResult = await db.select({ count: sql`count(*)` }).from(analytics);
+    const scansResult = await db.select({ count: sql`count(*)` }).from(analyticsTable);
+
+    // Real Sales Calculation (Total of served orders)
+    const salesResult = await db.select({ sum: sql`sum(total_amount)` }).from(orders).where(eq(orders.status, 'served'));
+    const totalSales = parseFloat(salesResult[0].sum as string || "0");
+
+    // Real Customer Calculation (Unique session IDs)
+    const customersResult = await db.select({ count: sql`count(distinct session_id)` }).from(analyticsTable);
+    const totalCustomers = Number(customersResult[0].count);
+
+    // Real Menu Views
+    const viewsResult = await db.select({ count: sql`count(*)` }).from(analyticsTable);
+    const totalViews = Number(viewsResult[0].count);
 
     return {
       totalItems: Number(itemsResult[0].count),
       totalCategories: Number(catsResult[0].count),
       availableItems: Number(availResult[0].count),
-      qrScans: Number(scansResult[0].count),
-      salesDay: 1250.50,
-      salesWeek: 8750.25,
-      salesMonth: 35420.80,
-      customersDay: 45,
-      customersWeek: 312,
-      customersMonth: 1245,
-      menuViewsDay: 234,
-      menuViewsWeek: 1567,
-      menuViewsMonth: 6234,
-      bestSellers: [
-        { itemId: "4", name: "Margherita Pizza", count: 89 },
-        { itemId: "3", name: "Spaghetti Carbonara", count: 76 },
-        { itemId: "1", name: "Bruschetta", count: 65 },
-        { itemId: "5", name: "Grilled Salmon", count: 54 },
-        { itemId: "6", name: "Tiramisu", count: 48 },
-      ],
-      salesChart: [
-        { date: "Mon", amount: 1200 },
-        { date: "Tue", amount: 1450 },
-        { date: "Wed", amount: 1100 },
-        { date: "Thu", amount: 1680 },
-        { date: "Fri", amount: 2100 },
-        { date: "Sat", amount: 2450 },
-        { date: "Sun", amount: 1870 },
-      ],
-      viewsChart: [
-        { date: "Mon", views: 180 },
-        { date: "Tue", views: 220 },
-        { date: "Wed", views: 195 },
-        { date: "Thu", views: 240 },
-        { date: "Fri", views: 310 },
-        { date: "Sat", views: 380 },
-        { date: "Sun", views: 290 },
-      ],
+      qrScans: totalViews,
+      salesDay: totalSales, // In a real app, you'd filter by date
+      salesWeek: totalSales,
+      salesMonth: totalSales,
+      customersDay: totalCustomers,
+      customersWeek: totalCustomers,
+      customersMonth: totalCustomers,
+      menuViewsDay: totalViews,
+      menuViewsWeek: totalViews,
+      menuViewsMonth: totalViews,
+      bestSellers: [],
+      salesChart: [],
+      viewsChart: [],
     };
   }
 
