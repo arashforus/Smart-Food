@@ -221,35 +221,25 @@ export default function RolesPage() {
           return (
             <Card key={role} className="flex flex-col">
               <CardHeader className="pb-2">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
-                  <Badge variant="secondary" className="text-[10px] uppercase font-bold px-1.5 py-0 h-4">
-                    {role}
-                  </Badge>
-                </div>
+                <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col gap-3">
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Permissions
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {permissions[0] === 'all' ? (
-                      <Badge variant="default" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 text-[11px] h-5 px-2">
-                        Full Access
+                <div className="flex flex-wrap gap-1">
+                  {permissions[0] === 'all' ? (
+                    <Badge variant="default" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 text-[11px] h-5 px-2">
+                      Full Access
+                    </Badge>
+                  ) : (
+                    permissions.map((p) => (
+                      <Badge 
+                        key={p} 
+                        variant="outline" 
+                        className="text-[11px] h-5 px-2 capitalize bg-muted/30"
+                      >
+                        {p.replace(/_/g, ' ')}
                       </Badge>
-                    ) : (
-                      permissions.map((p) => (
-                        <Badge 
-                          key={p} 
-                          variant="outline" 
-                          className="text-[11px] h-5 px-2 capitalize bg-muted/30"
-                        >
-                          {p.replace(/_/g, ' ')}
-                        </Badge>
-                      ))
-                    )}
-                  </div>
+                    ))
+                  )}
                 </div>
                 
                 <div className="pt-2 border-t mt-auto flex items-center justify-between text-xs text-muted-foreground">
