@@ -236,7 +236,7 @@ export default function RolesPage() {
                         variant="outline" 
                         className="text-[11px] h-5 px-2 capitalize bg-muted/30"
                       >
-                        {p.replace(/_/g, ' ')}
+                        {p.toString().replace(/_/g, ' ').replace(/[\[\]"]/g, '')}
                       </Badge>
                     ))
                   )}
