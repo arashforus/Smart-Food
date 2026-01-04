@@ -31,6 +31,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "020-add-analytics-table", description: "Add analytics table for tracking visits and dashboard metrics" },
   { version: "021-add-qr-customization-fields", description: "Add QR code customization fields to settings table" },
   { version: "022-add-menu-display-settings", description: "Add menu display toggle settings to settings table" },
+  { version: "023-add-kd-display-settings", description: "Add kitchen display toggle settings to settings table" },
 ];
 
 export async function runDatabaseMigrations() {
