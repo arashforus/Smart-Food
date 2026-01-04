@@ -28,6 +28,8 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "017-add-menu-items-settings", description: "Add menu items display settings to settings table" },
   { version: "018-add-missing-settings-fields", description: "Add missing settings fields (operating hours, QR page, menu display)" },
   { version: "019-add-payment-roles-license-oss-fields", description: "Add payment, roles, license, and order status styling fields to settings table" },
+  { version: "020-add-analytics-table", description: "Add analytics table for tracking visits and dashboard metrics" },
+  { version: "021-add-qr-customization-fields", description: "Add QR code customization fields to settings table" },
 ];
 
 export async function runDatabaseMigrations() {
