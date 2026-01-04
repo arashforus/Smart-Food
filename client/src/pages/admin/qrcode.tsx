@@ -129,11 +129,11 @@ export default function QRCodePage() {
                         {getBranchName(table.branchId)}
                       </p>
                     </div>
-                    <div className="px-4 pb-4">
+                    <div className="px-4 pb-4 flex justify-center">
                       <QRCodeDisplay 
                         menuUrl={getTableMenuUrl(table.id)}
                         id={`table-qr-${table.id}`}
-                        size={120}
+                        size={180}
                         filename={`table-${table.tableNumber}-qr.png`}
                       />
                     </div>

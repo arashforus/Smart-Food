@@ -55,7 +55,7 @@ export default function QRCodeDisplay({
         margin: 0,
         crossOrigin: 'anonymous',
       },
-      margin: 10,
+      margin: 0,
     });
 
     qrRef.current.innerHTML = '';
