@@ -24,6 +24,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/lib/auth';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { applyPrimaryColor } from '@/lib/color-utils';
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
@@ -40,6 +43,16 @@ export default function LoginPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { data: settings } = useQuery<any>({ 
+    queryKey: ["/api/settings"],
+  });
+
+  useEffect(() => {
+    if (settings?.primaryColor) {
+      applyPrimaryColor(settings.primaryColor);
+    }
+  }, [settings?.primaryColor]);
+
   const [backgroundImage, setBackgroundImage] = useState<string>(() => {
     return localStorage.getItem('loginBackgroundImage') || 'url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80)';
   });
