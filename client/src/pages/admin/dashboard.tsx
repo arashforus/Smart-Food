@@ -26,10 +26,13 @@ import type { DashboardMetrics } from '@/lib/types';
 import { mockDashboardMetrics } from '@/lib/mockData';
 
 export default function DashboardPage() {
-  const { data: metrics } = useQuery<DashboardMetrics>({
+  const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ['/api/dashboard/metrics'],
-    initialData: mockDashboardMetrics,
   });
+
+  if (isLoading) {
+    return <div className="p-8 text-center text-muted-foreground">Loading dashboard data...</div>;
+  }
 
   const statCards = [
     { 
