@@ -1,4 +1,18 @@
 import { randomUUID } from "crypto";
+import { 
+  users, type User, type InsertUser, 
+  settings, type Setting, type InsertSettings,
+  branches, type Branch,
+  categories, type Category,
+  items, type Item,
+  orders, type Order,
+  waiterRequests, type WaiterRequest as SchemaWaiterRequest,
+  tables, type Table,
+  languages, type Language,
+  foodTypes, type FoodType,
+  materials, type Material,
+  analytics, type Analytics, type InsertAnalytics
+} from "@shared/schema";
 
 export interface StorageUser {
   id: string;
