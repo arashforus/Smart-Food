@@ -2554,6 +2554,8 @@ export default function SettingsPage() {
                 initialEyeBorderShape={qrEyeBorderShape}
                 initialEyeDotShape={qrEyeDotShape}
                 initialDotsStyle={qrDotsStyle}
+                initialForegroundColor={qrForegroundColor}
+                initialBackgroundColor={qrBackgroundColor}
                 onLogoChange={(url) => setQrLogo(url)} 
                 onCenterTypeChange={(type) => setQrCenterType(type)}
                 onCenterTextChange={(text) => setQrCenterText(text)}
@@ -2562,6 +2564,8 @@ export default function SettingsPage() {
                 onEyeBorderShapeChange={(shape) => setQrEyeBorderShape(shape)}
                 onEyeDotShapeChange={(shape) => setQrEyeDotShape(shape)}
                 onDotsStyleChange={(style) => setQrDotsStyle(style)}
+                onForegroundColorChange={(color) => setQrForegroundColor(color)}
+                onBackgroundColorChange={(color) => setQrBackgroundColor(color)}
               />
             </TabsContent>
 

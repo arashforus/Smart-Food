@@ -42,6 +42,8 @@ interface QRCodeDesignerProps {
   initialEyeBorderShape?: string;
   initialEyeDotShape?: string;
   initialDotsStyle?: string;
+  initialForegroundColor?: string;
+  initialBackgroundColor?: string;
   onLogoChange?: (url: string) => void;
   onCenterTypeChange?: (type: 'none' | 'logo' | 'text') => void;
   onCenterTextChange?: (text: string) => void;
@@ -50,6 +52,8 @@ interface QRCodeDesignerProps {
   onEyeBorderShapeChange?: (shape: string) => void;
   onEyeDotShapeChange?: (shape: string) => void;
   onDotsStyleChange?: (style: string) => void;
+  onForegroundColorChange?: (color: string) => void;
+  onBackgroundColorChange?: (color: string) => void;
 }
 
 export default function QRCodeDesigner({ 
@@ -61,6 +65,8 @@ export default function QRCodeDesigner({
   initialEyeBorderShape = 'square',
   initialEyeDotShape = 'square',
   initialDotsStyle = 'square',
+  initialForegroundColor = '#000000',
+  initialBackgroundColor = '#FFFFFF',
   onLogoChange,
   onCenterTypeChange,
   onCenterTextChange,
@@ -68,7 +74,9 @@ export default function QRCodeDesigner({
   onEyeDotColorChange,
   onEyeBorderShapeChange,
   onEyeDotShapeChange,
-  onDotsStyleChange
+  onDotsStyleChange,
+  onForegroundColorChange,
+  onBackgroundColorChange
 }: QRCodeDesignerProps) {
   const { toast } = useToast();
   const qrDisplayRef = useRef<HTMLDivElement>(null);
@@ -84,14 +92,14 @@ export default function QRCodeDesigner({
     name: 'QR Design 1',
     qrText: 'https://example.com',
     logoUrl: initialLogo || '',
-    eyeBorderColor: '#000000',
-    eyeDotColor: '#000000',
+    eyeBorderColor: initialEyeBorderColor,
+    eyeDotColor: initialEyeDotColor,
     eyeBorderShape: initialEyeBorderShape,
     eyeDotShape: initialEyeDotShape,
     centerType: initialCenterType,
     centerText: initialCenterText,
-    backgroundColor: '#FFFFFF',
-    foregroundColor: '#000000',
+    backgroundColor: initialBackgroundColor,
+    foregroundColor: initialForegroundColor,
     cornerDots: initialDotsStyle,
   });
 
@@ -105,9 +113,11 @@ export default function QRCodeDesigner({
       eyeDotColor: initialEyeDotColor !== undefined ? initialEyeDotColor : prev.eyeDotColor,
       eyeBorderShape: initialEyeBorderShape !== undefined ? initialEyeBorderShape : prev.eyeBorderShape,
       eyeDotShape: initialEyeDotShape !== undefined ? initialEyeDotShape : prev.eyeDotShape,
-      cornerDots: initialDotsStyle !== undefined ? initialDotsStyle : prev.cornerDots
+      cornerDots: initialDotsStyle !== undefined ? initialDotsStyle : prev.cornerDots,
+      foregroundColor: initialForegroundColor !== undefined ? initialForegroundColor : prev.foregroundColor,
+      backgroundColor: initialBackgroundColor !== undefined ? initialBackgroundColor : prev.backgroundColor,
     }));
-  }, [initialLogo, initialCenterType, initialCenterText, initialEyeBorderColor, initialEyeDotColor, initialEyeBorderShape, initialEyeDotShape, initialDotsStyle]);
+  }, [initialLogo, initialCenterType, initialCenterText, initialEyeBorderColor, initialEyeDotColor, initialEyeBorderShape, initialEyeDotShape, initialDotsStyle, initialForegroundColor, initialBackgroundColor]);
 
   // Initialize and update QR code whenever design changes
   useEffect(() => {
@@ -249,8 +259,10 @@ export default function QRCodeDesigner({
   const handleColorChange = (type: 'bg' | 'fg', color: string) => {
     if (type === 'bg') {
       setCurrentDesign({ ...currentDesign, backgroundColor: color });
+      onBackgroundColorChange?.(color);
     } else {
       setCurrentDesign({ ...currentDesign, foregroundColor: color });
+      onForegroundColorChange?.(color);
     }
   };
 
