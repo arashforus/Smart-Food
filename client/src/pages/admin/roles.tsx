@@ -219,19 +219,45 @@ export default function RolesPage() {
         {roles.map((role) => {
           const permissions = getRolePermissions(role);
           return (
-            <Card key={role}>
+            <Card key={role} className="flex flex-col">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
+                  <Badge variant="secondary" className="text-[10px] uppercase font-bold px-1.5 py-0 h-4">
+                    {role}
+                  </Badge>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {permissions[0] === 'all'
-                    ? 'Full access to all features'
-                    : `Access: ${permissions.join(', ')}`}
-                </p>
-                <p className="text-sm mt-2">
-                  {users.filter((u) => u.role === role).length} user(s)
-                </p>
+              <CardContent className="flex-1 flex flex-col gap-3">
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    Permissions
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {permissions[0] === 'all' ? (
+                      <Badge variant="default" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 text-[11px] h-5 px-2">
+                        Full Access
+                      </Badge>
+                    ) : (
+                      permissions.map((p) => (
+                        <Badge 
+                          key={p} 
+                          variant="outline" 
+                          className="text-[11px] h-5 px-2 capitalize bg-muted/30"
+                        >
+                          {p.replace(/_/g, ' ')}
+                        </Badge>
+                      ))
+                    )}
+                  </div>
+                </div>
+                
+                <div className="pt-2 border-t mt-auto flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Users</span>
+                  <span className="font-medium text-foreground">
+                    {users.filter((u) => u.role === role).length}
+                  </span>
+                </div>
               </CardContent>
             </Card>
           );
