@@ -2,14 +2,27 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, ExternalLink } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface QRCodeDisplayProps {
   menuUrl: string;
+  id?: string;
+  size?: number;
+  filename?: string;
 }
 
-export default function QRCodeDisplay({ menuUrl }: QRCodeDisplayProps) {
+export default function QRCodeDisplay({ 
+  menuUrl, 
+  id = "qr-code-svg", 
+  size = 200,
+  filename = "menu-qr-code.png"
+}: QRCodeDisplayProps) {
+  const { data: settings } = useQuery<any>({ 
+    queryKey: ["/api/settings"],
+  });
+
   const handleDownload = () => {
-    const svg = document.getElementById('qr-code-svg');
+    const svg = document.getElementById(id);
     if (!svg) return;
 
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -23,7 +36,7 @@ export default function QRCodeDisplay({ menuUrl }: QRCodeDisplayProps) {
       ctx?.drawImage(img, 0, 0);
       const pngFile = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
-      downloadLink.download = 'menu-qr-code.png';
+      downloadLink.download = filename;
       downloadLink.href = pngFile;
       downloadLink.click();
     };
@@ -32,7 +45,7 @@ export default function QRCodeDisplay({ menuUrl }: QRCodeDisplayProps) {
   };
 
   return (
-    <Card className="max-w-md">
+    <Card className="max-w-md w-full">
       <CardHeader>
         <CardTitle>Your Menu QR Code</CardTitle>
         <CardDescription>
@@ -42,19 +55,29 @@ export default function QRCodeDisplay({ menuUrl }: QRCodeDisplayProps) {
       <CardContent className="space-y-4">
         <div className="flex justify-center p-4 bg-white rounded-md">
           <QRCodeSVG
-            id="qr-code-svg"
+            id={id}
             value={menuUrl}
-            size={200}
+            size={size}
             level="H"
             includeMargin
-            data-testid="qr-code-svg"
+            fgColor={settings?.qrForegroundColor || "#000000"}
+            bgColor={settings?.qrBackgroundColor || "#FFFFFF"}
+            imageSettings={settings?.qrLogo ? {
+              src: settings.qrLogo,
+              x: undefined,
+              y: undefined,
+              height: size * 0.2,
+              width: size * 0.2,
+              excavate: true,
+            } : undefined}
+            data-testid={id}
           />
         </div>
         <p className="text-sm text-muted-foreground text-center break-all">
           {menuUrl}
         </p>
         <div className="flex gap-2 flex-wrap">
-          <Button onClick={handleDownload} className="flex-1" data-testid="button-download-qr">
+          <Button onClick={handleDownload} className="flex-1" data-testid={`button-download-${id}`}>
             <Download className="h-4 w-4 mr-2" />
             Download PNG
           </Button>
@@ -62,7 +85,7 @@ export default function QRCodeDisplay({ menuUrl }: QRCodeDisplayProps) {
             variant="outline"
             onClick={() => window.open(menuUrl, '_blank')}
             className="flex-1"
-            data-testid="button-preview-menu"
+            data-testid={`button-preview-${id}`}
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Preview Menu
