@@ -1218,11 +1218,6 @@ export default function SettingsPage() {
                               setFaviconPreview(url);
                               updateSettingsMutation.mutate({ favicon: url });
                             }}
-                            onRemove={() => {
-                              setFavicon('');
-                              setFaviconPreview('');
-                              updateSettingsMutation.mutate({ favicon: null });
-                            }}
                             placeholder="Upload favicon"
                             testId="input-favicon"
                           />
