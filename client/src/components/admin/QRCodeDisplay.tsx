@@ -1,8 +1,9 @@
-import { QRCode } from 'react-qrcode-logo';
+import { useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, ExternalLink } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import QRCodeStyling from 'qr-code-styling';
 
 interface QRCodeDisplayProps {
   menuUrl: string;
@@ -13,7 +14,7 @@ interface QRCodeDisplayProps {
 
 export default function QRCodeDisplay({ 
   menuUrl, 
-  id = "qr-code-canvas", 
+  id = "qr-code-container", 
   size = 200,
   filename = "menu-qr-code.png"
 }: QRCodeDisplayProps) {
@@ -21,22 +22,51 @@ export default function QRCodeDisplay({
     queryKey: ["/api/settings"],
   });
 
+  const qrRef = useRef<HTMLDivElement>(null);
+  const qrInstanceRef = useRef<QRCodeStyling | null>(null);
+
+  useEffect(() => {
+    if (!qrRef.current) return;
+
+    const qrCode = new QRCodeStyling({
+      width: size,
+      height: size,
+      type: 'svg',
+      data: menuUrl,
+      dotsOptions: {
+        color: settings?.qrForegroundColor || '#000000',
+        type: (settings?.qrDotsStyle || 'square') as any,
+      },
+      cornersSquareOptions: {
+        color: settings?.qrEyeBorderColor || settings?.qrForegroundColor || '#000000',
+        type: (settings?.qrEyeBorderShape || 'square') as any,
+      },
+      cornersDotOptions: {
+        color: settings?.qrEyeDotColor || settings?.qrForegroundColor || '#000000',
+        type: (settings?.qrEyeDotShape || 'square') as any,
+      },
+      backgroundOptions: {
+        color: settings?.qrBackgroundColor || '#FFFFFF',
+      },
+      image: settings?.qrLogo || undefined,
+      imageOptions: {
+        hideBackgroundDots: true,
+        imageSize: 0.4,
+        margin: 0,
+        crossOrigin: 'anonymous',
+      },
+      margin: 10,
+    });
+
+    qrRef.current.innerHTML = '';
+    qrCode.append(qrRef.current);
+    qrInstanceRef.current = qrCode;
+  }, [menuUrl, settings, size]);
+
   const handleDownload = () => {
-    const canvas = document.getElementById(id) as HTMLCanvasElement;
-    if (!canvas) return;
-
-    const pngFile = canvas.toDataURL('image/png');
-    const downloadLink = document.createElement('a');
-    downloadLink.download = filename;
-    downloadLink.href = pngFile;
-    downloadLink.click();
+    if (!qrInstanceRef.current) return;
+    qrInstanceRef.current.download({ name: filename.replace('.png', ''), extension: 'png' });
   };
-
-  // Map settings to react-qrcode-logo props
-  const qrStyle = settings?.qrDotsStyle === 'dots' ? 'dots' : 
-                  settings?.qrDotsStyle === 'rounded' ? 'fluid' : 'squares';
-  
-  const eyeRadius = settings?.qrEyeBorderShape === 'rounded' ? 10 : 0;
 
   return (
     <Card className="max-w-md w-full">
@@ -48,22 +78,7 @@ export default function QRCodeDisplay({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-center p-4 bg-white rounded-md overflow-hidden">
-          <QRCode
-            id={id}
-            value={menuUrl}
-            size={size}
-            qrStyle={qrStyle}
-            eyeRadius={eyeRadius}
-            fgColor={settings?.qrForegroundColor || "#000000"}
-            bgColor={settings?.qrBackgroundColor || "#FFFFFF"}
-            logoImage={settings?.qrLogo}
-            logoWidth={size * 0.2}
-            logoHeight={size * 0.2}
-            logoOpacity={1}
-            removeQrCodeBehindLogo={true}
-            eyeColor={settings?.qrEyeBorderColor || settings?.qrForegroundColor || "#000000"}
-            data-testid={id}
-          />
+          <div ref={qrRef} data-testid={id} />
         </div>
         <p className="text-sm text-muted-foreground text-center break-all">
           {menuUrl}
