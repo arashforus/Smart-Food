@@ -476,6 +476,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/track-visit", async (req: Request, res: Response) => {
+    try {
+      const visit = await storage.recordVisit({
+        pagePath: req.body.pagePath,
+        referrer: req.body.referrer || null,
+        userAgent: req.headers["user-agent"] || null,
+        language: req.headers["accept-language"] || null,
+        sessionId: req.sessionID || null,
+      });
+      res.json(visit);
+    } catch (error) {
+      console.error("Track visit error:", error);
+      res.status(500).json({ message: "Failed to track visit" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

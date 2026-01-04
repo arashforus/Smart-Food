@@ -319,6 +319,7 @@ export interface IStorage {
   updateMaterial(id: string, data: Partial<Omit<StorageMaterial, 'id'>>): Promise<StorageMaterial | undefined>;
   deleteMaterial(id: string): Promise<boolean>;
   createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest>;
+  recordVisit(visit: Omit<Analytics, 'id' | 'timestamp'>): Promise<Analytics>;
   getDashboardMetrics(): Promise<DashboardMetrics>;
 }
 
@@ -334,6 +335,7 @@ export class MemStorage implements IStorage {
   private languages: Map<string, StorageLanguage>;
   private foodTypes: Map<string, StorageFoodType>;
   private materials: Map<string, StorageMaterial>;
+  private analytics: Analytics[];
 
   public sessionStore: session.Store;
 
@@ -351,6 +353,7 @@ export class MemStorage implements IStorage {
     this.languages = new Map();
     this.foodTypes = new Map();
     this.materials = new Map();
+    this.analytics = [];
     
     const branch1: StorageBranch = { id: '1', name: 'Downtown Branch', address: '123 Main Street', phone: '+1 (555) 123-4567', isActive: true };
     const branch2: StorageBranch = { id: '2', name: 'Uptown Branch', address: '456 Oak Avenue', phone: '+1 (555) 234-5678', isActive: true };
@@ -773,6 +776,13 @@ export class MemStorage implements IStorage {
     };
     this.waiterRequests.set(id, request);
     return request;
+  }
+
+  async recordVisit(visit: Omit<Analytics, 'id' | 'timestamp'>): Promise<Analytics> {
+    const id = randomUUID();
+    const newVisit: Analytics = { ...visit, id, timestamp: new Date() };
+    this.analytics.push(newVisit);
+    return newVisit;
   }
 
   async getDashboardMetrics(): Promise<DashboardMetrics> {

@@ -130,6 +130,16 @@ export const materials = pgTable("materials", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const analytics = pgTable("analytics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  pagePath: text("page_path").notNull(),
+  referrer: text("referrer"),
+  userAgent: text("user_agent"),
+  language: text("language"),
+  sessionId: text("session_id"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 export const settings = pgTable("settings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   
@@ -256,6 +266,11 @@ export const insertUserSchema = createInsertSchema(users).pick({
   phone: true,
 });
 
+export const insertAnalyticsSchema = createInsertSchema(analytics).omit({
+  id: true,
+  timestamp: true,
+});
+
 export const insertSettingsSchema = createInsertSchema(settings).omit({ 
   id: true,
   createdAt: true 
@@ -263,7 +278,9 @@ export const insertSettingsSchema = createInsertSchema(settings).omit({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
+export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
 export type Setting = typeof settings.$inferSelect;
+export type Analytics = typeof analytics.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Branch = typeof branches.$inferSelect;
 export type Category = typeof categories.$inferSelect;

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, RequireAuth } from "@/lib/auth";
 import { LanguageProvider } from "@/hooks/use-language";
+import { useAnalytics } from "@/hooks/use-analytics";
 import NotFound from "@/pages/not-found";
 import MenuPage from "@/pages/menu";
 import QRLandingPage from "@/pages/qr-landing";
@@ -13,6 +14,7 @@ import AdminLayout from "@/pages/admin/index";
 import LandingPage from "@/pages/landing";
 
 function Router() {
+  useAnalytics();
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
