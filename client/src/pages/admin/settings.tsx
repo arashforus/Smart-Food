@@ -446,6 +446,19 @@ export default function SettingsPage() {
   const [favicon, setFavicon] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
   const [faviconPreview, setFaviconPreview] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
 
+  // Update real favicon in document head when favicon state changes
+  useEffect(() => {
+    if (favicon) {
+      let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = favicon;
+    }
+  }, [favicon]);
+
   // Payment Settings
   const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem('paymentMethod') || 'cash');
 
@@ -1203,6 +1216,12 @@ export default function SettingsPage() {
                             onChange={(url) => {
                               setFavicon(url);
                               setFaviconPreview(url);
+                              updateSettingsMutation.mutate({ favicon: url });
+                            }}
+                            onRemove={() => {
+                              setFavicon('');
+                              setFaviconPreview('');
+                              updateSettingsMutation.mutate({ favicon: null });
                             }}
                             placeholder="Upload favicon"
                             testId="input-favicon"
@@ -1212,7 +1231,11 @@ export default function SettingsPage() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={handleClearFavicon}
+                        onClick={() => {
+                          setFavicon('');
+                          setFaviconPreview('');
+                          updateSettingsMutation.mutate({ favicon: null });
+                        }}
                         className="w-full"
                         data-testid="button-clear-favicon"
                       >
