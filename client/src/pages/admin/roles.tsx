@@ -221,7 +221,15 @@ export default function RolesPage() {
           return (
             <Card key={role} className="flex flex-col">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      {users.filter((u) => u.role === role).length}
+                    </span>
+                    <span>User(s)</span>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col gap-3">
                 <div className="flex flex-wrap gap-1">
@@ -240,13 +248,6 @@ export default function RolesPage() {
                       </Badge>
                     ))
                   )}
-                </div>
-                
-                <div className="pt-2 border-t mt-auto flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Users</span>
-                  <span className="font-medium text-foreground">
-                    {users.filter((u) => u.role === role).length}
-                  </span>
                 </div>
               </CardContent>
             </Card>
