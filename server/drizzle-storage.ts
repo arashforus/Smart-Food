@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings } from "@shared/schema";
+import { users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings, analytics } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 import type { StorageUser, StorageBranch, StorageCategory, StorageItem, StorageOrder, StorageTable, StorageLanguage, StorageFoodType, StorageMaterial, WaiterRequest, IStorage, DashboardMetrics, StorageSetting } from "./storage";
 
@@ -675,16 +675,32 @@ export class DrizzleStorage implements IStorage {
     };
   }
 
+  async recordVisit(visit: Omit<Analytics, 'id' | 'timestamp'>): Promise<Analytics> {
+    const db = getDb();
+    const [newVisit] = await db.insert(analytics).values({
+      pagePath: visit.pagePath,
+      referrer: visit.referrer ?? null,
+      userAgent: visit.userAgent ?? null,
+      language: visit.language ?? null,
+      sessionId: visit.sessionId ?? null,
+    }).returning();
+    return newVisit as any;
+  }
+
   async getDashboardMetrics(): Promise<DashboardMetrics> {
     const db = getDb();
     
-    const waiterRequestsData = await db.select().from(waiterRequests);
-    
+    // Total counts
+    const itemsResult = await db.select({ count: sql`count(*)` }).from(items);
+    const catsResult = await db.select({ count: sql`count(*)` }).from(categories);
+    const availResult = await db.select({ count: sql`count(*)` }).from(items).where(eq(items.available, true));
+    const scansResult = await db.select({ count: sql`count(*)` }).from(analytics);
+
     return {
-      totalItems: 9,
-      totalCategories: 4,
-      availableItems: 9,
-      qrScans: 156,
+      totalItems: Number(itemsResult[0].count),
+      totalCategories: Number(catsResult[0].count),
+      availableItems: Number(availResult[0].count),
+      qrScans: Number(scansResult[0].count),
       salesDay: 1250.50,
       salesWeek: 8750.25,
       salesMonth: 35420.80,

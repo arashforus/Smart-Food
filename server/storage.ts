@@ -13,6 +13,8 @@ import {
   materials, type Material,
   analytics, type Analytics, type InsertAnalytics
 } from "@shared/schema";
+import { db } from "./db";
+import { sql, eq } from "drizzle-orm";
 
 export interface StorageUser {
   id: string;
@@ -794,51 +796,37 @@ export class MemStorage implements IStorage {
 
   async recordVisit(visit: Omit<Analytics, 'id' | 'timestamp'>): Promise<Analytics> {
     const id = randomUUID();
-    const newVisit: Analytics = { ...visit, id, timestamp: new Date() };
+    const newVisit: Analytics = {
+      ...visit,
+      id,
+      timestamp: new Date(),
+      referrer: visit.referrer ?? null,
+      userAgent: visit.userAgent ?? null,
+      language: visit.language ?? null,
+      sessionId: visit.sessionId ?? null,
+    };
     this.analytics.push(newVisit);
     return newVisit;
   }
 
   async getDashboardMetrics(): Promise<DashboardMetrics> {
     return {
-      totalItems: 9,
-      totalCategories: 4,
-      availableItems: 9,
-      qrScans: 156,
-      salesDay: 1250.50,
-      salesWeek: 8750.25,
-      salesMonth: 35420.80,
-      customersDay: 45,
-      customersWeek: 312,
-      customersMonth: 1245,
-      menuViewsDay: 234,
-      menuViewsWeek: 1567,
-      menuViewsMonth: 6234,
-      bestSellers: [
-        { itemId: '4', name: 'Margherita Pizza', count: 89 },
-        { itemId: '3', name: 'Spaghetti Carbonara', count: 76 },
-        { itemId: '1', name: 'Bruschetta', count: 65 },
-        { itemId: '5', name: 'Grilled Salmon', count: 54 },
-        { itemId: '6', name: 'Tiramisu', count: 48 },
-      ],
-      salesChart: [
-        { date: 'Mon', amount: 1200 },
-        { date: 'Tue', amount: 1450 },
-        { date: 'Wed', amount: 1100 },
-        { date: 'Thu', amount: 1680 },
-        { date: 'Fri', amount: 2100 },
-        { date: 'Sat', amount: 2450 },
-        { date: 'Sun', amount: 1870 },
-      ],
-      viewsChart: [
-        { date: 'Mon', views: 180 },
-        { date: 'Tue', views: 220 },
-        { date: 'Wed', views: 195 },
-        { date: 'Thu', views: 240 },
-        { date: 'Fri', views: 310 },
-        { date: 'Sat', views: 380 },
-        { date: 'Sun', views: 290 },
-      ],
+      totalItems: this.items.size,
+      totalCategories: this.categories.size,
+      availableItems: Array.from(this.items.values()).filter(i => i.available).length,
+      qrScans: this.analytics.length,
+      salesDay: 0,
+      salesWeek: 0,
+      salesMonth: 0,
+      customersDay: 0,
+      customersWeek: 0,
+      customersMonth: 0,
+      menuViewsDay: 0,
+      menuViewsWeek: 0,
+      menuViewsMonth: 0,
+      bestSellers: [],
+      salesChart: [],
+      viewsChart: [],
     };
   }
 }
@@ -861,8 +849,5 @@ async function initializeStorage() {
   }
 }
 
-// Call it immediately but export the promise if needed, 
-// or ensure it finishes before routes use it.
-// For simplicity in this env, we call it top-level.
 const initPromise = initializeStorage();
 export { initPromise };
