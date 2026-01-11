@@ -30,6 +30,11 @@ COPY package*.json ./
 # Install ONLY production dependencies
 RUN npm install --omit=dev
 
+# Install drizzle-kit globally or ensure it is in the production image
+# Since drizzle-kit is needed for db:push, we include it here.
+# Alternatively, we can move it to "dependencies" instead of "devDependencies"
+RUN npm install -g drizzle-kit
+
 # Copy built assets from builder stage
 # dist/ contains both client (dist/public) and server (dist/index.cjs)
 COPY --from=builder /app/dist ./dist
