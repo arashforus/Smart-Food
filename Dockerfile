@@ -20,7 +20,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/uploads ./uploads
 # COPY migration folder so migration files are available in production image.
 # Adjust the source path (/app/migrations) if your project stores migrations elsewhere.
-COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/migrations ./server/migrations
 
 EXPOSE 5000
 ENV NODE_ENV=production
