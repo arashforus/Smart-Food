@@ -21,10 +21,6 @@ COPY --from=builder /app/uploads ./uploads
 # COPY migration folder so migration files are available in production image.
 # Adjust the source path (/app/migrations) if your project stores migrations elsewhere.
 COPY --from=builder /app/migrations ./migrations
-# Optional: copy an entrypoint script that runs migrations before starting the app.
-# See entrypoint.sh below. If you don't want the image to attempt to run migrations
-# automatically, remove these two lines and keep the original CMD.
-COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
 
 EXPOSE 5000
 ENV NODE_ENV=production
