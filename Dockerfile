@@ -31,8 +31,6 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 # Install drizzle-kit globally or ensure it is in the production image
-# Since drizzle-kit is needed for db:push, we include it here.
-# Alternatively, we can move it to "dependencies" instead of "devDependencies"
 RUN npm install -g drizzle-kit
 
 # Copy built assets from builder stage
@@ -41,6 +39,9 @@ COPY --from=builder /app/dist ./dist
 
 # Copy migrations so they can be run in production if needed
 COPY --from=builder /app/server/migrations ./server/migrations
+
+# Copy drizzle configuration
+COPY --from=builder /app/drizzle.config.ts ./
 
 # Create uploads directory
 RUN mkdir -p uploads
