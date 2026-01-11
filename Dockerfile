@@ -1,27 +1,52 @@
-# name=Dockerfile
+# Stage 1: Build
 FROM node:20-alpine AS builder
+
+# Check if we are in Replit or local and set appropriate environment variables
+ENV NODE_ENV=development
+
 WORKDIR /app
-# copy lock and package to ensure deterministic installs
-COPY package.json package-lock.json ./
-# install all deps (dev + prod) for build
-RUN npm ci
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Install all dependencies (including devDependencies for build)
+RUN npm install
+
+# Copy the rest of the application code
 COPY . .
+
+# Build the application
+# This runs script/build.ts which handles esbuild for server and vite for client
 RUN npm run build
 
-# production image
+# Stage 2: Production
 FROM node:20-alpine
-WORKDIR /app
-COPY package.json package-lock.json ./
-# install only production dependencies
-RUN npm ci --production
-# copy built output
-COPY --from=builder /app/dist ./dist
-# copy uploads folder (will be overridden by mounted volume in production)
-COPY --from=builder /app/uploads ./uploads
-# COPY migration folder so migration files are available in production image.
-# Adjust the source path (/app/migrations) if your project stores migrations elsewhere.
-COPY --from=builder /app/migrations ./migrations
 
-EXPOSE 5000
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ONLY production dependencies
+RUN npm install --omit=dev
+
+# Copy built assets from builder stage
+# dist/ contains both client (dist/public) and server (dist/index.cjs)
+COPY --from=builder /app/dist ./dist
+
+# Copy migrations so they can be run in production if needed
+COPY --from=builder /app/server/migrations ./server/migrations
+
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Set environment variables
 ENV NODE_ENV=production
-CMD ["node", "dist/index.cjs"]
+ENV PORT=5000
+
+# Expose the application port
+EXPOSE 5000
+
+# Use the start script which handles migrations and starting the server
+# Note: npm run db:push requires DATABASE_URL to be set at runtime
+CMD ["npm", "start"]
