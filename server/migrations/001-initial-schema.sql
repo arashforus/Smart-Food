@@ -8,11 +8,11 @@ CREATE TABLE IF NOT EXISTS schema_versions (
   version TEXT NOT NULL,
   applied_at TIMESTAMP NOT NULL DEFAULT NOW(),
   description TEXT,
-  -- CONSTRAINT schema_versions_version_unique UNIQUE (version)
+  CONSTRAINT schema_versions_version_unique UNIQUE (version)
 );
 
-ALTER TABLE schema_versions
-ADD CONSTRAINT schema_versions_version_unique UNIQUE (version);
+--ALTER TABLE schema_versions
+--ADD CONSTRAINT schema_versions_version_unique UNIQUE (version);
 
 -- Branches Table
 CREATE TABLE IF NOT EXISTS branches (
