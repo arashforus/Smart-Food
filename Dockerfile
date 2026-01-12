@@ -30,7 +30,7 @@ COPY package*.json ./
 # Install ONLY production dependencies
 RUN npm install --omit=dev
 
-# Install drizzle-kit globally or ensure it is in the production image
+# Install drizzle-kit globally
 RUN npm install -g drizzle-kit
 
 # Copy built assets from builder stage
@@ -39,6 +39,9 @@ COPY --from=builder /app/dist ./dist
 
 # Copy migrations so they can be run in production if needed
 COPY --from=builder /app/server/migrations ./server/migrations
+
+# Copy shared folder (needed for schema.ts which drizzle.config.ts depends on)
+COPY --from=builder /app/shared ./shared
 
 # Copy drizzle configuration
 COPY --from=builder /app/drizzle.config.ts ./
