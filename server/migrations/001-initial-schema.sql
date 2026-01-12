@@ -5,9 +5,10 @@
 -- Schema Version Tracking Table
 CREATE TABLE IF NOT EXISTS schema_versions (
   id SERIAL PRIMARY KEY,
-  version TEXT NOT NULL UNIQUE,
+  version TEXT NOT NULL,
   applied_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  description TEXT
+  description TEXT,
+  CONSTRAINT schema_versions_version_unique UNIQUE (version)
 );
 
 -- Branches Table
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS branches (
 -- Users Table (with avatar and branchId)
 CREATE TABLE IF NOT EXISTS users (
   id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-  username TEXT NOT NULL UNIQUE,
+  username TEXT NOT NULL,
   password TEXT NOT NULL,
   name TEXT NOT NULL DEFAULT '',
   email TEXT NOT NULL DEFAULT '',
@@ -31,7 +32,8 @@ CREATE TABLE IF NOT EXISTS users (
   avatar TEXT,
   phone TEXT,
   branch_id VARCHAR,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  CONSTRAINT users_username_unique UNIQUE (username)
 );
 
 -- Categories Table
@@ -98,7 +100,7 @@ CREATE TABLE IF NOT EXISTS tables (
 -- Orders Table
 CREATE TABLE IF NOT EXISTS orders (
   id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-  order_number TEXT NOT NULL UNIQUE,
+  order_number TEXT NOT NULL,
   table_number VARCHAR,
   branch_id VARCHAR NOT NULL,
   items JSONB NOT NULL,
@@ -106,7 +108,8 @@ CREATE TABLE IF NOT EXISTS orders (
   total_amount NUMERIC(10, 2) NOT NULL,
   notes TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW(),
+  CONSTRAINT orders_order_number_unique UNIQUE (order_number)
 );
 
 -- Waiter Requests Table
@@ -121,11 +124,12 @@ CREATE TABLE IF NOT EXISTS waiter_requests (
 -- Languages Table
 CREATE TABLE IF NOT EXISTS languages (
   id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
-  code TEXT NOT NULL UNIQUE,
+  code TEXT NOT NULL,
   name TEXT NOT NULL,
   is_active BOOLEAN NOT NULL DEFAULT TRUE,
   "order" NUMERIC NOT NULL DEFAULT 1,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  CONSTRAINT languages_code_unique UNIQUE (code)
 );
 
 -- Session Table for express-session

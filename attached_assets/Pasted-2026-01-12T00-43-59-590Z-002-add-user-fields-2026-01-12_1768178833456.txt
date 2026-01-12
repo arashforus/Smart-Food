@@ -1,0 +1,98 @@
+2026-01-12T00:43:59.590Z → 002-add-user-fields
+2026-01-12T00:43:59.590Z → 003-add-phone-to-users
+2026-01-12T00:43:59.590Z → 004-add-language-to-users
+2026-01-12T00:43:59.590Z → 005-add-missing-user-columns
+2026-01-12T00:43:59.590Z → 006-add-general-name-to-categories
+2026-01-12T00:43:59.590Z → 007-add-language-fields
+2026-01-12T00:43:59.591Z → 008-add-icon-color-to-food-types
+2026-01-12T00:43:59.591Z → 009-add-general-name-to-food-types
+2026-01-12T00:43:59.591Z → 010-add-owner-fields-to-branches
+2026-01-12T00:43:59.591Z → 011-add-settings-table
+2026-01-12T00:43:59.591Z → 012-add-login-settings
+2026-01-12T00:43:59.591Z → 013-add-restaurant-settings
+2026-01-12T00:43:59.591Z → 014-add-restaurant-socials
+2026-01-12T00:43:59.591Z → 015-add-qr-code-settings
+2026-01-12T00:43:59.591Z → 016-add-menu-display-settings
+2026-01-12T00:43:59.591Z → 016-add-menu-page-settings
+2026-01-12T00:43:59.591Z → 017-add-menu-items-settings
+2026-01-12T00:43:59.591Z → 018-add-missing-settings-fields
+2026-01-12T00:43:59.591Z → 019-add-payment-roles-license-oss-fields
+2026-01-12T00:43:59.591Z → 020-add-analytics-table
+2026-01-12T00:43:59.591Z → 021-add-qr-customization-fields
+2026-01-12T00:43:59.591Z → 022-add-menu-display-settings
+2026-01-12T00:43:59.591Z → 023-add-kd-display-settings
+2026-01-12T00:43:59.591Z 🚀 Applying migration: 001-initial-schema
+2026-01-12T00:43:59.601Z ❌ Failed to apply migration 001-initial-schema: error: there is no unique or exclusion constraint matching the ON CONFLICT specification
+2026-01-12T00:43:59.601Z at /app/dist/index.cjs:86:13326
+2026-01-12T00:43:59.601Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-12T00:43:59.601Z at async v6 (/app/dist/index.cjs:103:157)
+2026-01-12T00:43:59.601Z at async y6 (/app/dist/index.cjs:104:369)
+2026-01-12T00:43:59.601Z at async /app/dist/index.cjs:108:854 {
+2026-01-12T00:43:59.601Z length: 148,
+2026-01-12T00:43:59.601Z severity: 'ERROR',
+2026-01-12T00:43:59.601Z code: '42P10',
+2026-01-12T00:43:59.601Z detail: undefined,
+2026-01-12T00:43:59.601Z hint: undefined,
+2026-01-12T00:43:59.601Z position: undefined,
+2026-01-12T00:43:59.601Z internalPosition: undefined,
+2026-01-12T00:43:59.601Z internalQuery: undefined,
+2026-01-12T00:43:59.601Z where: undefined,
+2026-01-12T00:43:59.601Z schema: undefined,
+2026-01-12T00:43:59.601Z table: undefined,
+2026-01-12T00:43:59.601Z column: undefined,
+2026-01-12T00:43:59.601Z dataType: undefined,
+2026-01-12T00:43:59.601Z constraint: undefined,
+2026-01-12T00:43:59.601Z file: 'plancat.c',
+2026-01-12T00:43:59.601Z line: '958',
+2026-01-12T00:43:59.601Z routine: 'infer_arbiter_indexes'
+2026-01-12T00:43:59.601Z }
+2026-01-12T00:43:59.601Z ❌ Migration failed: error: there is no unique or exclusion constraint matching the ON CONFLICT specification
+2026-01-12T00:43:59.601Z at /app/dist/index.cjs:86:13326
+2026-01-12T00:43:59.601Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-12T00:43:59.601Z at async v6 (/app/dist/index.cjs:103:157)
+2026-01-12T00:43:59.601Z at async y6 (/app/dist/index.cjs:104:369)
+2026-01-12T00:43:59.601Z at async /app/dist/index.cjs:108:854 {
+2026-01-12T00:43:59.601Z length: 148,
+2026-01-12T00:43:59.601Z severity: 'ERROR',
+2026-01-12T00:43:59.601Z code: '42P10',
+2026-01-12T00:43:59.601Z detail: undefined,
+2026-01-12T00:43:59.601Z hint: undefined,
+2026-01-12T00:43:59.601Z position: undefined,
+2026-01-12T00:43:59.601Z internalPosition: undefined,
+2026-01-12T00:43:59.601Z internalQuery: undefined,
+2026-01-12T00:43:59.601Z where: undefined,
+2026-01-12T00:43:59.601Z schema: undefined,
+2026-01-12T00:43:59.601Z table: undefined,
+2026-01-12T00:43:59.601Z column: undefined,
+2026-01-12T00:43:59.601Z dataType: undefined,
+2026-01-12T00:43:59.601Z constraint: undefined,
+2026-01-12T00:43:59.601Z file: 'plancat.c',
+2026-01-12T00:43:59.601Z line: '958',
+2026-01-12T00:43:59.601Z routine: 'infer_arbiter_indexes'
+2026-01-12T00:43:59.601Z }
+2026-01-12T00:43:59.601Z ⚠️ Database initialization error: error: there is no unique or exclusion constraint matching the ON CONFLICT specification
+2026-01-12T00:43:59.601Z at /app/dist/index.cjs:86:13326
+2026-01-12T00:43:59.601Z at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-12T00:43:59.601Z at async v6 (/app/dist/index.cjs:103:157)
+2026-01-12T00:43:59.601Z at async y6 (/app/dist/index.cjs:104:369)
+2026-01-12T00:43:59.601Z at async /app/dist/index.cjs:108:854 {
+2026-01-12T00:43:59.601Z length: 148,
+2026-01-12T00:43:59.601Z severity: 'ERROR',
+2026-01-12T00:43:59.601Z code: '42P10',
+2026-01-12T00:43:59.601Z detail: undefined,
+2026-01-12T00:43:59.601Z hint: undefined,
+2026-01-12T00:43:59.601Z position: undefined,
+2026-01-12T00:43:59.601Z internalPosition: undefined,
+2026-01-12T00:43:59.601Z internalQuery: undefined,
+2026-01-12T00:43:59.601Z where: undefined,
+2026-01-12T00:43:59.601Z schema: undefined,
+2026-01-12T00:43:59.601Z table: undefined,
+2026-01-12T00:43:59.601Z column: undefined,
+2026-01-12T00:43:59.601Z dataType: undefined,
+2026-01-12T00:43:59.601Z constraint: undefined,
+2026-01-12T00:43:59.601Z file: 'plancat.c',
+2026-01-12T00:43:59.601Z line: '958',
+2026-01-12T00:43:59.601Z routine: 'infer_arbiter_indexes'
+2026-01-12T00:43:59.601Z }
+2026-01-12T00:43:59.601Z Note: If this is a connection error, check your DATABASE_URL
+2026-01-12T00:43:59.636Z 12:43:59 AM [express] serving on port 5000
