@@ -169,7 +169,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/items", async (req: Request, res: Response) => {
     try {
-      const item = await storage.createItem(req.body);
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials } = req.body;
+      const item = await storage.createItem({
+        generalName: generalName || "",
+        name: name || {},
+        shortDescription: shortDescription || {},
+        longDescription: longDescription || {},
+        price: Number(price),
+        discountedPrice: discountedPrice ? Number(discountedPrice) : undefined,
+        maxSelect: maxSelect ? Number(maxSelect) : undefined,
+        categoryId,
+        image: image || null,
+        available: available !== undefined ? available : true,
+        suggested: suggested !== undefined ? suggested : false,
+        isNew: isNew !== undefined ? isNew : false,
+        materials: materials || []
+      });
       res.json(item);
     } catch (error) {
       console.error("Create item error:", error);
@@ -179,7 +194,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/items/:id", async (req: Request, res: Response) => {
     try {
-      const item = await storage.updateItem(req.params.id, req.body);
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials } = req.body;
+      const item = await storage.updateItem(req.params.id, {
+        generalName: generalName !== undefined ? generalName : undefined,
+        name: name !== undefined ? name : undefined,
+        shortDescription: shortDescription !== undefined ? shortDescription : undefined,
+        longDescription: longDescription !== undefined ? longDescription : undefined,
+        price: price !== undefined ? Number(price) : undefined,
+        discountedPrice: discountedPrice !== undefined ? (discountedPrice === null ? null : Number(discountedPrice)) : undefined,
+        maxSelect: maxSelect !== undefined ? (maxSelect === null ? null : Number(maxSelect)) : undefined,
+        categoryId: categoryId !== undefined ? categoryId : undefined,
+        image: image !== undefined ? image : undefined,
+        available: available !== undefined ? available : undefined,
+        suggested: suggested !== undefined ? suggested : undefined,
+        isNew: isNew !== undefined ? isNew : undefined,
+        materials: materials !== undefined ? materials : undefined
+      } as any);
       if (!item) {
         return res.status(404).json({ message: "Item not found" });
       }
