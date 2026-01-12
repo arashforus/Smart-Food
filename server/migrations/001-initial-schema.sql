@@ -147,4 +147,4 @@ CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
 -- Record this migration as applied
 INSERT INTO schema_versions (version, description)
 VALUES ('001-initial-schema', 'Initial database schema with all tables')
-ON CONFLICT (version) DO NOTHING;
+ON CONFLICT ON CONSTRAINT schema_versions_version_unique DO NOTHING;
