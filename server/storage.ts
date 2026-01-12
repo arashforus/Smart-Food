@@ -52,6 +52,7 @@ export interface StorageCategory {
 export interface StorageItem {
   id: string;
   categoryId: string;
+  generalName: string;
   name: Record<string, string>;
   shortDescription: Record<string, string>;
   longDescription: Record<string, string>;
@@ -624,7 +625,7 @@ export class MemStorage implements IStorage {
 
   async createItem(data: Omit<StorageItem, 'id'>): Promise<StorageItem> {
     const id = randomUUID();
-    const item: StorageItem = { ...data, id };
+    const item: StorageItem = { ...data, id, generalName: data.generalName || '' };
     this.items.set(id, item);
     return item;
   }

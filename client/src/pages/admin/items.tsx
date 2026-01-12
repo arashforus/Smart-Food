@@ -53,12 +53,13 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const itemSchema = z.object({
-  nameEn: z.string().min(1, 'Name is required'),
+  generalName: z.string().min(1, 'Internal name is required'),
+  nameEn: z.string().min(1, 'English name is required'),
   nameEs: z.string().optional(),
   nameFr: z.string().optional(),
   nameFa: z.string().optional(),
   nameTr: z.string().optional(),
-  shortDescriptionEn: z.string().min(1, 'Short description is required'),
+  shortDescriptionEn: z.string().min(1, 'English short description is required'),
   shortDescriptionEs: z.string().optional(),
   shortDescriptionFr: z.string().optional(),
   shortDescriptionFa: z.string().optional(),
@@ -84,6 +85,7 @@ type ItemFormData = z.infer<typeof itemSchema>;
 interface StorageItem {
   id: string;
   categoryId: string;
+  generalName?: string;
   name: Record<string, string>;
   shortDescription: Record<string, string>;
   longDescription: Record<string, string>;
@@ -173,6 +175,7 @@ export default function ItemsPage() {
     mutationFn: async (data: ItemFormData) => {
       return apiRequest('POST', '/api/items', {
         categoryId: data.categoryId,
+        generalName: data.generalName,
         name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
         shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
         longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
@@ -202,6 +205,7 @@ export default function ItemsPage() {
       if (!editingItem) throw new Error('No item selected');
       return apiRequest('PATCH', `/api/items/${editingItem.id}`, {
         categoryId: data.categoryId,
+        generalName: data.generalName,
         name: { en: data.nameEn, es: data.nameEs || '', fr: data.nameFr || '', fa: data.nameFa || '', tr: data.nameTr || '' },
         shortDescription: { en: data.shortDescriptionEn, es: data.shortDescriptionEs || '', fr: data.shortDescriptionFr || '', fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '' },
         longDescription: { en: data.longDescriptionEn || '', es: data.longDescriptionEs || '', fr: data.longDescriptionFr || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '' },
@@ -242,6 +246,7 @@ export default function ItemsPage() {
 
   const openCreate = () => {
     form.reset({
+      generalName: '',
       nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
       shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
       longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
@@ -252,6 +257,7 @@ export default function ItemsPage() {
 
   const openEdit = (item: StorageItem) => {
     form.reset({
+      generalName: item.generalName || '',
       nameEn: item.name.en || '',
       nameEs: item.name.es || '',
       nameFr: item.name.fr || '',
@@ -353,7 +359,7 @@ export default function ItemsPage() {
               </div>
             )
           },
-          { key: 'name', header: 'Name', render: (item) => item.name.en },
+          { key: 'generalName', header: 'Name', render: (item) => item.generalName || item.name.en },
           { key: 'categoryId', header: 'Category', render: (item) => getCategoryName(item.categoryId) },
           { 
             key: 'price', 
@@ -509,18 +515,17 @@ function FormContent({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-4">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic</TabsTrigger>
-              <TabsTrigger value="descriptions">Descriptions</TabsTrigger>
               <TabsTrigger value="materials">Materials</TabsTrigger>
               <TabsTrigger value="translations">Translations</TabsTrigger>
             </TabsList>
             
             <TabsContent value="basic" className="space-y-4 pt-4">
-              <FormField control={form.control} name="nameEn" render={({ field }) => (
+              <FormField control={form.control} name="generalName" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl><Input {...field} data-testid={`input-item-name${isEdit ? '-edit' : ''}`} /></FormControl>
+                  <FormLabel>Name (Internal Display)</FormLabel>
+                  <FormControl><Input {...field} data-testid={`input-item-general-name${isEdit ? '-edit' : ''}`} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -665,7 +670,7 @@ function FormContent({
                             const current = field.value || [];
                             const newValue = checked
                               ? [...current, material.id]
-                              : current.filter((id) => id !== material.id);
+                              : current.filter((id: string) => id !== material.id);
                             field.onChange(newValue);
                           }}
                         />
@@ -688,47 +693,69 @@ function FormContent({
               )} />
             </TabsContent>
             
-            <TabsContent value="descriptions" className="space-y-4 pt-4">
-              <FormField control={form.control} name="shortDescriptionEn" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Short Description</FormLabel>
-                  <FormControl><Input {...field} data-testid={`input-item-short-desc${isEdit ? '-edit' : ''}`} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="longDescriptionEn" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Long Description</FormLabel>
-                  <FormControl><Textarea {...field} data-testid={`input-item-long-desc${isEdit ? '-edit' : ''}`} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </TabsContent>
-            
-            <TabsContent value="translations" className="space-y-4 pt-4 max-h-[300px] overflow-y-auto">
-              {sortedLanguages.filter(lang => lang.isActive && lang.code !== 'en').map((language) => (
-                <div key={language.id} className="space-y-3 p-3 rounded-md bg-muted/50">
-                  <h4 className="font-medium text-sm">{language.name}</h4>
-                  <FormField control={form.control} name={`name${language.code.toUpperCase()}` as any} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Name</FormLabel>
-                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name={`shortDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Short Description</FormLabel>
-                      <FormControl><Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name={`longDescription${language.code.toUpperCase()}` as any} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Long Description</FormLabel>
-                      <FormControl><Textarea {...field} value={typeof field.value === 'string' ? field.value : ''} rows={2} data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} /></FormControl>
-                    </FormItem>
-                  )} />
-                </div>
-              ))}
+            <TabsContent value="translations" className="space-y-4 pt-4 max-h-[400px] overflow-y-auto">
+              <div className="space-y-6 pb-4">
+                {sortedLanguages.filter(lang => lang.isActive).map((language) => {
+                  const langCode = language.code.charAt(0).toUpperCase() + language.code.slice(1).toLowerCase();
+                  const fieldName = `name${langCode}` as any;
+                  const shortDescName = `shortDescription${langCode}` as any;
+                  const longDescName = `longDescription${langCode}` as any;
+                  
+                  return (
+                    <div key={language.id} className="space-y-4 p-4 rounded-lg border bg-muted/30">
+                      <div className="flex items-center gap-2 border-b pb-2 mb-2">
+                        <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-[10px] uppercase font-bold">
+                          {language.code}
+                        </span>
+                        <h4 className="font-semibold text-sm">{language.name}</h4>
+                      </div>
+
+                      <FormField control={form.control} name={fieldName} render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name ({language.name})</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              value={typeof field.value === 'string' ? field.value : ''} 
+                              data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+
+                      <FormField control={form.control} name={shortDescName} render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Short Description ({language.name})</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              {...field} 
+                              value={typeof field.value === 'string' ? field.value : ''} 
+                              data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+
+                      <FormField control={form.control} name={longDescName} render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Long Description ({language.name})</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              {...field} 
+                              value={typeof field.value === 'string' ? field.value : ''} 
+                              rows={3}
+                              data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  );
+                })}
+              </div>
             </TabsContent>
           </Tabs>
           

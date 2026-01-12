@@ -47,6 +47,7 @@ export const categories = pgTable("categories", {
 export const items = pgTable("items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   categoryId: varchar("category_id").notNull(),
+  generalName: text("general_name").notNull().default(""),
   name: jsonb("name").notNull(),
   shortDescription: jsonb("short_description").notNull(),
   longDescription: jsonb("long_description").notNull(),
