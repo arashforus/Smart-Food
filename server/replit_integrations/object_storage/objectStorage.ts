@@ -45,6 +45,13 @@ export class ObjectStorageService {
   // Gets the public object search paths.
   getPublicObjectSearchPaths(): Array<string> {
     const pathsStr = process.env.PUBLIC_OBJECT_SEARCH_PATHS || "";
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+    
+    // If we're in Docker/external and have a bucket ID, synthesize the path
+    if (!pathsStr && bucketId) {
+      return [`/${bucketId}/public`];
+    }
+
     const paths = Array.from(
       new Set(
         pathsStr
@@ -65,6 +72,13 @@ export class ObjectStorageService {
   // Gets the private object directory.
   getPrivateObjectDir(): string {
     const dir = process.env.PRIVATE_OBJECT_DIR || "";
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+
+    // If we're in Docker/external and have a bucket ID, synthesize the path
+    if (!dir && bucketId) {
+      return `/${bucketId}/.private`;
+    }
+
     if (!dir) {
       throw new Error(
         "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " +
