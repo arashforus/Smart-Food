@@ -5,6 +5,7 @@ import { setupAuth } from "./auth.js";
 import multer from "multer";
 import path from "path";
 import express from "express";
+import { registerObjectStorageRoutes, ObjectStorageService, ObjectNotFoundError } from "./replit_integrations/object_storage";
 
 const storage_multer = multer.diskStorage({
   destination: "./uploads",
@@ -17,6 +18,7 @@ const upload = multer({ storage: storage_multer });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+  registerObjectStorageRoutes(app);
 
   app.use("/uploads", express.static("uploads"));
 
@@ -519,6 +521,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Track visit error:", error);
       res.status(500).json({ message: "Failed to track visit" });
+    }
+  });
+
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      await objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.status(404).json({ error: "Object not found" });
+      }
+      return res.status(500).json({ error: "Failed to serve object" });
     }
   });
 

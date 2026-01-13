@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useUpload } from '@/hooks/use-upload';
 
 interface ImageUploadProps {
   value?: string;
@@ -20,42 +20,29 @@ export default function ImageUpload({
   placeholder = 'Upload an image or enter URL',
   testId = 'input-image-upload',
 }: ImageUploadProps) {
-  const [isUploading, setIsUploading] = useState(false);
+  const { toast } = useToast();
+  const { uploadFile, isUploading } = useUpload({
+    onSuccess: (response) => {
+      onChange(response.objectPath);
+      setUrlInput(response.objectPath);
+      toast({ title: 'Image uploaded successfully' });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Upload failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  });
+
   const [urlInput, setUrlInput] = useState(value || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      onChange(data.url);
-      setUrlInput(data.url);
-      toast({ title: 'Image uploaded successfully' });
-    } catch (error) {
-      toast({
-        title: 'Upload failed',
-        description: 'Could not upload image. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsUploading(false);
-    }
+    await uploadFile(file);
   };
 
   const handleUrlChange = (url: string) => {
