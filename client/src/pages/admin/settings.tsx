@@ -36,6 +36,8 @@ import type { Settings as SettingsType } from '@/lib/types';
 import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 import { useOrders, type OSSSettings } from '@/lib/orderContext';
 
+import logoImg from "@/assets/logo.png";
+
 const settingsSchema = z.object({
   primaryColor: z.string().min(1, 'Primary color is required'),
   showBuyButton: z.boolean(),
