@@ -35,3 +35,8 @@ ADD COLUMN IF NOT EXISTS oss_number_label TEXT,
 ADD COLUMN IF NOT EXISTS oss_table_label TEXT,
 ADD COLUMN IF NOT EXISTS oss_show_table_information BOOLEAN DEFAULT true,
 ADD COLUMN IF NOT EXISTS oss_show_status_icon BOOLEAN DEFAULT true;
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('019-add-payment-roles-license-oss-fields', 'Add payment methods, roles, licensing, and OSS configuration')
+ON CONFLICT (version) DO NOTHING;

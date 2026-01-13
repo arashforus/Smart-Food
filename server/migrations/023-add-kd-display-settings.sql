@@ -12,3 +12,8 @@ ADD COLUMN IF NOT EXISTS currency_name TEXT NOT NULL DEFAULT 'US Dollar',
 ADD COLUMN IF NOT EXISTS currency_symbol TEXT NOT NULL DEFAULT '$',
 ADD COLUMN IF NOT EXISTS currency_position TEXT NOT NULL DEFAULT 'after',
 ADD COLUMN IF NOT EXISTS currency_select TEXT NOT NULL DEFAULT 'USD';
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('023-add-kd-display-settings', 'Add settings for Kitchen Display system')
+ON CONFLICT (version) DO NOTHING;

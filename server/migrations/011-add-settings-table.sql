@@ -10,3 +10,8 @@ CREATE TABLE IF NOT EXISTS settings (
   default_language TEXT NOT NULL DEFAULT 'en',
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('011-add-settings-table', 'Create settings table for application configuration')
+ON CONFLICT (version) DO NOTHING;

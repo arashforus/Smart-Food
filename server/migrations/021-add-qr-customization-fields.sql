@@ -7,3 +7,8 @@ ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "qr_dots_style" text NOT NULL DE
 ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "qr_center_type" text NOT NULL DEFAULT 'none';
 ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "qr_center_text" text;
 ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "qr_logo" text;
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('021-add-qr-customization-fields', 'Add advanced QR code design customization fields')
+ON CONFLICT (version) DO NOTHING;

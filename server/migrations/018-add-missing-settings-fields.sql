@@ -19,3 +19,8 @@ ADD COLUMN IF NOT EXISTS menu_show_prices BOOLEAN DEFAULT true,
 ADD COLUMN IF NOT EXISTS menu_show_images BOOLEAN DEFAULT true,
 ADD COLUMN IF NOT EXISTS menu_show_ingredients BOOLEAN DEFAULT true,
 ADD COLUMN IF NOT EXISTS menu_show_food_types BOOLEAN DEFAULT true;
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('018-add-missing-settings-fields', 'Add missing configuration fields to settings table')
+ON CONFLICT (version) DO NOTHING;

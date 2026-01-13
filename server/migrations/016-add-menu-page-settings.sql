@@ -10,3 +10,8 @@ ADD COLUMN IF NOT EXISTS menu_background_color TEXT,
 ADD COLUMN IF NOT EXISTS menu_gradient_start TEXT,
 ADD COLUMN IF NOT EXISTS menu_gradient_end TEXT,
 ADD COLUMN IF NOT EXISTS menu_background_image TEXT;
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('016-add-menu-page-settings', 'Add theme and background settings for the menu page')
+ON CONFLICT (version) DO NOTHING;

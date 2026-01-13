@@ -15,3 +15,8 @@ ADD COLUMN IF NOT EXISTS menu_show_ingredients BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN IF NOT EXISTS menu_show_food_types BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN IF NOT EXISTS menu_show_buy_button BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN IF NOT EXISTS menu_show_more_information_popup BOOLEAN NOT NULL DEFAULT true;
+
+-- Record this migration as applied
+INSERT INTO schema_versions (version, description)
+VALUES ('022-add-menu-display-settings', 'Update menu display settings with more granular controls')
+ON CONFLICT (version) DO NOTHING;
