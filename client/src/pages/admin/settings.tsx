@@ -2859,9 +2859,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className="space-y-6 flex flex-col">
                   <div className="flex flex-col items-center justify-center p-6 bg-muted/30 rounded-xl border border-border/50">
-                    <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
-                      <Building2 className="h-10 w-10 text-primary" />
-                    </div>
+                    <img src={logoImg} alt="Smart Food Logo" className="h-20 w-20 object-contain mb-4" />
                     <h3 className="text-xl font-bold">Smart Food</h3>
                     <p className="text-sm text-muted-foreground mt-1">Professional Foody Places Management System</p>
                     <div className="mt-4 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
