@@ -17,6 +17,13 @@ export async function initializeDatabase() {
     // Run all pending migrations
     await runDatabaseMigrations();
 
+    // Insert default settings if not exists
+    await pool.query(`
+      INSERT INTO settings (id, primary_color) 
+      VALUES ('default', '#4CAF50')
+      ON CONFLICT (id) DO NOTHING;
+    `);
+
     // Insert admin user if not exists
     await pool.query(`
       INSERT INTO users (username, password, name, email, role) 
