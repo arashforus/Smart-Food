@@ -9,7 +9,7 @@ ADD COLUMN IF NOT EXISTS menu_background_type TEXT DEFAULT 'default',
 ADD COLUMN IF NOT EXISTS menu_background_color TEXT,
 ADD COLUMN IF NOT EXISTS menu_gradient_start TEXT,
 ADD COLUMN IF NOT EXISTS menu_gradient_end TEXT,
-ADD COLUMN IF NOT EXISTS menu_background_image TEXT;
+ADD COLUMN IF NOT EXISTS menu_background_image TEXT,
 ADD COLUMN IF NOT EXISTS show_menu BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN IF NOT EXISTS show_all_menu_item BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN IF NOT EXISTS show_recommended_menu_item BOOLEAN NOT NULL DEFAULT true,
