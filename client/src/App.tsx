@@ -8,7 +8,7 @@ import { LanguageProvider } from "@/hooks/use-language";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useQuery } from "@tanstack/react-query";
 import { applyPrimaryColor } from "@/lib/color-utils";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import NotFound from "@/pages/not-found";
 import MenuPage from "@/pages/menu";
 import QRLandingPage from "@/pages/qr-landing";
@@ -22,10 +22,12 @@ function Router() {
     queryKey: ["/api/settings"],
   });
 
-  useEffect(() => {
-    if (settings?.primaryColor) {
-      applyPrimaryColor(settings.primaryColor);
-    }
+  useLayoutEffect(() => {
+    const primaryColor = settings?.primaryColor || "#4CAF50";
+    applyPrimaryColor(primaryColor);
+    // Force a small delay to ensure CSS variables are applied
+    const timer = setTimeout(() => applyPrimaryColor(primaryColor), 0);
+    return () => clearTimeout(timer);
   }, [settings?.primaryColor]);
 
   return (

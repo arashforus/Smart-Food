@@ -38,6 +38,7 @@ export function applyPrimaryColor(hexColor: string) {
   
   try {
     const hslValues = hexToHslValues(hexColor);
+    document.documentElement.style.setProperty('--primary-custom', hslValues);
     document.documentElement.style.setProperty('--primary', hslValues);
     document.documentElement.style.setProperty('--sidebar-primary', hslValues);
     document.documentElement.style.setProperty('--sidebar-ring', hslValues);
