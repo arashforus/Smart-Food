@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'wouter';
+import logoImg from "@/assets/logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -67,8 +68,9 @@ export default function AdminSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-4">
-        <h1 className="text-lg font-semibold">Menu Manager</h1>
+      <SidebarHeader className="p-4 flex flex-row items-center gap-2">
+        <img src={logoImg} alt="Smart Food Logo" className="h-8 w-8 object-contain" />
+        <h1 className="text-lg font-semibold">Smart Food</h1>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
