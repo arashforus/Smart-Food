@@ -23,7 +23,6 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "013-add-restaurant-settings", description: "Add restaurant information settings to settings table" },
   { version: "014-add-restaurant-socials", description: "Add restaurant social media settings to settings table" },
   { version: "015-add-qr-code-settings", description: "Add QR code customization settings to settings table" },
-  { version: "016-add-menu-display-settings", description: "Add menu display toggle settings to settings table" },
   { version: "016-add-menu-page-settings", description: "Add menu page customization settings to settings table" },
   { version: "017-add-menu-items-settings", description: "Add menu items display settings to settings table" },
   { version: "018-add-missing-settings-fields", description: "Add missing settings fields (operating hours, QR page, menu display)" },
@@ -32,6 +31,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "021-add-qr-customization-fields", description: "Add QR code customization fields to settings table" },
   { version: "022-add-menu-display-settings", description: "Add menu display toggle settings to settings table" },
   { version: "023-add-kd-display-settings", description: "Add kitchen display toggle settings to settings table" },
+  { version: "024-add-general-name-to-items", description: "Add general_name column to items table" },
 ];
 
 export async function runDatabaseMigrations() {
