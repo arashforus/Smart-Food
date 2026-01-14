@@ -4,16 +4,16 @@ import { Response } from "express";
 import { randomUUID } from "crypto";
 
 const s3Client = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
-  region: process.env.S3_REGION || "us-east-1",
+  endpoint: process.env.OBJECT_STORAGE_ENDPOINT,
+  region: process.env.OBJECT_STORAGE_REGION || "auto",
   credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+    accessKeyId: process.env.OBJECT_STORAGE_ACCESS_KEY || "",
+    secretAccessKey: process.env.OBJECT_STORAGE_SECRET_KEY || "",
   },
   forcePathStyle: true,
 });
 
-const BUCKET_NAME = process.env.S3_BUCKET_NAME || "";
+const BUCKET_NAME = process.env.OBJECT_STORAGE_BUCKET || "";
 
 export class ObjectNotFoundError extends Error {
   constructor() {
