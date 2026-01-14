@@ -10,13 +10,10 @@ const s3Client = new S3Client({
     accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
   },
-  forcePathStyle: true, // Often needed for custom S3 providers
+  forcePathStyle: true,
 });
 
 const BUCKET_NAME = process.env.S3_BUCKET_NAME || "";
-
-// Re-adding objectStorageClient as an empty object since it's expected by other files
-export const objectStorageClient = {};
 
 export class ObjectNotFoundError extends Error {
   constructor() {
@@ -25,6 +22,8 @@ export class ObjectNotFoundError extends Error {
     Object.setPrototypeOf(this, ObjectNotFoundError.prototype);
   }
 }
+
+export const objectStorageClient = {};
 
 export class ObjectStorageService {
   constructor() {}
@@ -38,7 +37,9 @@ export class ObjectStorageService {
       Key: key,
     });
 
-    return await getSignedUrl(s3Client, command, { expiresIn: 900 });
+    return await getSignedUrl(s3Client, command, { 
+      expiresIn: 3600,
+    });
   }
 
   async getObjectEntityFile(objectPath: string): Promise<{ bucket: string; key: string }> {
@@ -88,20 +89,20 @@ export class ObjectStorageService {
   }
 
   normalizeObjectEntityPath(rawPath: string): string {
-    // If it's already a local path, return it
     if (rawPath.startsWith("/objects/")) {
       return rawPath;
     }
 
     try {
       const url = new URL(rawPath);
-      // Try to extract the key from the URL
-      // This is a simplified version, might need adjustment based on specific S3 provider URL structure
-      const path = url.pathname.startsWith(`/${BUCKET_NAME}/`) 
-        ? url.pathname.slice(BUCKET_NAME.length + 2)
-        : url.pathname.startsWith("/") ? url.pathname.slice(1) : url.pathname;
-        
-      return `/objects/${path}`;
+      const path = url.pathname;
+      const bucketPrefix = `/${BUCKET_NAME}/`;
+      
+      if (path.startsWith(bucketPrefix)) {
+        return `/objects/${path.slice(bucketPrefix.length)}`;
+      }
+      
+      return `/objects/${path.startsWith('/') ? path.slice(1) : path}`;
     } catch (e) {
       return rawPath;
     }
@@ -112,6 +113,6 @@ export class ObjectStorageService {
   }
 
   async canAccessObjectEntity({ userId, objectFile }: { userId?: string; objectFile: any }): Promise<boolean> {
-    return true; // Simple implementation for now
+    return true;
   }
 }
