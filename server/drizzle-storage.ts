@@ -375,18 +375,22 @@ export class DrizzleStorage implements IStorage {
     return (await db.select().from(categories)) as any;
   }
 
-  async createCategory(category: Omit<StorageCategory, "id">): Promise<StorageCategory> {
+  async createCategory(data: Omit<StorageCategory, 'id'>): Promise<StorageCategory> {
     const db = getDb();
-    const result = await db.insert(categories).values(category as any).returning();
-    if (result.length === 0) throw new Error("Failed to create category");
-    return result[0] as any;
+    const [category] = await db.insert(categories).values({
+      ...data,
+      name: data.name || {},
+      order: (data.order || 1).toString()
+    }).returning();
+    return { ...category, order: Number(category.order) } as any;
   }
 
-  async updateCategory(id: string, data: Partial<Omit<StorageCategory, "id">>): Promise<StorageCategory | undefined> {
+  async updateCategory(id: string, data: Partial<Omit<StorageCategory, 'id'>>): Promise<StorageCategory | undefined> {
     const db = getDb();
-    const result = await db.update(categories).set(data as any).where(eq(categories.id, id)).returning();
-    if (result.length === 0) return undefined;
-    return result[0] as any;
+    const updateData: any = { ...data };
+    if (data.order !== undefined) updateData.order = data.order.toString();
+    const [category] = await db.update(categories).set(updateData).where(eq(categories.id, id)).returning();
+    return category ? ({ ...category, order: Number(category.order) } as any) : undefined;
   }
 
   async deleteCategory(id: string): Promise<boolean> {
@@ -399,31 +403,55 @@ export class DrizzleStorage implements IStorage {
     const db = getDb();
     const result = await db.select().from(items).where(eq(items.id, id)).limit(1);
     if (result.length === 0) return undefined;
-    return result[0] as any;
+    return this.mapItem(result[0]);
   }
 
   async getAllItems(): Promise<StorageItem[]> {
     const db = getDb();
-    return (await db.select().from(items)) as any;
+    const result = await db.select().from(items);
+    return result.map(item => this.mapItem(item));
   }
 
   async getItemsByCategory(categoryId: string): Promise<StorageItem[]> {
     const db = getDb();
-    return (await db.select().from(items).where(eq(items.categoryId, categoryId))) as any;
+    const result = await db.select().from(items).where(eq(items.categoryId, categoryId));
+    return result.map(item => this.mapItem(item));
   }
 
-  async createItem(item: Omit<StorageItem, "id">): Promise<StorageItem> {
+  async createItem(data: Omit<StorageItem, 'id'>): Promise<StorageItem> {
     const db = getDb();
-    const result = await db.insert(items).values(item as any).returning();
-    if (result.length === 0) throw new Error("Failed to create item");
-    return result[0] as any;
+    const [item] = await db.insert(items).values({
+      ...data,
+      name: data.name || {},
+      shortDescription: data.shortDescription || {},
+      longDescription: data.longDescription || {},
+      price: data.price.toString(),
+      discountedPrice: data.discountedPrice?.toString(),
+      maxSelect: data.maxSelect?.toString()
+    }).returning();
+    return this.mapItem(item);
   }
 
-  async updateItem(id: string, data: Partial<Omit<StorageItem, "id">>): Promise<StorageItem | undefined> {
+  async updateItem(id: string, data: Partial<Omit<StorageItem, 'id'>>): Promise<StorageItem | undefined> {
     const db = getDb();
-    const result = await db.update(items).set(data as any).where(eq(items.id, id)).returning();
-    if (result.length === 0) return undefined;
-    return result[0] as any;
+    const updateData: any = { ...data };
+    if (data.price !== undefined) updateData.price = data.price.toString();
+    if (data.discountedPrice !== undefined) updateData.discountedPrice = data.discountedPrice?.toString();
+    if (data.maxSelect !== undefined) updateData.maxSelect = data.maxSelect?.toString();
+    const [item] = await db.update(items).set(updateData).where(eq(items.id, id)).returning();
+    return item ? this.mapItem(item) : undefined;
+  }
+
+  private mapItem(item: any): StorageItem {
+    return {
+      ...item,
+      name: item.name || {},
+      shortDescription: item.shortDescription || {},
+      longDescription: item.longDescription || {},
+      price: Number(item.price),
+      discountedPrice: item.discountedPrice ? Number(item.discountedPrice) : undefined,
+      maxSelect: item.maxSelect ? Number(item.maxSelect) : undefined,
+    };
   }
 
   async deleteItem(id: string): Promise<boolean> {

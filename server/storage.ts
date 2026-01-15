@@ -594,7 +594,11 @@ export class MemStorage implements IStorage {
 
   async createCategory(data: Omit<StorageCategory, 'id'>): Promise<StorageCategory> {
     const id = randomUUID();
-    const category: StorageCategory = { ...data, id };
+    const category: StorageCategory = { 
+      ...data, 
+      id,
+      name: data.name || {}
+    };
     this.categories.set(id, category);
     return category;
   }
@@ -620,12 +624,20 @@ export class MemStorage implements IStorage {
   }
 
   async getItemsByCategory(categoryId: string): Promise<StorageItem[]> {
-    return Array.from(this.items.values()).filter(item => item.categoryId === categoryId);
+    const itemsArray = Array.from(this.items.values());
+    return itemsArray.filter(item => item.categoryId === categoryId);
   }
 
   async createItem(data: Omit<StorageItem, 'id'>): Promise<StorageItem> {
     const id = randomUUID();
-    const item: StorageItem = { ...data, id, generalName: data.generalName || '' };
+    const item: StorageItem = { 
+      ...data, 
+      id, 
+      generalName: data.generalName || '',
+      name: data.name || {},
+      shortDescription: data.shortDescription || {},
+      longDescription: data.longDescription || {}
+    };
     this.items.set(id, item);
     return item;
   }

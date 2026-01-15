@@ -54,18 +54,9 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 
 const itemSchema = z.object({
   generalName: z.string().min(1, 'Internal name is required'),
-  nameEn: z.string().min(1, 'English name is required'),
-  nameFa: z.string().optional(),
-  nameTr: z.string().optional(),
-  nameAr: z.string().optional(),
-  shortDescriptionEn: z.string().min(1, 'English short description is required'),
-  shortDescriptionFa: z.string().optional(),
-  shortDescriptionTr: z.string().optional(),
-  shortDescriptionAr: z.string().optional(),
-  longDescriptionEn: z.string().optional(),
-  longDescriptionFa: z.string().optional(),
-  longDescriptionTr: z.string().optional(),
-  longDescriptionAr: z.string().optional(),
+  name: z.record(z.string(), z.string().min(1, 'Name is required')),
+  shortDescription: z.record(z.string(), z.string().min(1, 'Short description is required')),
+  longDescription: z.record(z.string(), z.string().optional()),
   price: z.number().min(0.01, 'Price must be greater than 0'),
   discountedPrice: z.number().optional(),
   maxSelect: z.number().optional(),
@@ -130,12 +121,6 @@ export default function ItemsPage() {
 
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
-    defaultValues: {
-      nameEn: '', nameFa: '', nameTr: '', nameAr: '',
-      shortDescriptionEn: '', shortDescriptionFa: '', shortDescriptionTr: '', shortDescriptionAr: '',
-      longDescriptionEn: '', longDescriptionFa: '', longDescriptionTr: '', longDescriptionAr: '',
-      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true, suggested: false, isNew: false, materials: []
-    },
   });
 
   const { data: items = [], isLoading: itemsLoading } = useQuery<StorageItem[]>({
@@ -173,9 +158,9 @@ export default function ItemsPage() {
       const payload = {
         categoryId: data.categoryId,
         generalName: data.generalName,
-        name: { en: data.nameEn, fa: data.nameFa || '', tr: data.nameTr || '', ar: (data as any).nameAr || '' },
-        shortDescription: { en: data.shortDescriptionEn, fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '', ar: (data as any).shortDescriptionAr || '' },
-        longDescription: { en: data.longDescriptionEn || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '', ar: (data as any).longDescriptionAr || '' },
+        name: data.name,
+        shortDescription: data.shortDescription,
+        longDescription: data.longDescription,
         price: parseFloat(String(data.price)),
         discountedPrice: data.discountedPrice ? parseFloat(String(data.discountedPrice)) : undefined,
         maxSelect: data.maxSelect ? parseFloat(String(data.maxSelect)) : undefined,
@@ -204,9 +189,9 @@ export default function ItemsPage() {
       const payload = {
         categoryId: data.categoryId,
         generalName: data.generalName,
-        name: { en: data.nameEn, fa: data.nameFa || '', tr: data.nameTr || '', ar: (data as any).nameAr || '' },
-        shortDescription: { en: data.shortDescriptionEn, fa: data.shortDescriptionFa || '', tr: data.shortDescriptionTr || '', ar: (data as any).shortDescriptionAr || '' },
-        longDescription: { en: data.longDescriptionEn || '', fa: data.longDescriptionFa || '', tr: data.longDescriptionTr || '', ar: (data as any).longDescriptionAr || '' },
+        name: data.name,
+        shortDescription: data.shortDescription,
+        longDescription: data.longDescription,
         price: parseFloat(String(data.price)),
         discountedPrice: data.discountedPrice ? parseFloat(String(data.discountedPrice)) : undefined,
         maxSelect: data.maxSelect ? parseFloat(String(data.maxSelect)) : undefined,
@@ -244,31 +229,38 @@ export default function ItemsPage() {
   });
 
   const openCreate = () => {
+    const initialLangValues = languages.reduce((acc, lang) => {
+      acc[lang.code] = '';
+      return acc;
+    }, {} as Record<string, string>);
+
     form.reset({
       generalName: '',
-      nameEn: '', nameFa: '', nameTr: '', nameAr: '',
-      shortDescriptionEn: '', shortDescriptionFa: '', shortDescriptionTr: '', shortDescriptionAr: '',
-      longDescriptionEn: '', longDescriptionFa: '', longDescriptionTr: '', longDescriptionAr: '',
+      name: { ...initialLangValues },
+      shortDescription: { ...initialLangValues },
+      longDescription: { ...initialLangValues },
       price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true, suggested: false, isNew: false, materials: []
     });
     setFormOpen(true);
   };
 
   const openEdit = (item: StorageItem) => {
+    const langCodes = languages.map(l => l.code);
+    const itemNames = { ...item.name };
+    const itemShorts = { ...item.shortDescription };
+    const itemLongs = { ...item.longDescription };
+
+    langCodes.forEach(code => {
+      if (!itemNames[code]) itemNames[code] = '';
+      if (!itemShorts[code]) itemShorts[code] = '';
+      if (!itemLongs[code]) itemLongs[code] = '';
+    });
+
     form.reset({
       generalName: item.generalName || '',
-      nameEn: item.name.en || '',
-      nameFa: item.name.fa || '',
-      nameTr: item.name.tr || '',
-      nameAr: (item.name as any).ar || '',
-      shortDescriptionEn: item.shortDescription.en || '',
-      shortDescriptionFa: item.shortDescription.fa || '',
-      shortDescriptionTr: item.shortDescription.tr || '',
-      shortDescriptionAr: (item.shortDescription as any).ar || '',
-      longDescriptionEn: item.longDescription.en || '',
-      longDescriptionFa: item.longDescription.fa || '',
-      longDescriptionTr: item.longDescription.tr || '',
-      longDescriptionAr: (item.longDescription as any).ar || '',
+      name: itemNames,
+      shortDescription: itemShorts,
+      longDescription: itemLongs,
       price: item.price ? Number(item.price) : 0,
       discountedPrice: item.discountedPrice ? Number(item.discountedPrice) : undefined,
       maxSelect: item.maxSelect ? Number(item.maxSelect) : undefined,
@@ -586,7 +578,7 @@ function FormContent({
                       </FormControl>
                       <SelectContent>
                         {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>{cat.name.en}</SelectItem>
+                          <SelectItem key={cat.id} value={cat.id}>{cat.name.en || cat.name[Object.keys(cat.name)[0]] || 'Unnamed'}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
