@@ -119,6 +119,15 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       isNew: data.isNew,
       materials: item?.materials || [],
     };
+    
+    // Explicitly delete any extra keys that might have leaked from previous versions
+    if ((formattedData.name as any).es) delete (formattedData.name as any).es;
+    if ((formattedData.name as any).fr) delete (formattedData.name as any).fr;
+    if ((formattedData.shortDescription as any).es) delete (formattedData.shortDescription as any).es;
+    if ((formattedData.shortDescription as any).fr) delete (formattedData.shortDescription as any).fr;
+    if ((formattedData.longDescription as any).es) delete (formattedData.longDescription as any).es;
+    if ((formattedData.longDescription as any).fr) delete (formattedData.longDescription as any).fr;
+
     onSubmit(formattedData);
     form.reset();
     onClose();
