@@ -236,10 +236,18 @@ export default function ItemsPage() {
 
     form.reset({
       generalName: '',
-      name: { ...initialLangValues },
-      shortDescription: { ...initialLangValues },
-      longDescription: { ...initialLangValues },
-      price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true, suggested: false, isNew: false, materials: []
+      name: initialLangValues,
+      shortDescription: initialLangValues,
+      longDescription: initialLangValues,
+      price: 0,
+      discountedPrice: undefined,
+      maxSelect: undefined,
+      categoryId: categories[0]?.id || '',
+      image: '',
+      available: true,
+      suggested: false,
+      isNew: false,
+      materials: []
     });
     setFormOpen(true);
   };
@@ -303,7 +311,20 @@ export default function ItemsPage() {
     deleteMutation.mutate(deleteItem.id);
   };
 
-  const getCategoryName = (categoryId: string) => categories.find((c) => c.id === categoryId)?.name.en || 'Unknown';
+  const getCategoryName = (categoryId: string) => {
+    const cat = categories.find((c) => c.id === categoryId);
+    if (!cat) return 'Unknown';
+    const nameData = cat.name;
+    if (typeof nameData === 'string') return nameData;
+    if (!nameData) return 'Unnamed';
+    // Handle potential double nesting from migration or legacy data
+    const directName = nameData.en || Object.values(nameData)[0];
+    if (typeof directName === 'string') return directName;
+    if (typeof directName === 'object' && directName !== null) {
+      return (directName as any).en || Object.values(directName)[0] || 'Unnamed';
+    }
+    return 'Unnamed';
+  };
   const currencySymbol = settings?.currencySymbol || '$';
 
   if (itemsLoading || categoriesLoading || languagesLoading) {
@@ -333,21 +354,53 @@ export default function ItemsPage() {
           { 
             key: 'image', 
             header: 'Image', 
-            render: (item) => (
-              <div className="w-10 h-10 rounded bg-muted flex items-center justify-center overflow-hidden">
-                {item.image ? (
-                  <img 
-                    src={item.image} 
-                    alt={item.name.en} 
-                    className="w-full h-full object-cover" 
-                  />
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-                )}
-              </div>
-            )
+            render: (item) => {
+              const nameData = item.name;
+              let itemName = 'Item';
+              if (typeof nameData === 'string') {
+                itemName = nameData;
+              } else if (nameData) {
+                const directName = nameData.en || Object.values(nameData)[0];
+                if (typeof directName === 'string') {
+                  itemName = directName;
+                } else if (typeof directName === 'object' && directName !== null) {
+                  itemName = (directName as any).en || Object.values(directName)[0] || 'Item';
+                }
+              }
+              return (
+                <div className="w-10 h-10 rounded bg-muted flex items-center justify-center overflow-hidden">
+                  {item.image ? (
+                    <img 
+                      src={item.image} 
+                      alt={itemName} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+                  )}
+                </div>
+              );
+            }
           },
-          { key: 'generalName', header: 'Name', render: (item) => item.generalName || item.name.en },
+          { 
+            key: 'generalName', 
+            header: 'Name', 
+            render: (item) => {
+              const nameData = item.name;
+              let displayName = 'Unnamed';
+              if (typeof nameData === 'string') {
+                displayName = nameData;
+              } else if (nameData) {
+                const directName = nameData.en || Object.values(nameData)[0];
+                if (typeof directName === 'string') {
+                  displayName = directName;
+                } else if (typeof directName === 'object' && directName !== null) {
+                  displayName = (directName as any).en || Object.values(directName)[0] || 'Unnamed';
+                }
+              }
+              return item.generalName || displayName;
+            }
+          },
           { key: 'categoryId', header: 'Category', render: (item) => getCategoryName(item.categoryId) },
           { 
             key: 'price', 
@@ -576,11 +629,25 @@ function FormContent({
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>{cat.name.en || cat.name[Object.keys(cat.name)[0]] || 'Unnamed'}</SelectItem>
-                        ))}
-                      </SelectContent>
+                        <SelectContent>
+                          {categories.map((cat) => {
+                            const nameData = cat.name;
+                            let displayName = 'Unnamed';
+                            if (typeof nameData === 'string') {
+                              displayName = nameData;
+                            } else if (nameData) {
+                              const directName = nameData.en || Object.values(nameData)[0];
+                              if (typeof directName === 'string') {
+                                displayName = directName;
+                              } else if (typeof directName === 'object' && directName !== null) {
+                                displayName = (directName as any).en || Object.values(directName)[0] || 'Unnamed';
+                              }
+                            }
+                            return (
+                              <SelectItem key={cat.id} value={cat.id}>{displayName}</SelectItem>
+                            );
+                          })}
+                        </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
@@ -698,48 +765,48 @@ function FormContent({
                         <h4 className="font-semibold text-sm">{language.name}</h4>
                       </div>
 
-                      <FormField control={form.control} name={fieldName} render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name ({language.name})</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={typeof field.value === 'string' ? field.value : ''} 
-                              data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
+                    <FormField control={form.control} name={`name.${language.code}`} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name ({language.name})</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
+                            data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
 
-                      <FormField control={form.control} name={shortDescName} render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Short Description ({language.name})</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              {...field} 
-                              value={typeof field.value === 'string' ? field.value : ''} 
-                              data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
+                    <FormField control={form.control} name={`shortDescription.${language.code}`} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Short Description ({language.name})</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
+                            data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
 
-                      <FormField control={form.control} name={longDescName} render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Long Description ({language.name})</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              {...field} 
-                              value={typeof field.value === 'string' ? field.value : ''} 
-                              rows={3}
-                              data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
+                    <FormField control={form.control} name={`longDescription.${language.code}`} render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Long Description ({language.name})</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
+                            rows={3}
+                            data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                     </div>
                   );
                 })}
