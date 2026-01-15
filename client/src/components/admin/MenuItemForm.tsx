@@ -30,12 +30,15 @@ import {
 import type { MenuItem, Category } from '@/lib/types';
 
 const menuItemSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  nameEs: z.string().min(1, 'Spanish name is required'),
-  nameFr: z.string().min(1, 'French name is required'),
-  description: z.string().min(1, 'Description is required'),
-  descriptionEs: z.string().min(1, 'Spanish description is required'),
-  descriptionFr: z.string().min(1, 'French description is required'),
+  generalName: z.string().min(1, 'General name is required'),
+  nameEn: z.string().min(1, 'English name is required'),
+  nameFa: z.string().min(1, 'Persian name is required'),
+  nameTr: z.string().min(1, 'Turkish name is required'),
+  nameAr: z.string().min(1, 'Arabic name is required'),
+  descriptionEn: z.string().min(1, 'English description is required'),
+  descriptionFa: z.string().min(1, 'Persian description is required'),
+  descriptionTr: z.string().min(1, 'Turkish description is required'),
+  descriptionAr: z.string().min(1, 'Arabic description is required'),
   price: z.preprocess((val) => (val === '' || val === null || val === undefined ? 0 : Number(val)), z.number().min(0.01, 'Price must be greater than 0')),
   discountedPrice: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().min(0).optional()),
   maxSelect: z.preprocess((val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), z.number().int().min(1).optional()),
@@ -53,19 +56,22 @@ interface MenuItemFormProps {
   categories: Category[];
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: MenuItemFormData) => void;
+  onSubmit: (data: any) => void;
 }
 
 export default function MenuItemForm({ item, categories, open, onClose, onSubmit }: MenuItemFormProps) {
   const form = useForm<MenuItemFormData>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
-      name: (item?.name as any)?.en ?? '',
-      nameEs: (item?.name as any)?.es ?? '',
-      nameFr: (item?.name as any)?.fr ?? '',
-      description: (item?.shortDescription as any)?.en ?? '',
-      descriptionEs: (item?.shortDescription as any)?.es ?? '',
-      descriptionFr: (item?.shortDescription as any)?.fr ?? '',
+      generalName: (item as any)?.generalName ?? '',
+      nameEn: (item?.name as any)?.en ?? '',
+      nameFa: (item?.name as any)?.fa ?? '',
+      nameTr: (item?.name as any)?.tr ?? '',
+      nameAr: (item?.name as any)?.ar ?? '',
+      descriptionEn: (item?.shortDescription as any)?.en ?? '',
+      descriptionFa: (item?.shortDescription as any)?.fa ?? '',
+      descriptionTr: (item?.shortDescription as any)?.tr ?? '',
+      descriptionAr: (item?.shortDescription as any)?.ar ?? '',
       price: Number(item?.price) || 0,
       discountedPrice: item?.discountedPrice ? Number(item?.discountedPrice) : undefined,
       maxSelect: item?.maxSelect ? Number(item?.maxSelect) : 1,
@@ -81,39 +87,75 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
   const getCategoryImage = (categoryId: string) => {
     return categories.find(c => c.id === categoryId)?.image;
   };
-  const categoryImage = item?.categoryId ? getCategoryImage(item.categoryId) : undefined;
 
   const handleSubmit = (data: MenuItemFormData) => {
-    // Convert numeric fields to appropriate types
     const formattedData = {
-      ...data,
+      generalName: data.generalName,
+      name: {
+        en: data.nameEn,
+        fa: data.nameFa,
+        tr: data.nameTr,
+        ar: data.nameAr,
+      },
+      shortDescription: {
+        en: data.descriptionEn,
+        fa: data.descriptionFa,
+        tr: data.descriptionTr,
+        ar: data.descriptionAr,
+      },
+      longDescription: {
+        en: data.descriptionEn,
+        fa: data.descriptionFa,
+        tr: data.descriptionTr,
+        ar: data.descriptionAr,
+      },
       price: Number(data.price),
       discountedPrice: data.discountedPrice !== undefined ? Number(data.discountedPrice) : undefined,
       maxSelect: data.maxSelect !== undefined ? Math.round(Number(data.maxSelect)) : undefined,
+      categoryId: data.categoryId,
+      image: data.image,
+      available: data.available,
+      suggested: data.suggested,
       isNew: data.isNew,
+      materials: item?.materials || [],
     };
-    onSubmit(formattedData as any);
+    onSubmit(formattedData);
     form.reset();
     onClose();
   };
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="modal-menu-item-form">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="modal-menu-item-form">
         <DialogHeader>
           <DialogTitle>{item ? 'Edit Menu Item' : 'Add Menu Item'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="generalName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>General Name (Internal)</FormLabel>
+                  <FormControl>
+                    <Input {...field} data-testid="input-item-general-name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/30">
+              <h3 className="col-span-full font-medium">Names</h3>
               <FormField
                 control={form.control}
-                name="name"
+                name="nameEn"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name (English)</FormLabel>
+                    <FormLabel>English</FormLabel>
                     <FormControl>
-                      <Input {...field} value={typeof field.value === 'string' ? field.value : ''} data-testid="input-item-name" />
+                      <Input {...field} data-testid="input-item-name-en" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,70 +163,100 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
               />
               <FormField
                 control={form.control}
-                name="nameEs"
+                name="nameFa"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name (Spanish)</FormLabel>
+                    <FormLabel>Persian</FormLabel>
                     <FormControl>
-                      <Input {...field} data-testid="input-item-name-es" />
+                      <Input {...field} className="text-right" dir="rtl" data-testid="input-item-name-fa" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="nameTr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Turkish</FormLabel>
+                    <FormControl>
+                      <Input {...field} data-testid="input-item-name-tr" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="nameAr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Arabic</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="text-right" dir="rtl" data-testid="input-item-name-ar" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="nameFr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name (French)</FormLabel>
-                  <FormControl>
-                    <Input {...field} data-testid="input-item-name-fr" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (English)</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} data-testid="input-item-description" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="descriptionEs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Spanish)</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} data-testid="input-item-description-es" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="descriptionFr"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (French)</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} data-testid="input-item-description-fr" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/30">
+              <h3 className="col-span-full font-medium">Descriptions</h3>
+              <FormField
+                control={form.control}
+                name="descriptionEn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>English</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} data-testid="input-item-description-en" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="descriptionFa"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Persian</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} className="text-right" dir="rtl" data-testid="input-item-description-fa" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="descriptionTr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Turkish</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} data-testid="input-item-description-tr" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="descriptionAr"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Arabic</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} className="text-right" dir="rtl" data-testid="input-item-description-ar" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -260,7 +332,6 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                 control={form.control}
                 name="categoryId"
                 render={({ field }) => {
-                  const categoryImage = getCategoryImage(field.value);
                   return (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
