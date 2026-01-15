@@ -48,11 +48,6 @@ expertMode = true
 [userenv]
 
 [userenv.shared]
-S3_ENDPOINT = "https://rustfs-rustfs-fb8e9a-57-129-78-11.traefik.me/"
-S3_ACCESS_KEY_ID = "4gXJF9MxtL3eZiynuvGU"
-S3_SECRET_ACCESS_KEY = "nh0Bi3XE8FcQodW2v4OrRuxfmtaGJ9YPkLslUHNK"
-S3_REGION = "auto"
-S3_BUCKET_NAME = "aydan-restaurant"
 OBJECT_STORAGE_REGION = "auto"
 OBJECT_STORAGE_ENDPOINT = "https://upload.aydanrestaurant.com"
 OBJECT_STORAGE_BUCKET = "aydan-restaurant"
