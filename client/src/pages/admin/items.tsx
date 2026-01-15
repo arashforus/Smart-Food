@@ -131,9 +131,9 @@ export default function ItemsPage() {
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
-      nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
-      shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
-      longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
+      nameEn: '', nameFa: '', nameTr: '', nameAr: '',
+      shortDescriptionEn: '', shortDescriptionFa: '', shortDescriptionTr: '', shortDescriptionAr: '',
+      longDescriptionEn: '', longDescriptionFa: '', longDescriptionTr: '', longDescriptionAr: '',
       price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: '', image: '', available: true, suggested: false, isNew: false, materials: []
     },
   });
