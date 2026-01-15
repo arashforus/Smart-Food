@@ -55,20 +55,17 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 const itemSchema = z.object({
   generalName: z.string().min(1, 'Internal name is required'),
   nameEn: z.string().min(1, 'English name is required'),
-  nameEs: z.string().optional(),
-  nameFr: z.string().optional(),
   nameFa: z.string().optional(),
   nameTr: z.string().optional(),
+  nameAr: z.string().optional(),
   shortDescriptionEn: z.string().min(1, 'English short description is required'),
-  shortDescriptionEs: z.string().optional(),
-  shortDescriptionFr: z.string().optional(),
   shortDescriptionFa: z.string().optional(),
   shortDescriptionTr: z.string().optional(),
+  shortDescriptionAr: z.string().optional(),
   longDescriptionEn: z.string().optional(),
-  longDescriptionEs: z.string().optional(),
-  longDescriptionFr: z.string().optional(),
   longDescriptionFa: z.string().optional(),
   longDescriptionTr: z.string().optional(),
+  longDescriptionAr: z.string().optional(),
   price: z.number().min(0.01, 'Price must be greater than 0'),
   discountedPrice: z.number().optional(),
   maxSelect: z.number().optional(),
@@ -173,7 +170,7 @@ export default function ItemsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: ItemFormData) => {
-      return apiRequest('POST', '/api/items', {
+      const payload = {
         categoryId: data.categoryId,
         generalName: data.generalName,
         name: { en: data.nameEn, fa: data.nameFa || '', tr: data.nameTr || '', ar: (data as any).nameAr || '' },
@@ -187,7 +184,8 @@ export default function ItemsPage() {
         suggested: data.suggested,
         isNew: data.isNew,
         materials: data.materials,
-      });
+      };
+      return apiRequest('POST', '/api/items', payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/items'] });
@@ -203,7 +201,7 @@ export default function ItemsPage() {
   const updateMutation = useMutation({
     mutationFn: async (data: ItemFormData) => {
       if (!editingItem) throw new Error('No item selected');
-      return apiRequest('PATCH', `/api/items/${editingItem.id}`, {
+      const payload = {
         categoryId: data.categoryId,
         generalName: data.generalName,
         name: { en: data.nameEn, fa: data.nameFa || '', tr: data.nameTr || '', ar: (data as any).nameAr || '' },
@@ -217,7 +215,8 @@ export default function ItemsPage() {
         suggested: data.suggested,
         isNew: data.isNew,
         materials: data.materials,
-      });
+      };
+      return apiRequest('PATCH', `/api/items/${editingItem.id}`, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/items'] });
@@ -247,9 +246,9 @@ export default function ItemsPage() {
   const openCreate = () => {
     form.reset({
       generalName: '',
-      nameEn: '', nameEs: '', nameFr: '', nameFa: '', nameTr: '',
-      shortDescriptionEn: '', shortDescriptionEs: '', shortDescriptionFr: '', shortDescriptionFa: '', shortDescriptionTr: '',
-      longDescriptionEn: '', longDescriptionEs: '', longDescriptionFr: '', longDescriptionFa: '', longDescriptionTr: '',
+      nameEn: '', nameFa: '', nameTr: '', nameAr: '',
+      shortDescriptionEn: '', shortDescriptionFa: '', shortDescriptionTr: '', shortDescriptionAr: '',
+      longDescriptionEn: '', longDescriptionFa: '', longDescriptionTr: '', longDescriptionAr: '',
       price: 0, discountedPrice: undefined, maxSelect: undefined, categoryId: categories[0]?.id || '', image: '', available: true, suggested: false, isNew: false, materials: []
     });
     setFormOpen(true);
@@ -259,20 +258,17 @@ export default function ItemsPage() {
     form.reset({
       generalName: item.generalName || '',
       nameEn: item.name.en || '',
-      nameEs: item.name.es || '',
-      nameFr: item.name.fr || '',
       nameFa: item.name.fa || '',
       nameTr: item.name.tr || '',
+      nameAr: (item.name as any).ar || '',
       shortDescriptionEn: item.shortDescription.en || '',
-      shortDescriptionEs: item.shortDescription.es || '',
-      shortDescriptionFr: item.shortDescription.fr || '',
       shortDescriptionFa: item.shortDescription.fa || '',
       shortDescriptionTr: item.shortDescription.tr || '',
+      shortDescriptionAr: (item.shortDescription as any).ar || '',
       longDescriptionEn: item.longDescription.en || '',
-      longDescriptionEs: item.longDescription.es || '',
-      longDescriptionFr: item.longDescription.fr || '',
       longDescriptionFa: item.longDescription.fa || '',
       longDescriptionTr: item.longDescription.tr || '',
+      longDescriptionAr: (item.longDescription as any).ar || '',
       price: item.price ? Number(item.price) : 0,
       discountedPrice: item.discountedPrice ? Number(item.discountedPrice) : undefined,
       maxSelect: item.maxSelect ? Number(item.maxSelect) : undefined,
