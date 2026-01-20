@@ -2,8 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SiInstagram, SiWhatsapp, SiTelegram } from "react-icons/si";
 import { MapPin, Phone, ExternalLink, UtensilsCrossed } from "lucide-react";
-import { Button } from "@/components/ui/sidebar";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Setting } from "@shared/schema";
 
@@ -57,86 +57,88 @@ export default function ComingSoonPage() {
       </div>
 
       <Card className="max-w-2xl w-full p-8 space-y-8 text-center bg-card/50 backdrop-blur-sm border-primary/20 shadow-xl relative z-10">
-        {/* Animated Text Transition */}
-        <div className="h-24 flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            <motion.h1
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-5xl md:text-7xl font-bold text-primary"
-              dir={comingSoonTexts[index].dir}
+        <CardContent className="p-0 space-y-8">
+          {/* Animated Text Transition */}
+          <div className="h-24 flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="text-5xl md:text-7xl font-bold text-primary"
+                dir={comingSoonTexts[index].dir}
+              >
+                {comingSoonTexts[index].text}
+              </motion.h1>
+            </AnimatePresence>
+          </div>
+
+          <div className="space-y-4">
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="flex justify-center"
             >
-              {comingSoonTexts[index].text}
-            </motion.h1>
-          </AnimatePresence>
-        </div>
-
-        <div className="space-y-4">
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex justify-center"
-          >
-            <div className="p-6 bg-primary/10 rounded-full">
-              <UtensilsCrossed size={64} className="text-primary" />
-            </div>
-          </motion.div>
-          <p className="text-xl text-muted-foreground">
-            We are preparing something delicious for you!
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 pt-8">
-          <div className="space-y-4 text-left">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <MapPin className="text-primary" /> Address
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {settings?.restaurantAddress || "Coming to a place near you"}
-            </p>
-            
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Phone className="text-primary" /> Contact
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {settings?.restaurantPhone || "Stay tuned for updates"}
+              <div className="p-6 bg-primary/10 rounded-full">
+                <UtensilsCrossed size={64} className="text-primary" />
+              </div>
+            </motion.div>
+            <p className="text-xl text-muted-foreground">
+              We are preparing something delicious for you!
             </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex justify-center gap-4">
-              {settings?.restaurantInstagram && (
-                <a href={settings.restaurantInstagram} target="_blank" rel="noreferrer">
-                  <Button variant="outline" size="icon" className="hover-elevate">
-                    <SiInstagram size={20} />
-                  </Button>
-                </a>
-              )}
-              {settings?.restaurantWhatsapp && (
-                <a href={`https://wa.me/${settings.restaurantWhatsapp}`} target="_blank" rel="noreferrer">
-                  <Button variant="outline" size="icon" className="hover-elevate">
-                    <SiWhatsapp size={20} />
-                  </Button>
-                </a>
-              )}
-              {settings?.restaurantTelegram && (
-                <a href={settings.restaurantTelegram} target="_blank" rel="noreferrer">
-                  <Button variant="outline" size="icon" className="hover-elevate">
-                    <SiTelegram size={20} />
-                  </Button>
-                </a>
-              )}
+          <div className="grid md:grid-cols-2 gap-6 pt-8">
+            <div className="space-y-4 text-left">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <MapPin className="text-primary" /> Address
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {settings?.restaurantAddress || "Coming to a place near you"}
+              </p>
+              
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Phone className="text-primary" /> Contact
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {settings?.restaurantPhone || "Stay tuned for updates"}
+              </p>
             </div>
 
-            <Button className="w-full flex items-center justify-center gap-2" asChild>
-              <a href="/menu">
-                View Menu Preview <ExternalLink size={16} />
-              </a>
-            </Button>
+            <div className="space-y-6">
+              <div className="flex justify-center gap-4">
+                {settings?.restaurantInstagram && (
+                  <a href={settings.restaurantInstagram} target="_blank" rel="noreferrer">
+                    <Button variant="outline" size="icon" className="hover-elevate">
+                      <SiInstagram size={20} />
+                    </Button>
+                  </a>
+                )}
+                {settings?.restaurantWhatsapp && (
+                  <a href={`https://wa.me/${settings.restaurantWhatsapp}`} target="_blank" rel="noreferrer">
+                    <Button variant="outline" size="icon" className="hover-elevate">
+                      <SiWhatsapp size={20} />
+                    </Button>
+                  </a>
+                )}
+                {settings?.restaurantTelegram && (
+                  <a href={settings.restaurantTelegram} target="_blank" rel="noreferrer">
+                    <Button variant="outline" size="icon" className="hover-elevate">
+                      <SiTelegram size={20} />
+                    </Button>
+                  </a>
+                )}
+              </div>
+
+              <Button className="w-full flex items-center justify-center gap-2" asChild>
+                <a href="/menu">
+                  View Menu Preview <ExternalLink size={16} />
+                </a>
+              </Button>
+            </div>
           </div>
-        </div>
+        </CardContent>
       </Card>
     </div>
   );
