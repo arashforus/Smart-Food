@@ -1,11 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SiInstagram, SiWhatsapp, SiTelegram } from "react-icons/si";
-import { MapPin, Phone, ExternalLink, UtensilsCrossed } from "lucide-react";
+import { MapPin, Phone, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Setting } from "@shared/schema";
+import Lottie from "lottie-react";
+
+// You would typically fetch this from an external URL or have a local JSON
+// For demonstration, I'll use a placeholder URL for a food-related Lottie animation
+const LOTTIE_FOOD_URL = "https://assets9.lottiefiles.com/packages/lf20_tll0j4bb.json";
 
 const comingSoonTexts = [
   { text: "Coming Soon", lang: "English", dir: "ltr" },
@@ -17,6 +22,7 @@ const comingSoonTexts = [
 
 export default function ComingSoonPage() {
   const [index, setIndex] = useState(0);
+  const [lottieData, setLottieData] = useState<any>(null);
   const { data: settings } = useQuery<Setting>({ 
     queryKey: ["/api/settings"],
   });
@@ -28,36 +34,44 @@ export default function ComingSoonPage() {
     return () => clearInterval(timer);
   }, []);
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Food Elements */}
-      <div className="absolute inset-0 pointer-events-none opacity-10">
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            initial={{ 
-              x: Math.random() * 100 + "%", 
-              y: Math.random() * 100 + "%",
-              rotate: 0 
-            }}
-            animate={{ 
-              y: ["-10%", "110%"],
-              rotate: 360
-            }}
-            transition={{ 
-              duration: Math.random() * 20 + 10, 
-              repeat: Infinity, 
-              ease: "linear" 
-            }}
-          >
-            <UtensilsCrossed size={Math.random() * 40 + 20} />
-          </motion.div>
-        ))}
-      </div>
+  useEffect(() => {
+    fetch(LOTTIE_FOOD_URL)
+      .then(res => res.json())
+      .then(data => setLottieData(data))
+      .catch(err => console.error("Lottie load error:", err));
+  }, []);
 
-      <Card className="max-w-2xl w-full p-8 space-y-8 text-center bg-card/50 backdrop-blur-sm border-primary/20 shadow-xl relative z-10">
-        <CardContent className="p-0 space-y-8">
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-gradient-xy">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes gradient-xy {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient-xy {
+          background-size: 400% 400%;
+          animation: gradient-xy 15s ease infinite;
+        }
+      `}} />
+
+      <Card className="w-[90vw] h-[90vh] flex flex-col p-8 space-y-8 text-center bg-card/80 backdrop-blur-md border-primary/20 shadow-2xl relative z-10 overflow-y-auto">
+        <CardContent className="p-0 space-y-8 flex flex-col items-center flex-1 justify-center">
+          {/* Logo and Name */}
+          <div className="space-y-4">
+            {settings?.restaurantLogo && (
+              <motion.img 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                src={settings.restaurantLogo} 
+                alt="Logo" 
+                className="h-24 mx-auto object-contain"
+              />
+            )}
+            <h2 className="text-3xl font-bold text-foreground">
+              {settings?.restaurantName || "Our Restaurant"}
+            </h2>
+          </div>
+
           {/* Animated Text Transition */}
           <div className="h-24 flex items-center justify-center">
             <AnimatePresence mode="wait">
@@ -66,7 +80,7 @@ export default function ComingSoonPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="text-5xl md:text-7xl font-bold text-primary"
+                className="text-5xl md:text-8xl font-bold text-primary"
                 dir={comingSoonTexts[index].dir}
               >
                 {comingSoonTexts[index].text}
@@ -74,66 +88,72 @@ export default function ComingSoonPage() {
             </AnimatePresence>
           </div>
 
-          <div className="space-y-4">
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="flex justify-center"
-            >
-              <div className="p-6 bg-primary/10 rounded-full">
-                <UtensilsCrossed size={64} className="text-primary" />
-              </div>
-            </motion.div>
-            <p className="text-xl text-muted-foreground">
-              We are preparing something delicious for you!
-            </p>
+          {/* Lottie Animation */}
+          <div className="w-full max-w-md aspect-square flex items-center justify-center">
+            {lottieData ? (
+              <Lottie 
+                animationData={lottieData} 
+                loop={true} 
+                style={{ height: '300px' }}
+              />
+            ) : (
+              <div className="animate-pulse text-muted-foreground">Loading Animation...</div>
+            )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 pt-8">
-            <div className="space-y-4 text-left">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <MapPin className="text-primary" /> Address
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {settings?.restaurantAddress || "Coming to a place near you"}
-              </p>
+          <p className="text-2xl text-muted-foreground max-w-2xl">
+            We are preparing something delicious for you!
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-12 pt-8 w-full max-w-4xl">
+            <div className="space-y-6 text-left flex flex-col justify-center">
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <MapPin className="text-primary" /> Address
+                </h3>
+                <p className="text-lg text-muted-foreground">
+                  {settings?.restaurantAddress || "Coming to a place near you"}
+                </p>
+              </div>
               
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Phone className="text-primary" /> Contact
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {settings?.restaurantPhone || "Stay tuned for updates"}
-              </p>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <Phone className="text-primary" /> Contact
+                </h3>
+                <p className="text-lg text-muted-foreground">
+                  {settings?.restaurantPhone || "Stay tuned for updates"}
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="flex justify-center gap-4">
+            <div className="space-y-8 flex flex-col justify-center">
+              <div className="flex justify-center gap-6">
                 {settings?.restaurantInstagram && (
                   <a href={settings.restaurantInstagram} target="_blank" rel="noreferrer">
-                    <Button variant="outline" size="icon" className="hover-elevate">
-                      <SiInstagram size={20} />
+                    <Button variant="outline" size="icon" className="w-14 h-14 hover-elevate">
+                      <SiInstagram size={28} />
                     </Button>
                   </a>
                 )}
                 {settings?.restaurantWhatsapp && (
                   <a href={`https://wa.me/${settings.restaurantWhatsapp}`} target="_blank" rel="noreferrer">
-                    <Button variant="outline" size="icon" className="hover-elevate">
-                      <SiWhatsapp size={20} />
+                    <Button variant="outline" size="icon" className="w-14 h-14 hover-elevate">
+                      <SiWhatsapp size={28} />
                     </Button>
                   </a>
                 )}
                 {settings?.restaurantTelegram && (
                   <a href={settings.restaurantTelegram} target="_blank" rel="noreferrer">
-                    <Button variant="outline" size="icon" className="hover-elevate">
-                      <SiTelegram size={20} />
+                    <Button variant="outline" size="icon" className="w-14 h-14 hover-elevate">
+                      <SiTelegram size={28} />
                     </Button>
                   </a>
                 )}
               </div>
 
-              <Button className="w-full flex items-center justify-center gap-2" asChild>
+              <Button className="w-full h-16 text-xl flex items-center justify-center gap-2" asChild>
                 <a href="/menu">
-                  View Menu Preview <ExternalLink size={16} />
+                  View Menu Preview <ExternalLink size={24} />
                 </a>
               </Button>
             </div>
