@@ -54,7 +54,7 @@ export default function ComingSoonPage() {
         }
       `}} />
 
-      <Card className="w-[90vw] h-[90vh] flex flex-col p-8 space-y-8 text-center bg-card/80 backdrop-blur-md border-primary/20 shadow-2xl relative z-10 overflow-y-auto">
+      <Card className="w-[95vw] h-[95vh] flex flex-col p-8 space-y-8 text-center bg-card/80 backdrop-blur-md border-primary/20 shadow-2xl relative z-10 overflow-y-auto">
         <CardContent className="p-0 space-y-8 flex flex-col items-center flex-1 justify-center">
           {/* Logo and Name */}
           <div className="space-y-4">
