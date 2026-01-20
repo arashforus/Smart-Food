@@ -15,6 +15,7 @@ import QRLandingPage from "@/pages/qr-landing";
 import LoginPage from "@/pages/login";
 import AdminLayout from "@/pages/admin/index";
 import LandingPage from "@/pages/landing";
+import ComingSoonPage from "@/pages/coming-soon";
 
 function Router() {
   useAnalytics();
@@ -33,6 +34,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/coming-soon" component={ComingSoonPage} />
       <Route path="/qr" component={QRLandingPage} />
       <Route path="/menu" component={MenuPage} />
       <Route path="/login" component={LoginPage} />
