@@ -141,9 +141,9 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, width: 0, x: isRtl ? -100 : 100 }}
-              animate={isMobile ? { opacity: 1, height: 'auto', width: '90%' } : { opacity: 1, width: '50%', x: 0 }}
-              exit={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, width: 0, x: isRtl ? -100 : 100 }}
+              initial={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, height: 0,width: 0, x: isRtl ? -100 : 100 }}
+              animate={isMobile ? { opacity: 1, height: 'auto', width: '90%' } : { opacity: 1, height: 'auto', width: '50%', x: 0 }}
+              exit={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, height:0 ,width: 0, x: isRtl ? -100 : 100 }}
               transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="overflow-hidden w-full flex justify-center"
             >
