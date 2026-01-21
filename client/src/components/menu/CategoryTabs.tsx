@@ -85,7 +85,7 @@ export default function CategoryTabs({
                 <LayoutGrid className="w-7 h-7 text-primary" />
               </div>
             </div>
-            <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${selectedCategory === null && !showSuggested ? 'text-primary' : 'text-muted-foreground'}`}>
+            <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center ${selectedCategory === null && !showSuggested ? 'text-primary' : 'text-muted-foreground'}`}>
               {t.all}
             </span>
           </button>
@@ -114,7 +114,7 @@ export default function CategoryTabs({
                   <Star className="w-7 h-7 text-amber-500 fill-amber-500" />
                 </div>
               </div>
-              <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}>
+              <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}>
                 {language === 'fa' ? 'پیشنهادی' : 'Recommend'}
               </span>
             </button>
@@ -157,7 +157,7 @@ export default function CategoryTabs({
                     </div>
                   )}
                 </div>
-                <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}>
+                <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}>
                   {getCategoryName(category)}
                 </span>
               </button>
