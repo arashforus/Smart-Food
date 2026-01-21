@@ -1,4 +1,4 @@
-import { MapPin, Phone, Clock, ChevronRight, X, Circle } from 'lucide-react';
+import { MapPin, Phone, Clock, ChevronRight, ChevronDown, ChevronUp, X, Circle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,14 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
   const [isRestaurantOpen, setIsRestaurantOpen] = useState<boolean | null>(null);
   const t = translations[language] || translations.en;
   const isRtl = language === 'fa' || language === 'ar';
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const checkOpenStatus = () => {
@@ -121,7 +129,11 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               data-testid="button-toggle-info"
             >
               {t.aboutUs}
-              <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'}`} />
+              {isMobile ? (
+                isOpen ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ChevronRight className={`ml-2 h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'}`} />
+              )}
             </Button>
           </div>
         </motion.div>
@@ -129,13 +141,13 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, width: 0, height: 0,x: isRtl ? -100 : 100 }}
-              animate={{ opacity: 1, width: '50%', height: 'auto', x: 0 }}
-              exit={{ opacity: 0, width: 0, height: 0, x: isRtl ? -100 : 100 }}
+              initial={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, width: 0, x: isRtl ? -100 : 100 }}
+              animate={isMobile ? { opacity: 1, height: 'auto', width: '90%' } : { opacity: 1, width: '50%', x: 0 }}
+              exit={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, width: 0, x: isRtl ? -100 : 100 }}
               transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-              className="overflow-hidden"
+              className="overflow-hidden w-full flex justify-center"
             >
-              <Card className="border-none shadow-none bg-card/40 backdrop-blur-md min-w-[300px] md:min-w-[400px]">
+              <Card className="border-none shadow-none bg-card/40 backdrop-blur-md w-full md:min-w-[400px]">
                 <CardContent className="p-6">
                   <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${isRtl ? 'md:divide-x-reverse md:divide-x' : 'md:divide-x'} divide-border`}>
                     {/* Left Column: Hours */}
