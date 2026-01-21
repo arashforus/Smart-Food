@@ -99,12 +99,12 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-          <div className="w-full aspect-video rounded-xl bg-muted flex items-center justify-center overflow-hidden">
+          <div className="w-full aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden">
             {settings?.menuShowImages && item.image ? (
               <img
                 src={item.image}
                 alt={getName()}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
