@@ -74,16 +74,16 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </Badge>
             )}
           </div>
-          <div className={`p-3 ${isRtl ? 'text-right' : ''}`}>
-            <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
+          <div className={`p-3 ${isRtl ? 'text-right' : 'text-left'}`}>
+            <h3 className={`font-medium text-sm truncate ${isRtl ? 'text-right' : ''}`} data-testid={`text-item-name-${item.id}`}>
               {getName()}
             </h3>
             {settings?.menuShowIngredients && (
-              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
+              <p className={`text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem] ${isRtl ? 'text-right' : ''}`}>
                 {getDescription()}
               </p>
             )}
-            <div className="flex items-center justify-between mt-2">
+            <div className={`flex items-center justify-between mt-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
               {settings?.menuShowPrices && (
                 <div className="flex items-center gap-2">
                   {hasDiscount ? (

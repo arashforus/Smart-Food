@@ -145,11 +145,11 @@ export default function MenuList({
       {suggestedItems.length > 0 && settings?.menuShowRecommendedMenuItems && (
         <div>
           <h2
-            className={`text-lg font-semibold mb-3 sticky top-[145px] bg-background py-2 z-30 flex items-center gap-2 ${isRtl ? 'text-right flex-row-reverse' : ''}`}
+            className={`text-lg font-semibold mb-3 sticky top-[145px] bg-background py-2 z-30 flex items-center gap-2 ${isRtl ? 'flex-row-reverse justify-start' : ''}`}
             data-testid="text-category-heading-suggested"
           >
             <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-            {t.suggested}
+            <span>{t.suggested}</span>
           </h2>
           <div className={gridClass}>
             {suggestedItems.map((item) => (
