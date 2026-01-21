@@ -92,14 +92,14 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md rounded-2xl px-6" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DialogContent className="max-w-md md:max-w-3xl rounded-2xl px-6" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader>
           <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
             {getName()}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-          <div className="w-full aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-6 max-h-[70vh] overflow-y-auto">
+          <div className="w-full md:w-1/2 aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
             {settings?.menuShowImages && item.image ? (
               <img
                 src={item.image}
@@ -111,105 +111,107 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             )}
           </div>
           
-          <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
-          
-          {settings?.menuShowFoodTypes && getTypes().length > 0 && (
-            <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
-              {getTypes().map((type, idx) => (
-                <Badge 
-                  key={idx} 
-                  variant="secondary" 
-                  className="text-xs"
-                  style={{ backgroundColor: type?.color, color: 'white' }}
-                >
-                  {type?.name}
-                </Badge>
-              ))}
-            </div>
-          )}
-          
-          {settings?.menuShowIngredients && getMaterials().length > 0 && (
-            <div className={isRtl ? 'text-right' : ''}>
-              <p className="text-xs text-muted-foreground font-medium mb-1">{t.materials}:</p>
-              <p className="text-sm text-muted-foreground">
-                {getMaterials().join(', ')}
-              </p>
-            </div>
-          )}
-          
-          {settings?.menuShowPrices && (
-            <div className={`flex items-center gap-3 ${isRtl ? 'justify-end' : ''}`}>
-              {hasDiscount ? (
-                <>
+          <div className="flex-1 space-y-4">
+            <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
+            
+            {settings?.menuShowFoodTypes && getTypes().length > 0 && (
+              <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
+                {getTypes().map((type, idx) => (
+                  <Badge 
+                    key={idx} 
+                    variant="secondary" 
+                    className="text-xs"
+                    style={{ backgroundColor: type?.color, color: 'white' }}
+                  >
+                    {type?.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            
+            {settings?.menuShowIngredients && getMaterials().length > 0 && (
+              <div className={isRtl ? 'text-right' : ''}>
+                <p className="text-xs text-muted-foreground font-medium mb-1">{t.materials}:</p>
+                <p className="text-sm text-muted-foreground">
+                  {getMaterials().join(', ')}
+                </p>
+              </div>
+            )}
+            
+            {settings?.menuShowPrices && (
+              <div className={`flex items-center gap-3 ${isRtl ? 'justify-end' : ''}`}>
+                {hasDiscount ? (
+                  <>
+                    <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
+                      {formatPrice(discountedPrice!)}
+                    </span>
+                    <span className="text-lg text-muted-foreground line-through">
+                      {formatPrice(price)}
+                    </span>
+                  </>
+                ) : (
                   <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                    {formatPrice(discountedPrice!)}
-                  </span>
-                  <span className="text-lg text-muted-foreground line-through">
                     {formatPrice(price)}
                   </span>
-                </>
-              ) : (
-                <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                  {formatPrice(price)}
+                )}
+              </div>
+            )}
+            
+            <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+              <span className="text-sm font-medium">{t.quantity}:</span>
+              <div className={`flex items-center gap-2 bg-muted rounded-lg p-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => handleQuantityChange(-1)}
+                  disabled={quantity <= 1}
+                  data-testid="button-quantity-decrease"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-8 text-center font-semibold" data-testid="text-quantity-display">
+                  {quantity}
                 </span>
-              )}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => handleQuantityChange(1)}
+                  disabled={item.maxSelect ? quantity >= Number(item.maxSelect) : false}
+                  data-testid="button-quantity-increase"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          )}
-          
-          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
-            <span className="text-sm font-medium">{t.quantity}:</span>
-            <div className={`flex items-center gap-2 bg-muted rounded-lg p-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={() => handleQuantityChange(-1)}
-                disabled={quantity <= 1}
-                data-testid="button-quantity-decrease"
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <span className="w-8 text-center font-semibold" data-testid="text-quantity-display">
-                {quantity}
-              </span>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={() => handleQuantityChange(1)}
-                disabled={item.maxSelect ? quantity >= Number(item.maxSelect) : false}
-                data-testid="button-quantity-increase"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
 
-          <div className={isRtl ? 'text-right' : ''}>
-            <label className="text-sm font-medium block mb-2" htmlFor="order-notes">
-              {t.notes || 'Special requests'}
-            </label>
-            <Textarea
-              id="order-notes"
-              placeholder={t.notesPlaceholder || 'Add any special requests or notes...'}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className={`resize-none rounded-lg ${isRtl ? 'text-right' : ''}`}
-              data-testid="textarea-order-notes"
-            />
+            <div className={isRtl ? 'text-right' : ''}>
+              <label className="text-sm font-medium block mb-2" htmlFor="order-notes">
+                {t.notes || 'Special requests'}
+              </label>
+              <Textarea
+                id="order-notes"
+                placeholder={t.notesPlaceholder || 'Add any special requests or notes...'}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className={`resize-none rounded-lg ${isRtl ? 'text-right' : ''}`}
+                data-testid="textarea-order-notes"
+              />
+            </div>
+            
+            {settings?.menuShowBuyButton && (
+              <Button
+                onClick={handleAddToCart}
+                className="w-full gap-2 rounded-lg"
+                size="lg"
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {t.addToCart}
+              </Button>
+            )}
           </div>
-          
-          {settings?.menuShowBuyButton && (
-            <Button
-              onClick={handleAddToCart}
-              className="w-full gap-2 rounded-lg"
-              size="lg"
-              data-testid="button-add-to-cart"
-            >
-              <ShoppingCart className="h-4 w-4" />
-              {t.addToCart}
-            </Button>
-          )}
         </div>
       </DialogContent>
     </Dialog>
