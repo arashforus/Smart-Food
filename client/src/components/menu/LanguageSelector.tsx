@@ -20,6 +20,11 @@ const FLAG_URLS: Record<string, string> = {
   fr: 'https://flagcdn.com/w40/fr.png',
 };
 
+interface LanguageSelectorProps {
+  language: Language;
+  onLanguageChange: (lang: Language) => void;
+}
+
 export default function LanguageSelector({ language, onLanguageChange }: LanguageSelectorProps) {
   const t = translations[language];
 
