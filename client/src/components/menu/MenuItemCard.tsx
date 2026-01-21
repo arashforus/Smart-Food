@@ -123,13 +123,14 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
 
   return (
     <Card
-      className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-sm bg-card/60 backdrop-blur-sm ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
+      className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-md bg-card/60 backdrop-blur-sm rounded-2xl ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
       onClick={onClick}
       data-testid={`card-menu-item-${item.id}`}
+      dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <CardContent className={`p-0 flex h-32 ${isRtl ? 'flex-row-reverse' : ''}`}>
+      <CardContent className={`p-0 flex h-32 ${isRtl ? 'flex-row' : ''}`}>
         {settings?.menuShowImages && (
-          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'rounded-r-2xl' : 'rounded-l-2xl'}`}>
+          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'rounded-r-2xl order-last' : 'rounded-l-2xl'}`}>
             {item.image ? (
               <img
                 src={item.image}

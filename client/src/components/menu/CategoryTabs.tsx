@@ -60,8 +60,8 @@ export default function CategoryTabs({
 
   return (
     <div className="sticky top-[49px] z-40 bg-background/80 backdrop-blur-md border-b shadow-sm">
-      <ScrollArea className="w-full">
-        <div className="flex gap-4 p-4">
+      <ScrollArea className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
+        <div className={`flex gap-4 p-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
           <button
             onClick={() => {
               onSelectCategory(null);
@@ -168,8 +168,8 @@ export default function CategoryTabs({
 
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
         {settings?.menuShowFoodType && (
-          <ScrollArea className="flex-1">
-            <div className="flex gap-2">
+          <ScrollArea className="flex-1" dir={isRtl ? 'rtl' : 'ltr'}>
+            <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
               {foodTypes.map((type) => {
                 const IconComponent = iconMap[type.icon || ''] || Leaf;
                 const isSelected = selectedTypes.includes(type.id);
