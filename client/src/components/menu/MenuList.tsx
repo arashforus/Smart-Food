@@ -60,7 +60,7 @@ export default function MenuList({
   const t = translations[language] || translations.en;
   const isRtl = language === 'fa' || language === 'ar';
 
-  const gridClass = viewMode === 'grid' ? 'grid grid-cols-2 gap-3' : 'space-y-3';
+  const gridClass = viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4' : 'space-y-3';
 
   if (showSuggested || settings?.menuShowRecommendedMenuItems) {
     if (suggestedItems.length > 0) {
