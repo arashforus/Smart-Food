@@ -121,7 +121,7 @@ export default function CategoryTabs({
           )}
 
           {categories
-            .filter((category) => category.isActive)
+            .filter((category: any) => category.isActive)
             .map((category) => (
               <button
                 key={category.id}
