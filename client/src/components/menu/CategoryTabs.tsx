@@ -90,49 +90,6 @@ export default function CategoryTabs({
             </span>
           </button>
 
-          {categories
-            .filter(category => category.isActive)
-            .map((category) => (
-            <button
-              key={category.id}
-              onClick={() => {
-                onSelectCategory(category.id);
-                onShowSuggestedChange(false);
-              }}
-              className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
-                selectedCategory === category.id
-                  ? 'scale-105'
-                  : 'hover:opacity-100'
-              }`}
-              data-testid={`button-category-${category.id}`}
-            >
-              <div
-                className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? 'border-primary shadow-lg ring-4 ring-primary/10'
-                    : 'border-transparent bg-muted/80'
-                }`}
-              >
-                {category.image ? (
-                  <img
-                    src={category.image}
-                    alt={getCategoryName(category)}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <span className="text-xl font-bold text-muted-foreground/50">
-                      {getCategoryName(category).charAt(0)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}>
-                {getCategoryName(category)}
-              </span>
-            </button>
-          ))}
-
           {settings?.menuShowRecommendedMenuItems && (
             <button
               onClick={() => {
@@ -158,10 +115,53 @@ export default function CategoryTabs({
                 </div>
               </div>
               <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}>
-                {t.suggested}
+                {language === 'fa' ? 'پیشنهادی' : 'Recommend'}
               </span>
             </button>
           )}
+
+          {categories
+            .filter((category) => category.isActive)
+            .map((category) => (
+              <button
+                key={category.id}
+                onClick={() => {
+                  onSelectCategory(category.id);
+                  onShowSuggestedChange(false);
+                }}
+                className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
+                  selectedCategory === category.id
+                    ? 'scale-105'
+                    : 'hover:opacity-100'
+                }`}
+                data-testid={`button-category-${category.id}`}
+              >
+                <div
+                  className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
+                    selectedCategory === category.id
+                      ? 'border-primary shadow-lg ring-4 ring-primary/10'
+                      : 'border-transparent bg-muted/80'
+                  }`}
+                >
+                  {category.image ? (
+                    <img
+                      src={category.image}
+                      alt={getCategoryName(category)}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center">
+                      <span className="text-xl font-bold text-muted-foreground/50">
+                        {getCategoryName(category).charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 truncate ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}>
+                  {getCategoryName(category)}
+                </span>
+              </button>
+            ))}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
