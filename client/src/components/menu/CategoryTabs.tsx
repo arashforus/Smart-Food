@@ -70,7 +70,7 @@ export default function CategoryTabs({
             className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
               selectedCategory === null && !showSuggested
                 ? 'scale-105'
-                : 'opacity-60 hover:opacity-100'
+                : 'hover:opacity-100'
             }`}
             data-testid="button-category-all"
           >
@@ -78,7 +78,7 @@ export default function CategoryTabs({
               className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
                 selectedCategory === null && !showSuggested
                   ? 'border-primary shadow-lg ring-4 ring-primary/10'
-                  : 'border-transparent bg-muted/50'
+                  : 'border-transparent bg-muted/80'
               }`}
             >
               <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/30 flex items-center justify-center">
@@ -90,7 +90,9 @@ export default function CategoryTabs({
             </span>
           </button>
 
-          {categories.map((category) => (
+          {categories
+            .filter(category => category.isActive)
+            .map((category) => (
             <button
               key={category.id}
               onClick={() => {
@@ -100,7 +102,7 @@ export default function CategoryTabs({
               className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
                 selectedCategory === category.id
                   ? 'scale-105'
-                  : 'opacity-60 hover:opacity-100'
+                  : 'hover:opacity-100'
               }`}
               data-testid={`button-category-${category.id}`}
             >
@@ -108,7 +110,7 @@ export default function CategoryTabs({
                 className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
                   selectedCategory === category.id
                     ? 'border-primary shadow-lg ring-4 ring-primary/10'
-                    : 'border-transparent bg-muted/50'
+                    : 'border-transparent bg-muted/80'
                 }`}
               >
                 {category.image ? (
@@ -140,7 +142,7 @@ export default function CategoryTabs({
               className={`flex flex-col items-center flex-shrink-0 transition-all duration-300 ${
                 showSuggested
                   ? 'scale-105'
-                  : 'opacity-60 hover:opacity-100'
+                  : 'hover:opacity-100'
               }`}
               data-testid="button-category-suggested"
             >
@@ -148,7 +150,7 @@ export default function CategoryTabs({
                 className={`w-16 h-16 rounded-2xl overflow-hidden mb-2 border-2 transition-all duration-300 ${
                   showSuggested
                     ? 'border-amber-500 shadow-lg ring-4 ring-amber-500/10'
-                    : 'border-transparent bg-muted/50'
+                    : 'border-transparent bg-muted/80'
                 }`}
               >
                 <div className="w-full h-full bg-gradient-to-br from-amber-400/20 to-amber-500/40 flex items-center justify-center">
