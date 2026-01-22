@@ -130,7 +130,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
     >
       <CardContent className="p-0 flex h-32">
         {settings?.menuShowImages && (
-          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'order-last rounded-l-none rounded-r-2xl' : 'rounded-l-2xl'}`}>
+          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'order-last rounded-r-2xl' : 'rounded-l-2xl'}`}>
             {item.image ? (
               <img
                 src={item.image}
