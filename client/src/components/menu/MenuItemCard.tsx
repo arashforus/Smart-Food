@@ -128,9 +128,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
       data-testid={`card-menu-item-${item.id}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <CardContent className={`p-0 flex h-32`}>
+      <CardContent className="p-0 flex h-32">
         {settings?.menuShowImages && (
-          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'rounded-l-2xl order-last' : 'rounded-l-2xl'}`}>
+          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'order-last rounded-l-none rounded-r-2xl' : 'rounded-l-2xl'}`}>
             {item.image ? (
               <img
                 src={item.image}
@@ -143,7 +143,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
             {(isSuggested || item.suggested) && (
-              <div className="absolute top-1 right-1 bg-amber-500 rounded-full p-0.5">
+              <div className={`absolute top-1 ${isRtl ? 'left-1' : 'right-1'} bg-amber-500 rounded-full p-0.5`}>
                 <Star className="h-3 w-3 text-white fill-white" />
               </div>
             )}
@@ -156,12 +156,12 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
         )}
         <div className={`flex-1 p-3 flex flex-col justify-between min-w-0 ${isRtl ? 'text-right' : ''}`}>
           <div>
-            <div className={`flex justify-between items-start gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <div className="flex justify-between items-start gap-2">
               <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
                 {getName()}
               </h3>
               {settings?.menuShowPrices && (
-                <div className="text-right flex flex-col items-end">
+                <div className={`flex flex-col ${isRtl ? 'items-start' : 'items-end'}`}>
                   {hasDiscount ? (
                     <>
                       <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
@@ -185,7 +185,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </p>
             )}
           </div>
-          <div className={`flex items-center justify-between mt-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <div className="flex items-center justify-between mt-1">
             <div className="flex gap-1">
               {settings?.menuShowFoodTypes && item.types?.slice(0, 2).map((typeId) => (
                 <Badge key={typeId} variant="secondary" className="text-[10px] py-0 px-1.5 h-4 font-normal">
@@ -197,13 +197,13 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <Button
                 size="sm"
                 variant="default"
-                className="rounded-full h-8 px-4"
+                className={`rounded-full h-8 px-4 ${isRtl ? 'flex-row-reverse' : ''}`}
                 onClick={handleAddClick}
                 data-testid={`button-add-to-cart-card-${item.id}`}
                 title={t.addToCart}
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Add
+                <Plus className={`h-4 w-4 ${isRtl ? 'ml-1' : 'mr-1'}`} />
+                {t.add || 'Add'}
               </Button>
             )}
           </div>
