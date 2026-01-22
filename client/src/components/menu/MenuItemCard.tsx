@@ -128,9 +128,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
       data-testid={`card-menu-item-${item.id}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <CardContent className={`p-0 flex h-32 ${isRtl ? 'flex-row' : ''}`}>
+      <CardContent className={`p-0 flex h-32`}>
         {settings?.menuShowImages && (
-          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'rounded-r-2xl order-last' : 'rounded-l-2xl'}`}>
+          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'rounded-l-2xl order-last' : 'rounded-l-2xl'}`}>
             {item.image ? (
               <img
                 src={item.image}
@@ -148,9 +148,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </div>
             )}
             {item.isNew && (
-              <Badge className="absolute top-1 left-1 bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5">
+              <div className={`absolute top-1 ${isRtl ? 'right-1' : 'left-1'} bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 rounded-full`}>
                 New
-              </Badge>
+              </div>
             )}
           </div>
         )}
