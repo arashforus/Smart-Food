@@ -61,7 +61,7 @@ export default function CategoryTabs({
   return (
     <div className="sticky top-[49px] z-40 bg-background/80 backdrop-blur-md border-b shadow-sm">
       <ScrollArea className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
-        <div className={`flex gap-4 p-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
+        <div className={`flex gap-4 p-4 ${isRtl ? 'flex-row-reverse justify-start' : ''}`}>
           <button
             onClick={() => {
               onSelectCategory(null);
@@ -169,7 +169,7 @@ export default function CategoryTabs({
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
         {settings?.menuShowFoodType && (
           <ScrollArea className="flex-1" dir={isRtl ? 'rtl' : 'ltr'}>
-            <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse justify-start' : ''}`}>
               {foodTypes.map((type) => {
                 const IconComponent = iconMap[type.icon || ''] || Leaf;
                 const isSelected = selectedTypes.includes(type.id);
@@ -197,7 +197,7 @@ export default function CategoryTabs({
         )}
 
         {settings?.menuShowViewSwitcher && (
-          <div className={`flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg ${isRtl ? 'border-r pr-2 mr-2 border-l-0 pl-0 ml-0' : 'border-l pl-2 ml-2'}`}>
+          <div className={`flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg ${isRtl ? 'order-first border-l pl-2 ml-2' : 'border-l pl-2 ml-2'}`}>
             <Button
               size="icon"
               variant={viewMode === 'list' ? 'default' : 'ghost'}
