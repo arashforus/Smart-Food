@@ -74,16 +74,16 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </Badge>
             )}
           </div>
-          <div className={`p-3 ${isRtl ? 'text-right' : 'text-left'}`}>
-            <h3 className={`font-medium text-sm truncate ${isRtl ? 'text-right' : ''}`} data-testid={`text-item-name-${item.id}`}>
+          <div className="p-3">
+            <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
               {getName()}
             </h3>
             {settings?.menuShowIngredients && (
-              <p className={`text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem] ${isRtl ? 'text-right' : ''}`}>
+              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
                 {getDescription()}
               </p>
             )}
-            <div className={`flex items-center justify-between mt-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <div className="flex items-center justify-between mt-2">
               {settings?.menuShowPrices && (
                 <div className="flex items-center gap-2">
                   {hasDiscount ? (
@@ -154,14 +154,14 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             )}
           </div>
         )}
-        <div className={`flex-1 p-3 flex flex-col justify-between min-w-0 ${isRtl ? 'text-right' : ''}`}>
+        <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
               <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
                 {getName()}
               </h3>
               {settings?.menuShowPrices && (
-                <div className={`flex flex-col ${isRtl ? 'items-start' : 'items-end'}`}>
+                <div className="flex flex-col items-end">
                   {hasDiscount ? (
                     <>
                       <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
@@ -197,12 +197,12 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <Button
                 size="sm"
                 variant="default"
-                className={`rounded-full h-8 px-4 ${isRtl ? 'flex-row-reverse' : ''}`}
+                className="rounded-full h-8 px-4 flex items-center gap-1"
                 onClick={handleAddClick}
                 data-testid={`button-add-to-cart-card-${item.id}`}
                 title={t.addToCart}
               >
-                <Plus className={`h-4 w-4 ${isRtl ? 'ml-1' : 'mr-1'}`} />
+                <Plus className="h-4 w-4" />
                 {t.add || 'Add'}
               </Button>
             )}

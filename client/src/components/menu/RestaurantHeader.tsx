@@ -78,11 +78,11 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
   return (
     <div className="bg-background/40 backdrop-blur-sm py-8 px-4 overflow-hidden">
-      <div className={`max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 transition-all duration-500`}>
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 transition-all duration-500">
         <motion.div
           key="header-content"
           layout
-          className="flex flex-col items-center transition-all duration-500"
+          className="flex flex-col items-center transition-all duration-500 text-center"
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
             <div className="flex justify-center mb-4">
@@ -124,15 +124,15 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             <Button 
               variant="outline" 
               size="sm" 
-              className={`rounded-full px-6 group ${isRtl ? 'flex-row-reverse' : ''}`}
+              className="rounded-full px-6 group flex items-center gap-2"
               onClick={() => setIsOpen(!isOpen)}
               data-testid="button-toggle-info"
             >
               {t.aboutUs}
               {isMobile ? (
-                isOpen ? <ChevronUp className={`${isRtl ? 'mr-2' : 'ml-2'} h-4 w-4`} /> : <ChevronDown className={`${isRtl ? 'mr-2' : 'ml-2'} h-4 w-4`} />
+                isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
               ) : (
-                <ChevronRight className={`${isRtl ? 'mr-2' : 'ml-2'} h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'}`} />
+                <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'}`} />
               )}
             </Button>
           </div>
@@ -149,12 +149,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             >
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md w-full md:min-w-[400px]">
                 <CardContent className="p-6">
-                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${isRtl ? 'md:divide-x-reverse md:divide-x' : 'md:divide-x'} divide-border`}>
+                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-border`}>
                     {/* Left Column: Hours */}
                     <div className="space-y-3">
                       {settings?.menuShowOperationHours && restaurant.hours && (
-                        <div className={`flex flex-col gap-2 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 mb-0.5 ${isRtl ? 'flex-row-reverse' : ''} ${isRtl ? 'justify-start' : ''}`}>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2 mb-0.5">
                             <Clock className="h-4 w-4 text-primary" />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.hours}</p>
                           </div>
@@ -163,7 +163,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                               try {
                                 const hours = JSON.parse(restaurant.hours);
                                 return Object.entries(hours).map(([day, config]: [string, any]) => (
-                                  <div key={day} className={`flex items-center justify-between py-0 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                                  <div key={day} className="flex items-center justify-between py-0">
                                     <span className="text-[11px] font-medium">{day}</span>
                                     <span className={`text-[11px] ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
                                       {config.closed ? (language === 'fa' ? 'بسته' : 'Closed') : `${config.start} - ${config.end}`}
@@ -180,21 +180,21 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                     </div>
 
                     {/* Right Column: Address and Phone */}
-                    <div className={`space-y-4 ${isRtl ? 'md:pr-6 border-r md:border-r-0 md:border-l' : 'md:pl-6'}`}>
+                    <div className={`space-y-4 md:pl-6`}>
                       <div className="space-y-3">
-                        <div className={`flex flex-col gap-1.5 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''} ${isRtl ? 'justify-start' : ''}`}>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-primary" />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.address}</p>
                           </div>
-                          <div className={`flex-1 flex flex-col ${isRtl ? 'items-end' : 'items-center md:items-start'}`}>
-                            <p className="text-[12px] font-medium leading-tight" data-testid="text-restaurant-address">{restaurant.address}</p>
+                          <div className="flex-1 flex flex-col items-center md:items-start">
+                            <p className="text-[12px] font-medium leading-tight text-inherit" data-testid="text-restaurant-address">{restaurant.address}</p>
                             {settings?.restaurantGoogleMapsUrl && (
-                              <div className={`mt-2 w-full flex ${isRtl ? 'justify-end' : 'justify-center md:justify-start'}`}>
+                              <div className="mt-2 w-full flex justify-center md:justify-start">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className={`h-8 px-4 text-[11px] text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5 font-medium w-full max-w-[160px] ${isRtl ? 'flex-row-reverse' : ''}`}
+                                  className="h-8 px-4 text-[11px] text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5 font-medium w-full max-w-[160px]"
                                   onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
                                   data-testid="button-show-on-map"
                                 >
@@ -208,18 +208,18 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
                         <div className="border-t border-border/50 my-2" />
 
-                        <div className={`flex flex-col gap-2 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''} ${isRtl ? 'justify-start' : ''}`}>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
                             <Phone className="h-4 w-4 text-primary" />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.phone}</p>
                           </div>
-                          <div className={`flex-1 flex flex-col ${isRtl ? 'items-end' : 'items-center md:items-start'}`}>
-                            <p className="text-[12px] font-medium leading-tight" data-testid="text-restaurant-phone">{restaurant.phone}</p>
-                            <div className={`mt-2 w-full flex ${isRtl ? 'justify-end' : 'justify-center md:justify-start'}`}>
+                          <div className="flex-1 flex flex-col items-center md:items-start">
+                            <p className="text-[12px] font-medium leading-tight text-inherit" data-testid="text-restaurant-phone">{restaurant.phone}</p>
+                            <div className="mt-2 w-full flex justify-center md:justify-start">
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className={`h-8 px-4 text-[11px] text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5 font-medium w-full max-w-[160px] ${isRtl ? 'flex-row-reverse' : ''}`}
+                                className="h-8 px-4 text-[11px] text-primary hover-elevate gap-2 rounded-full border-primary/20 bg-primary/5 font-medium w-full max-w-[160px]"
                                 onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
                                 data-testid="button-call-now"
                               >

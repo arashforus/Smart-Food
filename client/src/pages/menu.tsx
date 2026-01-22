@@ -117,8 +117,8 @@ export default function MenuPage() {
   return (
     <div className="min-h-screen bg-background" dir={isRtl ? 'rtl' : 'ltr'} style={backgroundStyle}>
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
-        <div className={`flex items-center justify-between gap-2 p-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
-          <div className={`flex items-center gap-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+        <div className="flex items-center justify-between gap-2 p-2">
+          <div className="flex items-center gap-1">
             <Button
               size="icon"
               variant="ghost"
@@ -159,7 +159,7 @@ export default function MenuPage() {
               </Button>
             )}
           </div>
-          <div className={`flex items-center gap-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <div className="flex items-center gap-1">
             {settings?.showMenuLanguageSelector && (
               <LanguageSelector language={language} onLanguageChange={setLanguage} />
             )}
