@@ -124,7 +124,6 @@ export default function MenuPage() {
               variant="ghost"
               onClick={() => setLocation('/')}
               data-testid="button-back"
-              className={isRtl ? 'rotate-180' : ''}
             >
               <BackArrow className="w-5 h-5" />
             </Button>
