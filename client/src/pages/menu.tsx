@@ -169,7 +169,6 @@ export default function MenuPage() {
 
       <div dir={isRtl ? 'rtl' : 'ltr'}>
         
-
         <RestaurantHeader 
           restaurant={restaurantData as any} 
           language={language} 
@@ -211,7 +210,6 @@ export default function MenuPage() {
 
       </div>
     
-
       <ItemDetailModal
         item={selectedItem}
         open={!!selectedItem}
