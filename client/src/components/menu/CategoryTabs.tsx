@@ -167,29 +167,6 @@ export default function CategoryTabs({
       </ScrollArea>
 
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
-        {settings?.menuShowViewSwitcher && (
-          <div className="flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-inline-start pl-2 ml-2">
-            <Button
-              size="icon"
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              onClick={() => onViewModeChange('list')}
-              className="h-8 w-8 rounded-md"
-              data-testid="button-view-list"
-            >
-              <LayoutList className="w-4 h-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              onClick={() => onViewModeChange('grid')}
-              className="h-8 w-8 rounded-md"
-              data-testid="button-view-grid"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
-
         {settings?.menuShowFoodType && (
           <ScrollArea className="flex-1">
             <div className="flex gap-2">
@@ -217,6 +194,29 @@ export default function CategoryTabs({
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
+        )}
+
+        {settings?.menuShowViewSwitcher && (
+          <div className="flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-inline-start pl-2 ml-2">
+            <Button
+              size="icon"
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              onClick={() => onViewModeChange('list')}
+              className="h-8 w-8 rounded-md"
+              data-testid="button-view-list"
+            >
+              <LayoutList className="w-4 h-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              onClick={() => onViewModeChange('grid')}
+              className="h-8 w-8 rounded-md"
+              data-testid="button-view-grid"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </Button>
+          </div>
         )}
       </div>
 
