@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -197,25 +198,43 @@ export default function CategoryTabs({
         )}
 
         {settings?.menuShowViewSwitcher && (
-          <div className="flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-inline-start pl-2 ml-2">
-            <Button
-              size="icon"
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              onClick={() => onViewModeChange('list')}
-              className="h-8 w-8 rounded-md"
-              data-testid="button-view-list"
-            >
-              <LayoutList className="w-4 h-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              onClick={() => onViewModeChange('grid')}
-              className="h-8 w-8 rounded-md"
-              data-testid="button-view-grid"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </Button>
+          <div className="relative flex items-center justify-center bg-muted/30 p-1 rounded-xl border border-border/40 ml-2">
+            {/* Animated background indicator */}
+            <motion.div
+              className="absolute bg-background shadow-sm rounded-lg"
+              initial={false}
+              animate={{
+                x: viewMode === 'list' ? (isRtl ? 34 : 0) : (isRtl ? 0 : 34),
+                width: 32,
+                height: 32
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            />
+            
+            <div className="flex relative z-10">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => onViewModeChange('list')}
+                className={`h-8 w-8 rounded-lg transition-colors duration-200 ${
+                  viewMode === 'list' ? 'text-primary' : 'text-muted-foreground/60'
+                }`}
+                data-testid="button-view-list"
+              >
+                <LayoutList className="w-4 h-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => onViewModeChange('grid')}
+                className={`h-8 w-8 rounded-lg transition-colors duration-200 ${
+                  viewMode === 'grid' ? 'text-primary' : 'text-muted-foreground/60'
+                }`}
+                data-testid="button-view-grid"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         )}
       </div>
