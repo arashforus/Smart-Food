@@ -204,7 +204,7 @@ export default function CategoryTabs({
               className="absolute bg-primary shadow-sm rounded-lg"
               initial={false}
               animate={{
-                x: viewMode === 'list' ? 0 : 36,
+                x: viewMode === 'list' ? 0 : (isRtl ? -36 : 36),
               }}
               style={{
                 width: 32,
