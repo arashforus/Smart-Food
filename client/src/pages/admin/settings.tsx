@@ -1257,10 +1257,11 @@ export default function SettingsPage() {
                   <div className="space-y-2">
                     <FormLabel htmlFor="rest-logo">Restaurant Logo</FormLabel>
                           <ImageUpload
-                            value={restaurantLogo || ''}
+                            value={restaurantLogo}
                             onChange={(url) => {
                               setRestaurantLogo(url);
                               setRestaurantLogoPreview(url);
+                              updateSettingsMutation.mutate({ restaurantLogo: url });
                             }}
                             placeholder="Upload logo"
                             testId="input-restaurant-logo"
@@ -1277,7 +1278,10 @@ export default function SettingsPage() {
                     <Input
                       id="rest-name"
                       value={restaurantName}
-                      onChange={(e) => setRestaurantName(e.target.value)}
+                      onChange={(e) => {
+                        setRestaurantName(e.target.value);
+                        updateSettingsMutation.mutate({ restaurantName: e.target.value });
+                      }}
                       placeholder="Enter restaurant name"
                       data-testid="input-restaurant-name"
                     />
@@ -1287,7 +1291,10 @@ export default function SettingsPage() {
                     <Textarea
                       id="rest-desc"
                       value={restaurantDescription}
-                      onChange={(e) => setRestaurantDescription(e.target.value)}
+                      onChange={(e) => {
+                        setRestaurantDescription(e.target.value);
+                        updateSettingsMutation.mutate({ restaurantDescription: e.target.value });
+                      }}
                       placeholder="Describe your restaurant"
                       className="resize-none"
                       data-testid="textarea-restaurant-description"
@@ -1298,7 +1305,10 @@ export default function SettingsPage() {
                     <Input
                       id="rest-address"
                       value={restaurantAddress}
-                      onChange={(e) => setRestaurantAddress(e.target.value)}
+                      onChange={(e) => {
+                        setRestaurantAddress(e.target.value);
+                        updateSettingsMutation.mutate({ restaurantAddress: e.target.value });
+                      }}
                       placeholder="Street address"
                       data-testid="input-restaurant-address"
                     />
@@ -1308,7 +1318,10 @@ export default function SettingsPage() {
                     <Input
                       id="rest-phone"
                       value={restaurantPhone}
-                      onChange={(e) => setRestaurantPhone(e.target.value)}
+                      onChange={(e) => {
+                        setRestaurantPhone(e.target.value);
+                        updateSettingsMutation.mutate({ restaurantPhone: e.target.value });
+                      }}
                       placeholder="Contact phone number"
                       data-testid="input-restaurant-phone"
                     />
@@ -1319,7 +1332,10 @@ export default function SettingsPage() {
                       id="rest-email"
                       type="email"
                       value={restaurantEmail}
-                      onChange={(e) => setRestaurantEmail(e.target.value)}
+                      onChange={(e) => {
+                        setRestaurantEmail(e.target.value);
+                        updateSettingsMutation.mutate({ restaurantEmail: e.target.value });
+                      }}
                       placeholder="Contact email"
                       data-testid="input-restaurant-email"
                     />
@@ -1401,75 +1417,87 @@ export default function SettingsPage() {
                   <CardDescription>Connect your social media and location services</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-instagram">Instagram</FormLabel>
-                    <FormField control={form.control} name="restaurantInstagram" render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            id="rest-instagram"
-                            value={restaurantInstagram}
-                            onChange={(e) => setRestaurantInstagram(e.target.value)}
-                            placeholder="https://instagram.com/yourrestaurant"
-                            data-testid="input-restaurant-instagram"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-whatsapp">WhatsApp</FormLabel>
-                    <FormField control={form.control} name="restaurantWhatsapp" render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            id="rest-whatsapp"
-                            value={restaurantWhatsapp}
-                            onChange={(e) => setRestaurantWhatsapp(e.target.value)}
-                            placeholder="+1234567890 or https://wa.me/1234567890"
-                            data-testid="input-restaurant-whatsapp"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-telegram">Telegram</FormLabel>
-                    <FormField control={form.control} name="restaurantTelegram" render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            id="rest-telegram"
-                            value={restaurantTelegram}
-                            onChange={(e) => setRestaurantTelegram(e.target.value)}
-                            placeholder="https://t.me/yourrestaurant"
-                            data-testid="input-restaurant-telegram"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <FormLabel htmlFor="rest-gmaps">Google Maps URL</FormLabel>
-                    <FormField control={form.control} name="restaurantGoogleMapsUrl" render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            id="rest-gmaps"
-                            value={restaurantGoogleMapsUrl}
-                            onChange={(e) => setRestaurantGoogleMapsUrl(e.target.value)}
-                            placeholder="https://maps.google.com/?q=..."
-                            data-testid="input-restaurant-google-maps"
-                          />
-                        </FormControl>
-                        <FormDescription>Paste your Google Maps location link</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
+                          <div className="space-y-2">
+                            <FormLabel htmlFor="rest-instagram">Instagram</FormLabel>
+                            <FormField control={form.control} name="restaurantInstagram" render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    id="rest-instagram"
+                                    value={restaurantInstagram}
+                                    onChange={(e) => {
+                                      setRestaurantInstagram(e.target.value);
+                                      updateSettingsMutation.mutate({ restaurantInstagram: e.target.value });
+                                    }}
+                                    placeholder="https://instagram.com/yourrestaurant"
+                                    data-testid="input-restaurant-instagram"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )} />
+                          </div>
+                          <div className="space-y-2">
+                            <FormLabel htmlFor="rest-whatsapp">WhatsApp</FormLabel>
+                            <FormField control={form.control} name="restaurantWhatsapp" render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    id="rest-whatsapp"
+                                    value={restaurantWhatsapp}
+                                    onChange={(e) => {
+                                      setRestaurantWhatsapp(e.target.value);
+                                      updateSettingsMutation.mutate({ restaurantWhatsapp: e.target.value });
+                                    }}
+                                    placeholder="+1234567890 or https://wa.me/1234567890"
+                                    data-testid="input-restaurant-whatsapp"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )} />
+                          </div>
+                          <div className="space-y-2">
+                            <FormLabel htmlFor="rest-telegram">Telegram</FormLabel>
+                            <FormField control={form.control} name="restaurantTelegram" render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    id="rest-telegram"
+                                    value={restaurantTelegram}
+                                    onChange={(e) => {
+                                      setRestaurantTelegram(e.target.value);
+                                      updateSettingsMutation.mutate({ restaurantTelegram: e.target.value });
+                                    }}
+                                    placeholder="https://t.me/yourrestaurant"
+                                    data-testid="input-restaurant-telegram"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )} />
+                          </div>
+                          <div className="space-y-2">
+                            <FormLabel htmlFor="rest-gmaps">Google Maps URL</FormLabel>
+                            <FormField control={form.control} name="restaurantGoogleMapsUrl" render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    id="rest-gmaps"
+                                    value={restaurantGoogleMapsUrl}
+                                    onChange={(e) => {
+                                      setRestaurantGoogleMapsUrl(e.target.value);
+                                      updateSettingsMutation.mutate({ restaurantGoogleMapsUrl: e.target.value });
+                                    }}
+                                    placeholder="https://maps.google.com/?q=..."
+                                    data-testid="input-restaurant-google-maps"
+                                  />
+                                </FormControl>
+                                <FormDescription>Paste your Google Maps location link</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )} />
+                          </div>
                 </CardContent>
               </Card>
             </TabsContent>
