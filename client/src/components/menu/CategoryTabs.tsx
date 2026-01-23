@@ -168,7 +168,7 @@ export default function CategoryTabs({
 
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
         {settings?.menuShowViewSwitcher && (
-          <div className={`flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-l pl-2 ml-2 ${isRtl ? 'order-last' : 'order-first'}`}>
+          <div className={`flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-l pl-2 ml-2 ${isRtl ? 'order-first' : 'order-last'}`}>
             <Button
               size="icon"
               variant={viewMode === 'list' ? 'default' : 'ghost'}
