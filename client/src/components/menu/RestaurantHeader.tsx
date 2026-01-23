@@ -203,7 +203,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                                   onClick={() => window.open(settings.restaurantGoogleMapsUrl, '_blank')}
                                   data-testid="button-show-on-map"
                                 >
-                                  <MapPin className="h-3.5 w-3.5" />
+                                  <MapPin className={`h-3.5 w-3.5 ${isRtl ? 'scale-x-[-1]' : ''}`} />
                                   {language === 'fa' ? 'نمایش روی نقشه' : 'Show on Map'}
                                 </Button>
                               </div>
@@ -228,7 +228,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                                 onClick={() => window.open(`tel:${restaurant.phone}`, '_self')}
                                 data-testid="button-call-now"
                               >
-                                <Phone className="h-3.5 w-3.5" />
+                                <Phone className={`h-3.5 w-3.5 ${isRtl ? 'scale-x-[-1]' : ''}`} />
                                 {language === 'fa' ? 'تماس بگیرید' : 'Call Now'}
                               </Button>
                             </div>
