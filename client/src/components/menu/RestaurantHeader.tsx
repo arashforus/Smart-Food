@@ -35,7 +35,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
           return;
         }
 
-        const hours = JSON.parse(restaurant.hours);
+        const hours = typeof restaurant.hours === 'string' && restaurant.hours.trim() !== '' ? JSON.parse(restaurant.hours) : restaurant.hours;
         const now = new Date();
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const currentDay = days[now.getDay()];
@@ -161,7 +161,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           <div className="grid grid-cols-1 gap-0.5">
                             {(() => {
                               try {
-                                const hours = JSON.parse(restaurant.hours);
+                                const hours = typeof restaurant.hours === 'string' && restaurant.hours.trim() !== '' ? JSON.parse(restaurant.hours) : restaurant.hours;
                                 return Object.entries(hours).map(([day, config]: [string, any]) => (
                                   <div key={day} className="flex items-center justify-between py-0">
                                     <span className="text-[11px] font-medium">{day}</span>

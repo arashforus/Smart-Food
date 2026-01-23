@@ -103,7 +103,7 @@ export default function MenuPage() {
     description: settings?.restaurantDescription || '',
     address: settings?.restaurantAddress || '',
     phone: settings?.restaurantPhone || '',
-    hours: settings?.restaurantHours ? JSON.stringify(settings.restaurantHours) : '',
+    hours: settings?.restaurantHours || '',
   };
 
   const backgroundStyle = settings?.menuBackgroundType === 'color' 
