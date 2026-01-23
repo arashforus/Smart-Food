@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ShoppingCart, Instagram, MessageCircle, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShoppingCart, Instagram, Send } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import RestaurantHeader from '@/components/menu/RestaurantHeader';
 import CategoryTabs from '@/components/menu/CategoryTabs';
 import MenuList from '@/components/menu/MenuList';
@@ -144,7 +145,7 @@ export default function MenuPage() {
                 onClick={() => window.open(`https://wa.me/${settings.restaurantWhatsapp?.replace(/\D/g, '')}`, '_blank')}
                 data-testid="button-whatsapp"
               >
-                <MessageCircle className="w-4 h-4" />
+                <FaWhatsapp className="w-5 h-5 text-[#25D366]" />
               </Button>
             )}
             {settings?.showMenuTelegram && settings?.restaurantTelegram && (
