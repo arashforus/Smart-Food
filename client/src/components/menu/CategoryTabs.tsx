@@ -60,7 +60,7 @@ export default function CategoryTabs({
 
   return (
     <div className="sticky top-[49px] z-40 bg-background/80 backdrop-blur-md border-b shadow-sm">
-      <ScrollArea className="w-full" dir={isRtl ? 'rtl' : 'ltr'}>
+      <ScrollArea className="w-full">
         <div className="flex gap-4 p-4">
           <button
             onClick={() => {

@@ -115,7 +115,7 @@ export default function MenuPage() {
     : {};
 
   return (
-    <div className="min-h-screen bg-background" dir='ltr' style={backgroundStyle}>
+    <div className="min-h-screen bg-background" style={backgroundStyle}>
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="flex items-center justify-between gap-2 p-2">
           <div className="flex items-center gap-1">
@@ -247,7 +247,7 @@ export default function MenuPage() {
       </footer>
 
       {cartItems.length > 0 && settings?.menuShowBuyButton && (
-        <div className="fixed bottom-6 right-6 z-40" dir={isRtl ? 'rtl' : 'ltr'}>
+        <div className="fixed bottom-6 right-6 z-40">
           <Button
             size="lg"
             className="rounded-full gap-3 shadow-lg"
