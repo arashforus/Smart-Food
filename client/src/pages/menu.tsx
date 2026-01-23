@@ -145,7 +145,7 @@ export default function MenuPage() {
                 onClick={() => window.open(`https://wa.me/${settings.restaurantWhatsapp?.replace(/\D/g, '')}`, '_blank')}
                 data-testid="button-whatsapp"
               >
-                <FaWhatsapp className="w-5 h-5 text-[#25D366]" />
+                <FaWhatsapp className="w-4 h-4" />
               </Button>
             )}
             {settings?.showMenuTelegram && settings?.restaurantTelegram && (
