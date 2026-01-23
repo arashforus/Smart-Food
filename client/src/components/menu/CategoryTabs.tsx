@@ -201,7 +201,7 @@ export default function CategoryTabs({
           <div className="relative flex items-center justify-center bg-muted/30 p-1 rounded-xl border border-border/40 ml-2">
             {/* Animated background indicator */}
             <motion.div
-              className="absolute bg-background shadow-sm rounded-lg"
+              className="absolute bg-primary shadow-sm rounded-lg"
               initial={false}
               animate={{
                 x: viewMode === 'list' ? (isRtl ? 34 : 0) : (isRtl ? 0 : 34),
@@ -217,7 +217,7 @@ export default function CategoryTabs({
                 variant="ghost"
                 onClick={() => onViewModeChange('list')}
                 className={`h-8 w-8 rounded-lg transition-colors duration-200 ${
-                  viewMode === 'list' ? 'text-primary' : 'text-muted-foreground/60'
+                  viewMode === 'list' ? 'text-primary-foreground' : 'text-muted-foreground/60'
                 }`}
                 data-testid="button-view-list"
               >
@@ -228,7 +228,7 @@ export default function CategoryTabs({
                 variant="ghost"
                 onClick={() => onViewModeChange('grid')}
                 className={`h-8 w-8 rounded-lg transition-colors duration-200 ${
-                  viewMode === 'grid' ? 'text-primary' : 'text-muted-foreground/60'
+                  viewMode === 'grid' ? 'text-primary-foreground' : 'text-muted-foreground/60'
                 }`}
                 data-testid="button-view-grid"
               >
