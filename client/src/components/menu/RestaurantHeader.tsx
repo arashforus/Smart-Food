@@ -155,7 +155,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                       {settings?.menuShowOperationHours && restaurant.hours && (
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <Clock className="h-4 w-4 text-primary" />
+                            <Clock className={`h-4 w-4 text-primary ${isRtl ? 'scale-x-[-1]' : ''}`} />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.hours}</p>
                           </div>
                           <div className="grid grid-cols-1 gap-0.5">
@@ -189,7 +189,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                       <div className="space-y-3">
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-primary" />
+                            <MapPin className={`h-4 w-4 text-primary ${isRtl ? 'scale-x-[-1]' : ''}`} />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.address}</p>
                           </div>
                           <div className="flex-1 flex flex-col items-center md:items-start">
@@ -215,7 +215,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-primary" />
+                            <Phone className={`h-4 w-4 text-primary ${isRtl ? 'scale-x-[-1]' : ''}`} />
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.phone}</p>
                           </div>
                           <div className="flex-1 flex flex-col items-center md:items-start">
