@@ -168,7 +168,7 @@ export default function CategoryTabs({
 
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
         {settings?.menuShowViewSwitcher && (
-          <div className={`flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-l pl-2 ml-2 ${isRtl ? 'order-first' : 'order-last'}`}>
+          <div className="flex gap-1.5 flex-shrink-0 bg-muted/30 p-1 rounded-lg border-inline-start pl-2 ml-2">
             <Button
               size="icon"
               variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -191,7 +191,7 @@ export default function CategoryTabs({
         )}
 
         {settings?.menuShowFoodType && (
-          <ScrollArea className="flex-1" dir={isRtl ? 'rtl' : 'ltr'}>
+          <ScrollArea className="flex-1">
             <div className="flex gap-2">
               {foodTypes.map((type) => {
                 const IconComponent = iconMap[type.icon || ''] || Leaf;
@@ -223,20 +223,20 @@ export default function CategoryTabs({
       {settings?.menuShowSearchBar && (
         <div className="px-4 pb-4">
           <div className="relative">
-            <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors ${isRtl ? 'right-3' : 'left-3'}`} />
+            <Search className="absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors inset-inline-start-3" />
             <Input
               type="text"
               placeholder={t.search}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className={`rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all ${isRtl ? 'pr-10 pl-10 text-right' : 'pl-10 pr-10'}`}
+              className="rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all px-10 text-start"
               data-testid="input-search"
             />
             {searchQuery && (
               <Button
                 size="icon"
                 variant="ghost"
-                className={`absolute top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-transparent ${isRtl ? 'left-1' : 'right-1'}`}
+                className="absolute top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-transparent inset-inline-end-1"
                 onClick={() => onSearchChange('')}
                 data-testid="button-clear-search"
               >

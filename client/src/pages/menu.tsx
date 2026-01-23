@@ -115,7 +115,7 @@ export default function MenuPage() {
     : {};
 
   return (
-    <div className="min-h-screen bg-background" dir="ltr" style={backgroundStyle}>
+    <div className="min-h-screen bg-background" dir={isRtl ? 'rtl' : 'ltr'} style={backgroundStyle}>
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="flex items-center justify-between gap-2 p-2">
           <div className="flex items-center gap-1">
@@ -167,46 +167,44 @@ export default function MenuPage() {
         </div>
       </div>
 
-      <div dir={isRtl ? 'rtl' : 'ltr'}>
-        <RestaurantHeader 
-          restaurant={restaurantData as any} 
-          language={language} 
-          settings={settings}
-        />
+      <RestaurantHeader 
+        restaurant={restaurantData as any} 
+        language={language} 
+        settings={settings}
+      />
 
-        {settings?.menuShowMenu && (
-          <CategoryTabs
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            language={language}
-            foodTypes={foodTypes}
-            selectedTypes={selectedTypes}
-            onSelectType={handleSelectType}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            showSuggested={showSuggested}
-            onShowSuggestedChange={setShowSuggested}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            settings={settings}
-          />
-        )}
-
-        <MenuList
-          items={menuItems}
+      {settings?.menuShowMenu && (
+        <CategoryTabs
           categories={categories}
           selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
           language={language}
-          onItemClick={setSelectedItem}
-          onAddToCart={handleAddToCartFromCard}
+          foodTypes={foodTypes}
           selectedTypes={selectedTypes}
+          onSelectType={handleSelectType}
           viewMode={viewMode}
+          onViewModeChange={setViewMode}
           showSuggested={showSuggested}
+          onShowSuggestedChange={setShowSuggested}
           searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
           settings={settings}
         />
-      </div>
+      )}
+
+      <MenuList
+        items={menuItems}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        language={language}
+        onItemClick={setSelectedItem}
+        onAddToCart={handleAddToCartFromCard}
+        selectedTypes={selectedTypes}
+        viewMode={viewMode}
+        showSuggested={showSuggested}
+        searchQuery={searchQuery}
+        settings={settings}
+      />
 
       <ItemDetailModal
         item={selectedItem}

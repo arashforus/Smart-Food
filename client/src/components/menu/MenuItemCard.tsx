@@ -126,11 +126,10 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
       className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-md bg-card/60 backdrop-blur-sm rounded-2xl ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
       onClick={onClick}
       data-testid={`card-menu-item-${item.id}`}
-      dir={isRtl ? 'rtl' : 'ltr'}
     >
       <CardContent className="p-0 flex h-32">
         {settings?.menuShowImages && (
-          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'order-last rounded-r-2xl' : 'rounded-l-2xl'}`}>
+          <div className="w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative rounded-start-2xl">
             {item.image ? (
               <img
                 src={item.image}
@@ -143,12 +142,12 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
             {(isSuggested || item.suggested) && (
-              <div className={`absolute top-1 ${isRtl ? 'left-1' : 'right-1'} bg-amber-500 rounded-full p-0.5`}>
+              <div className="absolute top-1 inset-inline-end-1 bg-amber-500 rounded-full p-0.5">
                 <Star className="h-3 w-3 text-white fill-white" />
               </div>
             )}
             {item.isNew && (
-              <div className={`absolute top-1 ${isRtl ? 'right-1' : 'left-1'} bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 rounded-full`}>
+              <div className="absolute top-1 inset-inline-start-1 bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 rounded-full">
                 New
               </div>
             )}

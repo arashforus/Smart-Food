@@ -115,7 +115,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             </div>
           )}
           {settings?.menuShowRestaurantDescription && (
-            <p className="text-base text-muted-foreground leading-relaxed max-w-lg text-center">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
               {restaurant.description}
             </p>
           )}
@@ -132,7 +132,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               {isMobile ? (
                 isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
               ) : (
-                <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'}`} />
+                <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90 group-data-[state=closed]:rotate-0" />
               )}
             </Button>
           </div>
@@ -141,15 +141,15 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, height: 0,width: 0, x: isRtl ? -100 : 100 }}
-              animate={isMobile ? { opacity: 1, height: 'auto', width: '90%' } : { opacity: 1, height: 'auto', width: '50%', x: 0 }}
-              exit={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, height:0 ,width: 0, x: isRtl ? -100 : 100 }}
+              initial={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, height: 0, width: 0 }}
+              animate={isMobile ? { opacity: 1, height: 'auto', width: '90%' } : { opacity: 1, height: 'auto', width: '50%' }}
+              exit={isMobile ? { opacity: 0, height: 0 } : { opacity: 0, height: 0, width: 0 }}
               transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
               className="overflow-hidden w-full flex justify-center"
             >
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md w-full md:min-w-[400px]">
                 <CardContent className="p-6">
-                  <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-x divide-border`}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-inline-start divide-border">
                     {/* Left Column: Hours */}
                     <div className="space-y-3">
                       {settings?.menuShowOperationHours && restaurant.hours && (
@@ -180,7 +180,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                     </div>
 
                     {/* Right Column: Address and Phone */}
-                    <div className={`space-y-4 md:pl-6`}>
+                    <div className="space-y-4 md:padding-inline-start-6">
                       <div className="space-y-3">
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           </div>
                         </div>
 
-                        <div className="border-t border-border/50 my-2" />
+                        <div className="border-block-start border-border/50 my-2" />
 
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
