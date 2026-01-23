@@ -16,7 +16,7 @@ interface ImageUploadProps {
 export default function ImageUpload({
   value,
   onChange,
-  accept = 'image/*',
+  accept = 'image/*,.ico',
   placeholder = 'Upload an image or enter URL',
   testId = 'input-image-upload',
 }: ImageUploadProps) {

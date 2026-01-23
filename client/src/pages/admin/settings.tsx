@@ -1214,13 +1214,14 @@ export default function SettingsPage() {
                   <div className="space-y-2">
                     <FormLabel htmlFor="favicon">Favicon</FormLabel>
                           <ImageUpload
-                            value={favicon || ''}
+                            value={favicon}
                             onChange={(url) => {
                               setFavicon(url);
                               setFaviconPreview(url);
                               updateSettingsMutation.mutate({ favicon: url });
                             }}
-                            placeholder="Upload favicon"
+                            accept=".ico,image/*"
+                            placeholder="Upload favicon (.ico)"
                             testId="input-favicon"
                           />
                     {favicon && (
