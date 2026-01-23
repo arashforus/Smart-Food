@@ -56,7 +56,7 @@ export default function MenuPage() {
 
   const t = translations[language] || translations.en;
   const isRtl = language === 'fa' || language === 'ar';
-  const BackArrow = isRtl ? ArrowRight : ArrowLeft;
+  const BackArrow = ArrowLeft;
 
   const handleSelectType = (typeId: string) => {
     setSelectedTypes((prev) =>
