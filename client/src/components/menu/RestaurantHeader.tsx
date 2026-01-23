@@ -149,9 +149,9 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
             >
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md w-full md:min-w-[400px]">
                 <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:divide-inline-start divide-border">
+                  <div className="flex flex-col md:flex-row gap-6 md:gap-0">
                     {/* Left Column: Hours */}
-                    <div className="space-y-3">
+                    <div className="flex-1 space-y-3">
                       {settings?.menuShowOperationHours && restaurant.hours && (
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2 mb-0.5">
@@ -179,8 +179,13 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                       )}
                     </div>
 
+                    {/* Middle Divider - Responsive (Horizontal on mobile, Vertical on desktop) */}
+                    <div className="md:px-8 flex items-center justify-center">
+                      <div className="w-full h-[1px] md:h-full md:w-[1px] bg-border/50" />
+                    </div>
+
                     {/* Right Column: Address and Phone */}
-                    <div className="space-y-4 md:padding-inline-start-6">
+                    <div className="flex-1 space-y-4">
                       <div className="space-y-3">
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
@@ -206,7 +211,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                           </div>
                         </div>
 
-                        <div className="border-block-start border-border/50 my-2" />
+                        <div className="border-t border-border/30 my-2" />
 
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
