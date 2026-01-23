@@ -223,20 +223,20 @@ export default function CategoryTabs({
       {settings?.menuShowSearchBar && (
         <div className="px-4 pb-4">
           <div className="relative">
-            <Search className="absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors inset-inline-start-3" />
+            <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors ${isRtl ? 'right-3 scale-x-[-1]' : 'left-3'}`} />
             <Input
               type="text"
               placeholder={t.search}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all px-10 text-start"
+              className={`rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all text-start ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'}`}
               data-testid="input-search"
             />
             {searchQuery && (
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-transparent inset-inline-end-1"
+                className={`absolute top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-transparent ${isRtl ? 'left-1' : 'right-1'}`}
                 onClick={() => onSearchChange('')}
                 data-testid="button-clear-search"
               >

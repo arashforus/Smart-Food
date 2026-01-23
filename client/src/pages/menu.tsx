@@ -125,7 +125,7 @@ export default function MenuPage() {
               onClick={() => setLocation('/qr')}
               data-testid="button-back"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <BackArrow className="w-5 h-5" />
             </Button>
             {settings?.showMenuInstagram && settings?.restaurantInstagram && (
               <Button
