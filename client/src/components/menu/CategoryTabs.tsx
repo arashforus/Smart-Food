@@ -198,20 +198,22 @@ export default function CategoryTabs({
         )}
 
         {settings?.menuShowViewSwitcher && (
-          <div className="relative flex items-center justify-center bg-muted/30 p-1 rounded-xl border border-border/40 ml-2">
+          <div className="relative flex items-center bg-muted/30 p-1 rounded-xl border border-border/40 ml-2">
             {/* Animated background indicator */}
             <motion.div
               className="absolute bg-primary shadow-sm rounded-lg"
               initial={false}
               animate={{
-                x: viewMode === 'list' ? (isRtl ? 34 : 0) : (isRtl ? 0 : 34),
+                x: viewMode === 'list' ? 0 : 36,
+              }}
+              style={{
                 width: 32,
                 height: 32
               }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
             />
             
-            <div className="flex relative z-10">
+            <div className="flex relative z-10 gap-1">
               <Button
                 size="icon"
                 variant="ghost"
