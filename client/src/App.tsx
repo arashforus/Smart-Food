@@ -54,15 +54,19 @@ function Router() {
 }
 
 function App() {
+  const isRtl = localStorage.getItem('menuLanguage') === 'fa' || localStorage.getItem('menuLanguage') === 'ar';
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <LanguageProvider>
-            <Toaster />
-            <Router />
-          </LanguageProvider>
-        </AuthProvider>
+        <div className={isRtl ? 'font-vazir' : ''}>
+          <AuthProvider>
+            <LanguageProvider>
+              <Toaster />
+              <Router />
+            </LanguageProvider>
+          </AuthProvider>
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );
