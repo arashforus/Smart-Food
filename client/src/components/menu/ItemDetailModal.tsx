@@ -104,7 +104,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               <img
                 src={item.image}
                 alt={getName()}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-2xl"
               />
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
