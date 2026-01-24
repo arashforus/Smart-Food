@@ -92,13 +92,13 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={`max-w-md md:max-w-3xl rounded-2xl px-6 ${isRtl ? '[&>button]:right-auto [&>button]:left-4' : ''}`} data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
-        <DialogHeader>
+      <DialogContent className={`w-[calc(100%-2rem)] max-w-md md:max-w-3xl rounded-2xl px-6 ${isRtl ? '[&>button]:right-auto [&>button]:left-4' : ''} max-h-[90vh] flex flex-col`} data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
+        <DialogHeader className="shrink-0">
           <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
             {getName()}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col md:flex-row gap-6 max-h-[70vh] overflow-y-auto">
+        <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-y-auto pr-2 custom-scrollbar">
           <div className="w-full md:w-1/2 aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
             {settings?.menuShowImages && item.image ? (
               <img
