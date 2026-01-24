@@ -11,13 +11,13 @@ import { translations } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 
 const FLAG_URLS: Record<string, string> = {
-  en: 'https://flagcdn.com/w40/gb.png',
-  fa: 'https://flagcdn.com/w40/ir.png',
-  tr: 'https://flagcdn.com/w40/tr.png',
-  ar: 'https://flagcdn.com/w40/sa.png',
-  ru: 'https://flagcdn.com/w40/ru.png',
-  es: 'https://flagcdn.com/w40/es.png',
-  fr: 'https://flagcdn.com/w40/fr.png',
+  en: 'https://flagcdn.com/w80/gb.png',
+  fa: 'https://flagcdn.com/w80/ir.png',
+  tr: 'https://flagcdn.com/w80/tr.png',
+  ar: 'https://flagcdn.com/w80/sa.png',
+  ru: 'https://flagcdn.com/w80/ru.png',
+  es: 'https://flagcdn.com/w80/es.png',
+  fr: 'https://flagcdn.com/w80/fr.png',
 };
 
 interface LanguageSelectorProps {
@@ -49,7 +49,7 @@ export default function LanguageSelector({ language, onLanguageChange }: Languag
           ) : (
             <Globe className="h-4 w-4 shrink-0" />
           )}
-          <span className="text-sm font-medium leading-none mb-[1px]">{currentLang?.code?.toUpperCase() || language.toUpperCase()}</span>
+          <span className="text-sm font-medium leading-none ">{currentLang?.code?.toUpperCase() || language.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
