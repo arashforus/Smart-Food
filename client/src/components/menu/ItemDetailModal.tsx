@@ -92,7 +92,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md md:max-w-3xl rounded-2xl px-6" data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DialogContent className={`max-w-md md:max-w-3xl rounded-2xl px-6 ${isRtl ? '[&>button]:right-auto [&>button]:left-4' : ''}`} data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader>
           <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
             {getName()}
@@ -157,9 +157,9 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               </div>
             )}
             
-            <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center gap-2 ${isRtl ? 'flex-row' : ''}`}>
               <span className="text-sm font-medium">{t.quantity}:</span>
-              <div className={`flex items-center gap-2 bg-muted rounded-lg p-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+              <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
                 <Button
                   size="icon"
                   variant="ghost"
