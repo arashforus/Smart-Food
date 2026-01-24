@@ -41,15 +41,15 @@ export default function LanguageSelector({ language, onLanguageChange }: Languag
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" data-testid="button-language-selector" className="gap-2">
+        <Button variant="ghost" size="sm" data-testid="button-language-selector" className="gap-2 flex items-center">
           {flagUrl ? (
-            <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-sm shadow-sm border border-border/50">
+            <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-sm shadow-sm border border-border/50 shrink-0">
               <img src={flagUrl} alt="" className="w-full h-full object-cover" />
             </div>
           ) : (
-            <Globe className="h-4 w-4" />
+            <Globe className="h-4 w-4 shrink-0" />
           )}
-          <span className="text-sm font-medium">{currentLang?.code?.toUpperCase() || language.toUpperCase()}</span>
+          <span className="text-sm font-medium leading-none mb-[1px]">{currentLang?.code?.toUpperCase() || language.toUpperCase()}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -62,7 +62,7 @@ export default function LanguageSelector({ language, onLanguageChange }: Languag
               data-testid={`menu-item-language-${lang.code}`}
               className="flex items-center gap-3 py-2 cursor-pointer"
             >
-              <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-sm shadow-sm border border-border/50 bg-muted">
+              <div className="w-6 h-6 flex items-center justify-center overflow-hidden rounded-sm shadow-sm border border-border/50 bg-muted shrink-0">
                 {itemFlagUrl ? (
                   <img src={itemFlagUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -71,7 +71,7 @@ export default function LanguageSelector({ language, onLanguageChange }: Languag
                   </span>
                 )}
               </div>
-              <span className="font-medium">{lang.name}</span>
+              <span className="font-medium leading-none">{lang.name}</span>
             </DropdownMenuItem>
           );
         })}
