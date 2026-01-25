@@ -208,7 +208,7 @@
 
   /* Telegram-style theme toggle ripple effect */
   ::view-transition-group(root) {
-    animation-duration: 0.5s;
+    animation-duration: 0.4s;
   }
 
   ::view-transition-old(root),

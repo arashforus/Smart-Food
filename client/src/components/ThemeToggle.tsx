@@ -49,8 +49,8 @@ export default function ThemeToggle() {
           ],
         },
         {
-          duration: 500,
-          easing: 'ease-in-out',
+          duration: 400,
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
           pseudoElement: isDarkTransition 
             ? '::view-transition-new(root)' 
             : '::view-transition-old(root)',
