@@ -50,7 +50,7 @@ export default function ThemeToggle() {
         {
           duration: 400,
           easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          // The 'new' view is the one we want to reveal with the circle
+          // We always reveal the "new" theme (incoming) using the circle
           pseudoElement: '::view-transition-new(root)',
         }
       );

@@ -228,21 +228,16 @@
     mix-blend-mode: normal;
   }
 
-  /* Ensure the circle animation is always visible on top of the old theme */
+  /* 
+     We always animate the new view. 
+     To ensure it's visible during expansion, it must be on top.
+  */
   ::view-transition-old(root) {
     z-index: 1;
   }
 
   ::view-transition-new(root) {
     z-index: 2147483647;
-  }
-
-  .dark::view-transition-old(root) {
-    z-index: 2147483647;
-  }
-
-  .dark::view-transition-new(root) {
-    z-index: 1;
   }
 
   /* Hide ugly search cancel button in Chrome until we can style it properly */
