@@ -715,7 +715,7 @@ function FormContent({
                   {materials.map((material) => (
                     <div
                       key={material.id}
-                      className="flex items-center gap-3 p-3 rounded-md border"
+                      className="flex items-center gap-3 p-3 rounded-md border cursor-pointer"
                       onClick={() => {
                         setSelectedMaterials(current => 
                           current.includes(material.id)
