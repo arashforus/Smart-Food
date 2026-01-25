@@ -40,7 +40,6 @@ export default function ThemeToggle() {
     });
 
     transition.ready.then(() => {
-      const isDarkTransition = newValue;
       document.documentElement.animate(
         {
           clipPath: [
@@ -51,9 +50,8 @@ export default function ThemeToggle() {
         {
           duration: 400,
           easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          pseudoElement: isDarkTransition 
-            ? '::view-transition-new(root)' 
-            : '::view-transition-old(root)',
+          // The 'new' view is the one we want to reveal with the circle
+          pseudoElement: '::view-transition-new(root)',
         }
       );
     });

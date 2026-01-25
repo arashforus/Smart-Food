@@ -217,6 +217,18 @@
     mix-blend-mode: normal;
   }
 
+  /* Telegram-style theme toggle ripple effect */
+  ::view-transition-group(root) {
+    animation-duration: 0.4s;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  /* Ensure the circle animation is always visible on top of the old theme */
   ::view-transition-old(root) {
     z-index: 1;
   }
