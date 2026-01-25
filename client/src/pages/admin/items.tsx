@@ -533,6 +533,8 @@ function FormContent({
   isPending,
 }: FormContentProps) {
   const { toast } = useToast();
+  // Local state for materials to avoid immediate form update
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>(form.getValues('materials') || []);
   
   const onFormError = (errors: any) => {
     const errorMessages = Object.values(errors)
@@ -548,13 +550,18 @@ function FormContent({
     }
   };
 
+  const handleFormSubmit = (data: ItemFormData) => {
+    // Inject local material selections into the form data before submission
+    onSubmit({ ...data, materials: selectedMaterials });
+  };
+
   const sortedLanguages = useMemo(() => {
     return [...languages].sort((a, b) => a.order - b.order);
   }, [languages]);
 
   return (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleFormSubmit, onFormError)} className="space-y-4">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="basic">Basic</TabsTrigger>
@@ -702,46 +709,43 @@ function FormContent({
             </TabsContent>
             
             <TabsContent value="materials" className="space-y-4 pt-4">
-              <FormField control={form.control} name="materials" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Materials / Ingredients</FormLabel>
-                  <div className="grid grid-cols-2 gap-3 pt-2">
-                    {materials.map((material) => (
-                      <div
-                        key={material.id}
-                        className="flex items-center gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
-                        onClick={() => {
-                          const current = field.value || [];
-                          const newValue = current.includes(material.id)
-                            ? current.filter((id: string) => id !== material.id)
-                            : [...current, material.id];
-                          field.onChange(newValue);
+              <FormItem>
+                <FormLabel>Select Materials / Ingredients</FormLabel>
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  {materials.map((material) => (
+                    <div
+                      key={material.id}
+                      className="flex items-center gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
+                      onClick={() => {
+                        setSelectedMaterials(current => 
+                          current.includes(material.id)
+                            ? current.filter(id => id !== material.id)
+                            : [...current, material.id]
+                        );
+                      }}
+                      data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
+                    >
+                      <Checkbox
+                        checked={selectedMaterials.includes(material.id)}
+                        onCheckedChange={() => {
+                          // Handled by parent div
                         }}
-                        data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
-                      >
-                        <Checkbox
-                          checked={(field.value || []).includes(material.id)}
-                          onCheckedChange={() => {
-                            // Let the div handle the click to avoid double-triggering
-                          }}
-                        />
-                        {material.image ? (
-                          <img src={material.image} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
-                        ) : (
-                          <div
-                            className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
-                            style={{ backgroundColor: material.backgroundColor || '#999' }}
-                          >
-                            {material.name.en?.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <span className="text-sm">{material.name.en}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )} />
+                      />
+                      {material.image ? (
+                        <img src={material.image} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
+                      ) : (
+                        <div
+                          className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
+                          style={{ backgroundColor: material.backgroundColor || '#999' }}
+                        >
+                          {material.name.en?.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-sm">{material.name.en}</span>
+                    </div>
+                  ))}
+                </div>
+              </FormItem>
             </TabsContent>
             
             <TabsContent value="translations" className="space-y-4 pt-4 max-h-[400px] overflow-y-auto">
