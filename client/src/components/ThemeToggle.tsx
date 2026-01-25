@@ -16,27 +16,46 @@ export default function ThemeToggle() {
 
   const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     const newValue = !isDark;
-    setIsDark(newValue);
-    document.documentElement.classList.toggle('dark', newValue);
-    localStorage.setItem('theme', newValue ? 'dark' : 'light');
-
-    // Create ripple effect
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
-
-      const ripple = document.createElement('div');
-      ripple.className = 'theme-ripple';
-      ripple.style.left = x + 'px';
-      ripple.style.top = y + 'px';
-      document.body.appendChild(ripple);
-
-      // Remove ripple after animation completes
-      setTimeout(() => {
-        ripple.remove();
-      }, 600);
+    
+    // Check if the browser supports the View Transition API
+    if (!document.startViewTransition) {
+      setIsDark(newValue);
+      document.documentElement.classList.toggle('dark', newValue);
+      localStorage.setItem('theme', newValue ? 'dark' : 'light');
+      return;
     }
+
+    const rect = buttonRef.current!.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    const transition = document.startViewTransition(() => {
+      setIsDark(newValue);
+      document.documentElement.classList.toggle('dark', newValue);
+      localStorage.setItem('theme', newValue ? 'dark' : 'light');
+    });
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 500,
+          easing: 'ease-in-out',
+          pseudoElement: newValue 
+            ? '::view-transition-new(root)' 
+            : '::view-transition-old(root)',
+        }
+      );
+    });
   };
 
   return (

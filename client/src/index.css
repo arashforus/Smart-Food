@@ -206,6 +206,29 @@
     font-family: 'Vazirmatn', sans-serif !important;
   }
 
+  /* Telegram-style theme toggle ripple effect */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  ::view-transition-new(root) {
+    z-index: 2147483647;
+  }
+
+  .dark::view-transition-old(root) {
+    z-index: 2147483647;
+  }
+
+  .dark::view-transition-new(root) {
+    z-index: 1;
+  }
+
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {
     @apply hidden;
