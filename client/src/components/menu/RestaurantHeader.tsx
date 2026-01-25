@@ -132,7 +132,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               {isMobile ? (
                 isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
               ) : (
-                <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-90' : 'rotate-90') : 'rotate-0'} ${isRtl ? 'scale-x-[-1]' : ''}`} />
+                <ChevronRight className={`h-4 w-4 transition-transform ${isOpen ? (isRtl ? '-rotate-180' : 'rotate-180') : 'rotate-0'} ${isRtl ? 'scale-x-[-1]' : ''}`} />
               )}
             </Button>
           </div>
