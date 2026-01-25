@@ -710,10 +710,7 @@ function FormContent({
                       <div
                         key={material.id}
                         className="flex items-center gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
-                        onClick={(e) => {
-                          // Prevent triggering twice if the checkbox itself is clicked
-                          if (e.target instanceof HTMLInputElement && e.target.type === 'checkbox') return;
-                          
+                        onClick={() => {
                           const current = field.value || [];
                           const newValue = current.includes(material.id)
                             ? current.filter((id: string) => id !== material.id)
@@ -724,12 +721,8 @@ function FormContent({
                       >
                         <Checkbox
                           checked={(field.value || []).includes(material.id)}
-                          onCheckedChange={(checked) => {
-                            const current = field.value || [];
-                            const newValue = checked
-                              ? [...current, material.id]
-                              : current.filter((id: string) => id !== material.id);
-                            field.onChange(newValue);
+                          onCheckedChange={() => {
+                            // Let the div handle the click to avoid double-triggering
                           }}
                         />
                         {material.image ? (
