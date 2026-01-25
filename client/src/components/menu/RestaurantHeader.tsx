@@ -89,7 +89,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               <img 
                 src={settings.restaurantLogo} 
                 alt={restaurant.name} 
-                className="h-20 w-20 object-contain rounded-full border-2 border-primary/20 p-1"
+                className="h-24 w-auto max-w-[200px] object-contain"
                 data-testid="img-restaurant-logo"
               />
             </div>
