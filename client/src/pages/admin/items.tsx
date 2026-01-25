@@ -728,7 +728,7 @@ function FormContent({
                       <Checkbox
                         checked={selectedMaterials.includes(material.id)}
                         onCheckedChange={() => {
-                          // Handled by parent div
+                          // Parent div handles the click
                         }}
                       />
                       {material.image ? (
