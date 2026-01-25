@@ -207,6 +207,10 @@
   }
 
   /* Telegram-style theme toggle ripple effect */
+  ::view-transition-group(root) {
+    animation-duration: 0.5s;
+  }
+
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none;

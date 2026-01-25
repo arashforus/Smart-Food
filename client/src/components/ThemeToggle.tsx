@@ -40,6 +40,7 @@ export default function ThemeToggle() {
     });
 
     transition.ready.then(() => {
+      const isDarkTransition = newValue;
       document.documentElement.animate(
         {
           clipPath: [
@@ -50,7 +51,7 @@ export default function ThemeToggle() {
         {
           duration: 500,
           easing: 'ease-in-out',
-          pseudoElement: newValue 
+          pseudoElement: isDarkTransition 
             ? '::view-transition-new(root)' 
             : '::view-transition-old(root)',
         }
