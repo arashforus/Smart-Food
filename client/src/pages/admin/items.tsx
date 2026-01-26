@@ -716,13 +716,7 @@ function FormContent({
                     <div
                       key={material.id}
                       className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover:bg-accent/5 transition-colors"
-                      onClick={() => {
-                        setSelectedMaterials(current => 
-                          current.includes(material.id)
-                            ? current.filter(id => id !== material.id)
-                            : [...current, material.id]
-                        );
-                      }}
+                      
                       data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
                     >
                       <Checkbox

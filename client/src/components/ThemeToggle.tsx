@@ -48,7 +48,7 @@ export default function ThemeToggle() {
           ],
         },
         {
-          duration: 400,
+          duration: 300,
           easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
           // We always reveal the "new" theme (incoming) using the circle
           pseudoElement: '::view-transition-new(root)',
