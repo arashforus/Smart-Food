@@ -715,7 +715,7 @@ function FormContent({
                   {materials.map((material) => (
                     <div
                       key={material.id}
-                      className="flex items-center gap-3 p-3 rounded-md border cursor-pointer"
+                      className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover:bg-accent/5 transition-colors"
                       onClick={() => {
                         setSelectedMaterials(current => 
                           current.includes(material.id)
@@ -727,8 +727,13 @@ function FormContent({
                     >
                       <Checkbox
                         checked={selectedMaterials.includes(material.id)}
-                        onCheckedChange={() => {
-                          // Parent div handles the click
+                        onClick={(e) => e.stopPropagation()}
+                        onCheckedChange={(checked) => {
+                          setSelectedMaterials(current => 
+                            checked
+                              ? [...current, material.id]
+                              : current.filter(id => id !== material.id)
+                          );
                         }}
                       />
                       {material.image ? (
