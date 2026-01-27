@@ -49,7 +49,13 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
   const getMaterials = () => {
     return (item.materials || []).map(id => {
       const material = allMaterials.find(m => m.id === id);
-      return material ? (material.name[language as keyof typeof material.name] || material.name.en) : '';
+      if (!material) return null;
+      return {
+        id: material.id,
+        name: material.name[language as keyof typeof material.name] || material.name.en || '',
+        icon: material.icon,
+        color: material.color
+      };
     }).filter(Boolean);
   };
 
@@ -131,10 +137,31 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             
             {settings?.menuShowIngredients && getMaterials().length > 0 && (
               <div className={isRtl ? 'text-right' : ''}>
-                <p className="text-xs text-muted-foreground font-medium mb-1">{t.materials}:</p>
-                <p className="text-sm text-muted-foreground">
-                  {getMaterials().join(', ')}
-                </p>
+                <p className="text-xs text-muted-foreground font-medium mb-2">{t.materials}:</p>
+                <div className={`flex flex-wrap gap-3 ${isRtl ? 'justify-end' : ''}`}>
+                  {getMaterials().map((material: any) => (
+                    <div key={material.id} className="flex flex-col items-center gap-1">
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border bg-background"
+                        title={material.name}
+                      >
+                        {material.icon ? (
+                          <img src={material.icon} alt={material.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div 
+                            className="w-full h-full flex items-center justify-center text-white text-xs font-bold"
+                            style={{ backgroundColor: material.color || '#999' }}
+                          >
+                            {material.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground text-center max-w-[50px] truncate">
+                        {material.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             
