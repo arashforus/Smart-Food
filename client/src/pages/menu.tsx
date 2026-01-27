@@ -11,11 +11,13 @@ import ItemDetailModal from '@/components/menu/ItemDetailModal';
 import CartView from '@/components/menu/CartView';
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
+import CookingLoader from '@/components/menu/CookingLoader';
 import { translations } from '@/lib/types';
 import type { MenuItem, Language, CartItem, Category, FoodType, Settings } from '@/lib/types';
 
 export default function MenuPage() {
   const [, setLocation] = useLocation();
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [language, setLanguage] = useState<Language>(() => {
     const stored = localStorage.getItem('menuLanguage') as Language;
     return stored || 'en';
@@ -29,15 +31,15 @@ export default function MenuPage() {
     queryKey: ['/api/categories'],
   });
 
-  const { data: menuItems = [] } = useQuery<MenuItem[]>({
+  const { data: menuItems = [], isLoading: menuItemsLoading } = useQuery<MenuItem[]>({
     queryKey: ['/api/items'],
   });
 
-  const { data: foodTypes = [] } = useQuery<FoodType[]>({
+  const { data: foodTypes = [], isLoading: foodTypesLoading } = useQuery<FoodType[]>({
     queryKey: ['/api/food-types'],
   });
 
-  const { data: allLanguages = [] } = useQuery<any[]>({
+  const { data: allLanguages = [], isLoading: languagesLoading } = useQuery<any[]>({
     queryKey: ['/api/languages'],
   });
 
@@ -51,8 +53,23 @@ export default function MenuPage() {
   const [showCartView, setShowCartView] = useState(false);
 
   useEffect(() => {
+    // Show loader for at least 1.5 seconds or until data is loaded
+    const timer = setTimeout(() => {
+      if (!menuItemsLoading && !foodTypesLoading && !languagesLoading) {
+        setIsPageLoading(false);
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [menuItemsLoading, foodTypesLoading, languagesLoading]);
+
+  useEffect(() => {
     localStorage.setItem('menuLanguage', language);
   }, [language]);
+
+  if (isPageLoading) {
+    return <CookingLoader />;
+  }
 
   const t = translations[language] || translations.en;
   const isRtl = language === 'fa' || language === 'ar';
