@@ -97,8 +97,8 @@ interface StorageCategory {
 interface StorageMaterial {
   id: string;
   name: Record<string, string>;
-  image?: string;
-  backgroundColor?: string;
+  icon?: string;
+  color?: string;
 }
 
 interface StorageLanguage {
@@ -730,12 +730,12 @@ function FormContent({
                           );
                         }}
                       />
-                      {material.image ? (
-                        <img src={material.image} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
+                      {material.icon ? (
+                        <img src={material.icon} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
                       ) : (
                         <div
                           className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
-                          style={{ backgroundColor: material.backgroundColor || '#999' }}
+                          style={{ backgroundColor: material.color || '#999' }}
                         >
                           {material.name.en?.charAt(0).toUpperCase()}
                         </div>
