@@ -62,8 +62,8 @@ export default function CookingLoader() {
       setTimeout(() => {
         setIndex((prev) => (prev + 1) % SCENARIOS.length);
         setIsPouring(true);
-      }, 1200);
-    }, 4500);
+      }, 500); // Faster transition
+    }, 2000); // Faster cycle
     return () => clearInterval(interval);
   }, []);
 
@@ -79,16 +79,16 @@ export default function CookingLoader() {
         className="absolute inset-0 pointer-events-none"
       />
 
-      <div className="relative w-64 h-80 flex items-center justify-center">
+      <div className="relative w-64 h-80 flex items-center justify-center scale-90"> {/* Slightly smaller overall container */}
         
         {/* Pouring Stream with realistic gradient */}
         <AnimatePresence>
           {isPouring && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 220, opacity: 1 }}
+              animate={{ height: 180, opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="absolute top-[-120px] w-2.5 z-10 rounded-full blur-[0.5px]"
+              className="absolute top-[-100px] w-2 z-10 rounded-full blur-[0.5px]"
               style={{ 
                 background: `linear-gradient(to bottom, transparent, ${scenario.liquidColor}, ${scenario.secondaryColor || scenario.liquidColor})` 
               }}
@@ -96,48 +96,48 @@ export default function CookingLoader() {
           )}
         </AnimatePresence>
 
-        {/* The Glass - Realistic Design */}
-        <div className="relative w-32 h-52 perspective-[1000px]">
+        {/* The Glass - Smaller size */}
+        <div className="relative w-24 h-40 perspective-[1000px]"> {/* Reduced from 32/52 to 24/40 */}
           {/* Glass Rim Highlight */}
-          <div className="absolute top-0 left-0 w-full h-4 border-2 border-white/20 rounded-[100%] z-30 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-full h-3 border border-white/20 rounded-[100%] z-30 pointer-events-none" />
           
-          <div className="relative w-full h-full border-x-[3px] border-b-[3px] border-white/20 rounded-b-[40px] overflow-hidden bg-white/5 backdrop-blur-[8px] shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]">
+          <div className="relative w-full h-full border-x-2 border-b-2 border-white/20 rounded-b-[30px] overflow-hidden bg-white/5 backdrop-blur-[8px] shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
             
             {/* Liquid Content */}
             <motion.div
               initial={{ height: 0 }}
               animate={{ height: isPouring ? '85%' : '0%' }}
-              className="absolute bottom-0 w-full transition-all duration-1000 ease-out"
+              className="absolute bottom-0 w-full transition-all duration-700 ease-out" // Faster fill
               style={{ 
                 background: `linear-gradient(180deg, ${scenario.secondaryColor || scenario.liquidColor} 0%, ${scenario.liquidColor} 100%)` 
               }}
             >
               {/* Surface Reflection/Wave */}
               <motion.div 
-                animate={{ y: [-2, 2, -2], x: [-1, 1, -1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute top-0 left-0 w-full h-2 bg-white/20 blur-[2px]"
+                animate={{ y: [-1, 1, -1], x: [-1, 1, -1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="absolute top-0 left-0 w-full h-1.5 bg-white/20 blur-[2px]"
               />
 
               {/* Sparkling Bubbles */}
               {scenario.isSparkling && (
                 <div className="absolute inset-0 overflow-hidden">
-                  {[...Array(15)].map((_, i) => (
+                  {[...Array(12)].map((_, i) => (
                     <motion.div
                       key={i}
                       animate={{ 
-                        y: [200, -20], 
-                        x: [0, (Math.random() - 0.5) * 20],
+                        y: [160, -10], 
+                        x: [0, (Math.random() - 0.5) * 15],
                         opacity: [0, 0.8, 0],
                         scale: [0.5, 1, 0.8]
                       }}
                       transition={{ 
-                        duration: 1.5 + Math.random(), 
+                        duration: 1 + Math.random(), 
                         repeat: Infinity, 
-                        delay: Math.random() * 2,
+                        delay: Math.random() * 1,
                         ease: "easeOut"
                       }}
-                      className="absolute bottom-0 w-1 h-1 bg-white/40 rounded-full blur-[0.5px]"
+                      className="absolute bottom-0 w-0.5 h-0.5 bg-white/40 rounded-full blur-[0.5px]"
                       style={{ left: `${Math.random() * 100}%` }}
                     />
                   ))}
@@ -147,25 +147,25 @@ export default function CookingLoader() {
           </div>
 
           {/* Glass Base Reflection */}
-          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24 h-4 bg-white/5 blur-md rounded-full" />
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-16 h-3 bg-white/5 blur-md rounded-full" />
         </div>
 
-        {/* Floating Food with High Quality Shadow */}
+        {/* Floating Food - Bigger and Faster */}
         <AnimatePresence mode="wait">
           {isPouring && (
             <motion.div
               key={scenario.foodEmoji}
-              initial={{ x: 120, y: 20, opacity: 0, scale: 0.5, rotate: -20 }}
-              animate={{ x: 90, y: -60, opacity: 1, scale: 1, rotate: 12 }}
-              exit={{ x: -120, y: 80, opacity: 0, scale: 0.5, rotate: -45 }}
+              initial={{ x: 140, y: 30, opacity: 0, scale: 0.5, rotate: -20 }}
+              animate={{ x: 100, y: -70, opacity: 1, scale: 1.2, rotate: 15 }} // Increased scale to 1.2
+              exit={{ x: -140, y: 100, opacity: 0, scale: 0.5, rotate: -45 }}
               transition={{ 
                 type: "spring",
-                stiffness: 100,
-                damping: 15,
-                delay: 0.2
+                stiffness: 150, // Faster spring
+                damping: 12,
+                delay: 0.1
               }}
-              className="absolute text-7xl select-none z-40"
-              style={{ filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.5))' }}
+              className="absolute text-8xl select-none z-40" // Increased text size to 8xl
+              style={{ filter: 'drop-shadow(0 15px 20px rgba(0,0,0,0.6))' }}
             >
               {scenario.foodEmoji}
             </motion.div>
@@ -174,48 +174,27 @@ export default function CookingLoader() {
 
         {/* Realistic Steam for Hot Drinks */}
         {scenario.isHot && (
-           <div className="absolute top-10 flex gap-8 filter blur-[15px] pointer-events-none">
+           <div className="absolute top-10 flex gap-6 filter blur-[12px] pointer-events-none">
            {[...Array(4)].map((_, i) => (
              <motion.div
                key={i}
                animate={{ 
-                 y: [0, -120], 
-                 x: [0, (i % 2 === 0 ? 20 : -20)],
+                 y: [0, -100], 
+                 x: [0, (i % 2 === 0 ? 15 : -15)],
                  opacity: [0, 0.4, 0], 
-                 scale: [1, 2.5] 
+                 scale: [1, 2.2] 
                }}
                transition={{ 
-                 duration: 3, 
+                 duration: 2, // Faster steam
                  repeat: Infinity, 
-                 delay: i * 0.7,
+                 delay: i * 0.5,
                  ease: "linear"
                }}
-               className="w-6 h-16 bg-white/10 rounded-full"
+               className="w-5 h-14 bg-white/10 rounded-full"
              />
            ))}
          </div>
         )}
-      </div>
-
-      {/* Premium Status Label */}
-      <div className="mt-16 text-center space-y-3 relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={scenario.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="flex flex-col items-center"
-          >
-            <h2 className="text-3xl font-black tracking-tighter italic text-white uppercase">
-              {scenario.label}
-            </h2>
-            <div className="h-1 w-12 bg-primary rounded-full mt-1 mb-3" />
-            <p className="text-zinc-400 text-xs font-bold uppercase tracking-[0.3em] animate-pulse">
-              Curating your {scenario.liquidName} experience
-            </p>
-          </motion.div>
-        </AnimatePresence>
       </div>
     </div>
   );

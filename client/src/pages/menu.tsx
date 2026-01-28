@@ -58,7 +58,7 @@ export default function MenuPage() {
       if (!menuItemsLoading && !foodTypesLoading && !languagesLoading) {
         setIsPageLoading(false);
       }
-    }, 1500);
+    }, 8500);
 
     return () => clearTimeout(timer);
   }, [menuItemsLoading, foodTypesLoading, languagesLoading]);
