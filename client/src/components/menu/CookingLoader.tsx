@@ -8,13 +8,16 @@ export default function CookingLoader() {
   const [isEating, setIsEating] = useState(false);
 
   useEffect(() => {
+    // Initial sync: force an immediate state update to line up with the interval
+    setIsEating(false);
+
     const interval = setInterval(() => {
       setIsEating(true);
       setTimeout(() => {
         setIsEating(false);
         setFoodIndex((prev) => (prev + 1) % FOOD_ITEMS.length);
-      }, 150); // Faster duration
-    }, 600); // Faster cycle
+      }, 150);
+    }, 600);
     return () => clearInterval(interval);
   }, []);
 
@@ -42,15 +45,22 @@ export default function CookingLoader() {
           <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-black rounded-full z-10" />
         </div>
 
+        {/* Dots (Static Trail) */}
+        <div className="absolute flex gap-6 translate-x-12">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 bg-yellow-200/40 rounded-full" />
+          ))}
+        </div>
+
         {/* Food moving toward Pac-Man */}
         <AnimatePresence mode="wait">
           {!isEating && (
             <motion.div
               key={foodIndex}
-              initial={{ x: 150, opacity: 0, scale: 1 }}
-              animate={{ x: -20, opacity: 1, scale: 1 }}
-              exit={{ x: -60, opacity: 0, scale: 0 }} // Disappear earlier/closer to mouth
-              transition={{ duration: 0.4, ease: "linear" }}
+              initial={{ x: 200, opacity: 1, scale: 0.8 }}
+              animate={{ x: 10, opacity: 1, scale: 1.1 }}
+              exit={{ x: 25, opacity: 0, scale: 0.2 }}
+              transition={{ duration: 0.45, ease: "linear" }}
               className="absolute text-6xl select-none"
             >
               {FOOD_ITEMS[foodIndex]}
