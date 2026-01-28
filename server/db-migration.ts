@@ -32,6 +32,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "022-add-menu-display-settings", description: "Add menu display toggle settings to settings table" },
   { version: "023-add-kd-display-settings", description: "Add kitchen display toggle settings to settings table" },
   { version: "024-add-general-name-to-items", description: "Add general_name column to items table" },
+  { version: "025-remove-buy-button-and-popup-settings", description: "Remove show_buy_button and show_more_information_popup columns from settings table" },
 ];
 
 export async function runDatabaseMigrations() {
