@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
-const FOOD_ITEMS = ['🍔', '🍕', '🍤', '🍟', '🍣', '🍰', '🌮', '🍩'];
+const FOOD_ITEMS = ['🍔', '🍕', '🍤', '🍟', '🍰', '🌮', '🍩'];
 
 export default function CookingLoader() {
   const [foodIndex, setFoodIndex] = useState(0);
@@ -13,8 +13,8 @@ export default function CookingLoader() {
       setTimeout(() => {
         setIsEating(false);
         setFoodIndex((prev) => (prev + 1) % FOOD_ITEMS.length);
-      }, 200); // Faster duration
-    }, 800); // Faster cycle
+      }, 150); // Faster bite
+    }, 600); // Faster cycle
     return () => clearInterval(interval);
   }, []);
 
@@ -27,14 +27,14 @@ export default function CookingLoader() {
           {/* Upper Jaw */}
           <motion.div
             animate={{ rotate: isEating ? 0 : -35 }}
-            transition={{ duration: 0.15, ease: "easeInOut" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
             className="absolute inset-0 bg-yellow-400 rounded-t-full origin-bottom"
             style={{ height: '50%' }}
           />
           {/* Lower Jaw */}
           <motion.div
             animate={{ rotate: isEating ? 0 : 35 }}
-            transition={{ duration: 0.15, ease: "easeInOut" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
             className="absolute bottom-0 inset-x-0 bg-yellow-400 rounded-b-full origin-top"
             style={{ height: '50%' }}
           />
@@ -54,10 +54,10 @@ export default function CookingLoader() {
           {!isEating && (
             <motion.div
               key={foodIndex}
-              initial={{ x: 200, opacity: 0, scale: 0.8 }}
-              animate={{ x: 0, opacity: 1, scale: 1.2 }}
-              exit={{ x: 20, opacity: 0, scale: 0.2 }} // Disappear earlier/closer to mouth
-              transition={{ duration: 0.5, ease: "linear" }}
+              initial={{ x: 200, opacity: 1, scale: 0.8 }}
+              animate={{ x: 10, opacity: 1, scale: 1.1 }}
+              exit={{ x: 25, opacity: 0, scale: 0.2 }}
+              transition={{ duration: 0.4, ease: "linear" }}
               className="absolute text-6xl select-none"
             >
               {FOOD_ITEMS[foodIndex]}
