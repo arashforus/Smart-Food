@@ -1,150 +1,125 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
-const FOOD_ITEMS = ['🍔', '🍕', '🍳', '🥦', '🥕', '🍤', '🥩', '🥘'];
+type Scenario = {
+  liquidColor: string;
+  liquidName: string;
+  foodEmoji: string;
+  label: string;
+};
+
+const SCENARIOS: Scenario[] = [
+  { liquidColor: '#6F4E37', liquidName: 'Coffee', foodEmoji: '🍰', label: 'Morning Brew' },
+  { liquidColor: '#722F37', liquidName: 'Wine', foodEmoji: '🧀', label: 'Evening Relax' },
+  { liquidColor: '#964B00', liquidName: 'Cola', foodEmoji: '🍔', label: 'Lunch Break' },
+  { liquidColor: '#E0E0E0', liquidName: 'Raki', foodEmoji: '🐟', label: 'Dinner Feast' },
+  { liquidColor: '#FFD700', liquidName: 'Juice', foodEmoji: '🥐', label: 'Fresh Start' },
+];
 
 export default function CookingLoader() {
-  const [foodIndex, setFoodIndex] = useState(0);
+  const [index, setIndex] = useState(0);
+  const [isPouring, setIsPouring] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFoodIndex((prev) => (prev + 1) % FOOD_ITEMS.length);
-    }, 1500);
+      setIsPouring(false);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % SCENARIOS.length);
+        setIsPouring(true);
+      }, 1000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
+  const scenario = SCENARIOS[index];
+
   return (
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm">
-      <div className="relative w-64 h-64 flex items-center justify-center">
-        {/* Realistic Steam */}
-        <div className="absolute top-[-20px] flex gap-4 filter blur-xl">
-          {[...Array(4)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ y: 20, opacity: 0, scale: 0.5 }}
-              animate={{ 
-                y: [-10, -80], 
-                opacity: [0, 0.4, 0],
-                scale: [0.5, 1.8, 2],
-                x: [0, (i % 2 === 0 ? 15 : -15)]
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity, 
-                delay: i * 0.5,
-                ease: "linear" 
-              }}
-              className="w-6 h-20 bg-primary/20 rounded-full"
-            />
-          ))}
-        </div>
-
-        {/* Pan Handle - Smaller scale */}
-        <motion.div
-          animate={{ rotate: [-3, 3, -3] }}
-          transition={{ duration: 0.4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-[-35px] top-[115px] w-16 h-3.5 bg-gradient-to-r from-zinc-800 to-zinc-700 rounded-full origin-right shadow-lg z-10"
-        />
+      <div className="relative w-64 h-80 flex items-center justify-center">
         
-        {/* Pan Body - Smaller size (w-40 -> w-28, h-20 -> h-14) */}
-        <motion.div
-          animate={{ y: [0, -6, 0], rotate: [-2, 2, -2] }}
-          transition={{ duration: 0.4, repeat: Infinity, ease: "easeInOut" }}
-          className="relative w-28 h-14 bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-900 rounded-b-[40px] border-t-[8px] border-zinc-600 shadow-2xl z-20"
-        >
-          {/* Fire below the pan */}
-          <div className="absolute left-1/2 -bottom-6 -translate-x-1/2 flex gap-1 z-0">
-            {[...Array(4)].map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{ 
-                  height: [12, 24, 12],
-                  opacity: [0.6, 1, 0.6],
-                  scaleX: [1, 1.2, 1]
-                }}
-                transition={{ 
-                  duration: 0.3, 
-                  repeat: Infinity, 
-                  delay: i * 0.1,
-                  ease: "easeInOut" 
-                }}
-                className="w-3 bg-gradient-to-t from-orange-600 via-orange-400 to-transparent rounded-full blur-[2px]"
-              />
-            ))}
-          </div>
-
-          {/* Inner Glow (Heat) */}
-          <div className="absolute inset-x-2 top-0 h-1.5 bg-orange-500/30 blur-sm rounded-full" />
-          
-          {/* Sizzling particles */}
-          {[...Array(8)].map((_, i) => (
+        {/* Pouring Stream */}
+        <AnimatePresence>
+          {isPouring && (
             <motion.div
-              key={i}
-              initial={{ y: 5, opacity: 0 }}
-              animate={{ 
-                y: [-5, -40], 
-                x: [0, (i - 3.5) * 12],
-                opacity: [0, 1, 0],
-                scale: [0.5, 0.8, 0.5]
-              }}
-              transition={{ 
-                duration: 0.4, 
-                repeat: Infinity, 
-                delay: i * 0.08,
-                ease: "easeOut" 
-              }}
-              className="absolute left-1/2 bottom-2 w-1 h-1 bg-orange-300 rounded-full blur-[1px]"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 200, opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="absolute top-[-100px] w-2 z-10 rounded-full"
+              style={{ backgroundColor: scenario.liquidColor }}
             />
-          ))}
+          )}
+        </AnimatePresence>
 
-          {/* Jumping Food Item - Bigger and Faster */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={foodIndex}
-                initial={{ y: 10, opacity: 0, rotate: -45, scale: 0.5 }}
-                animate={{ 
-                  y: [-30, -140, -30],
-                  rotate: [0, 360, 720],
-                  opacity: [0, 1, 0],
-                  scale: [1.2, 1.8, 1.2]
-                }}
-                exit={{ opacity: 0, scale: 0.5 }}
-                transition={{ 
-                  duration: 0.8, // Faster duration
-                  ease: "circOut",
-                  times: [0, 0.5, 1]
-                }}
-                className="text-5xl filter drop-shadow-lg select-none"
-              >
-                {FOOD_ITEMS[foodIndex]}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </motion.div>
-
-        {/* Heat Distort (Lower half) */}
-        <div className="absolute bottom-10 w-48 h-10 bg-orange-600/10 blur-3xl animate-pulse" />
-      </div>
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mt-12 flex flex-col items-center gap-2"
-      >
-        <span className="text-2xl font-bold bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent uppercase tracking-tighter">
-          Chef is crafting magic
-        </span>
-        <div className="flex gap-1">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
-              transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-              className="w-2 h-2 bg-primary rounded-full"
-            />
-          ))}
+        {/* The Glass */}
+        <div className="relative w-32 h-48 border-x-4 border-b-4 border-white/30 rounded-b-2xl overflow-hidden bg-white/5 backdrop-blur-md">
+          {/* Liquid Level */}
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: isPouring ? '80%' : '0%' }}
+            className="absolute bottom-0 w-full transition-colors duration-1000"
+            style={{ backgroundColor: scenario.liquidColor }}
+          >
+            {/* Bubbles for sparkling drinks */}
+            {['Cola', 'Raki'].includes(scenario.liquidName) && (
+              <div className="absolute inset-0 overflow-hidden">
+                {[...Array(10)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ y: [-10, -100], opacity: [0, 1, 0] }}
+                    transition={{ duration: 1 + Math.random(), repeat: Infinity, delay: Math.random() }}
+                    className="absolute bottom-0 w-1 h-1 bg-white/40 rounded-full"
+                    style={{ left: `${Math.random() * 100}%` }}
+                  />
+                ))}
+              </div>
+            )}
+          </motion.div>
         </div>
+
+        {/* Floating Food */}
+        <AnimatePresence mode="wait">
+          {isPouring && (
+            <motion.div
+              key={scenario.foodEmoji}
+              initial={{ x: 100, y: 0, opacity: 0, rotate: 0 }}
+              animate={{ x: 80, y: -40, opacity: 1, rotate: 15 }}
+              exit={{ x: -100, y: 50, opacity: 0, rotate: -45 }}
+              transition={{ duration: 0.8, ease: "backOut" }}
+              className="absolute text-6xl filter drop-shadow-xl z-30"
+            >
+              {scenario.foodEmoji}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Steam or Condensation */}
+        {scenario.liquidName === 'Coffee' && (
+           <div className="absolute top-20 flex gap-4 filter blur-lg">
+           {[...Array(3)].map((_, i) => (
+             <motion.div
+               key={i}
+               animate={{ y: [0, -40], opacity: [0, 0.3, 0], scale: [1, 2] }}
+               transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+               className="w-4 h-12 bg-white/20 rounded-full"
+             />
+           ))}
+         </div>
+        )}
+      </div>
+
+      {/* Status Label */}
+      <motion.div
+        key={scenario.label}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-8 text-center"
+      >
+        <h2 className="text-2xl font-bold tracking-tight text-primary">
+          {scenario.label}
+        </h2>
+        <p className="text-muted-foreground text-sm uppercase tracking-widest mt-1">
+          Preparing your {scenario.liquidName.toLowerCase()}...
+        </p>
       </motion.div>
     </div>
   );
