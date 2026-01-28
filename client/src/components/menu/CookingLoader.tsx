@@ -13,8 +13,8 @@ export default function CookingLoader() {
       setTimeout(() => {
         setIsEating(false);
         setFoodIndex((prev) => (prev + 1) % FOOD_ITEMS.length);
-      }, 200); // Faster duration
-    }, 800); // Faster cycle
+      }, 150); // Faster duration
+    }, 600); // Faster cycle
     return () => clearInterval(interval);
   }, []);
 
@@ -27,14 +27,14 @@ export default function CookingLoader() {
           {/* Upper Jaw */}
           <motion.div
             animate={{ rotate: isEating ? 0 : -35 }}
-            transition={{ duration: 0.15, ease: "easeInOut" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
             className="absolute inset-0 bg-yellow-400 rounded-t-full origin-bottom"
             style={{ height: '50%' }}
           />
           {/* Lower Jaw */}
           <motion.div
             animate={{ rotate: isEating ? 0 : 35 }}
-            transition={{ duration: 0.15, ease: "easeInOut" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
             className="absolute bottom-0 inset-x-0 bg-yellow-400 rounded-b-full origin-top"
             style={{ height: '50%' }}
           />
@@ -50,7 +50,7 @@ export default function CookingLoader() {
               initial={{ x: 150, opacity: 0, scale: 0.8 }}
               animate={{ x: -20, opacity: 1, scale: 1 }}
               exit={{ x: -60, opacity: 0, scale: 0 }} // Disappear earlier/closer to mouth
-              transition={{ duration: 0.5, ease: "linear" }}
+              transition={{ duration: 0.4, ease: "linear" }}
               className="absolute text-6xl select-none"
             >
               {FOOD_ITEMS[foodIndex]}
