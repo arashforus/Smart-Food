@@ -13,80 +13,72 @@ export default function CookingLoader() {
       setTimeout(() => {
         setIsEating(false);
         setFoodIndex((prev) => (prev + 1) % FOOD_ITEMS.length);
-      }, 400); // Duration of the eat animation
-    }, 1200); // Total cycle time
+      }, 200); // Faster duration
+    }, 800); // Faster cycle
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]">
-      <div className="relative w-80 h-80 flex items-center justify-center">
+      <div className="relative w-64 h-64 flex items-center justify-center scale-75">
         
         {/* Pac-Man Body */}
-        <div className="relative w-32 h-32">
+        <div className="relative w-24 h-24 mr-16">
           {/* Upper Jaw */}
           <motion.div
             animate={{ rotate: isEating ? 0 : -35 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
             className="absolute inset-0 bg-yellow-400 rounded-t-full origin-bottom"
             style={{ height: '50%' }}
           />
           {/* Lower Jaw */}
           <motion.div
             animate={{ rotate: isEating ? 0 : 35 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
             className="absolute bottom-0 inset-x-0 bg-yellow-400 rounded-b-full origin-top"
             style={{ height: '50%' }}
           />
           {/* Eye */}
-          <div className="absolute top-1/4 right-1/4 w-3 h-3 bg-black rounded-full z-10" />
+          <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-black rounded-full z-10" />
         </div>
 
-        {/* Food to be eaten */}
+        {/* Food moving toward Pac-Man */}
         <AnimatePresence mode="wait">
           {!isEating && (
             <motion.div
               key={foodIndex}
-              initial={{ x: 150, opacity: 0, scale: 0.5 }}
-              animate={{ x: 80, opacity: 1, scale: 1.5 }}
-              exit={{ x: 0, opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="absolute text-7xl select-none"
+              initial={{ x: 200, opacity: 0, scale: 0.8 }}
+              animate={{ x: 0, opacity: 1, scale: 1.2 }}
+              exit={{ x: -50, opacity: 0, scale: 0.5 }}
+              transition={{ duration: 0.6, ease: "linear" }}
+              className="absolute text-6xl select-none"
             >
               {FOOD_ITEMS[foodIndex]}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Action particles / crumbs */}
+        {/* Action particles */}
         <AnimatePresence>
           {isEating && (
-            <div className="absolute right-1/4">
+            <div className="absolute left-1/2">
               {[...Array(6)].map((_, i) => (
                 <motion.div
                   key={i}
                   initial={{ x: 0, y: 0, opacity: 1 }}
                   animate={{ 
-                    x: Math.random() * 40 + 20, 
-                    y: (Math.random() - 0.5) * 60,
+                    x: Math.random() * 30 + 10, 
+                    y: (Math.random() - 0.5) * 40,
                     opacity: 0 
                   }}
-                  transition={{ duration: 0.5 }}
-                  className="absolute w-2 h-2 bg-yellow-200 rounded-full"
+                  transition={{ duration: 0.4 }}
+                  className="absolute w-1.5 h-1.5 bg-yellow-200 rounded-full"
                 />
               ))}
             </div>
           )}
         </AnimatePresence>
       </div>
-
-      <motion.div
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 1.2, repeat: Infinity }}
-        className="mt-8 text-yellow-400 font-black text-xl tracking-[0.2em] uppercase italic"
-      >
-        Processing your feast
-      </motion.div>
     </div>
   );
 }
