@@ -42,6 +42,13 @@ export default function CookingLoader() {
           <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-black rounded-full z-10" />
         </div>
 
+        {/* Dots (Static Trail) */}
+        <div className="absolute flex gap-6 translate-x-12">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 bg-yellow-200/40 rounded-full" />
+          ))}
+        </div>
+
         {/* Food moving toward Pac-Man */}
         <AnimatePresence mode="wait">
           {!isEating && (
@@ -49,8 +56,8 @@ export default function CookingLoader() {
               key={foodIndex}
               initial={{ x: 200, opacity: 0, scale: 0.8 }}
               animate={{ x: 0, opacity: 1, scale: 1.2 }}
-              exit={{ x: -50, opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.6, ease: "linear" }}
+              exit={{ x: 20, opacity: 0, scale: 0.2 }} // Disappear earlier/closer to mouth
+              transition={{ duration: 0.5, ease: "linear" }}
               className="absolute text-6xl select-none"
             >
               {FOOD_ITEMS[foodIndex]}
