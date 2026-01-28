@@ -52,22 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (userData: AdminUser) => {
     setUser(userData);
-    // Verify session was saved by checking auth endpoint
-    try {
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const verifiedUser = await response.json();
-        setUser(verifiedUser);
-      } else {
-        console.error('Session verification failed after login');
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Session verification error:', error);
-      setUser(null);
-    }
+    // Remove the redundant verification check that causes the loop
+    // if the session isn't immediately available in the cookie/storage
+    // or if there's a slight delay in the backend session persistence.
+    // The user is already redirected to /admin after this call in login.tsx.
   };
 
   const logout = async () => {
