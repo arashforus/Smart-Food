@@ -53,12 +53,12 @@ export default function MenuPage() {
   const [showCartView, setShowCartView] = useState(false);
 
   useEffect(() => {
-    // Show loader for at least 1.5 seconds or until data is loaded
+    // Show loader for at least 0.5 seconds or until data is loaded
     const timer = setTimeout(() => {
       if (!menuItemsLoading && !foodTypesLoading && !languagesLoading) {
         setIsPageLoading(false);
       }
-    }, 8500);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [menuItemsLoading, foodTypesLoading, languagesLoading]);
