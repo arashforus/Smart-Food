@@ -271,8 +271,8 @@ export default function SettingsPage() {
       if (dbSettings) {
         form.reset({
           primaryColor: dbSettings.primaryColor,
-          showBuyButton: dbSettings.showBuyButton !== false,
-          showMoreInformationPopup: dbSettings.showMoreInformationPopup !== false,
+          showBuyButton: dbSettings.menuShowBuyButton !== false,
+          showMoreInformationPopup: dbSettings.menuShowMoreInformationPopup !== false,
           defaultLanguage: dbSettings.defaultLanguage,
           currencySelect: dbSettings.currencySelect || 'USD',
           currencyName: dbSettings.currencyName || 'US Dollar',
@@ -2081,7 +2081,7 @@ export default function SettingsPage() {
                         <FormDescription>Display the buy/order button on menu items</FormDescription>
                       </div>
                       <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-buy-button" />
+                        <Switch checked={showBuyButton} onCheckedChange={(checked) => { setShowBuyButton(checked); field.onChange(checked); }} data-testid="switch-settings-buy-button" />
                       </FormControl>
                     </FormItem>
                   )} />
@@ -2092,7 +2092,7 @@ export default function SettingsPage() {
                         <FormDescription>Display details popup when viewing item information</FormDescription>
                       </div>
                       <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-settings-more-info" />
+                        <Switch checked={showMoreInformationPopup} onCheckedChange={(checked) => { setShowMoreInformationPopup(checked); field.onChange(checked); }} data-testid="switch-settings-more-info" />
                       </FormControl>
                     </FormItem>
                   )} />
