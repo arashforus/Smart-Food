@@ -737,13 +737,18 @@ function FormContent({
                   {materials.map((material) => (
                     <div
                       key={material.id}
-                      className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover:bg-accent/5 transition-colors"
-                      
+                      className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover-elevate transition-colors"
+                      onClick={() => {
+                        setSelectedMaterials(current => 
+                          current.includes(material.id)
+                            ? current.filter(id => id !== material.id)
+                            : [...current, material.id]
+                        );
+                      }}
                       data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
                     >
                       <Checkbox
                         checked={selectedMaterials.includes(material.id)}
-                        onClick={(e) => e.stopPropagation()}
                         onCheckedChange={(checked) => {
                           setSelectedMaterials(current => 
                             checked
@@ -753,7 +758,7 @@ function FormContent({
                         }}
                       />
                       {material.icon ? (
-                        <img src={material.icon} alt={material.name.en} className="w-6 h-6 rounded object-cover" />
+                        <span className="text-xl">{material.icon}</span>
                       ) : (
                         <div
                           className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
@@ -762,7 +767,51 @@ function FormContent({
                           {material.name.en?.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className="text-sm">{material.name.en}</span>
+                      <span className="text-sm">{material.name.en || Object.values(material.name)[0]}</span>
+                    </div>
+                  ))}
+                </div>
+              </FormItem>
+            </TabsContent>
+
+            <TabsContent value="types" className="space-y-4 pt-4">
+              <FormItem>
+                <FormLabel>Select Food Types</FormLabel>
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  {foodTypes.map((type) => (
+                    <div
+                      key={type.id}
+                      className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover-elevate transition-colors"
+                      onClick={() => {
+                        setSelectedTypes(current => 
+                          current.includes(type.id)
+                            ? current.filter(id => id !== type.id)
+                            : [...current, type.id]
+                        );
+                      }}
+                      data-testid={`checkbox-type-${type.id}${isEdit ? '-edit' : ''}`}
+                    >
+                      <Checkbox
+                        checked={selectedTypes.includes(type.id)}
+                        onCheckedChange={(checked) => {
+                          setSelectedTypes(current => 
+                            checked
+                              ? [...current, type.id]
+                              : current.filter(id => id !== type.id)
+                          );
+                        }}
+                      />
+                      {type.icon ? (
+                        <span className="text-xl">{type.icon}</span>
+                      ) : (
+                        <div
+                          className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
+                          style={{ backgroundColor: type.color || '#999' }}
+                        >
+                          {type.name.en?.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-sm">{type.name.en || Object.values(type.name)[0]}</span>
                     </div>
                   ))}
                 </div>
