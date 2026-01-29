@@ -50,12 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = async (userData: AdminUser) => {
+  const login = (userData: AdminUser) => {
     setUser(userData);
-    // Remove the redundant verification check that causes the loop
-    // if the session isn't immediately available in the cookie/storage
-    // or if there's a slight delay in the backend session persistence.
-    // The user is already redirected to /admin after this call in login.tsx.
   };
 
   const logout = async () => {

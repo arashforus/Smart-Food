@@ -75,7 +75,7 @@ export default function LoginPage() {
         title: 'Welcome back!',
         description: `Logged in as ${user.name}`,
       });
-      setLocation('/admin');
+      window.location.href = '/admin';
     } catch (error) {
       toast({
         title: 'Login failed',
