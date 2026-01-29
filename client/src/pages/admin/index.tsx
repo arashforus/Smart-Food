@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminFooter from '@/components/admin/AdminFooter';
+import { useAuth } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { mockCurrentUser } from '@/lib/mockData';
 import { OrderProvider } from '@/lib/orderContext';
@@ -28,6 +29,7 @@ import KitchenPage from './kitchen';
 import OrderStatusScreen from './order-status-screen';
 
 export default function AdminLayout() {
+  const { logout } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [currentUser, setCurrentUser] = useState(mockCurrentUser);
@@ -97,8 +99,18 @@ export default function AdminLayout() {
     setLocation('/admin/settings?tab=profile&action=changePassword');
   };
 
-  const handleSignOut = () => {
-    toast({ title: 'Signed Out', description: 'You have been signed out' });
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      toast({ title: 'Signed Out', description: 'You have been signed out' });
+      setLocation('/login');
+    } catch (error) {
+      toast({ 
+        title: 'Logout Failed', 
+        description: 'There was an error signing out',
+        variant: 'destructive'
+      });
+    }
   };
 
   const style = {
