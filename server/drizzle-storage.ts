@@ -719,41 +719,116 @@ export class DrizzleStorage implements IStorage {
   async getDashboardMetrics(): Promise<DashboardMetrics> {
     const db = getDb();
     
-    // Total counts
-    const itemsResult = await db.select({ count: sql`count(*)` }).from(items);
-    const catsResult = await db.select({ count: sql`count(*)` }).from(categories);
-    const availResult = await db.select({ count: sql`count(*)` }).from(items).where(eq(items.available, true));
-    const scansResult = await db.select({ count: sql`count(*)` }).from(analyticsTable);
+    // Get basic stats
+    const [totalItems] = await db.select({ count: sql<number>`count(*)` }).from(items);
+    const [totalCategories] = await db.select({ count: sql<number>`count(*)` }).from(categories);
+    const [availableItems] = await db.select({ count: sql<number>`count(*)` }).from(items).where(eq(items.available, true));
+    
+    // Get analytics stats
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - 7);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
 
-    // Real Sales Calculation (Total of served orders)
-    const salesResult = await db.select({ sum: sql`sum(total_amount)` }).from(orders).where(eq(orders.status, 'served'));
-    const totalSales = parseFloat(salesResult[0].sum as string || "0");
+    const [qrScans] = await db.select({ count: sql<number>`count(*)` }).from(analyticsTable).where(sql`${analyticsTable.pagePath} = '/qr'`);
+    
+    // Sales stats
+    const getSales = async (since: Date) => {
+      const result = await db.select({ 
+        total: sql<string>`COALESCE(SUM(CAST(${orders.totalAmount} AS NUMERIC)), 0)` 
+      }).from(orders).where(sql`${orders.createdAt} >= ${since} AND ${orders.status} != 'cancelled'`);
+      return Number(result[0].total);
+    };
 
-    // Real Customer Calculation (Unique session IDs)
-    const customersResult = await db.select({ count: sql`count(distinct session_id)` }).from(analyticsTable);
-    const totalCustomers = Number(customersResult[0].count);
+    const salesDay = await getSales(startOfDay);
+    const salesWeek = await getSales(startOfWeek);
+    const salesMonth = await getSales(startOfMonth);
 
-    // Real Menu Views
-    const viewsResult = await db.select({ count: sql`count(*)` }).from(analyticsTable);
-    const totalViews = Number(viewsResult[0].count);
+    // Customer stats (unique sessions)
+    const getCustomers = async (since: Date) => {
+      const result = await db.select({ 
+        count: sql<number>`COUNT(DISTINCT ${analyticsTable.sessionId})` 
+      }).from(analyticsTable).where(sql`${analyticsTable.timestamp} >= ${since}`);
+      return Number(result[0].count);
+    };
+
+    const customersDay = await getCustomers(startOfDay);
+    const customersWeek = await getCustomers(startOfWeek);
+    const customersMonth = await getCustomers(startOfMonth);
+
+    // Menu view stats
+    const getViews = async (since: Date) => {
+      const result = await db.select({ 
+        count: sql<number>`count(*)` 
+      }).from(analyticsTable).where(sql`${analyticsTable.pagePath} = '/menu' AND ${analyticsTable.timestamp} >= ${since}`);
+      return Number(result[0].count);
+    };
+
+    const menuViewsDay = await getViews(startOfDay);
+    const menuViewsWeek = await getViews(startOfWeek);
+    const menuViewsMonth = await getViews(startOfMonth);
+
+    // Best sellers
+    const bestSellers = await db.select({
+      itemId: sql<string>`(jsonb_array_elements(${orders.items})->>'menuItemId')`,
+      name: sql<string>`(jsonb_array_elements(${orders.items})->'menuItemName'->>'en')`,
+      count: sql<number>`CAST(count(*) AS INTEGER)`
+    })
+    .from(orders)
+    .where(sql`${orders.status} != 'cancelled'`)
+    .groupBy(sql`1, 2`)
+    .orderBy(sql`3 DESC`)
+    .limit(5);
+
+    // 30-day Charts
+    const salesChart = await db.execute(sql`
+      WITH RECURSIVE dates AS (
+        SELECT CURRENT_DATE - INTERVAL '29 days' as date
+        UNION ALL
+        SELECT date + INTERVAL '1 day' FROM dates WHERE date <= CURRENT_DATE
+      )
+      SELECT 
+        TO_CHAR(d.date, 'MM/DD') as date,
+        COALESCE(SUM(CAST(o.total_amount AS NUMERIC)), 0) as amount
+      FROM dates d
+      LEFT JOIN orders o ON DATE(o.created_at) = d.date AND o.status != 'cancelled'
+      GROUP BY d.date
+      ORDER BY d.date ASC
+    `);
+
+    const viewsChart = await db.execute(sql`
+      WITH RECURSIVE dates AS (
+        SELECT CURRENT_DATE - INTERVAL '29 days' as date
+        UNION ALL
+        SELECT date + INTERVAL '1 day' FROM dates WHERE date <= CURRENT_DATE
+      )
+      SELECT 
+        TO_CHAR(d.date, 'MM/DD') as date,
+        COUNT(a.id) as views
+      FROM dates d
+      LEFT JOIN analytics a ON DATE(a.timestamp) = d.date AND a.page_path = '/menu'
+      GROUP BY d.date
+      ORDER BY d.date ASC
+    `);
 
     return {
-      totalItems: Number(itemsResult[0].count),
-      totalCategories: Number(catsResult[0].count),
-      availableItems: Number(availResult[0].count),
-      qrScans: totalViews,
-      salesDay: totalSales, // In a real app, you'd filter by date
-      salesWeek: totalSales,
-      salesMonth: totalSales,
-      customersDay: totalCustomers,
-      customersWeek: totalCustomers,
-      customersMonth: totalCustomers,
-      menuViewsDay: totalViews,
-      menuViewsWeek: totalViews,
-      menuViewsMonth: totalViews,
-      bestSellers: [],
-      salesChart: [],
-      viewsChart: [],
+      totalItems: Number(totalItems.count),
+      totalCategories: Number(totalCategories.count),
+      availableItems: Number(availableItems.count),
+      qrScans: Number(qrScans.count),
+      salesDay,
+      salesWeek,
+      salesMonth,
+      customersDay,
+      customersWeek,
+      customersMonth,
+      menuViewsDay,
+      menuViewsWeek,
+      menuViewsMonth,
+      bestSellers: bestSellers as any,
+      salesChart: salesChart.rows as any,
+      viewsChart: viewsChart.rows as any,
     };
   }
 

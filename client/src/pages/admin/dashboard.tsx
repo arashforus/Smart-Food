@@ -162,7 +162,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-base font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Weekly Sales
+              Daily Sales (Last 30 Days)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-base font-medium flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Menu Views
+              Daily Menu Views (Last 30 Days)
             </CardTitle>
           </CardHeader>
           <CardContent>
