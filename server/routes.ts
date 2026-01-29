@@ -171,7 +171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/items", async (req: Request, res: Response) => {
     try {
-      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials } = req.body;
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types } = req.body;
       const item = await storage.createItem({
         generalName: generalName || "",
         name: name || {},
@@ -185,7 +185,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         available: available !== undefined ? available : true,
         suggested: suggested !== undefined ? suggested : false,
         isNew: isNew !== undefined ? isNew : false,
-        materials: materials || []
+        materials: materials || [],
+        types: types || []
       });
       res.json(item);
     } catch (error) {
@@ -196,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/items/:id", async (req: Request, res: Response) => {
     try {
-      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials } = req.body;
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types } = req.body;
       const item = await storage.updateItem(req.params.id, {
         generalName: generalName !== undefined ? generalName : undefined,
         name: name !== undefined ? name : undefined,
@@ -210,7 +211,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         available: available !== undefined ? available : undefined,
         suggested: suggested !== undefined ? suggested : undefined,
         isNew: isNew !== undefined ? isNew : undefined,
-        materials: materials !== undefined ? materials : undefined
+        materials: materials !== undefined ? materials : undefined,
+        types: types !== undefined ? types : undefined
       } as any);
       if (!item) {
         return res.status(404).json({ message: "Item not found" });

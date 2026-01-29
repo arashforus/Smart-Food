@@ -738,13 +738,13 @@ function FormContent({
                     <div
                       key={material.id}
                       className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover-elevate transition-colors"
-                      onClick={() => {
-                        setSelectedMaterials(current => 
-                          current.includes(material.id)
-                            ? current.filter(id => id !== material.id)
-                            : [...current, material.id]
-                        );
-                      }}
+                      //onClick={() => {
+                      //  setSelectedMaterials(current => 
+                      //    current.includes(material.id)
+                      //      ? current.filter(id => id !== material.id)
+                      //      : [...current, material.id]
+                       // );
+                      //}}
                       data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
                     >
                       <Checkbox
@@ -782,13 +782,13 @@ function FormContent({
                     <div
                       key={type.id}
                       className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover-elevate transition-colors"
-                      onClick={() => {
-                        setSelectedTypes(current => 
-                          current.includes(type.id)
-                            ? current.filter(id => id !== type.id)
-                            : [...current, type.id]
-                        );
-                      }}
+                      //onClick={() => {
+                      //  setSelectedTypes(current => 
+                      //    current.includes(type.id)
+                      //      ? current.filter(id => id !== type.id)
+                      //      : [...current, type.id]
+                      //  );
+                      //}}
                       data-testid={`checkbox-type-${type.id}${isEdit ? '-edit' : ''}`}
                     >
                       <Checkbox
@@ -802,7 +802,13 @@ function FormContent({
                         }}
                       />
                       {type.icon ? (
-                        <span className="text-xl">{type.icon}</span>
+                        <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
+                          {type.icon.startsWith('/') || type.icon.startsWith('http') ? (
+                            <img src={type.icon} alt={type.name.en} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xl">{type.icon}</span>
+                          )}
+                        </div>
                       ) : (
                         <div
                           className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
