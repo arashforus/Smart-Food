@@ -66,6 +66,7 @@ const itemSchema = z.object({
   suggested: z.boolean(),
   isNew: z.boolean(),
   materials: z.array(z.string()),
+  types: z.array(z.string()),
 });
 
 type ItemFormData = z.infer<typeof itemSchema>;
@@ -95,6 +96,13 @@ interface StorageCategory {
 }
 
 interface StorageMaterial {
+  id: string;
+  name: Record<string, string>;
+  icon?: string;
+  color?: string;
+}
+
+interface StorageFoodType {
   id: string;
   name: Record<string, string>;
   icon?: string;
@@ -141,6 +149,10 @@ export default function ItemsPage() {
     queryKey: ['/api/materials'],
   });
 
+  const { data: foodTypes = [] } = useQuery<StorageFoodType[]>({
+    queryKey: ['/api/food-types'],
+  });
+
   const { data: languages = [], isLoading: languagesLoading } = useQuery<StorageLanguage[]>({
     queryKey: ['/api/languages'],
   });
@@ -169,6 +181,7 @@ export default function ItemsPage() {
         suggested: data.suggested,
         isNew: data.isNew,
         materials: data.materials,
+        types: data.types,
       };
       return apiRequest('POST', '/api/items', payload);
     },
@@ -200,6 +213,7 @@ export default function ItemsPage() {
         suggested: data.suggested,
         isNew: data.isNew,
         materials: data.materials,
+        types: data.types,
       };
       return apiRequest('PATCH', `/api/items/${editingItem.id}`, payload);
     },
@@ -247,7 +261,8 @@ export default function ItemsPage() {
       available: true,
       suggested: false,
       isNew: false,
-      materials: []
+      materials: [],
+      types: []
     });
     setFormOpen(true);
   };
@@ -278,6 +293,7 @@ export default function ItemsPage() {
       suggested: item.suggested,
       isNew: item.isNew ?? false,
       materials: item.materials || [],
+      types: item.types || [],
     });
     setEditingItem(item);
   };
@@ -455,6 +471,7 @@ export default function ItemsPage() {
             form={form}
             categories={categories}
             materials={materials}
+            foodTypes={foodTypes}
             languages={languages}
             currencySymbol={currencySymbol}
             categoryImage={categoryImage}
@@ -475,6 +492,7 @@ export default function ItemsPage() {
             form={form}
             categories={categories}
             materials={materials}
+            foodTypes={foodTypes}
             languages={languages}
             currencySymbol={currencySymbol}
             categoryImage={categoryImage}
@@ -511,6 +529,7 @@ interface FormContentProps {
   form: any;
   categories: StorageCategory[];
   materials: StorageMaterial[];
+  foodTypes: StorageFoodType[];
   languages: StorageLanguage[];
   currencySymbol: string;
   categoryImage?: string;
@@ -524,6 +543,7 @@ function FormContent({
   form,
   categories,
   materials,
+  foodTypes,
   languages,
   currencySymbol,
   categoryImage,
@@ -535,6 +555,7 @@ function FormContent({
   const { toast } = useToast();
   // Local state for materials to avoid immediate form update
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>(form.getValues('materials') || []);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(form.getValues('types') || []);
   
   const onFormError = (errors: any) => {
     const errorMessages = Object.values(errors)
@@ -551,8 +572,8 @@ function FormContent({
   };
 
   const handleFormSubmit = (data: ItemFormData) => {
-    // Inject local material selections into the form data before submission
-    onSubmit({ ...data, materials: selectedMaterials });
+    // Inject local material and type selections into the form data before submission
+    onSubmit({ ...data, materials: selectedMaterials, types: selectedTypes });
   };
 
   const sortedLanguages = useMemo(() => {
@@ -563,9 +584,10 @@ function FormContent({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleFormSubmit, onFormError)} className="space-y-4">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basic">Basic</TabsTrigger>
               <TabsTrigger value="materials">Materials</TabsTrigger>
+              <TabsTrigger value="types">Types</TabsTrigger>
               <TabsTrigger value="translations">Translations</TabsTrigger>
             </TabsList>
             
