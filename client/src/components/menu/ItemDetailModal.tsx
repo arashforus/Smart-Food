@@ -13,6 +13,18 @@ import type { MenuItem, Language, Settings } from '@/lib/types';
 import { translations } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 
+function SteamEffect() {
+  return (
+    <div className="steam-container">
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+    </div>
+  );
+}
+
 interface ItemDetailModalProps {
   item: MenuItem | null;
   open: boolean;
@@ -105,13 +117,16 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-y-auto pr-2 custom-scrollbar">
-          <div className="w-full md:w-1/2 aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden shrink-0">
+          <div className="w-full md:w-1/2 aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden shrink-0 relative">
             {settings?.menuShowImages && item.image ? (
-              <img
-                src={item.image}
-                alt={getName()}
-                className="w-full h-full object-cover rounded-2xl"
-              />
+              <>
+                <img
+                  src={item.image}
+                  alt={getName()}
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+                <SteamEffect />
+              </>
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
             )}
