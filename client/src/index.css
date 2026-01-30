@@ -449,52 +449,70 @@ html.dark {
 
 .steam-container {
   position: absolute;
-  bottom: 40%;
+  bottom: 0%;
   left: 0;
   right: 0;
-  height: 60%;
+  height: 100%;
   pointer-events: none;
   overflow: hidden;
-  z-index: 10;
+  z-index: -1;
 }
 
 .steam-wisp {
   position: absolute;
   bottom: 0;
-  width: 8px;
-  height: 20px;
-  background: linear-gradient(to top, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  width: 12px;
+  height: 30px;
+  background: linear-gradient(to top, rgba(255,255,255,0.4), rgba(255,255,255,0));
   border-radius: 50%;
-  filter: blur(4px);
-  animation: steam-rise 2s ease-out infinite;
+  filter: blur(6px);
+  animation: steam-rise 3s ease-out infinite;
 }
 
 .steam-wisp:nth-child(1) {
-  left: 25%;
+  left: 15%;
   animation-delay: 0s;
-  animation-duration: 2.2s;
+  animation-duration: 2.8s;
 }
 
 .steam-wisp:nth-child(2) {
-  left: 45%;
-  animation-delay: 0.4s;
-  animation-duration: 1.8s;
+  left: 30%;
+  animation-delay: 0.5s;
+  animation-duration: 3.2s;
 }
 
 .steam-wisp:nth-child(3) {
-  left: 65%;
-  animation-delay: 0.8s;
-  animation-duration: 2.4s;
+  left: 45%;
+  animation-delay: 1s;
+  animation-duration: 2.6s;
 }
 
 .steam-wisp:nth-child(4) {
-  left: 35%;
-  animation-delay: 1.2s;
-  animation-duration: 2s;
+  left: 60%;
+  animation-delay: 1.5s;
+  animation-duration: 3.5s;
 }
 
 .steam-wisp:nth-child(5) {
-  left: 55%;
-  animation-delay: 1.6s;
-  animation-duration: 2.1s;
+  left: 75%;
+  animation-delay: 2s;
+  animation-duration: 2.9s;
+}
+
+.steam-wisp:nth-child(6) {
+  left: 22%;
+  animation-delay: 0.8s;
+  animation-duration: 3.1s;
+}
+
+.steam-wisp:nth-child(7) {
+  left: 52%;
+  animation-delay: 1.3s;
+  animation-duration: 2.7s;
+}
+
+.steam-wisp:nth-child(8) {
+  left: 82%;
+  animation-delay: 1.8s;
+  animation-duration: 3.3s;
 }

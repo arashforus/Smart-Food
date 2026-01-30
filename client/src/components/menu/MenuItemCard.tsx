@@ -13,6 +13,9 @@ function SteamEffect() {
       <div className="steam-wisp" />
       <div className="steam-wisp" />
       <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
     </div>
   );
 }
@@ -64,19 +67,17 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
       >
         <CardContent className="p-0">
           <div className="aspect-square w-full rounded-t-2xl bg-muted flex items-center justify-center overflow-hidden relative">
+            <SteamEffect />
             {settings?.menuShowImages && item.image ? (
-              <>
-                <img
-                  src={item.image}
-                  alt={getName()}
-                  className="w-full h-full object-cover rounded-t-2xl transition-transform duration-500 hover:scale-110"
-                  loading="lazy"
-                  data-testid={`img-item-${item.id}`}
-                />
-                <SteamEffect />
-              </>
+              <img
+                src={item.image}
+                alt={getName()}
+                className="w-full h-full object-cover rounded-t-2xl transition-transform duration-500 hover:scale-110 relative z-[1]"
+                loading="lazy"
+                data-testid={`img-item-${item.id}`}
+              />
             ) : (
-              <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
+              <UtensilsCrossed className="w-5 h-5 text-muted-foreground relative z-[1]" />
             )}
             {(isSuggested || item.suggested) && (
               <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
@@ -145,19 +146,17 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
       <CardContent className="p-0 flex h-32">
         {settings?.menuShowImages && (
           <div className="w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative rounded-s-2xl">
+            <SteamEffect />
             {item.image ? (
-              <>
-                <img
-                  src={item.image}
-                  alt={getName()}
-                  className="w-full h-full object-cover rounded-s-2xl"
-                  loading="lazy"
-                  data-testid={`img-item-${item.id}`}
-                />
-                <SteamEffect />
-              </>
+              <img
+                src={item.image}
+                alt={getName()}
+                className="w-full h-full object-cover rounded-s-2xl relative z-[1]"
+                loading="lazy"
+                data-testid={`img-item-${item.id}`}
+              />
             ) : (
-              <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
+              <UtensilsCrossed className="w-5 h-5 text-muted-foreground relative z-[1]" />
             )}
             {(isSuggested || item.suggested) && (
               <div className="absolute top-1 inset-inline-end-1 bg-amber-500 rounded-full p-0.5">
