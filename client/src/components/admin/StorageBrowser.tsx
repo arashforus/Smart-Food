@@ -27,10 +27,16 @@ export default function StorageBrowser({ onSelect, trigger }: StorageBrowserProp
   });
 
   const files = data?.files || [];
+  // Files in object storage are saved as UUIDs without extensions
+  // Include all files since they're likely images (no extension filtering needed)
   const imageFiles = files.filter(file => {
-    const ext = file.key.toLowerCase();
-    return ext.endsWith('.jpg') || ext.endsWith('.jpeg') || ext.endsWith('.png') || 
-           ext.endsWith('.gif') || ext.endsWith('.webp') || ext.endsWith('.svg') || ext.endsWith('.ico');
+    const key = file.key.toLowerCase();
+    // If file has an extension, check if it's an image extension
+    // If no extension (UUID format), include it as it's likely an uploaded image
+    const hasExtension = key.includes('.');
+    if (!hasExtension) return true;
+    return key.endsWith('.jpg') || key.endsWith('.jpeg') || key.endsWith('.png') || 
+           key.endsWith('.gif') || key.endsWith('.webp') || key.endsWith('.svg') || key.endsWith('.ico');
   });
 
   const handleSelect = () => {
