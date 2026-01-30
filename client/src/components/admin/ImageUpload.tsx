@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Loader2, FolderOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUpload } from '@/hooks/use-upload';
+import StorageBrowser from './StorageBrowser';
 
 interface ImageUploadProps {
   value?: string;
@@ -91,6 +92,12 @@ export default function ImageUpload({
             <Upload className="h-4 w-4" />
           )}
         </Button>
+        <StorageBrowser
+          onSelect={(path) => {
+            setUrlInput(path);
+            onChange(path);
+          }}
+        />
         {value && (
           <Button
             type="button"

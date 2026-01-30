@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Response } from "express";
 import { randomUUID } from "crypto";
@@ -114,5 +114,21 @@ export class ObjectStorageService {
 
   async canAccessObjectEntity({ userId, objectFile }: { userId?: string; objectFile: any }): Promise<boolean> {
     return true;
+  }
+
+  async listObjects(prefix: string = "uploads/"): Promise<{ key: string; size: number; lastModified: Date; objectPath: string }[]> {
+    const command = new ListObjectsV2Command({
+      Bucket: BUCKET_NAME,
+      Prefix: prefix,
+    });
+
+    const response = await s3Client.send(command);
+    
+    return (response.Contents || []).map(obj => ({
+      key: obj.Key || "",
+      size: obj.Size || 0,
+      lastModified: obj.LastModified || new Date(),
+      objectPath: `/objects/${obj.Key}`,
+    }));
   }
 }

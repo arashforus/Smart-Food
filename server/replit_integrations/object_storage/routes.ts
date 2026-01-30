@@ -82,5 +82,15 @@ export function registerObjectStorageRoutes(app: Express): void {
       return res.status(500).json({ error: "Failed to serve object" });
     }
   });
+
+  app.get("/api/uploads/list", async (req, res) => {
+    try {
+      const files = await objectStorageService.listObjects();
+      res.json({ files });
+    } catch (error) {
+      console.error("Error listing objects:", error);
+      res.status(500).json({ error: "Failed to list objects" });
+    }
+  });
 }
 
