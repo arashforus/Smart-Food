@@ -5,6 +5,18 @@ import { translations } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import type { MenuItem, Language, Settings } from '@/lib/types';
 
+function SteamEffect() {
+  return (
+    <div className="steam-container">
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+      <div className="steam-wisp" />
+    </div>
+  );
+}
+
 interface MenuItemCardProps {
   item: MenuItem;
   language: Language;
@@ -53,13 +65,16 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
         <CardContent className="p-0">
           <div className="aspect-square w-full rounded-t-2xl bg-muted flex items-center justify-center overflow-hidden relative">
             {settings?.menuShowImages && item.image ? (
-              <img
-                src={item.image}
-                alt={getName()}
-                className="w-full h-full object-cover rounded-t-2xl transition-transform duration-500 hover:scale-110"
-                loading="lazy"
-                data-testid={`img-item-${item.id}`}
-              />
+              <>
+                <img
+                  src={item.image}
+                  alt={getName()}
+                  className="w-full h-full object-cover rounded-t-2xl transition-transform duration-500 hover:scale-110"
+                  loading="lazy"
+                  data-testid={`img-item-${item.id}`}
+                />
+                <SteamEffect />
+              </>
             ) : (
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
@@ -131,13 +146,16 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
         {settings?.menuShowImages && (
           <div className="w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative rounded-s-2xl">
             {item.image ? (
-              <img
-                src={item.image}
-                alt={getName()}
-                className="w-full h-full object-cover rounded-s-2xl"
-                loading="lazy"
-                data-testid={`img-item-${item.id}`}
-              />
+              <>
+                <img
+                  src={item.image}
+                  alt={getName()}
+                  className="w-full h-full object-cover rounded-s-2xl"
+                  loading="lazy"
+                  data-testid={`img-item-${item.id}`}
+                />
+                <SteamEffect />
+              </>
             ) : (
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
