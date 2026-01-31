@@ -463,7 +463,7 @@ html.dark {
   bottom: 0;
   width: var(--steam-width, 12px);
   height: var(--steam-height, 30px);
-  background: linear-gradient(to top, rgba(150, 150, 150, 0.4), rgba(150, 150, 150, 0));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
   border-radius: 50%;
   filter: blur(var(--steam-blur, 6px));
   animation: steam-rise 3s ease-out infinite;
