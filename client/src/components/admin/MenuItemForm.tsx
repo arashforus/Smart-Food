@@ -46,6 +46,9 @@ const menuItemSchema = z.object({
   available: z.boolean(),
   suggested: z.boolean(),
   isNew: z.boolean(),
+  smokeEffect: z.boolean(),
+  fireEffect: z.boolean(),
+  iceEffect: z.boolean(),
   image: z.string().optional(),
 });
 
@@ -79,6 +82,9 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       available: item?.available ?? true,
       suggested: item?.suggested ?? false,
       isNew: (item as any)?.isNew ?? false,
+      smokeEffect: (item as any)?.smokeEffect ?? false,
+      fireEffect: (item as any)?.fireEffect ?? false,
+      iceEffect: (item as any)?.iceEffect ?? false,
       image: item?.image ?? '',
     },
   });
@@ -117,6 +123,9 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       available: data.available,
       suggested: data.suggested,
       isNew: data.isNew,
+      smokeEffect: data.smokeEffect,
+      fireEffect: data.fireEffect,
+      iceEffect: data.iceEffect,
       materials: item?.materials || [],
     };
     
@@ -124,7 +133,10 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
       ...formattedData,
       name: { en: data.nameEn, fa: data.nameFa, tr: data.nameTr, ar: data.nameAr },
       shortDescription: { en: data.descriptionEn, fa: data.descriptionFa, tr: data.descriptionTr, ar: data.descriptionAr },
-      longDescription: { en: data.descriptionEn, fa: data.descriptionFa, tr: data.descriptionTr, ar: data.descriptionAr }
+      longDescription: { en: data.descriptionEn, fa: data.descriptionFa, tr: data.descriptionTr, ar: data.descriptionAr },
+      smokeEffect: data.smokeEffect,
+      fireEffect: data.fireEffect,
+      iceEffect: data.iceEffect
     };
 
     onSubmit(submissionData);
@@ -391,6 +403,56 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                       <FormControl>
                         <Input {...field} value={typeof field.value === 'string' ? field.value : ''} placeholder="Image URL" data-testid="input-item-image" />
                       </FormControl>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20">
+                      <FormField
+                        control={form.control}
+                        name="smokeEffect"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                            <FormLabel className="text-xs">Smoke</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="switch-item-smoke"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="fireEffect"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                            <FormLabel className="text-xs">Fire</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="switch-item-fire"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="iceEffect"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                            <FormLabel className="text-xs">Ice</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="switch-item-ice"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
                     </div>
                     <FormMessage />
                   </FormItem>
