@@ -39,6 +39,25 @@ function FireEffect() {
   );
 }
 
+function IceEffect() {
+  return (
+    <div className="ice-container">
+      <div className="ice-overlay" />
+      {[...Array(10)].map((_, i) => (
+        <div
+          key={i}
+          className="ice-flake"
+          style={{
+            '--left': `${Math.random() * 100}%`,
+            '--delay': `${Math.random() * 3}s`,
+            '--duration': `${2 + Math.random() * 2}s`
+          } as any}
+        />
+      ))}
+    </div>
+  );
+}
+
 interface MenuItemCardProps {
   item: MenuItem;
   language: Language;
@@ -98,7 +117,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
             <SteamEffect />
-            {item.isHot && <FireEffect />}
+            {item.smokeEffect && <SteamEffect />}
+            {item.fireEffect && <FireEffect />}
+            {item.iceEffect && <IceEffect />}
             {(isSuggested || item.suggested) && (
               <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
                 <Star className="h-3 w-3 text-white fill-white" />
@@ -178,7 +199,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
             <SteamEffect />
-            {item.isHot && <FireEffect />}
+            {item.smokeEffect && <SteamEffect />}
+            {item.fireEffect && <FireEffect />}
+            {item.iceEffect && <IceEffect />}
             {(isSuggested || item.suggested) && (
               <div className="absolute top-1 inset-inline-end-1 bg-amber-500 rounded-full p-0.5">
                 <Star className="h-3 w-3 text-white fill-white" />

@@ -47,6 +47,25 @@ function FireEffect() {
   );
 }
 
+function IceEffect() {
+  return (
+    <div className="ice-container">
+      <div className="ice-overlay" />
+      {[...Array(15)].map((_, i) => (
+        <div
+          key={i}
+          className="ice-flake"
+          style={{
+            '--left': `${Math.random() * 100}%`,
+            '--delay': `${Math.random() * 3}s`,
+            '--duration': `${2 + Math.random() * 2}s`
+          } as any}
+        />
+      ))}
+    </div>
+  );
+}
+
 interface ItemDetailModalProps {
   item: MenuItem | null;
   open: boolean;
@@ -150,7 +169,9 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
             )}
             <SteamEffect />
-            {item.isHot && <FireEffect />}
+            {item.smokeEffect && <SteamEffect />}
+            {item.fireEffect && <FireEffect />}
+            {item.iceEffect && <IceEffect />}
           </div>
           
           <div className="flex-1 space-y-4">
