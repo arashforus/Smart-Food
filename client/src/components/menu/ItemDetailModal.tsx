@@ -28,6 +28,25 @@ function SteamEffect() {
   );
 }
 
+function FireEffect() {
+  return (
+    <div className="fire-container">
+      <div className="fire-glow" />
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="fire-particle"
+          style={{
+            '--left': `${Math.random() * 100}%`,
+            '--delay': `${Math.random() * 2}s`,
+            '--duration': `${1 + Math.random()}s`
+          } as any}
+        />
+      ))}
+    </div>
+  );
+}
+
 interface ItemDetailModalProps {
   item: MenuItem | null;
   open: boolean;
@@ -131,6 +150,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
             )}
             <SteamEffect />
+            {item.isHot && <FireEffect />}
           </div>
           
           <div className="flex-1 space-y-4">

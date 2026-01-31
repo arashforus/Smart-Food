@@ -20,6 +20,25 @@ function SteamEffect() {
   );
 }
 
+function FireEffect() {
+  return (
+    <div className="fire-container">
+      <div className="fire-glow" />
+      {[...Array(12)].map((_, i) => (
+        <div
+          key={i}
+          className="fire-particle"
+          style={{
+            '--left': `${Math.random() * 100}%`,
+            '--delay': `${Math.random() * 2}s`,
+            '--duration': `${1 + Math.random()}s`
+          } as any}
+        />
+      ))}
+    </div>
+  );
+}
+
 interface MenuItemCardProps {
   item: MenuItem;
   language: Language;
@@ -79,6 +98,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
             <SteamEffect />
+            {item.isHot && <FireEffect />}
             {(isSuggested || item.suggested) && (
               <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
                 <Star className="h-3 w-3 text-white fill-white" />
@@ -158,6 +178,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
             <SteamEffect />
+            {item.isHot && <FireEffect />}
             {(isSuggested || item.suggested) && (
               <div className="absolute top-1 inset-inline-end-1 bg-amber-500 rounded-full p-0.5">
                 <Star className="h-3 w-3 text-white fill-white" />

@@ -67,6 +67,7 @@ export interface MenuItem {
   available: boolean;
   suggested: boolean;
   isNew: boolean;
+  isHot?: boolean;
   materials: string[];
   types: string[];
 }
