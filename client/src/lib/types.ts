@@ -67,7 +67,9 @@ export interface MenuItem {
   available: boolean;
   suggested: boolean;
   isNew: boolean;
-  isHot?: boolean;
+  smokeEffect?: boolean;
+  fireEffect?: boolean;
+  iceEffect?: boolean;
   materials: string[];
   types: string[];
 }
