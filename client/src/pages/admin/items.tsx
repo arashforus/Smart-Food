@@ -767,19 +767,19 @@ function FormContent({
                 )} />
               </div>
               
-              <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center mt-4 border rounded-md bg-muted/20 divide-x h-12">
                 <FormField control={form.control} name="available" render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0">Available</FormLabel>
+                  <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
+                    <FormLabel className="text-xs font-medium">Available</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
                     </FormControl>
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="suggested" render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0 flex items-center gap-1">
-                      <Star className="h-4 w-4 text-amber-500" />
+                  <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
+                    <FormLabel className="text-xs font-medium flex items-center gap-1">
+                      <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
                       Suggested
                     </FormLabel>
                     <FormControl>
@@ -788,8 +788,8 @@ function FormContent({
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="isNew" render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0">New</FormLabel>
+                  <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
+                    <FormLabel className="text-xs font-medium">New</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-new${isEdit ? '-edit' : ''}`} />
                     </FormControl>
