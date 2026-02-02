@@ -629,7 +629,7 @@ function FormContent({
                         testId={`input-item-image${isEdit ? '-edit' : ''}`}
                       />
                     </FormControl>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20 items-center">
                       <FormField
                         control={form.control}
                         name="smokeEffect"
@@ -646,6 +646,7 @@ function FormContent({
                           </FormItem>
                         )}
                       />
+                      <div className="hidden md:block h-8 w-px bg-border mx-auto" />
                       <FormField
                         control={form.control}
                         name="fireEffect"
@@ -662,6 +663,8 @@ function FormContent({
                           </FormItem>
                         )}
                       />
+                      <div className="col-span-full md:hidden h-px w-full bg-border my-1" />
+                      <div className="hidden md:block h-8 w-px bg-border mx-auto" />
                       <FormField
                         control={form.control}
                         name="iceEffect"
