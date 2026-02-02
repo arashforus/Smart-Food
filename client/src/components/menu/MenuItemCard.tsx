@@ -43,23 +43,33 @@ function IceEffect() {
   return (
     <div className="ice-container">
       <div className="ice-overlay" />
-      <div className="ice-frost-corner" />
-      <div className="ice-frost-corner" />
-      <div className="ice-frost-corner" />
-      <div className="ice-frost-corner" />
-      {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="ice-snowflake"
-          style={{
-            '--left': `${Math.random() * 100}%`,
-            '--duration': `${2 + Math.random() * 3}s`,
-            '--delay': `${Math.random() * 5}s`,
-          } as React.CSSProperties}
-        >
-          ❄
-        </div>
-      ))}
+      <div className="ice-frost-corner" style={{ top: '-10px', left: '-10px' }} />
+      <div className="ice-frost-corner" style={{ top: '-10px', right: '-10px' }} />
+      <div className="ice-frost-corner" style={{ bottom: '-10px', left: '-10px' }} />
+      <div className="ice-frost-corner" style={{ bottom: '-10px', right: '-10px' }} />
+      {[...Array(12)].map((_, i) => {
+        const side = i % 4; // 0: top, 1: right, 2: bottom, 3: left
+        let top = '0%', left = '0%';
+        if (side === 0) { top = `${Math.random() * 15}%`; left = `${Math.random() * 100}%`; }
+        else if (side === 1) { left = `${85 + Math.random() * 15}%`; top = `${Math.random() * 100}%`; }
+        else if (side === 2) { top = `${85 + Math.random() * 15}%`; left = `${Math.random() * 100}%`; }
+        else { left = `${Math.random() * 15}%`; top = `${Math.random() * 100}%`; }
+        
+        return (
+          <div
+            key={i}
+            className="ice-snowflake"
+            style={{
+              '--left': left,
+              '--top': top,
+              '--size': `${8 + Math.random() * 12}px`,
+              '--duration': `${3 + Math.random() * 4}s`,
+            } as React.CSSProperties}
+          >
+            ❄
+          </div>
+        );
+      })}
     </div>
   );
 }
