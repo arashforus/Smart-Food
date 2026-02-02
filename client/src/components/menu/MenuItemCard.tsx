@@ -43,11 +43,11 @@ function IceEffect() {
   return (
     <div className="ice-container">
       <div className="ice-overlay" />
-      {[...Array(24)].map((_, i) => {
-        // Distribute more snowflakes strictly along the edges
+      {[...Array(40)].map((_, i) => {
+        // Distribute more snowflakes strictly along the extreme edges
         const side = i % 4;
         let top = '0%', left = '0%';
-        const offset = `${Math.random() * 6}px`; // Push them closer to the extreme edge
+        const offset = `${Math.random() * 4}px`; // Even closer to the edge
         
         if (side === 0) { // Top border
           top = offset;
@@ -70,7 +70,7 @@ function IceEffect() {
             style={{
               '--left': left,
               '--top': top,
-              '--size': `${8 + Math.random() * 10}px`, // Larger size
+              '--size': `${8 + Math.random() * 8}px`,
               '--duration': `${2 + Math.random() * 3}s`,
               'animationDelay': `${Math.random() * 5}s`
             } as React.CSSProperties}

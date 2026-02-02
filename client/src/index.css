@@ -478,23 +478,23 @@ html.dark {
 @keyframes snowflake-shine-disappear {
   0% {
     opacity: 0;
-    transform: scale(0.5) rotate(0deg);
+    transform: scale(0.5);
   }
   20% {
     opacity: 1;
-    transform: scale(1.1) rotate(45deg);
+    transform: scale(1);
   }
   50% {
     opacity: 0.7;
-    transform: scale(1) rotate(90deg);
+    transform: scale(1);
   }
   80% {
     opacity: 1;
-    transform: scale(1.1) rotate(135deg);
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(0.5) rotate(180deg);
+    transform: scale(0.5);
   }
 }
 
