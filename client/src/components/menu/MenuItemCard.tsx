@@ -47,6 +47,19 @@ function IceEffect() {
       <div className="ice-frost-corner" />
       <div className="ice-frost-corner" />
       <div className="ice-frost-corner" />
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="ice-snowflake"
+          style={{
+            '--left': `${Math.random() * 100}%`,
+            '--duration': `${2 + Math.random() * 3}s`,
+            '--delay': `${Math.random() * 5}s`,
+          } as React.CSSProperties}
+        >
+          ❄
+        </div>
+      ))}
     </div>
   );
 }

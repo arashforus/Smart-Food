@@ -425,6 +425,18 @@ html.dark {
   50% { opacity: 0.8; transform: scale(1.1); }
 }
 
+@keyframes snow-fall {
+  0% { transform: translateY(-100%) translateX(0); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(100%) translateX(20px); opacity: 0; }
+}
+
+@keyframes ice-border-pulse {
+  0%, 100% { border-color: rgba(173, 216, 230, 0.4); box-shadow: inset 0 0 30px 10px rgba(173, 216, 230, 0.5); }
+  50% { border-color: rgba(255, 255, 255, 0.6); box-shadow: inset 0 0 40px 15px rgba(173, 216, 230, 0.7); }
+}
+
 .ice-container {
   position: absolute;
   inset: 0;
@@ -446,6 +458,20 @@ html.dark {
   border-radius: inherit;
   mask-image: radial-gradient(circle, transparent 40%, black 100%);
   -webkit-mask-image: radial-gradient(circle, transparent 40%, black 100%);
+  animation: ice-border-pulse 3s infinite ease-in-out;
+}
+
+.ice-snowflake {
+  position: absolute;
+  top: -10px;
+  color: white;
+  font-size: 10px;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  animation: snow-fall var(--duration) linear infinite;
+  left: var(--left);
+  animation-delay: var(--delay);
 }
 
 .ice-frost-corner {
@@ -455,6 +481,7 @@ html.dark {
   background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
   filter: blur(5px);
   opacity: 0.6;
+  animation: ice-sparkle 2s infinite alternate;
 }
 
 .ice-frost-corner:nth-child(1) { top: -10px; left: -10px; }
