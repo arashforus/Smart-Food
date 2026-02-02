@@ -448,8 +448,8 @@ html.dark {
     inset 0 0 25px 5px rgba(173, 216, 230, 0.4),
     inset 0 0 10px rgba(255, 255, 255, 0.2);
   border-radius: inherit;
-  mask-image: radial-gradient(circle, transparent 50%, black 100%);
-  -webkit-mask-image: radial-gradient(circle, transparent 50%, black 100%);
+  mask-image: radial-gradient(circle, transparent 65%, black 100%);
+  -webkit-mask-image: radial-gradient(circle, transparent 65%, black 100%);
 }
 
 .ice-snowflake {
