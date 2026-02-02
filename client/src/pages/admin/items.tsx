@@ -65,6 +65,9 @@ const itemSchema = z.object({
   available: z.boolean(),
   suggested: z.boolean(),
   isNew: z.boolean(),
+  smokeEffect: z.boolean().default(false),
+  fireEffect: z.boolean().default(false),
+  iceEffect: z.boolean().default(false),
   materials: z.array(z.string()),
   types: z.array(z.string()),
 });
@@ -85,6 +88,9 @@ interface StorageItem {
   available: boolean;
   suggested: boolean;
   isNew: boolean;
+  smokeEffect?: boolean;
+  fireEffect?: boolean;
+  iceEffect?: boolean;
   materials?: string[];
   types?: string[];
 }
@@ -180,6 +186,9 @@ export default function ItemsPage() {
         available: data.available,
         suggested: data.suggested,
         isNew: data.isNew,
+        smokeEffect: data.smokeEffect,
+        fireEffect: data.fireEffect,
+        iceEffect: data.iceEffect,
         materials: data.materials,
         types: data.types,
       };
@@ -212,6 +221,9 @@ export default function ItemsPage() {
         available: data.available,
         suggested: data.suggested,
         isNew: data.isNew,
+        smokeEffect: data.smokeEffect,
+        fireEffect: data.fireEffect,
+        iceEffect: data.iceEffect,
         materials: data.materials,
         types: data.types,
       };
@@ -261,6 +273,9 @@ export default function ItemsPage() {
       available: true,
       suggested: false,
       isNew: false,
+      smokeEffect: false,
+      fireEffect: false,
+      iceEffect: false,
       materials: [],
       types: []
     });
@@ -292,6 +307,9 @@ export default function ItemsPage() {
       available: item.available,
       suggested: item.suggested,
       isNew: item.isNew ?? false,
+      smokeEffect: item.smokeEffect ?? false,
+      fireEffect: item.fireEffect ?? false,
+      iceEffect: item.iceEffect ?? false,
       materials: item.materials || [],
       types: item.types || [],
     });
@@ -611,6 +629,56 @@ function FormContent({
                         testId={`input-item-image${isEdit ? '-edit' : ''}`}
                       />
                     </FormControl>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20">
+                      <FormField
+                        control={form.control}
+                        name="smokeEffect"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                            <FormLabel className="text-xs">Smoke</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid={`switch-item-smoke${isEdit ? '-edit' : ''}`}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="fireEffect"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                            <FormLabel className="text-xs">Fire</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid={`switch-item-fire${isEdit ? '-edit' : ''}`}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="iceEffect"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                            <FormLabel className="text-xs">Ice</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid={`switch-item-ice${isEdit ? '-edit' : ''}`}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <FormMessage />
                   </FormItem>
               )} />
