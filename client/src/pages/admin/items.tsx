@@ -629,12 +629,12 @@ function FormContent({
                         testId={`input-item-image${isEdit ? '-edit' : ''}`}
                       />
                     </FormControl>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20 items-center">
+                    <div className="flex items-center gap-4 mt-2 border p-3 rounded-md bg-muted/20">
                       <FormField
                         control={form.control}
                         name="smokeEffect"
                         render={({ field }) => (
-                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                          <FormItem className="flex items-center gap-2 space-y-0">
                             <FormLabel className="text-xs">Smoke</FormLabel>
                             <FormControl>
                               <Switch
@@ -646,12 +646,12 @@ function FormContent({
                           </FormItem>
                         )}
                       />
-                      <div className="hidden md:block h-8 w-px bg-border mx-auto" />
+                      <div className="h-6 w-px bg-border" />
                       <FormField
                         control={form.control}
                         name="fireEffect"
                         render={({ field }) => (
-                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                          <FormItem className="flex items-center gap-2 space-y-0">
                             <FormLabel className="text-xs">Fire</FormLabel>
                             <FormControl>
                               <Switch
@@ -663,13 +663,12 @@ function FormContent({
                           </FormItem>
                         )}
                       />
-                      <div className="col-span-full md:hidden h-px w-full bg-border my-1" />
-                      <div className="hidden md:block h-8 w-px bg-border mx-auto" />
+                      <div className="h-6 w-px bg-border" />
                       <FormField
                         control={form.control}
                         name="iceEffect"
                         render={({ field }) => (
-                          <FormItem className="flex items-center justify-between gap-2 space-y-0">
+                          <FormItem className="flex items-center gap-2 space-y-0">
                             <FormLabel className="text-xs">Ice</FormLabel>
                             <FormControl>
                               <Switch
