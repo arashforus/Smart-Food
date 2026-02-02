@@ -43,15 +43,11 @@ function IceEffect() {
   return (
     <div className="ice-container">
       <div className="ice-overlay" />
-      <div className="ice-frost-corner" style={{ top: '-10px', left: '-10px' }} />
-      <div className="ice-frost-corner" style={{ top: '-10px', right: '-10px' }} />
-      <div className="ice-frost-corner" style={{ bottom: '-10px', left: '-10px' }} />
-      <div className="ice-frost-corner" style={{ bottom: '-10px', right: '-10px' }} />
-      {[...Array(16)].map((_, i) => {
-        // Distribute snowflakes strictly along the 5px border
+      {[...Array(24)].map((_, i) => {
+        // Distribute more snowflakes strictly along the edges
         const side = i % 4;
         let top = '0%', left = '0%';
-        const offset = `${Math.random() * 4}px`;
+        const offset = `${Math.random() * 8}px`; // Slightly wider area for snowflakes to shine
         
         if (side === 0) { // Top border
           top = offset;
@@ -74,8 +70,9 @@ function IceEffect() {
             style={{
               '--left': left,
               '--top': top,
-              '--size': `${4 + Math.random() * 6}px`,
-              '--duration': `${3 + Math.random() * 4}s`,
+              '--size': `${3 + Math.random() * 5}px`,
+              '--duration': `${2 + Math.random() * 3}s`,
+              'animationDelay': `${Math.random() * 5}s`
             } as React.CSSProperties}
           >
             ❄
