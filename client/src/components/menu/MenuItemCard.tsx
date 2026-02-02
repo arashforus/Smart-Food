@@ -43,26 +43,26 @@ function IceEffect() {
   return (
     <div className="ice-container">
       <div className="ice-overlay" />
-      {[...Array(60)].map((_, i) => {
+      {[...Array(25)].map((_, i) => {
         // Distribute snowflakes strictly along all four sides of the border
         const type = i % 4; // 0: top, 1: left, 2: bottom, 3: right
         let top = '0%', left = '0%';
         let clipPath = '';
         
         if (type === 0) { // top
-          top = '0';
+          top = '-20%';
           left = `${Math.random() * 100}%`;
           clipPath = 'inset(0% -100% -100% -100%)';
         } else if (type === 1) { // left
-          left = '0';
+          left = '-10%';
           top = `${Math.random() * 100}%`;
           clipPath = 'inset(-100% -100% -100% 0%)';
         } else if (type === 2) { // bottom
-          top = '100%';
+          top = '85%';
           left = `${Math.random() * 100}%`;
           clipPath = 'inset(-100% -100% 0% -100%)';
         } else { // right
-          left = '100%';
+          left = '95%';
           top = `${Math.random() * 100}%`;
           clipPath = 'inset(-100% 0% -100% -100%)';
         }
@@ -74,8 +74,8 @@ function IceEffect() {
             style={{
               '--left': left,
               '--top': top,
-              '--size': `${16 + Math.random() * 12}px`,
-              '--duration': `${6 + Math.random() * 4}s`,
+              '--size': `${20 + Math.random() * 12}px`,
+              '--duration': `${8 + Math.random() * 4}s`,
               'animationDelay': `${Math.random() * 8}s`,
               'transform': 'translate(-50%, -50%)',
               'clipPath': clipPath
