@@ -171,7 +171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/items", async (req: Request, res: Response) => {
     try {
-      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types } = req.body;
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;
       const item = await storage.createItem({
         generalName: generalName || "",
         name: name || {},
@@ -185,6 +185,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         available: available !== undefined ? available : true,
         suggested: suggested !== undefined ? suggested : false,
         isNew: isNew !== undefined ? isNew : false,
+        smokeEffect: !!smokeEffect,
+        fireEffect: !!fireEffect,
+        iceEffect: !!iceEffect,
         materials: materials || [],
         types: types || []
       });
@@ -197,7 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/items/:id", async (req: Request, res: Response) => {
     try {
-      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types } = req.body;
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;
       const item = await storage.updateItem(req.params.id, {
         generalName: generalName !== undefined ? generalName : undefined,
         name: name !== undefined ? name : undefined,
@@ -211,6 +214,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         available: available !== undefined ? available : undefined,
         suggested: suggested !== undefined ? suggested : undefined,
         isNew: isNew !== undefined ? isNew : undefined,
+        smokeEffect: smokeEffect !== undefined ? !!smokeEffect : undefined,
+        fireEffect: fireEffect !== undefined ? !!fireEffect : undefined,
+        iceEffect: iceEffect !== undefined ? !!iceEffect : undefined,
         materials: materials !== undefined ? materials : undefined,
         types: types !== undefined ? types : undefined
       } as any);

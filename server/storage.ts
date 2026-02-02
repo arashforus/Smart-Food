@@ -63,6 +63,9 @@ export interface StorageItem {
   available: boolean;
   suggested: boolean;
   isNew: boolean;
+  smokeEffect: boolean;
+  fireEffect: boolean;
+  iceEffect: boolean;
   materials?: string[];
   types?: string[];
 }
@@ -636,7 +639,10 @@ export class MemStorage implements IStorage {
       generalName: data.generalName || '',
       name: data.name || {},
       shortDescription: data.shortDescription || {},
-      longDescription: data.longDescription || {}
+      longDescription: data.longDescription || {},
+      smokeEffect: !!data.smokeEffect,
+      fireEffect: !!data.fireEffect,
+      iceEffect: !!data.iceEffect
     };
     this.items.set(id, item);
     return item;
@@ -655,7 +661,14 @@ export class MemStorage implements IStorage {
   }
 
   async getOrder(id: string): Promise<StorageOrder | undefined> {
-    return this.orders.get(id);
+    const [result] = await db.select().from(orders).where(eq(orders.id, id));
+    if (!result) return undefined;
+    return {
+      ...result,
+      price: Number(result.totalAmount),
+      totalAmount: Number(result.totalAmount),
+      items: result.items as any[]
+    } as any;
   }
 
   async getAllOrders(): Promise<StorageOrder[]> {
