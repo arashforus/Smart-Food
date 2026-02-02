@@ -72,7 +72,8 @@ function IceEffect() {
               '--size': `${16 + Math.random() * 12}px`,
               '--duration': `${6 + Math.random() * 4}s`,
               'animationDelay': `${Math.random() * 8}s`,
-              'transform': 'translate(-50%, -50%)' // Center the snowflake exactly on the border line
+              'transform': 'translate(-50%, -50%)', // Center the snowflake exactly on the border line
+              'clipPath': 'inset(0% -100% -100% -100%)' // This will hide the parts of the snowflake that go outside the container
             } as React.CSSProperties}
           >
             ❄
