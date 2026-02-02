@@ -47,19 +47,24 @@ function IceEffect() {
         // Distribute snowflakes strictly along all four sides of the border
         const side = i % 4;
         let top = '0%', left = '0%';
+        let clipPath = 'inset(0% -100% -100% -100%)'; // Default for top
         
         if (side === 0) { // Top border
           top = '0px';
           left = `${Math.random() * 100}%`;
+          clipPath = 'inset(0% -100% -100% -100%)';
         } else if (side === 1) { // Right border
           left = '100%';
           top = `${Math.random() * 100}%`;
+          clipPath = 'inset(-100% 0% -100% -100%)';
         } else if (side === 2) { // Bottom border
           top = '100%';
           left = `${Math.random() * 100}%`;
+          clipPath = 'inset(-100% -100% 0% -100%)';
         } else { // Left border
           left = '0px';
           top = `${Math.random() * 100}%`;
+          clipPath = 'inset(-100% -100% -100% 0%)';
         }
         
         return (
@@ -73,7 +78,7 @@ function IceEffect() {
               '--duration': `${6 + Math.random() * 4}s`,
               'animationDelay': `${Math.random() * 8}s`,
               'transform': 'translate(-50%, -50%)', // Center the snowflake exactly on the border line
-              'clipPath': 'inset(0% -100% -100% -100%)' // This will hide the parts of the snowflake that go outside the container
+              'clipPath': clipPath // Specific clip-path for each side to hide outside parts
             } as React.CSSProperties}
           >
             ❄
