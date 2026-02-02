@@ -47,13 +47,25 @@ function IceEffect() {
       <div className="ice-frost-corner" style={{ top: '-10px', right: '-10px' }} />
       <div className="ice-frost-corner" style={{ bottom: '-10px', left: '-10px' }} />
       <div className="ice-frost-corner" style={{ bottom: '-10px', right: '-10px' }} />
-      {[...Array(12)].map((_, i) => {
-        const side = i % 4; // 0: top, 1: right, 2: bottom, 3: left
+      {[...Array(16)].map((_, i) => {
+        // Distribute snowflakes strictly along the 20px border
+        const side = i % 4;
         let top = '0%', left = '0%';
-        if (side === 0) { top = `${Math.random() * 15}%`; left = `${Math.random() * 100}%`; }
-        else if (side === 1) { left = `${85 + Math.random() * 15}%`; top = `${Math.random() * 100}%`; }
-        else if (side === 2) { top = `${85 + Math.random() * 15}%`; left = `${Math.random() * 100}%`; }
-        else { left = `${Math.random() * 15}%`; top = `${Math.random() * 100}%`; }
+        const offset = `${Math.random() * 15}px`;
+        
+        if (side === 0) { // Top border
+          top = offset;
+          left = `${Math.random() * 100}%`;
+        } else if (side === 1) { // Right border
+          left = `calc(100% - ${offset})`;
+          top = `${Math.random() * 100}%`;
+        } else if (side === 2) { // Bottom border
+          top = `calc(100% - ${offset})`;
+          left = `${Math.random() * 100}%`;
+        } else { // Left border
+          left = offset;
+          top = `${Math.random() * 100}%`;
+        }
         
         return (
           <div
@@ -62,7 +74,7 @@ function IceEffect() {
             style={{
               '--left': left,
               '--top': top,
-              '--size': `${8 + Math.random() * 12}px`,
+              '--size': `${6 + Math.random() * 8}px`,
               '--duration': `${3 + Math.random() * 4}s`,
             } as React.CSSProperties}
           >
