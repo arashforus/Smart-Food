@@ -400,7 +400,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-8 h-8 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
                         )}
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 border p-3 rounded-md bg-muted/20 items-center">
                         <FormField
                           control={form.control}
                           name="smokeEffect"
@@ -417,6 +417,7 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                             </FormItem>
                           )}
                         />
+                        <div className="hidden md:block h-8 w-px bg-border mx-auto" />
                         <FormField
                           control={form.control}
                           name="fireEffect"
@@ -433,6 +434,8 @@ export default function MenuItemForm({ item, categories, open, onClose, onSubmit
                             </FormItem>
                           )}
                         />
+                        <div className="col-span-full md:hidden h-px w-full bg-border my-1" />
+                        <div className="hidden md:block h-8 w-px bg-border mx-auto" />
                         <FormField
                           control={form.control}
                           name="iceEffect"
