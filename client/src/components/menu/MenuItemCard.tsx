@@ -47,7 +47,7 @@ function IceEffect() {
         // Distribute more snowflakes strictly along the edges
         const side = i % 4;
         let top = '0%', left = '0%';
-        const offset = `${Math.random() * 8}px`; // Slightly wider area for snowflakes to shine
+        const offset = `${Math.random() * 6}px`; // Push them closer to the extreme edge
         
         if (side === 0) { // Top border
           top = offset;
@@ -70,7 +70,7 @@ function IceEffect() {
             style={{
               '--left': left,
               '--top': top,
-              '--size': `${3 + Math.random() * 5}px`,
+              '--size': `${8 + Math.random() * 10}px`, // Larger size
               '--duration': `${2 + Math.random() * 3}s`,
               'animationDelay': `${Math.random() * 5}s`
             } as React.CSSProperties}
