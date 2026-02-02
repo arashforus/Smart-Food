@@ -26,10 +26,21 @@ function Router() {
   useLayoutEffect(() => {
     const primaryColor = settings?.primaryColor || "#4CAF50";
     applyPrimaryColor(primaryColor);
-    // Force a small delay to ensure CSS variables are applied
+    
+    // Dynamically update favicon from settings
+    if (settings?.favicon) {
+      let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = settings.favicon;
+    }
+    
     const timer = setTimeout(() => applyPrimaryColor(primaryColor), 0);
     return () => clearTimeout(timer);
-  }, [settings?.primaryColor]);
+  }, [settings?.primaryColor, settings?.favicon]);
 
   return (
     <Switch>
