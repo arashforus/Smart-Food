@@ -168,7 +168,6 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
             )}
-            <SteamEffect />
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}

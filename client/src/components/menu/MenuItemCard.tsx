@@ -116,7 +116,6 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             ) : (
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
-            <SteamEffect />
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
@@ -198,7 +197,6 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             ) : (
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
-            <SteamEffect />
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
