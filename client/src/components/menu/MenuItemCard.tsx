@@ -47,20 +47,18 @@ function IceEffect() {
         // Distribute snowflakes strictly along all four sides of the border
         const side = i % 4;
         let top = '0%', left = '0%';
-        // Position them extremely near to the borders (0 to 1px offset)
-        const offset = `${Math.random() * 1}px`;
         
         if (side === 0) { // Top border
-          top = offset;
+          top = '0px';
           left = `${Math.random() * 100}%`;
         } else if (side === 1) { // Right border
-          left = `calc(100% - ${offset})`;
+          left = '100%';
           top = `${Math.random() * 100}%`;
         } else if (side === 2) { // Bottom border
-          top = `calc(100% - ${offset})`;
+          top = '100%';
           left = `${Math.random() * 100}%`;
         } else { // Left border
-          left = offset;
+          left = '0px';
           top = `${Math.random() * 100}%`;
         }
         
@@ -74,7 +72,7 @@ function IceEffect() {
               '--size': `${16 + Math.random() * 12}px`,
               '--duration': `${6 + Math.random() * 4}s`,
               'animationDelay': `${Math.random() * 8}s`,
-              'transform': 'translate(-50%, -50%)' // Center the snowflake on the border line
+              'transform': 'translate(-50%, -50%)' // Center the snowflake exactly on the border line
             } as React.CSSProperties}
           >
             ❄
