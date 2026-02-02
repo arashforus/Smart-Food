@@ -51,17 +51,10 @@ function IceEffect() {
   return (
     <div className="ice-container">
       <div className="ice-overlay" />
-      {[...Array(15)].map((_, i) => (
-        <div
-          key={i}
-          className="ice-flake"
-          style={{
-            '--left': `${Math.random() * 100}%`,
-            '--delay': `${Math.random() * 3}s`,
-            '--duration': `${2 + Math.random() * 2}s`
-          } as any}
-        />
-      ))}
+      <div className="ice-frost-corner" />
+      <div className="ice-frost-corner" />
+      <div className="ice-frost-corner" />
+      <div className="ice-frost-corner" />
     </div>
   );
 }
