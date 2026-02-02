@@ -629,13 +629,13 @@ function FormContent({
                         testId={`input-item-image${isEdit ? '-edit' : ''}`}
                       />
                     </FormControl>
-                    <div className="flex items-center gap-4 mt-2 border p-3 rounded-md bg-muted/20">
+                    <div className="flex items-center mt-2 border rounded-md bg-muted/20 divide-x h-12">
                       <FormField
                         control={form.control}
                         name="smokeEffect"
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 space-y-0">
-                            <FormLabel className="text-xs">Smoke</FormLabel>
+                          <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
+                            <FormLabel className="text-xs font-medium">Smoke</FormLabel>
                             <FormControl>
                               <Switch
                                 checked={field.value}
@@ -646,13 +646,12 @@ function FormContent({
                           </FormItem>
                         )}
                       />
-                      <div className="h-6 w-px bg-border" />
                       <FormField
                         control={form.control}
                         name="fireEffect"
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 space-y-0">
-                            <FormLabel className="text-xs">Fire</FormLabel>
+                          <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
+                            <FormLabel className="text-xs font-medium">Fire</FormLabel>
                             <FormControl>
                               <Switch
                                 checked={field.value}
@@ -663,13 +662,12 @@ function FormContent({
                           </FormItem>
                         )}
                       />
-                      <div className="h-6 w-px bg-border" />
                       <FormField
                         control={form.control}
                         name="iceEffect"
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 space-y-0">
-                            <FormLabel className="text-xs">Ice</FormLabel>
+                          <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
+                            <FormLabel className="text-xs font-medium">Ice</FormLabel>
                             <FormControl>
                               <Switch
                                 checked={field.value}
