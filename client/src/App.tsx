@@ -36,6 +36,10 @@ function Router() {
         document.head.appendChild(link);
       }
       link.href = settings.favicon;
+      
+      // Also update apple-touch-icon and others if they exist
+      const appleLink = document.querySelector("link[rel='apple-touch-icon']");
+      if (appleLink) (appleLink as HTMLLinkElement).href = settings.favicon;
     }
     
     const timer = setTimeout(() => applyPrimaryColor(primaryColor), 0);
