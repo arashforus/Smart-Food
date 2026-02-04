@@ -826,7 +826,13 @@ function FormContent({
                         }}
                       />
                       {material.icon ? (
-                        <span className="text-xl">{material.icon}</span>
+                        <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
+                          {material.icon.startsWith('/') || material.icon.startsWith('http') ? (
+                            <img src={material.icon} alt={material.name.en} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xl">{material.icon}</span>
+                          )}
+                        </div>
                       ) : (
                         <div
                           className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
