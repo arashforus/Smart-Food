@@ -296,7 +296,9 @@ export default function TypesPage() {
                     {item.icon && (item.icon.includes('/') || item.icon.includes('http') || item.icon.length > 10) ? (
                       <img src={item.icon} alt={item.generalName} className="w-full h-full object-cover" />
                     ) : (
-                      getIconComponent(item.icon)
+                      <div className="scale-75">
+                        {getIconComponent(item.icon)}
+                      </div>
                     )}
                   </div>
                 ),

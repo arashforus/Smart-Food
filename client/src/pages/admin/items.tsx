@@ -127,6 +127,14 @@ interface StorageSettings {
   currencySymbol: string;
 }
 
+const iconOptions = [
+  { value: 'leaf', Icon: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {...props}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C10.9 14.51 12 11 12 11"/></svg> },
+  { value: 'salad', Icon: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {...props}><path d="M7 21h10"/><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M11 7.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/><path d="M15 11.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/><path d="M9 13.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/><path d="M13 16.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0Z"/></svg> },
+  { value: 'wheat-off', Icon: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {...props}><path d="m2 2 20 20"/><path d="M10 10c0-1.1.9-2 2-2h1"/><path d="M17 11V7l-5-4-5 4v10a2 2 0 0 0 2 2h2"/><path d="M14 14c0 1.1-.9 2-2 2h-1"/><path d="M7 11V7"/><path d="M17 17v2"/></svg> },
+  { value: 'flame', Icon: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {...props}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/></svg> },
+  { value: 'heart', Icon: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> },
+];
+
 export default function ItemsPage() {
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
@@ -875,20 +883,22 @@ function FormContent({
                           );
                         }}
                       />
-                      {type.icon ? (
-                        <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
-                          {type.icon.includes('/') || type.icon.includes('http') || type.icon.length > 10 ? (
-                            <img src={type.icon} alt={type.name.en} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-xl">{type.icon}</span>
-                          )}
+                      {type.icon && (type.icon.includes('/') || type.icon.includes('http') || type.icon.length > 10) ? (
+                        <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center">
+                          <img src={type.icon} alt={type.name.en} className="w-full h-full object-cover" />
                         </div>
                       ) : (
                         <div
-                          className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-medium"
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-white"
                           style={{ backgroundColor: type.color || '#999' }}
                         >
-                          {type.name.en?.charAt(0).toUpperCase()}
+                          <div className="scale-75">
+                            {(() => {
+                              const iconName = type.icon || 'leaf';
+                              const iconOption = iconOptions.find((i) => i.value === iconName);
+                              return iconOption ? <iconOption.Icon className="h-4 w-4" /> : <span className="text-[10px]">{iconName}</span>;
+                            })()}
+                          </div>
                         </div>
                       )}
                       <span className="text-sm">{type.name.en || Object.values(type.name)[0]}</span>
