@@ -1,9 +1,18 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, Star, Plus } from 'lucide-react';
+import { UtensilsCrossed, Star, Plus, Leaf, Salad, WheatOff, Flame, Heart } from 'lucide-react';
 import { translations } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import type { MenuItem, Language, Settings } from '@/lib/types';
+import type { MenuItem, Language, Settings, FoodType } from '@/lib/types';
+import { useQuery } from '@tanstack/react-query';
+
+const iconMap: Record<string, typeof Leaf> = {
+  'leaf': Leaf,
+  'salad': Salad,
+  'wheat-off': WheatOff,
+  'flame': Flame,
+  'heart': Heart,
+};
 
 function SteamEffect() {
   return (
@@ -169,11 +178,29 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             </div>
             {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-1">
-                {item.types.map((typeId) => (
-                  <Badge key={typeId} variant="secondary" className="text-[9px] py-0 px-1 h-3.5 font-normal">
-                    {typeId}
-                  </Badge>
-                ))}
+                {item.types.map((typeId) => {
+                  const { data: foodTypes = [] } = useQuery<FoodType[]>({
+                    queryKey: ['/api/food-types'],
+                  });
+                  const type = foodTypes.find(t => t.id === typeId);
+                  if (!type) return null;
+                  const IconComponent = iconMap[type.icon || ''] || Leaf;
+                  return (
+                    <Badge 
+                      key={typeId} 
+                      variant="secondary" 
+                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
+                      style={{
+                        backgroundColor: type.color,
+                        color: 'white',
+                        borderColor: type.color
+                      }}
+                    >
+                      <IconComponent className="w-2.5 h-2.5" />
+                      {type.name[language as keyof typeof type.name] || type.name.en}
+                    </Badge>
+                  );
+                })}
               </div>
             )}
             {settings?.menuShowIngredients && (
