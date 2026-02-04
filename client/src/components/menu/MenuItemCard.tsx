@@ -162,8 +162,8 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 </Badge>
               )}
               {(isSuggested || item.suggested) && (
-                <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex items-center justify-center">
-                  <Star className="h-2 w-2 fill-white" />
+                <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex items-center justify-center min-w-[24px]">
+                  <Star className="h-2.5 w-2.5 fill-white" />
                 </Badge>
               )}
             </div>
@@ -248,7 +248,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   </Badge>
                 )}
                 {(isSuggested || item.suggested) && (
-                  <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0 flex items-center justify-center">
+                  <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0 flex items-center justify-center min-w-[24px]">
                     <Star className="h-2.5 w-2.5 fill-white" />
                   </Badge>
                 )}
