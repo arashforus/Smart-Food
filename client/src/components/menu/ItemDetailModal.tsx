@@ -146,8 +146,18 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className={`w-[calc(100%-2rem)] max-w-md md:max-w-3xl rounded-2xl px-6 ${isRtl ? '[&>button]:right-auto [&>button]:left-4' : ''} max-h-[90vh] flex flex-col`} data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader className="shrink-0">
-          <DialogTitle className={isRtl ? 'text-right' : ''} data-testid="text-modal-item-name">
-            {getName()}
+          <DialogTitle className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`} data-testid="text-modal-item-name">
+            <span>{getName()}</span>
+            {item.isNew && (
+              <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-1.5 py-0 h-4 shadow-sm shrink-0">
+                New
+              </Badge>
+            )}
+            {item.suggested && (
+              <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-1.5 py-0 h-4 flex items-center justify-center min-w-[20px] shadow-sm shrink-0">
+                <Star className="h-2.5 w-2.5 fill-white" />
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-y-auto pr-2 custom-scrollbar">
@@ -160,16 +170,6 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               />
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
-            )}
-            {item.isNew && (
-              <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground font-bold uppercase text-xs px-2 py-1 h-auto shadow-lg z-10">
-                New
-              </Badge>
-            )}
-            {item.suggested && (
-              <Badge className="absolute top-4 right-4 bg-amber-500 text-white font-bold uppercase text-xs px-2 py-1 h-auto flex items-center justify-center min-w-[28px] shadow-lg z-10">
-                <Star className="h-3 w-3 fill-white" />
-              </Badge>
             )}
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
