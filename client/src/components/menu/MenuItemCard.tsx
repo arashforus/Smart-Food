@@ -188,11 +188,12 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   return (
                     <Badge 
                       key={typeId} 
-                      variant="secondary" 
-                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1 border-none"
+                      variant="outline" 
+                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
                       style={{
-                        backgroundColor: type.color,
-                        color: 'white',
+                        borderColor: type.color,
+                        color: type.color,
+                        backgroundColor: 'transparent'
                       }}
                     >
                       <IconComponent className="w-2.5 h-2.5" />
@@ -301,11 +302,12 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                       return (
                         <Badge 
                           key={typeId} 
-                          variant="secondary" 
-                          className="text-[10px] py-0 px-1.5 h-4 font-medium gap-1 border-none"
+                          variant="outline" 
+                          className="text-[10px] py-0 px-1.5 h-4 font-medium gap-1"
                           style={{
-                            backgroundColor: type.color,
-                            color: 'white',
+                            borderColor: type.color,
+                            color: type.color,
+                            backgroundColor: 'transparent'
                           }}
                         >
                           <IconComponent className="w-3 h-3" />
