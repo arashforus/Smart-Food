@@ -162,7 +162,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 </Badge>
               )}
               {(isSuggested || item.suggested) && (
-                <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex items-center justify-center min-w-[24px]">
+                <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-1 h-auto items-center justify-center min-w-[24px]">
                   <Star className="h-2.5 w-2.5 fill-white" />
                 </Badge>
               )}
