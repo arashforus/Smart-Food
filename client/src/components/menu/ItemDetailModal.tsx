@@ -149,12 +149,12 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           <DialogTitle className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`} data-testid="text-modal-item-name">
             <span>{getName()}</span>
             {item.isNew && (
-              <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-1.5 py-0 h-4 shadow-sm shrink-0">
+              <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-1.5 py-0.5 h-5 shadow-sm shrink-0">
                 New
               </Badge>
             )}
             {item.suggested && (
-              <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-1.5 py-0 h-4 flex items-center justify-center min-w-[20px] shadow-sm shrink-0">
+              <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-1.5 py-0.5 h-5 flex items-center justify-center min-w-[20px] shadow-sm shrink-0">
                 <Star className="h-2.5 w-2.5 fill-white" />
               </Badge>
             )}
