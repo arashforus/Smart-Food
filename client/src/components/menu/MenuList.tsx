@@ -63,7 +63,7 @@ export default function MenuList({
   const gridClass = viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4' : 'space-y-3';
 
   if (showSuggested || settings?.menuShowRecommendedMenuItems) {
-    if (suggestedItems.length > 0) {
+    if (suggestedItems.length > 0 && showSuggested) {
       return (
         <div className={`p-4 space-y-6 ${isRtl ? 'dir-rtl' : ''}`} dir={isRtl ? 'rtl' : 'ltr'}>
           <div>
