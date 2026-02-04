@@ -184,7 +184,13 @@ export default function MaterialsPage() {
                 header: 'Preview',
                 render: (item: any) => (
                   item.image ? (
-                    <img src={item.image} alt={item.generalName} className="w-8 h-8 rounded-md object-cover" />
+                    <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center">
+                      {item.image.includes('/') || item.image.includes('http') || item.image.length > 10 ? (
+                        <img src={item.image} alt={item.generalName} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xl">{item.image}</span>
+                      )}
+                    </div>
                   ) : (
                     <div
                       className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"

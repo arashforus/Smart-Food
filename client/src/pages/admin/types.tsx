@@ -290,10 +290,14 @@ export default function TypesPage() {
                 header: 'Preview',
                 render: (item: any) => (
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white overflow-hidden"
                     style={{ backgroundColor: item.color }}
                   >
-                    {getIconComponent(item.icon)}
+                    {item.icon && (item.icon.includes('/') || item.icon.includes('http') || item.icon.length > 10) ? (
+                      <img src={item.icon} alt={item.generalName} className="w-full h-full object-cover" />
+                    ) : (
+                      getIconComponent(item.icon)
+                    )}
                   </div>
                 ),
               },

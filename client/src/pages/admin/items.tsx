@@ -827,7 +827,7 @@ function FormContent({
                       />
                       {material.icon ? (
                         <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
-                          {material.icon.startsWith('/') || material.icon.startsWith('http') ? (
+                          {material.icon.includes('/') || material.icon.includes('http') || material.icon.length > 10 ? (
                             <img src={material.icon} alt={material.name.en} className="w-full h-full object-cover" />
                           ) : (
                             <span className="text-xl">{material.icon}</span>
@@ -877,7 +877,7 @@ function FormContent({
                       />
                       {type.icon ? (
                         <div className="w-6 h-6 rounded overflow-hidden flex items-center justify-center">
-                          {type.icon.startsWith('/') || type.icon.startsWith('http') ? (
+                          {type.icon.includes('/') || type.icon.includes('http') || type.icon.length > 10 ? (
                             <img src={type.icon} alt={type.name.en} className="w-full h-full object-cover" />
                           ) : (
                             <span className="text-xl">{type.icon}</span>
