@@ -150,22 +150,23 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
-            {(isSuggested || item.suggested) && (
-              <div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1">
-                <Star className="h-3 w-3 text-white fill-white" />
-              </div>
-            )}
           </div>
           <div className="p-3">
             <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
+                {getName()}
+              </h3>
               {item.isNew && (
                 <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto">
                   New
                 </Badge>
               )}
-              <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
-                {getName()}
-              </h3>
+              {(isSuggested || item.suggested) && (
+                <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex items-center gap-1">
+                  <Star className="h-2 w-2 fill-white" />
+                  {t.suggested || 'Recommended'}
+                </Badge>
+              )}
             </div>
             {settings?.menuShowIngredients && (
               <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
@@ -233,25 +234,26 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
-            {(isSuggested || item.suggested) && (
-              <div className="absolute top-1 inset-inline-end-1 bg-amber-500 rounded-full p-0.5">
-                <Star className="h-3 w-3 text-white fill-white" />
-              </div>
-            )}
           </div>
         )}
         <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
               <div className="flex items-center gap-2 truncate">
+                <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
+                  {getName()}
+                </h3>
                 {item.isNew && (
                   <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0">
                     New
                   </Badge>
                 )}
-                <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
-                  {getName()}
-                </h3>
+                {(isSuggested || item.suggested) && (
+                  <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0 flex items-center gap-1">
+                    <Star className="h-2.5 w-2.5 fill-white" />
+                    {t.suggested || 'Recommended'}
+                  </Badge>
+                )}
               </div>
               {settings?.menuShowPrices && (
                 <div className="flex flex-col items-end">
