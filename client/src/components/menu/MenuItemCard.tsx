@@ -189,11 +189,10 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                     <Badge 
                       key={typeId} 
                       variant="secondary" 
-                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
+                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1 border-none"
                       style={{
                         backgroundColor: type.color,
                         color: 'white',
-                        borderColor: type.color
                       }}
                     >
                       <IconComponent className="w-2.5 h-2.5" />
@@ -292,11 +291,28 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 </div>
                 {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-0.5">
-                    {item.types.map((typeId) => (
-                      <Badge key={typeId} variant="secondary" className="text-[10px] py-0 px-1.5 h-4 font-normal">
-                        {typeId}
-                      </Badge>
-                    ))}
+                    {item.types.map((typeId) => {
+                      const { data: foodTypes = [] } = useQuery<FoodType[]>({
+                        queryKey: ['/api/food-types'],
+                      });
+                      const type = foodTypes.find(t => t.id === typeId);
+                      if (!type) return null;
+                      const IconComponent = iconMap[type.icon || ''] || Leaf;
+                      return (
+                        <Badge 
+                          key={typeId} 
+                          variant="secondary" 
+                          className="text-[10px] py-0 px-1.5 h-4 font-medium gap-1 border-none"
+                          style={{
+                            backgroundColor: type.color,
+                            color: 'white',
+                          }}
+                        >
+                          <IconComponent className="w-3 h-3" />
+                          {type.name[language as keyof typeof type.name] || type.name.en}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 )}
               </div>
