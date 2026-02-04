@@ -155,16 +155,18 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 <Star className="h-3 w-3 text-white fill-white" />
               </div>
             )}
-            {item.isNew && (
-              <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5">
-                New
-              </Badge>
-            )}
           </div>
           <div className="p-3">
-            <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
-              {getName()}
-            </h3>
+            <div className="flex items-center gap-2 mb-1">
+              {item.isNew && (
+                <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto">
+                  New
+                </Badge>
+              )}
+              <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
+                {getName()}
+              </h3>
+            </div>
             {settings?.menuShowIngredients && (
               <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
                 {getDescription()}
@@ -236,19 +238,21 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 <Star className="h-3 w-3 text-white fill-white" />
               </div>
             )}
-            {item.isNew && (
-              <div className="absolute top-1 inset-inline-start-1 bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 rounded-full">
-                New
-              </div>
-            )}
           </div>
         )}
         <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
-              <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
-                {getName()}
-              </h3>
+              <div className="flex items-center gap-2 truncate">
+                {item.isNew && (
+                  <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0">
+                    New
+                  </Badge>
+                )}
+                <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
+                  {getName()}
+                </h3>
+              </div>
               {settings?.menuShowPrices && (
                 <div className="flex flex-col items-end">
                   {hasDiscount ? (
