@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { UtensilsCrossed, Plus, Minus, ShoppingCart, Star } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import type { MenuItem, Language, Settings } from '@/lib/types';
 import { translations } from '@/lib/types';
@@ -160,6 +160,16 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               />
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
+            )}
+            {item.isNew && (
+              <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground font-bold uppercase text-xs px-2 py-1 h-auto shadow-lg z-10">
+                New
+              </Badge>
+            )}
+            {item.suggested && (
+              <Badge className="absolute top-4 right-4 bg-amber-500 text-white font-bold uppercase text-xs px-2 py-1 h-auto flex items-center justify-center min-w-[28px] shadow-lg z-10">
+                <Star className="h-3 w-3 fill-white" />
+              </Badge>
             )}
             {item.smokeEffect && <SteamEffect />}
             {item.fireEffect && <FireEffect />}
