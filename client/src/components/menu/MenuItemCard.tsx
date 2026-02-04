@@ -151,8 +151,8 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
           </div>
-          <div className="p-3">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="p-3">
+            <div className="flex items-center gap-2 mb-0.5">
               <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
                 {getName()}
               </h3>
@@ -167,6 +167,15 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 </Badge>
               )}
             </div>
+            {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-1">
+                {item.types.map((typeId) => (
+                  <Badge key={typeId} variant="secondary" className="text-[9px] py-0 px-1 h-3.5 font-normal">
+                    {typeId}
+                  </Badge>
+                ))}
+              </div>
+            )}
             {settings?.menuShowIngredients && (
               <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
                 {getDescription()}
@@ -238,19 +247,30 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
         <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
-              <div className="flex items-center gap-2 truncate">
-                <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
-                  {getName()}
-                </h3>
-                {item.isNew && (
-                  <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0">
-                    New
-                  </Badge>
-                )}
-                {(isSuggested || item.suggested) && (
-                  <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-1 h-auto flex-shrink-0 flex items-center justify-center min-w-[24px]">
-                    <Star className="h-2.5 w-2.5 fill-white" />
-                  </Badge>
+              <div className="flex flex-col truncate min-w-0">
+                <div className="flex items-center gap-2 truncate">
+                  <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
+                    {getName()}
+                  </h3>
+                  {item.isNew && (
+                    <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0">
+                      New
+                    </Badge>
+                  )}
+                  {(isSuggested || item.suggested) && (
+                    <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-1 h-auto flex-shrink-0 flex items-center justify-center min-w-[24px]">
+                      <Star className="h-2.5 w-2.5 fill-white" />
+                    </Badge>
+                  )}
+                </div>
+                {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-0.5">
+                    {item.types.map((typeId) => (
+                      <Badge key={typeId} variant="secondary" className="text-[10px] py-0 px-1.5 h-4 font-normal">
+                        {typeId}
+                      </Badge>
+                    ))}
+                  </div>
                 )}
               </div>
               {settings?.menuShowPrices && (
@@ -279,13 +299,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             )}
           </div>
           <div className="flex items-center justify-between mt-1">
-            <div className="flex gap-1">
-              {settings?.menuShowFoodTypes && item.types?.slice(0, 2).map((typeId) => (
-                <Badge key={typeId} variant="secondary" className="text-[10px] py-0 px-1.5 h-4 font-normal">
-                  {typeId}
-                </Badge>
-              ))}
-            </div>
+            <div className="flex gap-1" />
             {settings?.menuShowBuyButton && (
               <Button
                 size="sm"
