@@ -125,6 +125,7 @@ interface StorageLanguage {
 
 interface StorageSettings {
   currencySymbol: string;
+  currencyDecimal?: number;
 }
 
 const iconOptions = [
@@ -447,18 +448,21 @@ export default function ItemsPage() {
           { 
             key: 'price', 
             header: 'Price', 
-            render: (item) => (
-              <div className="flex items-center gap-2">
-                {item.discountedPrice ? (
-                  <>
-                    <span className="text-muted-foreground line-through">{currencySymbol}{Number(item.price).toFixed(2)}</span>
-                    <span className="text-green-600 font-medium">{currencySymbol}{Number(item.discountedPrice).toFixed(2)}</span>
-                  </>
-                ) : (
-                  <span>{currencySymbol}{Number(item.price).toFixed(2)}</span>
-                )}
-              </div>
-            )
+            render: (item) => {
+              const decimalPlaces = settings?.currencyDecimal ?? 2;
+              return (
+                <div className="flex items-center gap-2">
+                  {item.discountedPrice ? (
+                    <>
+                      <span className="text-muted-foreground line-through">{currencySymbol}{Number(item.price).toFixed(decimalPlaces)}</span>
+                      <span className="text-green-600 font-medium">{currencySymbol}{Number(item.discountedPrice).toFixed(decimalPlaces)}</span>
+                    </>
+                  ) : (
+                    <span>{currencySymbol}{Number(item.price).toFixed(decimalPlaces)}</span>
+                  )}
+                </div>
+              );
+            }
           },
           {
             key: 'available',
