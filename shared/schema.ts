@@ -229,6 +229,10 @@ export const settings = pgTable("settings", {
   menuShowFoodTypes: boolean("menu_show_food_types").notNull().default(true),
   menuShowBuyButton: boolean("menu_show_buy_button").notNull().default(true),
   menuShowMoreInformationPopup: boolean("menu_show_more_information_popup").notNull().default(true),
+  menuLogoShowBackground: boolean("menu_logo_show_background").notNull().default(false),
+  menuLogoBackgroundType: text("menu_logo_background_type").notNull().default("square"), // 'square' | 'square-low' | 'square-high' | 'circle'
+  menuLogoBackgroundColorLight: text("menu_logo_background_color_light").notNull().default("#ffffff"),
+  menuLogoBackgroundColorDark: text("menu_logo_background_color_dark").notNull().default("#1a1a1a"),
 
   // KD
   kdShowTableNumber: boolean("kd_show_table_number").notNull().default(true),
