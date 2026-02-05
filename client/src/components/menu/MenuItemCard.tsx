@@ -128,7 +128,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
   const currencyPosition = settings?.currencyPosition || 'after';
 
   const formatPrice = (p: number) => {
-    return currencyPosition === 'before' ? `${currencySymbol}${p.toFixed(2)}` : `${p.toFixed(2)}${currencySymbol}`;
+    const decimalPlaces = settings?.currencyDecimal ?? 2;
+    const formattedPrice = p.toFixed(decimalPlaces);
+    return currencyPosition === 'before' ? `${currencySymbol}${formattedPrice}` : `${formattedPrice}${currencySymbol}`;
   };
 
   const handleAddClick = (e: React.MouseEvent) => {
