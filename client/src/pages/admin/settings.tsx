@@ -2309,13 +2309,35 @@ export default function SettingsPage() {
                         )}
                       />
 
+                      <FormField
+                        control={form.control}
+                        name="currencyDecimal"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Decimal Places</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                {...field} 
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)} 
+                                data-testid="input-currency-decimal"
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Number of decimal places to show for prices (0-4)
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
                       <div className="p-4 bg-muted rounded-lg border">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">Current Currency:</span>
                           <p className="text-lg font-bold">
                             {form.watch('currencyPosition') === 'before' 
-                              ? `${form.watch('currencySymbol')} 100`
-                              : `100 ${form.watch('currencySymbol')}`
+                              ? `${form.watch('currencySymbol')} 100.${'0'.repeat(form.watch('currencyDecimal') || 0)}`
+                              : `100.${'0'.repeat(form.watch('currencyDecimal') || 0)} ${form.watch('currencySymbol')}`
                             } ({currencies.find((c) => c.code === form.watch('currencySelect'))?.name || 'Unknown'})
                           </p>
                         </div>
