@@ -121,9 +121,11 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
   const currencySymbol = settings?.currencySymbol || '$';
   const currencyPosition = settings?.currencyPosition || 'after';
+  const decimalPlaces = settings?.currencyDecimal ?? 2;
 
   const formatPrice = (p: number) => {
-    return currencyPosition === 'before' ? `${currencySymbol}${p.toFixed(2)}` : `${p.toFixed(2)}${currencySymbol}`;
+    const formattedPrice = p.toFixed(decimalPlaces);
+    return currencyPosition === 'before' ? `${currencySymbol}${formattedPrice}` : `${formattedPrice}${currencySymbol}`;
   };
 
   const handleAddToCart = () => {

@@ -173,6 +173,7 @@ export interface Settings {
   currencyPosition?: 'before' | 'after';
   currencyName?: string;
   currencySelect?: string;
+  currencyDecimal?: number;
   licenseKey?: string;
   licenseExpiry?: string;
   paymentSettings?: PaymentSettings;
