@@ -42,6 +42,10 @@ const settingsSchema = z.object({
   primaryColor: z.string().min(1, 'Primary color is required'),
   showBuyButton: z.boolean(),
   showMoreInformationPopup: z.boolean(),
+  menuLogoShowBackground: z.boolean(),
+  menuLogoBackgroundType: z.enum(['square', 'square-low', 'square-high', 'circle']),
+  menuLogoBackgroundColorLight: z.string(),
+  menuLogoBackgroundColorDark: z.string(),
   defaultLanguage: z.string().min(1, 'Default language is required'),
   currencyName: z.string().min(1, 'Currency name is required'),
   currencySymbol: z.string().min(1, 'Currency symbol is required'),
@@ -265,6 +269,11 @@ export default function SettingsPage() {
       if (dbSettings.menuShowBuyButton !== undefined) setShowBuyButton(dbSettings.menuShowBuyButton);
       if (dbSettings.menuShowMoreInformationPopup !== undefined) setShowMoreInformationPopup(dbSettings.menuShowMoreInformationPopup);
 
+      if (dbSettings.menuLogoShowBackground !== undefined) setMenuLogoShowBackground(dbSettings.menuLogoShowBackground);
+      if (dbSettings.menuLogoBackgroundType) setMenuLogoBackgroundType(dbSettings.menuLogoBackgroundType);
+      if (dbSettings.menuLogoBackgroundColorLight) setMenuLogoBackgroundColorLight(dbSettings.menuLogoBackgroundColorLight);
+      if (dbSettings.menuLogoBackgroundColorDark) setMenuLogoBackgroundColorDark(dbSettings.menuLogoBackgroundColorDark);
+
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
@@ -297,6 +306,10 @@ export default function SettingsPage() {
           restaurantWhatsapp: dbSettings.restaurantWhatsapp || '',
           restaurantTelegram: dbSettings.restaurantTelegram || '',
           restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || '',
+          menuLogoShowBackground: dbSettings.menuLogoShowBackground ?? false,
+          menuLogoBackgroundType: dbSettings.menuLogoBackgroundType || 'square',
+          menuLogoBackgroundColorLight: dbSettings.menuLogoBackgroundColorLight || '#ffffff',
+          menuLogoBackgroundColorDark: dbSettings.menuLogoBackgroundColorDark || '#1a1a1a',
         });
       }
     }
@@ -363,6 +376,10 @@ export default function SettingsPage() {
   const [showFoodTypes, setShowFoodTypes] = useState(true);
   const [showBuyButton, setShowBuyButton] = useState(true);
   const [showMoreInformationPopup, setShowMoreInformationPopup] = useState(true);
+  const [menuLogoShowBackground, setMenuLogoShowBackground] = useState(false);
+  const [menuLogoBackgroundType, setMenuLogoBackgroundType] = useState('square');
+  const [menuLogoBackgroundColorLight, setMenuLogoBackgroundColorLight] = useState('#ffffff');
+  const [menuLogoBackgroundColorDark, setMenuLogoBackgroundColorDark] = useState('#1a1a1a');
   const [rolePermissions, setRolePermissions] = useState<{
     admin: string[];
     manager: string[];
@@ -702,6 +719,10 @@ export default function SettingsPage() {
       menuShowFoodTypes: showFoodTypes,
       menuShowBuyButton: showBuyButton,
       menuShowMoreInformationPopup: showMoreInformationPopup,
+      menuLogoShowBackground,
+      menuLogoBackgroundType,
+      menuLogoBackgroundColorLight,
+      menuLogoBackgroundColorDark,
       kdShowTableNumber: data.kdShowTableNumber,
       kdShowOrderTime: data.kdShowOrderTime,
       kdShowClock: data.kdShowClock,
