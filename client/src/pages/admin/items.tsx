@@ -504,6 +504,7 @@ export default function ItemsPage() {
             foodTypes={foodTypes}
             languages={languages}
             currencySymbol={currencySymbol}
+            settings={settings}
             categoryImage={categoryImage}
             onSubmit={handleCreate} 
             onCancel={() => setFormOpen(false)} 
@@ -525,6 +526,7 @@ export default function ItemsPage() {
             foodTypes={foodTypes}
             languages={languages}
             currencySymbol={currencySymbol}
+            settings={settings}
             categoryImage={categoryImage}
             onSubmit={handleEdit} 
             onCancel={() => setEditingItem(null)} 
@@ -562,6 +564,7 @@ interface FormContentProps {
   foodTypes: StorageFoodType[];
   languages: StorageLanguage[];
   currencySymbol: string;
+  settings?: StorageSettings;
   categoryImage?: string;
   onSubmit: (data: ItemFormData) => void;
   onCancel: () => void;
@@ -576,6 +579,7 @@ function FormContent({
   foodTypes,
   languages,
   currencySymbol,
+  settings,
   categoryImage,
   onSubmit,
   onCancel,
@@ -695,38 +699,39 @@ function FormContent({
                   </FormItem>
               )} />
               
-              <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="price" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price ({currencySymbol})</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.01" {...field} 
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
-                        data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="discountedPrice" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discounted Price ({currencySymbol})</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        step="0.01" 
-                        {...field} 
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
-                        placeholder="Optional"
-                        data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="price" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Price ({currencySymbol})</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      step={1 / Math.pow(10, settings?.currencyDecimal ?? 2)}
+                      {...field} 
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                      data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="discountedPrice" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Discounted Price ({currencySymbol})</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      step={1 / Math.pow(10, settings?.currencyDecimal ?? 2)}
+                      {...field} 
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
+                      placeholder="Optional"
+                      data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="categoryId" render={({ field }) => (
