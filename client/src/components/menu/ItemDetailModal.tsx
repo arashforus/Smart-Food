@@ -196,7 +196,6 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             
             {settings?.menuShowIngredients && getMaterials().length > 0 && (
               <div className={isRtl ? 'text-right' : ''}>
-                <p className="text-xs text-muted-foreground font-medium mb-2">{t.materials}:</p>
                 <div className={`flex flex-wrap gap-3 ${isRtl ? 'justify-end' : ''}`}>
                   {getMaterials().map((material: any) => (
                     <div key={material.id} className="flex flex-col items-center gap-1">
@@ -228,11 +227,11 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
               <div className={`flex items-center gap-3 ${isRtl ? 'justify-end' : ''}`}>
                 {hasDiscount ? (
                   <>
-                    <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                      {formatPrice(discountedPrice!)}
-                    </span>
                     <span className="text-lg text-muted-foreground line-through">
                       {formatPrice(price)}
+                    </span>
+                    <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
+                      {formatPrice(discountedPrice!)}
                     </span>
                   </>
                 ) : (
