@@ -161,12 +161,12 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 flex flex-col md:flex-row gap-6 overflow-y-auto pr-2 custom-scrollbar">
-          <div className="w-full md:w-1/2 aspect-square rounded-2xl bg-muted flex items-center justify-center overflow-hidden shrink-0 relative">
+          <div className="w-full md:w-1/2 aspect-square rounded-2xl bg-muted/30 flex items-center justify-center overflow-hidden shrink-0 relative border">
             {settings?.menuShowImages && item.image ? (
               <img
                 src={item.image}
                 alt={getName()}
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-contain rounded-2xl"
               />
             ) : (
               <UtensilsCrossed className="w-12 h-12 text-muted-foreground" />
