@@ -2040,7 +2040,7 @@ export default function SettingsPage() {
                             <SelectValue placeholder="Select shape" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="square">Square (No rounding)</SelectItem>
+                            <SelectItem value="square">Square</SelectItem>
                             <SelectItem value="square-low">Rounded (Low)</SelectItem>
                             <SelectItem value="square-high">Rounded (High)</SelectItem>
                             <SelectItem value="circle">Circle</SelectItem>
@@ -2093,14 +2093,14 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div
                             className="flex flex-col items-center gap-2 p-4 border rounded-lg transition-colors duration-300"
-                            style={{ backgroundColor: menuBackgroundType === 'solid' ? menuBackgroundColor : '#f8fafc' }}
+                            style={{ backgroundColor: menuBackgroundType === 'solid' ? menuBackgroundColor : '#fff' }}
                           >
                             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Light Mode</span>
                             <div
                               className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
                                 menuLogoBackgroundType === 'circle' ? 'rounded-full' :
-                                menuLogoBackgroundType === 'square-low' ? 'rounded-sm' :
-                                menuLogoBackgroundType === 'square-high' ? 'rounded-2xl' :
+                                menuLogoBackgroundType === 'square-low' ? 'rounded-xl' :
+                                menuLogoBackgroundType === 'square-high' ? 'rounded-3xl' :
                                 menuLogoBackgroundType === 'square' ? 'rounded-none' :
                                 'rounded-md'
                               }`}
@@ -2115,14 +2115,14 @@ export default function SettingsPage() {
                           </div>
                           <div
                             className="flex flex-col items-center gap-2 p-4 border rounded-lg transition-colors duration-300"
-                            style={{ backgroundColor: menuBackgroundType === 'solid' ? menuBackgroundColor : '#0f172a' }}
+                            style={{ backgroundColor: menuBackgroundType === 'solid' ? menuBackgroundColor : '#121212' }}
                           >
                             <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Dark Mode</span>
                             <div
                               className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
                                 menuLogoBackgroundType === 'circle' ? 'rounded-full' :
-                                menuLogoBackgroundType === 'square-low' ? 'rounded-sm' :
-                                menuLogoBackgroundType === 'square-high' ? 'rounded-2xl' :
+                                menuLogoBackgroundType === 'square-low' ? 'rounded-xl' :
+                                menuLogoBackgroundType === 'square-high' ? 'rounded-3xl' :
                                 menuLogoBackgroundType === 'square' ? 'rounded-none' :
                                 'rounded-md'
                               }`}
