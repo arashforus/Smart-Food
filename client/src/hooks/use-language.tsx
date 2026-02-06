@@ -1,115 +1,99 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import en from '@/locales/en.json';
-import fa from '@/locales/fa.json';
-import tr from '@/locales/tr.json';
-import ar from '@/locales/ar.json';
 
-type Language = 'en' | 'fa' | 'tr' | 'ar';
+type Language = string;
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => Promise<void>;
   t: (key: string) => string;
-  languages: { code: Language; name: string }[];
+  languages: { code: string; name: string }[];
   dir: 'ltr' | 'rtl';
 }
-
-const translations = {
-  en,
-  fa,
-  tr,
-  ar,
-};
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguageState] = useState<string>('en');
+  const [translations, setTranslations] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Load language from localStorage or fetch from API
-    const loadLanguage = async () => {
-      try {
-        const response = await fetch('/api/auth/me');
-        if (response.ok) {
-          const user = await response.json();
-          const userLang = (user.language || 'en') as Language;
-          setLanguageState(userLang);
-          localStorage.setItem('language', userLang);
-          applyLanguageToDOM(userLang);
-        } else {
-          // If not authenticated, use localStorage or default
-          const stored = (localStorage.getItem('language') || 'en') as Language;
-          setLanguageState(stored);
-          applyLanguageToDOM(stored);
+  const { data: dbLanguages = [] } = useQuery<any[]>({
+    queryKey: ['/api/languages'],
+    staleTime: Infinity,
+  });
+
+  const loadTranslations = async (lang: string) => {
+    try {
+      const response = await fetch(`/src/locales/${lang}.json`);
+      if (response.ok) {
+        const data = await response.json();
+        setTranslations(data);
+      } else {
+        // Fallback to English if the specific language file doesn't exist
+        const fallbackResponse = await fetch('/src/locales/en.json');
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          setTranslations(fallbackData);
         }
-      } catch (error) {
-        console.error('Failed to load language:', error);
-        const stored = (localStorage.getItem('language') || 'en') as Language;
+      }
+    } catch (error) {
+      console.error(`Failed to load translations for ${lang}:`, error);
+    }
+  };
+
+  useEffect(() => {
+    const initLanguage = async () => {
+      try {
+        const stored = localStorage.getItem('language') || 'en';
         setLanguageState(stored);
+        await loadTranslations(stored);
         applyLanguageToDOM(stored);
       } finally {
         setIsLoading(false);
       }
     };
-
-    loadLanguage();
+    initLanguage();
   }, []);
 
-  const setLanguage = async (lang: Language) => {
+  const setLanguage = async (lang: string) => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
+    await loadTranslations(lang);
     applyLanguageToDOM(lang);
-
-    // Update user language preference in database
-    try {
-      await fetch('/api/auth/update-language', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language: lang }),
-      });
-    } catch (error) {
-      console.error('Failed to update language preference:', error);
-    }
   };
 
   const t = (key: string): string => {
+    if (!translations || Object.keys(translations).length === 0) return key;
+    
     const keys = key.split('.');
-    let value: any = translations[language];
+    let value: any = translations;
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
-        return key; // Return key if translation not found
+        return key;
       }
     }
 
     return typeof value === 'string' ? value : key;
   };
 
-  const dir = language === 'fa' || language === 'ar' ? 'rtl' : 'ltr';
+  const activeDbLang = dbLanguages.find(l => l.code === language);
+  const dir = activeDbLang?.direction || (language === 'fa' || language === 'ar' ? 'rtl' : 'ltr');
 
-  const languages: { code: Language; name: string }[] = [
-    { code: 'en', name: 'English' },
-    { code: 'fa', name: 'فارسی' },
-    { code: 'tr', name: 'Türkçe' },
-    { code: 'ar', name: 'العربية' },
-  ];
-
-  const { data: dbLanguages } = useQuery<any[]>({
-    queryKey: ['/api/languages'],
-    staleTime: Infinity,
-  });
-
-  const availableLanguages = dbLanguages 
-    ? dbLanguages.filter(l => l.isActive).map(l => ({ code: l.code as Language, name: l.name }))
-    : languages;
+  const availableLanguages = dbLanguages.length > 0 
+    ? dbLanguages.filter(l => l.isActive).map(l => ({ code: l.code, name: l.name }))
+    : [
+        { code: 'en', name: 'English' },
+        { code: 'fa', name: 'فارسی' },
+        { code: 'tr', name: 'Türkçe' },
+        { code: 'ar', name: 'العربية' },
+      ];
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   return (
@@ -127,8 +111,10 @@ export function useLanguage() {
   return context;
 }
 
-function applyLanguageToDOM(lang: 'en' | 'fa' | 'tr' | 'ar') {
-  const dir = lang === 'fa' || lang === 'ar' ? 'rtl' : 'ltr';
+function applyLanguageToDOM(lang: string) {
+  // In a real app we might want to check the DB language direction here too
+  const isRtl = lang === 'fa' || lang === 'ar';
+  const dir = isRtl ? 'rtl' : 'ltr';
   document.documentElement.dir = dir;
   document.documentElement.lang = lang;
 }

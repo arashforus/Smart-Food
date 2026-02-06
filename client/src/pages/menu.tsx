@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ShoppingCart, Instagram, Send } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Instagram, Send } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import RestaurantHeader from '@/components/menu/RestaurantHeader';
 import CategoryTabs from '@/components/menu/CategoryTabs';
@@ -12,16 +12,24 @@ import CartView from '@/components/menu/CartView';
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
 import CookingLoader from '@/components/menu/CookingLoader';
-import { translations } from '@/lib/types';
-import type { MenuItem, Language, CartItem, Category, FoodType, Settings } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
+import type { MenuItem, CartItem, Category, FoodType, Settings } from '@/lib/types';
 
 export default function MenuPage() {
   const [, setLocation] = useLocation();
+  const { language, setLanguage, t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
+  const BackArrow = ArrowLeft;
+
   const [isPageLoading, setIsPageLoading] = useState(true);
-  const [language, setLanguage] = useState<Language>(() => {
-    const stored = localStorage.getItem('menuLanguage') as Language;
-    return stored || 'en';
-  });
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [showSuggested, setShowSuggested] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [showCartView, setShowCartView] = useState(false);
 
   const { data: settings } = useQuery<Settings>({
     queryKey: ['/api/settings'],
@@ -43,37 +51,14 @@ export default function MenuPage() {
     queryKey: ['/api/languages'],
   });
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [showSuggested, setShowSuggested] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [showCartView, setShowCartView] = useState(false);
-
   useEffect(() => {
-    // Show loader for at least 0.5 seconds or until data is loaded
-    const timer = setTimeout(() => {
-      if (!menuItemsLoading && !foodTypesLoading && !languagesLoading) {
+    if (!menuItemsLoading && !foodTypesLoading && !languagesLoading) {
+      const timer = setTimeout(() => {
         setIsPageLoading(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
   }, [menuItemsLoading, foodTypesLoading, languagesLoading]);
-
-  useEffect(() => {
-    localStorage.setItem('menuLanguage', language);
-  }, [language]);
-
-  if (isPageLoading) {
-    return <CookingLoader />;
-  }
-
-  const t = translations[language] || translations.en;
-  const isRtl = language === 'fa' || language === 'ar';
-  const BackArrow = ArrowLeft;
 
   const handleSelectType = (typeId: string) => {
     setSelectedTypes((prev) =>
@@ -132,6 +117,10 @@ export default function MenuPage() {
     ? { backgroundImage: `url(${settings.menuBackgroundImage})`, backgroundSize: 'cover', backgroundAttachment: 'fixed' }
     : {};
 
+  if (isPageLoading) {
+    return <CookingLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-background" style={backgroundStyle}>
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
@@ -187,7 +176,6 @@ export default function MenuPage() {
       </div>
 
       <div dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'font-vazir' : ''}>
-        
         <RestaurantHeader 
           restaurant={restaurantData as any} 
           language={language} 
@@ -226,7 +214,6 @@ export default function MenuPage() {
           searchQuery={searchQuery}
           settings={settings}
         />
-
       </div>
     
       <ItemDetailModal
@@ -272,7 +259,7 @@ export default function MenuPage() {
             data-testid="button-cart"
           >
             <ShoppingCart className="h-5 w-5" />
-            <span>{cartItems.length} {t.cart}</span>
+            <span>{cartItems.length} {t('cart')}</span>
             <span className="font-semibold">
               {settings?.currencyPosition === 'before' ? settings?.currencySymbol : ''}
               {cartTotal.toFixed(2)}
