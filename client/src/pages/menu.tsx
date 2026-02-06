@@ -123,7 +123,7 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen bg-background" style={backgroundStyle}>
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b" dir="ltr">
         <div className="flex items-center justify-between gap-2 p-2">
           <div className="flex items-center gap-1">
             <Button
@@ -131,7 +131,6 @@ export default function MenuPage() {
               variant="ghost"
               onClick={() => setLocation('/qr')}
               data-testid="button-back"
-              className={isRtl ? 'rotate-180' : ''}
             >
               <BackArrow className="w-5 h-5" />
             </Button>
