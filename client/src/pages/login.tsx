@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,8 +25,9 @@ import { Loader2, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/lib/auth';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import { applyPrimaryColor } from '@/lib/color-utils';
+import { useLanguage } from "@/hooks/use-language";
+import LanguageSelector from "@/components/menu/LanguageSelector";
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
@@ -39,6 +40,7 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { login } = useAuth();
+  const { adminLanguage, setAdminLanguage } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
@@ -118,7 +120,13 @@ export default function LoginPage() {
         <div 
           className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg p-8 shadow-2xl"
         >
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 relative">
+            <div className="absolute top-0 right-0">
+              <LanguageSelector 
+                language={adminLanguage} 
+                onLanguageChange={setAdminLanguage} 
+              />
+            </div>
             <h1 className="text-3xl font-bold text-white mb-2">Menu Manager</h1>
           </div>
 

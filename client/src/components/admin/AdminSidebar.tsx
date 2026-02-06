@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'wouter';
 import logoImg from "@/assets/logo.png";
+import LanguageSelector from '@/components/menu/LanguageSelector';
+import { useLanguage } from '@/hooks/use-language';
 import {
   Sidebar,
   SidebarContent,
@@ -60,6 +62,7 @@ const settingsItems = [
 
 export default function AdminSidebar() {
   const [location] = useLocation();
+  const { adminLanguage, setAdminLanguage } = useLanguage();
 
   const isActive = (url: string) => {
     if (url === '/admin') return location === '/admin';
@@ -145,7 +148,13 @@ export default function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4 flex flex-col gap-4">
+        <div className="px-2">
+          <LanguageSelector 
+            language={adminLanguage} 
+            onLanguageChange={setAdminLanguage} 
+          />
+        </div>
         <p className="text-xs text-muted-foreground">v1.5.0</p>
       </SidebarFooter>
     </Sidebar>

@@ -69,7 +69,13 @@ function Router() {
 }
 
 function App() {
-  const isRtl = localStorage.getItem('menuLanguage') === 'fa' || localStorage.getItem('menuLanguage') === 'ar';
+  const menuLang = localStorage.getItem('language') || 'en';
+  const adminLang = localStorage.getItem('adminLanguage') || 'en';
+  
+  const isAdmin = window.location.pathname.startsWith('/admin') || window.location.pathname === '/login';
+  const currentLang = isAdmin ? adminLang : menuLang;
+  
+  const isRtl = currentLang === 'fa' || currentLang === 'ar';
 
   return (
     <QueryClientProvider client={queryClient}>
