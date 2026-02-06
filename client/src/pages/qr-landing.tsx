@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 import { apiRequest } from '@/lib/queryClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Settings, AppLanguage } from '@/lib/types';
@@ -69,6 +69,7 @@ function AnimatedWelcome({ texts, isVisible }: AnimatedWelcomeProps) {
 export default function QRLandingPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
 
   const { data: settings, isLoading: settingsLoading } = useQuery<Settings>({
@@ -222,7 +223,7 @@ export default function QRLandingPage() {
               data-testid="button-call-waiter"
             >
               <Bell className="h-5 w-5" />
-              {translations.en.callWaiter}
+              {t('callWaiter')}
             </Button>
           )}
 

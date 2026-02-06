@@ -52,7 +52,6 @@ import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { AppLanguage } from '@/lib/types';
-import { translations } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
 const languageSchema = z.object({
@@ -150,14 +149,9 @@ export default function LanguagesPage() {
 
   const openTextEditor = (lang: AppLanguage) => {
     setEditingTexts(lang);
-    const englishTexts = translations.en;
-    const langTexts = translations[lang.code as keyof typeof translations] || {};
-    const overrides: Record<string, string> = {};
-    
-    Object.keys(englishTexts).forEach(key => {
-      overrides[key] = lang.textOverrides?.[key] || langTexts[key] || englishTexts[key];
-    });
-    
+    // Since we moved to dynamic translations, we can't easily access translations.en here directly anymore
+    // We should ideally fetch them or use a default set. For now, let's use the hook's t function or a placeholder
+    const overrides: Record<string, string> = { ...lang.textOverrides };
     setTextOverrides(overrides);
     setTextEditorOpen(true);
   };
@@ -436,16 +430,14 @@ export default function LanguagesPage() {
               Customize the UI text for this language. Leave empty to use the default translation.
             </p>
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
-              {Object.entries(translations.en).map(([key, englishValue]) => (
+              {Object.entries(textOverrides).map(([key, value]) => (
                 <div key={key} className="grid grid-cols-2 gap-3 items-start">
                   <div>
                     <label className="text-xs font-medium text-muted-foreground">{key}</label>
-                    <p className="text-sm text-muted-foreground">{englishValue}</p>
                   </div>
                   <Input
-                    value={textOverrides[key] || ''}
+                    value={value || ''}
                     onChange={(e) => setTextOverrides({ ...textOverrides, [key]: e.target.value })}
-                    placeholder={englishValue}
                     data-testid={`input-text-${key}`}
                   />
                 </div>
