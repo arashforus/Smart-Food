@@ -148,7 +148,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className={`w-[calc(100%-2rem)] max-w-md md:max-w-3xl rounded-2xl px-6 ${isRtl ? '[&>button]:right-auto [&>button]:left-4' : ''} max-h-[90vh] flex flex-col`} data-testid="modal-item-detail" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader className="shrink-0">
-          <DialogTitle className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`} data-testid="text-modal-item-name">
+          <DialogTitle className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse justify-start text-right' : ''}`} data-testid="text-modal-item-name">
             <span>{getName()}</span>
             {item.isNew && (
               <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-1.5 py-0.5 h-5 shadow-sm shrink-0">
