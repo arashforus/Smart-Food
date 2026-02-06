@@ -26,7 +26,7 @@ interface LanguageSelectorProps {
 }
 
 export default function LanguageSelector({ language, onLanguageChange }: LanguageSelectorProps) {
-  const t = translations[language];
+  const t = translations[language] || translations.en || translations['en'];
 
   const { data: languages = [] } = useQuery<any[]>({
     queryKey: ['/api/languages'],

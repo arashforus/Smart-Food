@@ -71,7 +71,7 @@ export default function AdminHeader({
   onPasswordClick,
   onSignOut,
 }: AdminHeaderProps) {
-  const t = translations[language];
+  const t = translations[language] || translations.en || translations['en'];
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
 
   return (

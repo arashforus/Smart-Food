@@ -29,8 +29,8 @@ export default function CartView({
   onUpdateQuantity,
   onPlaceOrder,
 }: CartViewProps) {
-  const t = translations[language] || translations.en;
-  const isRtl = language === 'fa';
+  const t = translations[language] || translations.en || translations['en'];
+  const isRtl = language === 'fa' || language === 'ar';
 
   const cartTotal = cartItems.reduce(
     (sum, ci) => sum + (ci.item.discountedPrice || ci.item.price) * ci.quantity,

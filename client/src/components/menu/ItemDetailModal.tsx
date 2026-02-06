@@ -112,7 +112,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
     }).filter(Boolean);
   };
 
-  const t = translations[language] || translations.en;
+  const t = translations[language] || translations.en || translations['en'];
   const isRtl = language === 'fa' || language === 'ar';
 
   const price = Number(item.price);

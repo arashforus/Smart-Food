@@ -16,7 +16,7 @@ interface RestaurantHeaderProps {
 export default function RestaurantHeader({ restaurant, language, settings }: RestaurantHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState<boolean | null>(null);
-  const t = translations[language] || translations.en;
+  const t = translations[language] || translations.en || translations['en'];
   const isRtl = language === 'fa' || language === 'ar';
   const [isMobile, setIsMobile] = useState(false);
 

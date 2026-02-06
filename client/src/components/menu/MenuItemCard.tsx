@@ -117,7 +117,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
     return item.shortDescription[language as keyof typeof item.shortDescription] || item.shortDescription.en || Object.values(item.shortDescription)[0] || '';
   };
 
-  const t = translations[language] || translations.en;
+  const t = translations[language] || translations.en || translations['en'];
   const isRtl = language === 'fa' || language === 'ar';
 
   const price = Number(item.price);

@@ -1,3 +1,8 @@
+import en from '../locales/en.json';
+import tr from '../locales/tr.json';
+import fa from '../locales/fa.json';
+import ar from '../locales/ar.json';
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -339,4 +344,11 @@ export const rolePermissions: Record<Role, string[]> = {
   manager: ['dashboard', 'restaurant', 'categories', 'items', 'tables', 'qrcode', 'materials', 'types'],
   chef: ['dashboard', 'categories', 'items', 'materials'],
   accountant: ['dashboard', 'restaurant'],
+};
+
+export const translations: Record<string, any> = {
+  en,
+  tr,
+  fa,
+  ar,
 };

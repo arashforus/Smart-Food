@@ -57,7 +57,7 @@ export default function MenuList({
     return category.name[language as keyof typeof category.name] || category.name.en || Object.values(category.name)[0] || '';
   };
 
-  const t = translations[language] || translations.en;
+  const t = translations[language] || translations.en || translations['en'];
   const isRtl = language === 'fa' || language === 'ar';
 
   const gridClass = viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4' : 'space-y-3';
