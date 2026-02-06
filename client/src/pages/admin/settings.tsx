@@ -2106,11 +2106,7 @@ export default function SettingsPage() {
                               }`}
                               style={{ backgroundColor: menuLogoBackgroundColorLight }}
                             >
-                              {restaurantLogo ? (
-                                <img src={restaurantLogo} alt="Logo" className="w-16 h-16 object-contain" />
-                              ) : (
-                                <Building2 className="w-12 h-12 text-slate-400" />
-                              )}
+                              <img src={restaurantLogo || logoImg} alt="Logo" className="w-16 h-16 object-contain" />
                             </div>
                           </div>
                           <div
@@ -2128,11 +2124,7 @@ export default function SettingsPage() {
                               }`}
                               style={{ backgroundColor: menuLogoBackgroundColorDark }}
                             >
-                              {restaurantLogo ? (
-                                <img src={restaurantLogo} alt="Logo" className="w-16 h-16 object-contain" />
-                              ) : (
-                                <Building2 className="w-12 h-12 text-slate-600" />
-                              )}
+                              <img src={restaurantLogo || logoImg} alt="Logo" className="w-16 h-16 object-contain" />
                             </div>
                           </div>
                         </div>
