@@ -206,7 +206,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </div>
             )}
             {settings?.menuShowIngredients && (
-              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem]">
+              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem] text-start">
                 {getDescription()}
               </p>
             )}
@@ -341,7 +341,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               )}
             </div>
             {settings?.menuShowIngredients && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+              <p className="text-sm text-muted-foreground line-clamp-2 mt-1 text-start">
                 {getDescription()}
               </p>
             )}
