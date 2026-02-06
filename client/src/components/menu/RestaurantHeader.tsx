@@ -86,12 +86,31 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         >
           {settings?.menuShowRestaurantLogo && settings.restaurantLogo && (
             <div className="flex justify-center mb-4">
-              <img 
-                src={settings.restaurantLogo} 
-                alt={restaurant.name} 
-                className="h-24 w-auto max-w-[200px] object-contain"
-                data-testid="img-restaurant-logo"
-              />
+              <div 
+                className={`flex items-center justify-center shadow-sm transition-all duration-300 ${
+                  settings.menuLogoShowBackground ? (
+                    settings.menuLogoBackgroundType === 'circle' ? 'rounded-full' :
+                    settings.menuLogoBackgroundType === 'square-low' ? 'rounded-xl' :
+                    settings.menuLogoBackgroundType === 'square-high' ? 'rounded-3xl' :
+                    settings.menuLogoBackgroundType === 'square' ? 'rounded-none' :
+                    'rounded-md'
+                  ) : ''
+                } ${settings.menuLogoShowBackground ? 'w-28 h-28' : 'h-24 w-auto'}`}
+                style={settings.menuLogoShowBackground ? { 
+                  backgroundColor: 'var(--logo-bg-color)'
+                } : undefined}
+              >
+                <style dangerouslySetInnerHTML={{ __html: `
+                  :root { --logo-bg-color: ${settings.menuLogoBackgroundColorLight || 'transparent'}; }
+                  .dark { --logo-bg-color: ${settings.menuLogoBackgroundColorDark || 'transparent'}; }
+                `}} />
+                <img 
+                  src={settings.restaurantLogo} 
+                  alt={restaurant.name} 
+                  className={`${settings.menuLogoShowBackground ? 'w-20 h-20' : 'h-24 w-auto'} max-w-[200px] object-contain`}
+                  data-testid="img-restaurant-logo"
+                />
+              </div>
             </div>
           )}
           {settings?.menuShowRestaurantName && (

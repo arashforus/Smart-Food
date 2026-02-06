@@ -258,6 +258,10 @@ export interface Settings {
   menuShowBuyButton?: boolean;
   showMoreInformationPopup?: boolean;
   menuShowMoreInformationPopup?: boolean;
+  menuLogoShowBackground?: boolean;
+  menuLogoBackgroundType?: 'square' | 'square-low' | 'square-high' | 'circle';
+  menuLogoBackgroundColorLight?: string;
+  menuLogoBackgroundColorDark?: string;
   kdShowTableNumber?: boolean;
   kdShowOrderTime?: boolean;
   kdShowClock?: boolean;
