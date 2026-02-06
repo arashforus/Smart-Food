@@ -54,6 +54,8 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { AppLanguage } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 
+import { useLanguage } from '@/hooks/use-language';
+
 const languageSchema = z.object({
   code: z.string().min(2, 'Language code is required').max(5),
   name: z.string().min(1, 'Name is required'),
@@ -74,6 +76,7 @@ export default function LanguagesPage() {
   const [textEditorOpen, setTextEditorOpen] = useState(false);
   const [editingTexts, setEditingTexts] = useState<AppLanguage | null>(null);
   const [textOverrides, setTextOverrides] = useState<Record<string, string>>({});
+  const { setLanguage, setAdminLanguage } = useLanguage();
 
   const form = useForm<LanguageFormData>({
     resolver: zodResolver(languageSchema),
@@ -93,6 +96,9 @@ export default function LanguagesPage() {
       setFormOpen(false);
       form.reset();
       toast({ title: 'Language Added' });
+      // Refresh language contexts
+      setLanguage(localStorage.getItem('language') || 'en');
+      setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message || 'Failed to add language', variant: 'destructive' });
@@ -109,6 +115,9 @@ export default function LanguagesPage() {
       setEditingLanguage(null);
       form.reset();
       toast({ title: 'Language Updated' });
+      // Refresh language contexts
+      setLanguage(localStorage.getItem('language') || 'en');
+      setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message || 'Failed to update language', variant: 'destructive' });
@@ -123,6 +132,9 @@ export default function LanguagesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setDeleteLanguage(null);
       toast({ title: 'Language Deleted' });
+      // Refresh language contexts
+      setLanguage(localStorage.getItem('language') || 'en');
+      setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
       toast({ title: 'Error', description: error.message || 'Failed to delete language', variant: 'destructive' });
