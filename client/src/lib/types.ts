@@ -325,7 +325,7 @@ export interface WaiterRequest {
   status: 'pending' | 'acknowledged' | 'completed';
 }
 
-export type Language = 'en' | 'tr' | 'fa' | 'ar';
+export type Language = string;
 
 export const roleLabels: Record<Role, string> = {
   admin: 'Administrator',
