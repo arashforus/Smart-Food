@@ -142,6 +142,7 @@ export default function MenuPage() {
               variant="ghost"
               onClick={() => setLocation('/qr')}
               data-testid="button-back"
+              className={isRtl ? 'rotate-180' : ''}
             >
               <BackArrow className="w-5 h-5" />
             </Button>
@@ -185,7 +186,7 @@ export default function MenuPage() {
         </div>
       </div>
 
-      <div dir={isRtl ? 'rtl' : 'ltr'}>
+      <div dir={isRtl ? 'rtl' : 'ltr'} className={isRtl ? 'font-vazir' : ''}>
         
         <RestaurantHeader 
           restaurant={restaurantData as any} 
