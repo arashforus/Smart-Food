@@ -255,9 +255,9 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
       data-testid={`card-menu-item-${item.id}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <CardContent className={`p-0 flex h-32 ${isRtl ? 'flex-row-reverse' : ''}`}>
+      <CardContent className="p-0 flex h-32">
         {settings?.menuShowImages && (
-          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative ${isRtl ? 'rounded-e-2xl' : 'rounded-s-2xl'}`}>
+          <div className={`w-32 h-32 flex-shrink-0 bg-muted flex items-center justify-center overflow-hidden relative rounded-s-2xl`}>
             {item.image ? (
               <img
                 src={item.image}
@@ -274,11 +274,11 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             {item.iceEffect && <IceEffect />}
           </div>
         )}
-        <div className={`flex-1 p-3 flex flex-col justify-between min-w-0 ${isRtl ? 'text-right' : 'text-left'}`}>
+        <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
           <div>
-            <div className={`flex justify-between items-start gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
-              <div className={`flex flex-col truncate min-w-0 ${isRtl ? 'items-end' : 'items-start'}`}>
-                <div className={`flex items-center gap-2 truncate ${isRtl ? 'flex-row-reverse' : ''}`}>
+            <div className="flex justify-between items-start gap-2">
+              <div className="flex flex-col truncate min-w-0">
+                <div className="flex items-center gap-2 truncate">
                   <h3 className="font-bold text-base truncate" data-testid={`text-item-name-${item.id}`}>
                     {getName()}
                   </h3>
@@ -294,7 +294,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   )}
                 </div>
                 {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
-                  <div className={`flex flex-wrap gap-1 mt-0.5 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                  <div className={`flex flex-wrap gap-1 mt-0.5`}>
                     {item.types.map((typeId) => {
                       const { data: foodTypes = [] } = useQuery<FoodType[]>({
                         queryKey: ['/api/food-types'],
@@ -306,7 +306,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                         <Badge 
                           key={typeId} 
                           variant="outline" 
-                          className={`text-[10px] py-0 px-1.5 h-4 font-medium gap-1 ${isRtl ? 'flex-row-reverse' : ''}`}
+                          className={`text-[10px] py-0 px-1.5 h-4 font-medium gap-1 `}
                           style={{
                             borderColor: type.color,
                             color: type.color,
@@ -322,7 +322,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 )}
               </div>
               {settings?.menuShowPrices && (
-                <div className={`flex flex-col ${isRtl ? 'items-start' : 'items-end'}`}>
+                <div className={`flex flex-col item-end`}>
                   {hasDiscount ? (
                     <>
                       <span className="text-base font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
@@ -346,13 +346,13 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </p>
             )}
           </div>
-          <div className={`flex items-center justify-between mt-1 ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <div className={`flex items-center justify-between mt-1 `}>
             <div className="flex gap-1" />
             {settings?.menuShowBuyButton && (
               <Button
                 size="sm"
                 variant="default"
-                className={`rounded-full h-8 px-4 flex items-center gap-1 ${isRtl ? 'flex-row-reverse' : ''}`}
+                className={`rounded-full h-8 px-4 flex items-center gap-1 `}
                 onClick={handleAddClick}
                 data-testid={`button-add-to-cart-card-${item.id}`}
                 title={t.addToCart}
