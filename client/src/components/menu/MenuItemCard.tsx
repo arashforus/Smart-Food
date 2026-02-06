@@ -169,7 +169,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </h3>
               {item.isNew && (
                 <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto">
-                  New
+                  {t.new || 'New'}
                 </Badge>
               )}
               {(isSuggested || item.suggested) && (
@@ -283,7 +283,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   </h3>
                   {item.isNew && (
                     <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0">
-                      New
+                      {t.new || 'New'}
                     </Badge>
                   )}
                   {(isSuggested || item.suggested) && (

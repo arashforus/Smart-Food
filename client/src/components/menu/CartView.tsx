@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trash2, ShoppingCart } from 'lucide-react';
 import { translations } from '@/lib/types';
-import type { Language, CartItem } from '@/lib/types';
+import type { Language, CartItem, Settings } from '@/lib/types';
 
 interface CartViewProps {
   open: boolean;
@@ -18,6 +18,7 @@ interface CartViewProps {
   onRemoveItem?: (cartItemId: string) => void;
   onUpdateQuantity?: (cartItemId: string, quantity: number) => void;
   onPlaceOrder?: () => void;
+  settings?: Settings;
 }
 
 export default function CartView({
@@ -28,6 +29,7 @@ export default function CartView({
   onRemoveItem,
   onUpdateQuantity,
   onPlaceOrder,
+  settings,
 }: CartViewProps) {
   const t = translations[language] || translations.en || translations['en'];
   const isRtl = language === 'fa' || language === 'ar';
@@ -92,7 +94,7 @@ export default function CartView({
                       {getName(cartItem)}
                     </h4>
                     <p className={`text-xs text-muted-foreground mt-1 ${isRtl ? 'text-right' : ''}`}>
-                      ${(cartItem.item.discountedPrice || cartItem.item.price).toFixed(2)} x {cartItem.quantity}
+                      {settings?.currencySymbol || '$'}{(cartItem.item.discountedPrice || cartItem.item.price).toFixed(settings?.currencyDecimal ?? 2)} x {cartItem.quantity}
                     </p>
                     {cartItem.notes && (
                       <p className={`text-xs text-muted-foreground italic mt-2 ${isRtl ? 'text-right' : ''}`}>
@@ -102,7 +104,7 @@ export default function CartView({
                   </div>
                   <div className={`flex flex-col items-end gap-2 ${isRtl ? 'items-start' : ''}`}>
                     <span className="font-semibold text-sm">
-                      ${((cartItem.item.discountedPrice || cartItem.item.price) * cartItem.quantity).toFixed(2)}
+                      {settings?.currencySymbol || '$'}{((cartItem.item.discountedPrice || cartItem.item.price) * cartItem.quantity).toFixed(settings?.currencyDecimal ?? 2)}
                     </span>
                     <Button
                       size="icon"
@@ -121,7 +123,7 @@ export default function CartView({
 
           <div className={`flex items-center justify-between pt-4 border-t ${isRtl ? 'flex-row-reverse' : ''}`}>
             <span className="font-medium">{t.total || 'Total'}:</span>
-            <span className="text-lg font-semibold">${cartTotal.toFixed(2)}</span>
+            <span className="text-lg font-semibold">{settings?.currencySymbol || '$'}{cartTotal.toFixed(settings?.currencyDecimal ?? 2)}</span>
           </div>
 
           <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
