@@ -2012,6 +2012,138 @@ export default function SettingsPage() {
 
               <Card>
                 <CardHeader>
+                  <CardTitle className="text-lg">Logo Background Settings</CardTitle>
+                  <CardDescription>Customize the background appearance of your restaurant logo on the menu page</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Show Logo Background</FormLabel>
+                      <FormDescription>Enable background for the restaurant logo</FormDescription>
+                    </div>
+                    <Switch
+                      checked={menuLogoShowBackground}
+                      onCheckedChange={setMenuLogoShowBackground}
+                      data-testid="switch-menu-logo-bg"
+                    />
+                  </div>
+
+                  {menuLogoShowBackground && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                      <div className="space-y-3">
+                        <FormLabel>Background Type</FormLabel>
+                        <Select
+                          value={menuLogoBackgroundType}
+                          onValueChange={setMenuLogoBackgroundType}
+                        >
+                          <SelectTrigger data-testid="select-menu-logo-bg-type">
+                            <SelectValue placeholder="Select shape" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="square">Square (No rounding)</SelectItem>
+                            <SelectItem value="square-low">Rounded (Low)</SelectItem>
+                            <SelectItem value="square-high">Rounded (High)</SelectItem>
+                            <SelectItem value="circle">Circle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <FormLabel>Background Color (Light Mode)</FormLabel>
+                          <div className="flex gap-2">
+                            <Input
+                              type="color"
+                              value={menuLogoBackgroundColorLight}
+                              onChange={(e) => setMenuLogoBackgroundColorLight(e.target.value)}
+                              className="w-14 h-9 p-1"
+                              data-testid="input-menu-logo-bg-light"
+                            />
+                            <Input
+                              value={menuLogoBackgroundColorLight}
+                              onChange={(e) => setMenuLogoBackgroundColorLight(e.target.value)}
+                              placeholder="#ffffff"
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <FormLabel>Background Color (Dark Mode)</FormLabel>
+                          <div className="flex gap-2">
+                            <Input
+                              type="color"
+                              value={menuLogoBackgroundColorDark}
+                              onChange={(e) => setMenuLogoBackgroundColorDark(e.target.value)}
+                              className="w-14 h-9 p-1"
+                              data-testid="input-menu-logo-bg-dark"
+                            />
+                            <Input
+                              value={menuLogoBackgroundColorDark}
+                              onChange={(e) => setMenuLogoBackgroundColorDark(e.target.value)}
+                              placeholder="#1a1a1a"
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <FormLabel>Preview</FormLabel>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div
+                            className="flex flex-col items-center gap-2 p-4 border rounded-lg transition-colors duration-300"
+                            style={{ backgroundColor: menuBackgroundType === 'solid' ? menuBackgroundColor : '#f8fafc' }}
+                          >
+                            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Light Mode</span>
+                            <div
+                              className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
+                                menuLogoBackgroundType === 'circle' ? 'rounded-full' :
+                                menuLogoBackgroundType === 'square-low' ? 'rounded-sm' :
+                                menuLogoBackgroundType === 'square-high' ? 'rounded-2xl' :
+                                menuLogoBackgroundType === 'square' ? 'rounded-none' :
+                                'rounded-md'
+                              }`}
+                              style={{ backgroundColor: menuLogoBackgroundColorLight }}
+                            >
+                              {restaurantLogo ? (
+                                <img src={restaurantLogo} alt="Logo" className="w-16 h-16 object-contain" />
+                              ) : (
+                                <Building2 className="w-12 h-12 text-slate-400" />
+                              )}
+                            </div>
+                          </div>
+                          <div
+                            className="flex flex-col items-center gap-2 p-4 border rounded-lg transition-colors duration-300"
+                            style={{ backgroundColor: menuBackgroundType === 'solid' ? menuBackgroundColor : '#0f172a' }}
+                          >
+                            <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Dark Mode</span>
+                            <div
+                              className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
+                                menuLogoBackgroundType === 'circle' ? 'rounded-full' :
+                                menuLogoBackgroundType === 'square-low' ? 'rounded-sm' :
+                                menuLogoBackgroundType === 'square-high' ? 'rounded-2xl' :
+                                menuLogoBackgroundType === 'square' ? 'rounded-none' :
+                                'rounded-md'
+                              }`}
+                              style={{ backgroundColor: menuLogoBackgroundColorDark }}
+                            >
+                              {restaurantLogo ? (
+                                <img src={restaurantLogo} alt="Logo" className="w-16 h-16 object-contain" />
+                              ) : (
+                                <Building2 className="w-12 h-12 text-slate-600" />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
                   <CardTitle className="text-lg">Menu Bar</CardTitle>
                   <CardDescription>Control which menu elements are visible to customers</CardDescription>
                 </CardHeader>
@@ -2122,129 +2254,7 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Logo Background Settings</CardTitle>
-                  <CardDescription>Customize the background appearance of your restaurant logo on the menu page</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <FormLabel>Show Logo Background</FormLabel>
-                      <FormDescription>Enable background for the restaurant logo</FormDescription>
-                    </div>
-                    <Switch
-                      checked={menuLogoShowBackground}
-                      onCheckedChange={setMenuLogoShowBackground}
-                      data-testid="switch-menu-logo-bg"
-                    />
-                  </div>
 
-                  {menuLogoShowBackground && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                      <div className="space-y-3">
-                        <FormLabel>Background Type</FormLabel>
-                        <Select
-                          value={menuLogoBackgroundType}
-                          onValueChange={setMenuLogoBackgroundType}
-                        >
-                          <SelectTrigger data-testid="select-menu-logo-bg-type">
-                            <SelectValue placeholder="Select shape" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="square">Square</SelectItem>
-                            <SelectItem value="square-low">Square (Low Rounding)</SelectItem>
-                            <SelectItem value="square-high">Square (High Rounding)</SelectItem>
-                            <SelectItem value="circle">Circle</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                          <FormLabel>Background Color (Light Mode)</FormLabel>
-                          <div className="flex gap-2">
-                            <Input
-                              type="color"
-                              value={menuLogoBackgroundColorLight}
-                              onChange={(e) => setMenuLogoBackgroundColorLight(e.target.value)}
-                              className="w-14 h-9 p-1"
-                              data-testid="input-menu-logo-bg-light"
-                            />
-                            <Input
-                              value={menuLogoBackgroundColorLight}
-                              onChange={(e) => setMenuLogoBackgroundColorLight(e.target.value)}
-                              placeholder="#ffffff"
-                              className="flex-1"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <FormLabel>Background Color (Dark Mode)</FormLabel>
-                          <div className="flex gap-2">
-                            <Input
-                              type="color"
-                              value={menuLogoBackgroundColorDark}
-                              onChange={(e) => setMenuLogoBackgroundColorDark(e.target.value)}
-                              className="w-14 h-9 p-1"
-                              data-testid="input-menu-logo-bg-dark"
-                            />
-                            <Input
-                              value={menuLogoBackgroundColorDark}
-                              onChange={(e) => setMenuLogoBackgroundColorDark(e.target.value)}
-                              placeholder="#1a1a1a"
-                              className="flex-1"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <FormLabel>Preview</FormLabel>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-slate-50">
-                            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Light Mode</span>
-                            <div
-                              className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
-                                menuLogoBackgroundType === 'circle' ? 'rounded-full' :
-                                menuLogoBackgroundType === 'square-low' ? 'rounded-sm' :
-                                menuLogoBackgroundType === 'square-high' ? 'rounded-2xl' :
-                                'rounded-md'
-                              }`}
-                              style={{ backgroundColor: menuLogoBackgroundColorLight }}
-                            >
-                              {restaurantLogo ? (
-                                <img src={restaurantLogo} alt="Logo" className="w-16 h-16 object-contain" />
-                              ) : (
-                                <Building2 className="w-12 h-12 text-slate-400" />
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-slate-900">
-                            <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Dark Mode</span>
-                            <div
-                              className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
-                                menuLogoBackgroundType === 'circle' ? 'rounded-full' :
-                                menuLogoBackgroundType === 'square-low' ? 'rounded-sm' :
-                                menuLogoBackgroundType === 'square-high' ? 'rounded-2xl' :
-                                'rounded-md'
-                              }`}
-                              style={{ backgroundColor: menuLogoBackgroundColorDark }}
-                            >
-                              {restaurantLogo ? (
-                                <img src={restaurantLogo} alt="Logo" className="w-16 h-16 object-contain" />
-                              ) : (
-                                <Building2 className="w-12 h-12 text-slate-600" />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
             </TabsContent>
 
             {/* Kitchen Display Tab */}
