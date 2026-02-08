@@ -33,36 +33,36 @@ import {
   ClipboardList
 } from 'lucide-react';
 
-const menuItems = [
-  { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
-  { title: 'Categories', url: '/admin/categories', icon: List },
-  { title: 'Menu Items', url: '/admin/items', icon: UtensilsCrossed },
-  { title: 'QR Codes', url: '/admin/qrcode', icon: QrCode },
-];
-
-const operationsItems = [
-  { title: 'New Order', url: '/admin/orders', icon: ShoppingCart },
-  { title: 'Orders', url: '/admin/orders-list', icon: ClipboardList },
-  { title: 'Kitchen Display', url: '/admin/kitchen', icon: ChefHat },
-  { title: 'Order Status Screen', url: '/admin/order-status-screen', icon: Monitor },
-];
-
-const managementItems = [
-  { title: 'Branches', url: '/admin/branches', icon: Building2 },
-  { title: 'Tables', url: '/admin/tables', icon: TableProperties },
-  { title: 'Roles & Users', url: '/admin/roles', icon: Users },
-];
-
-const settingsItems = [
-  { title: 'Languages', url: '/admin/languages', icon: Globe },
-  { title: 'Materials', url: '/admin/materials', icon: Salad },
-  { title: 'Food Types', url: '/admin/types', icon: Tags },
-  { title: 'Settings', url: '/admin/settings', icon: Settings },
-];
-
 export default function AdminSidebar() {
   const [location] = useLocation();
-  const { adminLanguage, setAdminLanguage, adminDir } = useLanguage();
+  const { adminLanguage, setAdminLanguage, adminDir, t } = useLanguage();
+
+  const menuItems = [
+    { title: t('dashboard'), url: '/admin', icon: LayoutDashboard },
+    { title: t('categories'), url: '/admin/categories', icon: List },
+    { title: t('menu_items'), url: '/admin/items', icon: UtensilsCrossed },
+    { title: t('qr_codes'), url: '/admin/qrcode', icon: QrCode },
+  ];
+
+  const operationsItems = [
+    { title: t('new_order'), url: '/admin/orders', icon: ShoppingCart },
+    { title: t('orders_list'), url: '/admin/orders-list', icon: ClipboardList },
+    { title: t('kitchen'), url: '/admin/kitchen', icon: ChefHat },
+    { title: t('order_status'), url: '/admin/order-status-screen', icon: Monitor },
+  ];
+
+  const managementItems = [
+    { title: t('branches'), url: '/admin/branches', icon: Building2 },
+    { title: t('tables'), url: '/admin/tables', icon: TableProperties },
+    { title: t('roles'), url: '/admin/roles', icon: Users },
+  ];
+
+  const settingsItems = [
+    { title: t('languages'), url: '/admin/languages', icon: Globe },
+    { title: t('materials'), url: '/admin/materials', icon: Salad },
+    { title: t('food_types'), url: '/admin/types', icon: Tags },
+    { title: t('settings'), url: '/admin/settings', icon: Settings },
+  ];
 
   const isActive = (url: string) => {
     if (url === '/admin') return location === '/admin';
@@ -77,7 +77,7 @@ export default function AdminSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('menu_items')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -95,7 +95,7 @@ export default function AdminSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Operations</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('operations')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {operationsItems.map((item) => (
@@ -113,7 +113,7 @@ export default function AdminSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('management')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {managementItems.map((item) => (
@@ -131,7 +131,7 @@ export default function AdminSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Configuration</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('configuration')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {settingsItems.map((item) => (

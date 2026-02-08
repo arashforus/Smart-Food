@@ -27,14 +27,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     staleTime: Infinity,
   });
 
-  const loadTranslations = async (lang: string) => {
+  const loadTranslations = async (lang: string, isAdmin: boolean = false) => {
     try {
-      const response = await fetch(`/src/locales/${lang}.json`);
+      const path = isAdmin ? `/src/locales/admin/${lang}.json` : `/src/locales/${lang}.json`;
+      const response = await fetch(path);
       if (response.ok) {
         const data = await response.json();
         setTranslations(data);
       } else {
-        const fallbackResponse = await fetch('/src/locales/en.json');
+        const fallbackPath = isAdmin ? '/src/locales/admin/en.json' : '/src/locales/en.json';
+        const fallbackResponse = await fetch(fallbackPath);
         if (fallbackResponse.ok) {
           const fallbackData = await fallbackResponse.json();
           setTranslations(fallbackData);
@@ -53,9 +55,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         setLanguageState(storedMenu);
         setAdminLanguageState(storedAdmin);
         
-        // Determine which translations to load based on current path
         const isAdmin = window.location.pathname.startsWith('/admin') || window.location.pathname === '/login';
-        await loadTranslations(isAdmin ? storedAdmin : storedMenu);
+        await loadTranslations(isAdmin ? storedAdmin : storedMenu, isAdmin);
         applyLanguageToDOM(isAdmin ? storedAdmin : storedMenu);
       } finally {
         setIsLoading(false);
@@ -63,11 +64,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     };
     initLanguages();
 
-    // Listen for path changes to reload translations if needed
     const handlePathChange = () => {
       const isAdmin = window.location.pathname.startsWith('/admin') || window.location.pathname === '/login';
       const currentLang = isAdmin ? localStorage.getItem('adminLanguage') || 'en' : localStorage.getItem('language') || 'en';
-      loadTranslations(currentLang);
+      loadTranslations(currentLang, isAdmin);
       applyLanguageToDOM(currentLang);
     };
 
@@ -80,7 +80,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('language', lang);
     const isAdmin = window.location.pathname.startsWith('/admin') || window.location.pathname === '/login';
     if (!isAdmin) {
-      await loadTranslations(lang);
+      await loadTranslations(lang, false);
       applyLanguageToDOM(lang);
     }
   };
@@ -90,7 +90,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('adminLanguage', lang);
     const isAdmin = window.location.pathname.startsWith('/admin') || window.location.pathname === '/login';
     if (isAdmin) {
-      await loadTranslations(lang);
+      await loadTranslations(lang, true);
       applyLanguageToDOM(lang);
     }
   };

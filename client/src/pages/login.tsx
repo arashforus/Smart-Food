@@ -40,7 +40,7 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { login } = useAuth();
-  const { adminLanguage, setAdminLanguage } = useLanguage();
+  const { adminLanguage, setAdminLanguage, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
@@ -74,8 +74,8 @@ export default function LoginPage() {
       const user = await response.json();
       login(user);
       toast({
-        title: 'Welcome back!',
-        description: `Logged in as ${user.name}`,
+        title: t('welcome'),
+        description: `${t('logged_in_as')} ${user.name}`,
       });
       window.location.href = '/admin';
     } catch (error) {
@@ -127,7 +127,7 @@ export default function LoginPage() {
                 onLanguageChange={setAdminLanguage} 
               />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Menu Manager</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">{t('login_title')}</h1>
           </div>
 
           <Form {...form}>
@@ -137,7 +137,7 @@ export default function LoginPage() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Username</FormLabel>
+                    <FormLabel className="text-white">{t('username')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
@@ -158,7 +158,7 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Password</FormLabel>
+                    <FormLabel className="text-white">{t('password')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
@@ -195,7 +195,7 @@ export default function LoginPage() {
                     Signing in...
                   </>
                 ) : (
-                  'Sign In'
+                  t('sign_in')
                 )}
               </Button>
 
@@ -206,7 +206,7 @@ export default function LoginPage() {
                   className="text-white/70 hover:text-white text-sm underline underline-offset-4"
                   data-testid="button-forgot-password"
                 >
-                  Forgot Password?
+                  {t('forgot_password')}
                 </button>
               </div>
             </form>
@@ -217,7 +217,7 @@ export default function LoginPage() {
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset Password</DialogTitle>
+            <DialogTitle>{t('reset_password')}</DialogTitle>
             <DialogDescription>
               Enter your email address and we'll send you instructions to reset your password.
             </DialogDescription>
