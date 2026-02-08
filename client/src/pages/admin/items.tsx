@@ -136,7 +136,10 @@ const iconOptions = [
   { value: 'heart', Icon: (props: any) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> },
 ];
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function ItemsPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<StorageItem | null>(null);
@@ -495,7 +498,7 @@ export default function ItemsPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="modal-menu-item-form">
           <DialogHeader>
-            <DialogTitle>Add Menu Item</DialogTitle>
+            <DialogTitle>{t('add_item')}</DialogTitle>
           </DialogHeader>
           <FormContent 
             form={form}
@@ -510,6 +513,7 @@ export default function ItemsPage() {
             onCancel={() => setFormOpen(false)} 
             isEdit={false}
             isPending={createMutation.isPending}
+            t={t}
           />
         </DialogContent>
       </Dialog>
@@ -517,7 +521,7 @@ export default function ItemsPage() {
       <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="modal-menu-item-edit">
           <DialogHeader>
-            <DialogTitle>Edit Menu Item</DialogTitle>
+            <DialogTitle>{t('edit_item')}</DialogTitle>
           </DialogHeader>
           <FormContent 
             form={form}
@@ -532,6 +536,7 @@ export default function ItemsPage() {
             onCancel={() => setEditingItem(null)} 
             isEdit={true}
             isPending={updateMutation.isPending}
+            t={t}
           />
         </DialogContent>
       </Dialog>
@@ -570,6 +575,7 @@ interface FormContentProps {
   onCancel: () => void;
   isEdit: boolean;
   isPending: boolean;
+  t: any;
 }
 
 function FormContent({
@@ -585,6 +591,7 @@ function FormContent({
   onCancel,
   isEdit,
   isPending,
+  t,
 }: FormContentProps) {
   const { toast } = useToast();
   // Local state for materials to avoid immediate form update

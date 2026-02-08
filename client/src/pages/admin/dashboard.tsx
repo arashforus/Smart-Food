@@ -25,36 +25,39 @@ import {
 import type { DashboardMetrics } from '@/lib/types';
 import { mockDashboardMetrics } from '@/lib/mockData';
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
     queryKey: ['/api/dashboard/metrics'],
   });
 
   if (isLoading) {
-    return <div className="p-8 text-center text-muted-foreground">Loading dashboard data...</div>;
+    return <div className="p-8 text-center text-muted-foreground">{t('loading_dashboard', 'Loading dashboard data...')}</div>;
   }
 
   const statCards = [
     { 
-      title: 'Total Items', 
+      title: t('total_items'), 
       value: metrics?.totalItems || 0, 
       icon: UtensilsCrossed,
       color: 'text-blue-600'
     },
     { 
-      title: 'Categories', 
+      title: t('categories'), 
       value: metrics?.totalCategories || 0, 
       icon: List,
       color: 'text-green-600'
     },
     { 
-      title: 'Available', 
+      title: t('available'), 
       value: metrics?.availableItems || 0, 
       icon: Eye,
       color: 'text-purple-600'
     },
     { 
-      title: 'QR Scans', 
+      title: t('qr_scans'), 
       value: metrics?.qrScans || 0, 
       icon: QrCode,
       color: 'text-orange-600'
@@ -62,28 +65,28 @@ export default function DashboardPage() {
   ];
 
   const salesStats = [
-    { label: 'Today', value: metrics?.salesDay || 0 },
-    { label: 'This Week', value: metrics?.salesWeek || 0 },
-    { label: 'This Month', value: metrics?.salesMonth || 0 },
+    { label: t('today') as string, value: metrics?.salesDay || 0 },
+    { label: t('this_week') as string, value: metrics?.salesWeek || 0 },
+    { label: t('this_month') as string, value: metrics?.salesMonth || 0 },
   ];
 
   const customerStats = [
-    { label: 'Today', value: metrics?.customersDay || 0 },
-    { label: 'This Week', value: metrics?.customersWeek || 0 },
-    { label: 'This Month', value: metrics?.customersMonth || 0 },
+    { label: t('today') as string, value: metrics?.customersDay || 0 },
+    { label: t('this_week') as string, value: metrics?.customersWeek || 0 },
+    { label: t('this_month') as string, value: metrics?.customersMonth || 0 },
   ];
 
   const viewStats = [
-    { label: 'Today', value: metrics?.menuViewsDay || 0 },
-    { label: 'This Week', value: metrics?.menuViewsWeek || 0 },
-    { label: 'This Month', value: metrics?.menuViewsMonth || 0 },
+    { label: t('today') as string, value: metrics?.menuViewsDay || 0 },
+    { label: t('this_week') as string, value: metrics?.menuViewsWeek || 0 },
+    { label: t('this_month') as string, value: metrics?.menuViewsMonth || 0 },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold" data-testid="text-page-title">Dashboard</h1>
-        <p className="text-muted-foreground">Overview of your restaurant menu</p>
+        <h1 className="text-2xl font-bold" data-testid="text-page-title">{t('dashboard')}</h1>
+        <p className="text-muted-foreground">{t('dashboard_desc')}</p>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
@@ -107,7 +110,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('sales', 'Sales')}</CardTitle>
             <DollarSign className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent className="space-y-3">
@@ -124,7 +127,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-sm font-medium">Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('customers', 'Customers')}</CardTitle>
             <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent className="space-y-3">
@@ -141,7 +144,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
-            <CardTitle className="text-sm font-medium">Menu Views</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('menu_views', 'Menu Views')}</CardTitle>
             <Eye className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent className="space-y-3">
@@ -162,7 +165,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-base font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Daily Sales (Last 30 Days)
+              {t('daily_sales')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -178,7 +181,7 @@ export default function DashboardPage() {
                       borderColor: 'hsl(var(--border))',
                       borderRadius: '8px'
                     }}
-                    formatter={(value: number) => [`$${value}`, 'Sales']}
+                    formatter={(value: number) => [`$${value}`, t('sales')]}
                   />
                   <Area 
                     type="monotone" 
@@ -196,7 +199,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="text-base font-medium flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Daily Menu Views (Last 30 Days)
+              {t('daily_views')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -228,7 +231,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-medium">Best Sellers</CardTitle>
+            <CardTitle className="text-base font-medium">{t('best_sellers')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -240,7 +243,7 @@ export default function DashboardPage() {
                     </Badge>
                     <span className="font-medium" data-testid={`bestseller-${index}`}>{item.name}</span>
                   </div>
-                  <span className="text-muted-foreground text-sm">{item.count} orders</span>
+                  <span className="text-muted-foreground text-sm">{item.count} {t('orders', 'orders')}</span>
                 </div>
               ))}
             </div>
@@ -249,7 +252,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-medium">Recent Activity</CardTitle>
+            <CardTitle className="text-base font-medium">{t('recent_activity')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

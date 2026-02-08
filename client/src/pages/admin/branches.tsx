@@ -57,7 +57,10 @@ interface StorageBranch {
   isActive: boolean;
 }
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function BranchesPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<StorageBranch | null>(null);
@@ -80,10 +83,10 @@ export default function BranchesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'Branch Created' });
+      toast({ title: t('branch_created', 'Branch Created') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to create branch', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_branch', 'Failed to create branch'), variant: 'destructive' });
     },
   });
 
@@ -96,10 +99,10 @@ export default function BranchesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
       setEditingBranch(null);
       form.reset();
-      toast({ title: 'Branch Updated' });
+      toast({ title: t('branch_updated', 'Branch Updated') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to update branch', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_branch', 'Failed to update branch'), variant: 'destructive' });
     },
   });
 
@@ -110,10 +113,10 @@ export default function BranchesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
       setDeleteBranch(null);
-      toast({ title: 'Branch Deleted' });
+      toast({ title: t('branch_deleted', 'Branch Deleted') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to delete branch', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_branch', 'Failed to delete branch'), variant: 'destructive' });
     },
   });
 
@@ -152,29 +155,29 @@ export default function BranchesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Branches</h1>
-          <p className="text-muted-foreground">Manage your restaurant locations</p>
+          <h1 className="text-2xl font-semibold">{t('branches')}</h1>
+          <p className="text-muted-foreground">{t('branches_desc')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-branch" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Branch
+          {t('add_branch')}
         </Button>
       </div>
 
       <DataTable
         data={branches}
         columns={[
-          { key: 'name', header: 'Name' },
-          { key: 'address', header: 'Address' },
-          { key: 'phone', header: 'Phone' },
-          { key: 'owner', header: 'Owner' },
-          { key: 'ownerPhone', header: 'Owner Phone' },
+          { key: 'name', header: t('name') },
+          { key: 'address', header: t('address') },
+          { key: 'phone', header: t('phone') },
+          { key: 'owner', header: t('owner', 'Owner') },
+          { key: 'ownerPhone', header: t('owner_phone', 'Owner Phone') },
           {
             key: 'isActive',
-            header: 'Status',
+            header: t('status'),
             render: (item) => (
               <Badge variant={item.isActive ? 'default' : 'secondary'} className="no-default-active-elevate">
-                {item.isActive ? 'Active' : 'Inactive'}
+                {item.isActive ? t('active') : t('inactive', 'Inactive')}
               </Badge>
             ),
           },
@@ -187,58 +190,58 @@ export default function BranchesPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent data-testid="modal-branch-form">
           <DialogHeader>
-            <DialogTitle>Add Branch</DialogTitle>
+            <DialogTitle>{t('add_branch')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch Name</FormLabel>
+                  <FormLabel>{t('branch_name', 'Branch Name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-name" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="address" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>{t('address')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-address" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="phone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>{t('phone')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-phone" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="owner" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Owner</FormLabel>
-                  <FormControl><Input {...field} placeholder="Owner name" data-testid="input-branch-owner" /></FormControl>
+                  <FormLabel>{t('owner', 'Owner')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_placeholder', "Owner name")} data-testid="input-branch-owner" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="ownerPhone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Owner Phone</FormLabel>
-                  <FormControl><Input {...field} placeholder="Owner phone number" data-testid="input-branch-owner-phone" /></FormControl>
+                  <FormLabel>{t('owner_phone', 'Owner Phone')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_phone_placeholder', "Owner phone number")} data-testid="input-branch-owner-phone" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Active</FormLabel>
+                  <FormLabel className="mt-0">{t('active')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-branch-active" />
                   </FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-save-branch" disabled={createMutation.isPending}>
                   {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
+                  {t('create')}
                 </Button>
               </div>
             </form>
@@ -249,58 +252,58 @@ export default function BranchesPage() {
       <Dialog open={!!editingBranch} onOpenChange={() => setEditingBranch(null)}>
         <DialogContent data-testid="modal-branch-edit">
           <DialogHeader>
-            <DialogTitle>Edit Branch</DialogTitle>
+            <DialogTitle>{t('edit_branch')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch Name</FormLabel>
+                  <FormLabel>{t('branch_name', 'Branch Name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-name-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="address" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>{t('address')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-address-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="phone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>{t('phone')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-phone-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="owner" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Owner</FormLabel>
-                  <FormControl><Input {...field} placeholder="Owner name" data-testid="input-branch-owner-edit" /></FormControl>
+                  <FormLabel>{t('owner', 'Owner')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_placeholder', "Owner name")} data-testid="input-branch-owner-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="ownerPhone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Owner Phone</FormLabel>
-                  <FormControl><Input {...field} placeholder="Owner phone number" data-testid="input-branch-owner-phone-edit" /></FormControl>
+                  <FormLabel>{t('owner_phone', 'Owner Phone')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_phone_placeholder', "Owner phone number")} data-testid="input-branch-owner-phone-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Active</FormLabel>
+                  <FormLabel className="mt-0">{t('active')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-branch-active-edit" />
                   </FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingBranch(null)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingBranch(null)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-update-branch" disabled={updateMutation.isPending}>
                   {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Update
+                  {t('update')}
                 </Button>
               </div>
             </form>
@@ -311,16 +314,16 @@ export default function BranchesPage() {
       <AlertDialog open={!!deleteBranch} onOpenChange={() => setDeleteBranch(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Branch</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_branch')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteBranch?.name}"? This will also remove all tables associated with this branch.
+              {t('confirm_delete_branch', `Are you sure you want to delete "${deleteBranch?.name}"? This will also remove all tables associated with this branch.`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-branch" disabled={deleteMutation.isPending}>
               {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
