@@ -8,8 +8,9 @@ import AdminFooter from '@/components/admin/AdminFooter';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { mockCurrentUser } from '@/lib/mockData';
+import { useLanguage } from '@/hooks/use-language';
 import { OrderProvider } from '@/lib/orderContext';
-import type { Language, Branch } from '@/lib/types';
+import type { Branch } from '@/lib/types';
 
 import DashboardPage from './dashboard';
 import RestaurantPage from './restaurant';
@@ -32,12 +33,9 @@ export default function AdminLayout() {
   const { logout } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const { adminLanguage, setAdminLanguage, adminDir } = useLanguage();
   const [currentUser, setCurrentUser] = useState(mockCurrentUser);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const [adminLanguage, setAdminLanguage] = useState<Language>(() => {
-    const stored = localStorage.getItem('adminLanguage') as Language;
-    return stored || 'en';
-  });
 
   const { data: branches = [] } = useQuery({
     queryKey: ['/api/branches'],
@@ -121,7 +119,7 @@ export default function AdminLayout() {
   return (
     <OrderProvider>
       <SidebarProvider style={style as React.CSSProperties}>
-        <div className="flex min-h-screen w-full">
+        <div className="flex min-h-screen w-full" dir={adminDir}>
           <AdminSidebar />
           <SidebarInset className="flex flex-col flex-1">
             <AdminHeader

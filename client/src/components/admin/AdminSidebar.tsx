@@ -62,7 +62,7 @@ const settingsItems = [
 
 export default function AdminSidebar() {
   const [location] = useLocation();
-  const { adminLanguage, setAdminLanguage } = useLanguage();
+  const { adminLanguage, setAdminLanguage, adminDir } = useLanguage();
 
   const isActive = (url: string) => {
     if (url === '/admin') return location === '/admin';
@@ -70,7 +70,7 @@ export default function AdminSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar side={adminDir === 'rtl' ? 'right' : 'left'}>
       <SidebarHeader className="p-4 flex flex-row items-center gap-2">
         <img src={logoImg} alt="Smart Food Logo" className="h-8 w-8 object-contain" />
         <h1 className="text-lg font-semibold">Smart Food</h1>
