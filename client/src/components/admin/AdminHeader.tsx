@@ -101,12 +101,12 @@ export default function AdminHeader({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" data-testid="button-language-admin">
               <Globe className="h-4 w-4" />
-              <span className="ml-1 text-xs hidden sm:inline">
+              <span className="mx-1 text-xs hidden sm:inline">
                 {languageOptions.find((l) => l.code === language)?.shortCode}
               </span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+        <DropdownMenuContent align={language === 'ar' || language === 'fa' ? 'start' : 'end'}>
             {languageOptions.map((lang) => (
               <DropdownMenuItem
                 key={lang.code}
@@ -125,7 +125,7 @@ export default function AdminHeader({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2 pl-2 pr-1" data-testid="button-profile-dropdown">
+            <Button variant="ghost" className="gap-2 px-2" data-testid="button-profile-dropdown">
               <Avatar className="h-7 w-7">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="text-xs">{initials}</AvatarFallback>
@@ -134,7 +134,7 @@ export default function AdminHeader({
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align={language === 'ar' || language === 'fa' ? 'start' : 'end'} className="w-56">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col gap-1">
                 <p className="font-medium">{user.name}</p>
@@ -146,16 +146,16 @@ export default function AdminHeader({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onProfileClick} data-testid="menu-item-profile">
-              <User className="mr-2 h-4 w-4" />
+              <User className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
               {t.profile}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onPasswordClick} data-testid="menu-item-password">
-              <Key className="mr-2 h-4 w-4" />
+              <Key className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
               {t.changePassword}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSignOut} className="text-destructive" data-testid="menu-item-signout">
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
               {t.signOut}
             </DropdownMenuItem>
           </DropdownMenuContent>
