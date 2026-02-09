@@ -86,7 +86,7 @@ export default function AdminHeader({
         <Select value={selectedBranch} onValueChange={onBranchChange}>
           <SelectTrigger className="w-auto max-w-[200px] gap-2" data-testid="select-branch">
             <Building2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <SelectValue placeholder="Select Branch" />
+            <SelectValue placeholder={t.selectBranch || "Select Branch"} />
           </SelectTrigger>
           <SelectContent>
             {branches.filter(b => b.isActive).map((branch) => (

@@ -338,6 +338,7 @@ export default function CategoriesPage() {
 
       <DataTable
         data={categories.sort((a, b) => a.order - b.order)}
+        dir={adminDir}
         columns={[
           {
             key: 'image',
