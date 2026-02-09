@@ -139,7 +139,7 @@ const iconOptions = [
 import { useLanguage } from '@/hooks/use-language';
 
 export default function ItemsPage() {
-  const { t } = useLanguage();
+  const { t, adminLanguage } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<StorageItem | null>(null);
@@ -385,12 +385,12 @@ export default function ItemsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Menu Items</h1>
-          <p className="text-muted-foreground">Manage your menu offerings</p>
+          <h1 className="text-2xl font-semibold">{t('menuItemsTitle')}</h1>
+          <p className="text-muted-foreground">{t('manageMenuOfferings')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-item" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Item
+          {t('addItem')}
         </Button>
       </div>
 
@@ -399,10 +399,10 @@ export default function ItemsPage() {
         columns={[
           { 
             key: 'image', 
-            header: 'Image', 
+            header: t('image'), 
             render: (item) => {
               const nameData = item.name;
-              let itemName = 'Item';
+              let itemName = t('name');
               if (typeof nameData === 'string') {
                 itemName = nameData;
               } else if (nameData) {
@@ -410,7 +410,7 @@ export default function ItemsPage() {
                 if (typeof directName === 'string') {
                   itemName = directName;
                 } else if (typeof directName === 'object' && directName !== null) {
-                  itemName = (directName as any).en || Object.values(directName)[0] || 'Item';
+                  itemName = (directName as any).en || Object.values(directName)[0] || t('name');
                 }
               }
               return (
@@ -430,7 +430,7 @@ export default function ItemsPage() {
           },
           { 
             key: 'generalName', 
-            header: 'Name', 
+            header: t('name'), 
             render: (item) => {
               const nameData = item.name;
               let displayName = 'Unnamed';
@@ -447,10 +447,10 @@ export default function ItemsPage() {
               return item.generalName || displayName;
             }
           },
-          { key: 'categoryId', header: 'Category', render: (item) => getCategoryName(item.categoryId) },
+          { key: 'categoryId', header: t('category'), render: (item) => getCategoryName(item.categoryId) },
           { 
             key: 'price', 
-            header: 'Price', 
+            header: t('price'), 
             render: (item) => {
               const decimalPlaces = settings?.currencyDecimal ?? 2;
               return (
@@ -469,21 +469,21 @@ export default function ItemsPage() {
           },
           {
             key: 'available',
-            header: 'Status',
+            header: t('status'),
             render: (item) => (
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant={item.available ? 'default' : 'secondary'} className="no-default-active-elevate">
-                  {item.available ? 'Available' : 'Unavailable'}
+                  {item.available ? t('available') : t('unavailable')}
                 </Badge>
                 {item.suggested && (
                   <Badge variant="outline" className="no-default-active-elevate text-amber-600 border-amber-500/50">
                     <Star className="h-3 w-3 mr-1 fill-amber-500" />
-                    Suggested
+                    {t('suggestedLabel')}
                   </Badge>
                 )}
                 {item.isNew && (
                   <Badge variant="outline" className="no-default-active-elevate text-blue-600 border-blue-500/50">
-                    New
+                    {t('newLabel')}
                   </Badge>
                 )}
               </div>
@@ -544,16 +544,16 @@ export default function ItemsPage() {
       <AlertDialog open={!!deleteItem} onOpenChange={() => setDeleteItem(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Menu Item</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteMenuItem')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteItem?.name.en}"? This action cannot be undone.
+              {t('deleteConfirmText').replace('{name}', deleteItem?.name[adminLanguage] || deleteItem?.name.en || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-item" disabled={deleteMutation.isPending}>
               {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
