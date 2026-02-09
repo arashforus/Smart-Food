@@ -39,7 +39,7 @@ export default function DataTable<T extends { id: string }>({
         <TableHeader>
           <TableRow>
             {columns.map((col) => (
-              <TableHead key={String(col.key)}>{col.header}</TableHead>
+              <TableHead key={String(col.key)} className="text-start">{col.header}</TableHead>
             ))}
             {(onEdit || onDelete) && <TableHead className="text-end">{t('actions')}</TableHead>}
           </TableRow>
@@ -55,7 +55,7 @@ export default function DataTable<T extends { id: string }>({
             data.map((item) => (
               <TableRow key={item.id} data-testid={`${testIdPrefix}-row-${item.id}`}>
                 {columns.map((col) => (
-                  <TableCell key={String(col.key)}>
+                  <TableCell key={String(col.key)} className="text-start">
                     {col.render ? col.render(item) : String(item[col.key as keyof T] ?? '')}
                   </TableCell>
                 ))}
