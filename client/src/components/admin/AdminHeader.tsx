@@ -75,7 +75,7 @@ export default function AdminHeader({
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b bg-background px-3 py-2">
+    <header className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b bg-background px-3 py-2 rtl:flex-row-reverse">
       <div className="flex items-center gap-2">
         <SidebarTrigger data-testid="button-admin-sidebar-toggle" />
       </div>
