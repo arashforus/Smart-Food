@@ -36,7 +36,8 @@ import type { Settings as SettingsType } from '@/lib/types';
 import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 import { useOrders, type OSSSettings } from '@/lib/orderContext';
 
-import logoImg from "@/assets/logo.png";
+import logoDark from "@/assets/images/logo-dark.png";
+import logoLight from "@/assets/images/logo-light.png";
 
 const settingsSchema = z.object({
   primaryColor: z.string().min(1, 'Primary color is required'),
@@ -110,7 +111,11 @@ const currencies = [
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 
+import { useTheme } from '@/hooks/use-theme-hook';
+
 export default function SettingsPage() {
+  const { theme } = useTheme();
+  const logoImg = theme === 'dark' ? logoLight : logoDark;
   const { toast } = useToast();
   const [location] = useLocation();
   const { ossSettings, updateOSSSettings } = useOrders();

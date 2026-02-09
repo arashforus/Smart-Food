@@ -1,7 +1,10 @@
 import { Link, useLocation } from 'wouter';
-import logoImg from "@/assets/logo.png";
+import logoDark from "@/assets/images/logo-dark.png";
+import logoLight from "@/assets/images/logo-light.png";
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import { useLanguage } from '@/hooks/use-language';
+import { useTheme } from '@/hooks/use-theme-hook';
+
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +39,9 @@ import {
 export default function AdminSidebar() {
   const [location] = useLocation();
   const { adminLanguage, setAdminLanguage, adminDir, t } = useLanguage();
+  const { theme } = useTheme();
+
+  const logoImg = theme === 'dark' ? logoLight : logoDark;
 
   const menuItems = [
     { title: t('dashboard'), url: '/admin', icon: LayoutDashboard },
