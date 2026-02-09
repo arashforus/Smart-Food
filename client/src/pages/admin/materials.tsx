@@ -47,7 +47,10 @@ const materialSchema = z.object({
 
 type MaterialFormData = z.infer<typeof materialSchema>;
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function MaterialsPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
@@ -87,7 +90,10 @@ export default function MaterialsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'Material Added' });
+      toast({ title: t('material_added', 'Material Added') });
+    },
+    onError: (error: any) => {
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_add_material', 'Failed to add material'), variant: 'destructive' });
     },
   });
 
@@ -108,7 +114,10 @@ export default function MaterialsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setEditingMaterial(null);
       form.reset();
-      toast({ title: 'Material Updated' });
+      toast({ title: t('material_updated', 'Material Updated') });
+    },
+    onError: (error: any) => {
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_material', 'Failed to update material'), variant: 'destructive' });
     },
   });
 
@@ -117,7 +126,10 @@ export default function MaterialsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setDeleteMaterial(null);
-      toast({ title: 'Material Deleted' });
+      toast({ title: t('material_deleted', 'Material Deleted') });
+    },
+    onError: (error: any) => {
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_material', 'Failed to delete material'), variant: 'destructive' });
     },
   });
 
@@ -158,12 +170,12 @@ export default function MaterialsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Materials / Ingredients</h1>
-          <p className="text-muted-foreground">Manage ingredients used in your dishes</p>
+          <h1 className="text-2xl font-semibold">{t('materials_ingredients', 'Materials / Ingredients')}</h1>
+          <p className="text-muted-foreground">{t('materials_desc', 'Manage ingredients used in your dishes')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-material">
           <Plus className="h-4 w-4 mr-2" />
-          Add Material
+          {t('add_material')}
         </Button>
       </div>
 
@@ -181,7 +193,7 @@ export default function MaterialsPage() {
             columns={[
               {
                 key: 'preview',
-                header: 'Preview',
+                header: t('preview'),
                 render: (item: any) => (
                   item.image ? (
                     <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center">
@@ -203,12 +215,12 @@ export default function MaterialsPage() {
               },
               { 
                 key: 'generalName', 
-                header: 'Name', 
+                header: t('name'), 
                 render: (item: any) => item.generalName || (item.name as any)?.en || 'N/A' 
               },
               { 
                 key: 'translations', 
-                header: 'Translations', 
+                header: t('translations'), 
                 render: (item: any) => {
                   const count = Object.values(item.name || {}).filter(v => v && String(v).trim() !== '').length;
                   return (
@@ -219,7 +231,7 @@ export default function MaterialsPage() {
                   );
                 }
               },
-              { key: 'color', header: 'Color', render: (item: any) => (
+              { key: 'color', header: t('color'), render: (item: any) => (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
                   <span className="text-xs text-muted-foreground">{item.color}</span>
@@ -239,18 +251,18 @@ export default function MaterialsPage() {
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" data-testid="modal-material-form">
           <DialogHeader>
-            <DialogTitle>{editingMaterial ? 'Edit Material' : 'Add Material'}</DialogTitle>
+            <DialogTitle>{editingMaterial ? t('edit_material') : t('add_material')}</DialogTitle>
           </DialogHeader>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="info" className="flex items-center gap-2">
                 <Info className="h-4 w-4" />
-                Info
+                {t('info')}
               </TabsTrigger>
               <TabsTrigger value="translation" className="flex items-center gap-2">
                 <Globe className="h-4 w-4" />
-                Translation
+                {t('translation')}
               </TabsTrigger>
             </TabsList>
 
@@ -259,7 +271,7 @@ export default function MaterialsPage() {
                 <TabsContent value="info" className="space-y-4 m-0">
                   <FormField control={form.control} name="generalName" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{t('name')}</FormLabel>
                       <FormControl><Input {...field} placeholder="e.g. Tomato" data-testid="input-material-general-name" /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -267,23 +279,23 @@ export default function MaterialsPage() {
                   
                   <FormField control={form.control} name="image" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Image (Optional)</FormLabel>
+                      <FormLabel>{t('image')} ({t('optional')})</FormLabel>
                       <FormControl>
                         <ImageUpload
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Upload image or enter URL"
+                          placeholder={t('upload_image')}
                           testId="input-material-image"
                         />
                       </FormControl>
-                      <FormDescription>If no image, the color will be used as background</FormDescription>
+                      <FormDescription>{t('material_image_desc')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
 
                   <FormField control={form.control} name="backgroundColor" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Background Color</FormLabel>
+                      <FormLabel>{t('background_color')}</FormLabel>
                       <FormControl>
                         <div className="flex gap-2">
                           <Input type="color" {...field} className="w-14 h-9 p-1" data-testid="input-material-color" />
@@ -304,12 +316,12 @@ export default function MaterialsPage() {
                           name={`translations.${lang.code}`} 
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{lang.name} Translation</FormLabel>
+                              <FormLabel>{lang.name} {t('translation')}</FormLabel>
                               <FormControl>
                                 <Input 
                                   {...field} 
                                   value={field.value || ''} 
-                                  placeholder={`Name in ${lang.name}`}
+                                  placeholder={`${t('name')} in ${lang.name}`}
                                   data-testid={`input-material-translation-${lang.code}`} 
                                 />
                               </FormControl>
@@ -320,7 +332,7 @@ export default function MaterialsPage() {
                       ))}
                       {languages.length === 0 && (
                         <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                          No languages defined in database.
+                          {t('no_languages_defined')}
                         </div>
                       )}
                     </div>
@@ -330,10 +342,10 @@ export default function MaterialsPage() {
                   <Button type="button" variant="ghost" onClick={() => {
                     setFormOpen(false);
                     setEditingMaterial(null);
-                  }}>Cancel</Button>
+                  }}>{t('cancel')}</Button>
                   <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-save-material">
                     {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    {editingMaterial ? 'Update' : 'Create'}
+                    {editingMaterial ? t('update') : t('create')}
                   </Button>
                 </div>
               </form>
@@ -345,20 +357,20 @@ export default function MaterialsPage() {
       <AlertDialog open={!!deleteMaterial} onOpenChange={() => setDeleteMaterial(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Material</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_material')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this material? This action cannot be undone.
+              {t('confirm_delete_material', 'Are you sure you want to delete this material? This action cannot be undone.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => deleteMaterial && deleteMutation.mutate(deleteMaterial.id)}
               disabled={deleteMutation.isPending}
               className="bg-destructive text-destructive-foreground"
             >
               {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

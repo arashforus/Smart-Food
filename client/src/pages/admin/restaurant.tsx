@@ -39,7 +39,10 @@ const restaurantSchema = z.object({
 
 type RestaurantFormData = z.infer<typeof restaurantSchema>;
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function RestaurantPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [restaurant, setRestaurant] = useState<Restaurant>(mockRestaurant);
   const [isPending, setIsPending] = useState(false);
@@ -124,14 +127,14 @@ export default function RestaurantPage() {
       });
       setRestaurant({ ...restaurant, ...data });
       toast({
-        title: 'Restaurant Updated',
-        description: 'Your restaurant information has been saved.',
+        title: t('restaurant_updated', 'Restaurant Updated'),
+        description: t('restaurant_saved_desc', 'Your restaurant information has been saved.'),
       });
     } catch (error) {
       console.error('Failed to update settings:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to save restaurant information.',
+        title: t('error', 'Error'),
+        description: t('failed_save_restaurant', 'Failed to save restaurant information.'),
         variant: 'destructive',
       });
     } finally {
@@ -142,8 +145,8 @@ export default function RestaurantPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Restaurant Info</h1>
-        <p className="text-muted-foreground">Manage your restaurant details</p>
+        <h1 className="text-2xl font-semibold">{t('restaurant_info', 'Restaurant Info')}</h1>
+        <p className="text-muted-foreground">{t('restaurant_info_desc', 'Manage your restaurant details')}</p>
       </div>
 
       <Form {...form}>
@@ -151,19 +154,19 @@ export default function RestaurantPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle>{t('basic_information', 'Basic Information')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Restaurant Name</FormLabel>
+                    <FormLabel>{t('restaurant_name', 'Restaurant Name')}</FormLabel>
                     <FormControl><Input {...field} data-testid="input-restaurant-name" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="description" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t('description')}</FormLabel>
                     <FormControl><Textarea {...field} rows={3} data-testid="input-restaurant-description" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,14 +174,14 @@ export default function RestaurantPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>{t('phone')}</FormLabel>
                       <FormControl><Input {...field} data-testid="input-restaurant-phone" /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="email" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('email')}</FormLabel>
                       <FormControl><Input type="email" {...field} data-testid="input-restaurant-email" /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -186,14 +189,14 @@ export default function RestaurantPage() {
                 </div>
                 <FormField control={form.control} name="address" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address</FormLabel>
+                    <FormLabel>{t('address')}</FormLabel>
                     <FormControl><Input {...field} data-testid="input-restaurant-address" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="hours" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Business Hours</FormLabel>
+                    <FormLabel>{t('business_hours', 'Business Hours')}</FormLabel>
                     <FormControl><Input {...field} data-testid="input-restaurant-hours" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -201,14 +204,14 @@ export default function RestaurantPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField control={form.control} name="currency" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
+                      <FormLabel>{t('currency')}</FormLabel>
                       <FormControl><Input {...field} placeholder="USD" data-testid="input-restaurant-currency" /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="currencySymbol" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency Symbol</FormLabel>
+                      <FormLabel>{t('currency_symbol')}</FormLabel>
                       <FormControl><Input {...field} placeholder="$" data-testid="input-restaurant-currency-symbol" /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -220,36 +223,36 @@ export default function RestaurantPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Logo & Images</CardTitle>
+                  <CardTitle>{t('logo_images', 'Logo & Images')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField control={form.control} name="logo" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Restaurant Logo</FormLabel>
+                      <FormLabel>{t('restaurant_logo', 'Restaurant Logo')}</FormLabel>
                       <FormControl>
                         <ImageUpload
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Upload logo or enter URL"
+                          placeholder={t('upload_logo')}
                           testId="input-restaurant-logo"
                         />
                       </FormControl>
-                      <FormDescription>Your restaurant logo will appear on the menu</FormDescription>
+                      <FormDescription>{t('logo_desc')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="backgroundImage" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Background Image</FormLabel>
+                      <FormLabel>{t('background_image')}</FormLabel>
                       <FormControl>
                         <ImageUpload
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Upload background or enter URL"
+                          placeholder={t('upload_background')}
                           testId="input-restaurant-background"
                         />
                       </FormControl>
-                      <FormDescription>Background image for the QR menu landing page</FormDescription>
+                      <FormDescription>{t('background_desc')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -260,14 +263,14 @@ export default function RestaurantPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
-                    Google Maps Location
+                    {t('google_maps_location', 'Google Maps Location')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="mapLat" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Latitude</FormLabel>
+                        <FormLabel>{t('latitude')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -284,7 +287,7 @@ export default function RestaurantPage() {
                     )} />
                     <FormField control={form.control} name="mapLng" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Longitude</FormLabel>
+                        <FormLabel>{t('longitude')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -301,14 +304,14 @@ export default function RestaurantPage() {
                     )} />
                   </div>
                   <FormDescription>
-                    Enter coordinates for Google Maps integration. 
+                    {t('google_maps_desc', 'Enter coordinates for Google Maps integration.')} 
                     <a 
                       href="https://www.google.com/maps" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-primary ml-1 underline"
                     >
-                      Find coordinates on Google Maps
+                      {t('find_coordinates', 'Find coordinates on Google Maps')}
                     </a>
                   </FormDescription>
                   {form.watch('mapLat') && form.watch('mapLng') && (
@@ -320,7 +323,7 @@ export default function RestaurantPage() {
                         className="text-primary underline text-sm"
                         data-testid="link-view-map"
                       >
-                        View on Google Maps
+                        {t('view_on_google_maps', 'View on Google Maps')}
                       </a>
                     </div>
                   )}
@@ -331,7 +334,7 @@ export default function RestaurantPage() {
 
           <div className="flex justify-end gap-2">
             <Button type="submit" disabled={isPending} data-testid="button-save-restaurant">
-              {isPending ? 'Saving...' : 'Save Changes'}
+              {isPending ? t('saving') : t('save_changes')}
             </Button>
           </div>
         </form>

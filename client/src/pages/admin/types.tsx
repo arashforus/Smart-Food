@@ -79,7 +79,10 @@ interface DbFoodType {
   order: number;
 }
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function TypesPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingType, setEditingType] = useState<DbFoodType | null>(null);
@@ -127,10 +130,10 @@ export default function TypesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'Food Type Added' });
+      toast({ title: t('food_type_added', 'Food Type Added') });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to create food type', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: t('failed_create_type', 'Failed to create food type'), variant: 'destructive' });
     },
   });
 
@@ -153,10 +156,10 @@ export default function TypesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setEditingType(null);
       form.reset();
-      toast({ title: 'Food Type Updated' });
+      toast({ title: t('food_type_updated', 'Food Type Updated') });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to update food type', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: t('failed_update_type', 'Failed to update food type'), variant: 'destructive' });
     },
   });
 
@@ -165,10 +168,10 @@ export default function TypesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setDeleteType(null);
-      toast({ title: 'Food Type Deleted' });
+      toast({ title: t('food_type_deleted', 'Food Type Deleted') });
     },
     onError: () => {
-      toast({ title: 'Error', description: 'Failed to delete food type', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: t('failed_delete_type', 'Failed to delete food type'), variant: 'destructive' });
     },
   });
 
@@ -197,18 +200,6 @@ export default function TypesPage() {
       }
     }
     return nameStr;
-  };
-
-  const parseDescription = (descStr: string) => {
-    if (!descStr) return { en: '' };
-    if (typeof descStr === 'string') {
-      try {
-        return JSON.parse(descStr);
-      } catch {
-        return { en: descStr };
-      }
-    }
-    return descStr;
   };
 
   const openCreate = () => {
@@ -270,24 +261,24 @@ export default function TypesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Food Types / Tags</h1>
-          <p className="text-muted-foreground">Define dietary tags like vegan, spicy, healthy</p>
+          <h1 className="text-2xl font-semibold">{t('food_types_tags', 'Food Types / Tags')}</h1>
+          <p className="text-muted-foreground">{t('food_types_desc', 'Define dietary tags like vegan, spicy, healthy')}</p>
         </div>
         <Button onClick={openCreate} disabled={isLoading} data-testid="button-add-type">
           <Plus className="h-4 w-4 mr-2" />
-          Add Type
+          {t('add_type')}
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8 text-muted-foreground">Loading food types...</div>
+        <div className="text-center py-8 text-muted-foreground">{t('loading_food_types', 'Loading food types...')}</div>
       ) : (
           <DataTable
             data={displayTypes}
             columns={[
               {
                 key: 'preview',
-                header: 'Preview',
+                header: t('preview'),
                 render: (item: any) => (
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white overflow-hidden"
@@ -305,12 +296,12 @@ export default function TypesPage() {
               },
               { 
                 key: 'generalName', 
-                header: 'Name', 
+                header: t('name'), 
                 render: (item: any) => item.generalName || item.name?.en || 'N/A' 
               },
               {
                 key: 'translations',
-                header: 'Translations',
+                header: t('translations'),
                 render: (item: any) => {
                   const dbType = dbFoodTypes.find(t => t.id === item.id);
                   const count = getTranslationCount(dbType?.name);
@@ -326,12 +317,12 @@ export default function TypesPage() {
               },
               {
                 key: 'icon',
-                header: 'Icon',
+                header: t('icon'),
                 render: (item: any) => iconOptions.find((i) => i.value === item.icon)?.label || item.icon,
               },
               {
                 key: 'color',
-                header: 'Color',
+                header: t('color'),
                 render: (item: any) => (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
@@ -360,14 +351,14 @@ export default function TypesPage() {
       }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-form">
           <DialogHeader>
-            <DialogTitle>Add Food Type</DialogTitle>
+            <DialogTitle>{t('add_type')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <Tabs defaultValue="info" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">Info</TabsTrigger>
-                  <TabsTrigger value="translation">Translation</TabsTrigger>
+                  <TabsTrigger value="info">{t('info')}</TabsTrigger>
+                  <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="info" className="space-y-4 pt-4">
@@ -376,7 +367,7 @@ export default function TypesPage() {
                     name="generalName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>{t('name')}</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name" />
                         </FormControl>
@@ -389,11 +380,11 @@ export default function TypesPage() {
                     name="icon"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Icon</FormLabel>
+                        <FormLabel>{t('icon')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-type-icon">
-                              <SelectValue placeholder="Select icon" />
+                              <SelectValue placeholder={t('select_icon')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -416,7 +407,7 @@ export default function TypesPage() {
                     name="color"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Color</FormLabel>
+                        <FormLabel>{t('color')}</FormLabel>
                         <FormControl>
                           <div className="flex gap-2">
                             <Input
@@ -436,7 +427,7 @@ export default function TypesPage() {
 
                 <TabsContent value="translation" className="space-y-4 pt-4">
                   {languages.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No active languages defined</p>
+                    <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
                   ) : (
                     languages.map((lang) => (
                       <FormField
@@ -447,7 +438,7 @@ export default function TypesPage() {
                           <FormItem>
                             <FormLabel>{lang.name}</FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value || ''} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}`} />
+                              <Input {...field} value={field.value || ''} placeholder={`${t('name')} in ${lang.name}`} data-testid={`input-type-name-${lang.code}`} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -463,10 +454,10 @@ export default function TypesPage() {
                   setFormOpen(false);
                   form.reset();
                 }}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button type="submit" data-testid="button-save-type" disabled={createMutation.isPending || !form.formState.isValid}>
-                  {createMutation.isPending ? 'Creating...' : 'Create'}
+                  {createMutation.isPending ? t('creating') : t('create')}
                 </Button>
               </div>
             </form>
@@ -482,14 +473,14 @@ export default function TypesPage() {
       }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-edit">
           <DialogHeader>
-            <DialogTitle>Edit Food Type</DialogTitle>
+            <DialogTitle>{t('edit_type', 'Edit Food Type')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <Tabs defaultValue="info" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">Info</TabsTrigger>
-                  <TabsTrigger value="translation">Translation</TabsTrigger>
+                  <TabsTrigger value="info">{t('info')}</TabsTrigger>
+                  <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="info" className="space-y-4 pt-4">
@@ -498,7 +489,7 @@ export default function TypesPage() {
                     name="generalName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>{t('name')}</FormLabel>
                         <FormControl>
                           <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name-edit" />
                         </FormControl>
@@ -511,11 +502,11 @@ export default function TypesPage() {
                     name="icon"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Icon</FormLabel>
+                        <FormLabel>{t('icon')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-type-icon-edit">
-                              <SelectValue placeholder="Select icon" />
+                              <SelectValue placeholder={t('select_icon')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -538,7 +529,7 @@ export default function TypesPage() {
                     name="color"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Color</FormLabel>
+                        <FormLabel>{t('color')}</FormLabel>
                         <FormControl>
                           <div className="flex gap-2">
                             <Input
@@ -558,7 +549,7 @@ export default function TypesPage() {
 
                 <TabsContent value="translation" className="space-y-4 pt-4">
                   {languages.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No active languages defined</p>
+                    <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
                   ) : (
                     languages.map((lang) => (
                       <FormField
@@ -569,7 +560,7 @@ export default function TypesPage() {
                           <FormItem>
                             <FormLabel>{lang.name}</FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value || ''} placeholder={`Name in ${lang.name}`} data-testid={`input-type-name-${lang.code}-edit`} />
+                              <Input {...field} value={field.value || ''} placeholder={`${t('name')} in ${lang.name}`} data-testid={`input-type-name-${lang.code}-edit`} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -585,10 +576,10 @@ export default function TypesPage() {
                   setEditingType(null);
                   form.reset();
                 }}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button type="submit" data-testid="button-update-type" disabled={updateMutation.isPending || !form.formState.isValid}>
-                  {updateMutation.isPending ? 'Updating...' : 'Update'}
+                  {updateMutation.isPending ? t('updating') : t('update')}
                 </Button>
               </div>
             </form>
@@ -599,19 +590,19 @@ export default function TypesPage() {
       <AlertDialog open={!!deleteType} onOpenChange={() => setDeleteType(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Food Type</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_type')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteType && parseName(deleteType.name).en}"?
+              {t('confirm_delete_type', `Are you sure you want to delete "${deleteType && parseName(deleteType.name).en}"?`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               data-testid="button-confirm-delete-type"
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteMutation.isPending ? t('deleting') : t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

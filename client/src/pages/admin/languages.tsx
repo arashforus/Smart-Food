@@ -69,6 +69,7 @@ const languageSchema = z.object({
 type LanguageFormData = z.infer<typeof languageSchema>;
 
 export default function LanguagesPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingLanguage, setEditingLanguage] = useState<AppLanguage | null>(null);
@@ -95,13 +96,13 @@ export default function LanguagesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'Language Added' });
+      toast({ title: t('language_added', 'Language Added') });
       // Refresh language contexts
       setLanguage(localStorage.getItem('language') || 'en');
       setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to add language', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_add_language', 'Failed to add language'), variant: 'destructive' });
     },
   });
 
@@ -114,13 +115,13 @@ export default function LanguagesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setEditingLanguage(null);
       form.reset();
-      toast({ title: 'Language Updated' });
+      toast({ title: t('language_updated', 'Language Updated') });
       // Refresh language contexts
       setLanguage(localStorage.getItem('language') || 'en');
       setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to update language', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_language', 'Failed to update language'), variant: 'destructive' });
     },
   });
 
@@ -131,13 +132,13 @@ export default function LanguagesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setDeleteLanguage(null);
-      toast({ title: 'Language Deleted' });
+      toast({ title: t('language_deleted', 'Language Deleted') });
       // Refresh language contexts
       setLanguage(localStorage.getItem('language') || 'en');
       setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to delete language', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_language', 'Failed to delete language'), variant: 'destructive' });
     },
   });
 
@@ -161,8 +162,6 @@ export default function LanguagesPage() {
 
   const openTextEditor = (lang: AppLanguage) => {
     setEditingTexts(lang);
-    // Since we moved to dynamic translations, we can't easily access translations.en here directly anymore
-    // We should ideally fetch them or use a default set. For now, let's use the hook's t function or a placeholder
     const overrides: Record<string, string> = { ...lang.textOverrides };
     setTextOverrides(overrides);
     setTextEditorOpen(true);
@@ -179,13 +178,13 @@ export default function LanguagesPage() {
   const handleSaveTexts = () => {
     setTextEditorOpen(false);
     setEditingTexts(null);
-    toast({ title: 'Text translations saved' });
+    toast({ title: t('text_translations_saved', 'Text translations saved') });
   };
 
   const handleDelete = () => {
     if (!deleteLanguage) return;
     if (deleteLanguage.isDefault) {
-      toast({ title: 'Cannot delete default language', variant: 'destructive' });
+      toast({ title: t('cannot_delete_default_language', 'Cannot delete default language'), variant: 'destructive' });
       setDeleteLanguage(null);
       return;
     }
@@ -204,12 +203,12 @@ export default function LanguagesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Languages</h1>
-          <p className="text-muted-foreground">Configure available menu languages</p>
+          <h1 className="text-2xl font-semibold">{t('languages')}</h1>
+          <p className="text-muted-foreground">{t('languages_desc')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-language">
           <Plus className="h-4 w-4 mr-2" />
-          Add Language
+          {t('add_language')}
         </Button>
       </div>
 
@@ -218,28 +217,28 @@ export default function LanguagesPage() {
         columns={[
           { 
             key: 'flag', 
-            header: 'Flag', 
+            header: t('flag', 'Flag'), 
             render: (item: any) => item.flagImage ? (
               <img src={item.flagImage} alt={item.name} className="w-8 h-5 object-cover rounded-sm" />
             ) : (
               <div className="w-8 h-5 rounded-sm bg-muted flex items-center justify-center text-xs">{item.code.toUpperCase()}</div>
             )
           },
-          { key: 'code', header: 'Code' },
-          { key: 'name', header: 'Name' },
-          { key: 'nativeName', header: 'Native Name', render: (item: any) => item.nativeName || '-' },
-          { key: 'direction', header: 'Direction', render: (item: any) => (item.direction ? item.direction.toUpperCase() : 'LTR') },
+          { key: 'code', header: t('code') },
+          { key: 'name', header: t('name') },
+          { key: 'nativeName', header: t('native_name'), render: (item: any) => item.nativeName || '-' },
+          { key: 'direction', header: t('direction'), render: (item: any) => (item.direction ? item.direction.toUpperCase() : 'LTR') },
           {
             key: 'isDefault',
-            header: 'Default',
+            header: t('default'),
             render: (item: any) => item.isDefault ? <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" /> : null,
           },
           {
             key: 'isActive',
-            header: 'Status',
+            header: t('status'),
             render: (item: any) => (
               <Badge variant={item.isActive ? 'default' : 'secondary'} className="no-default-active-elevate">
-                {item.isActive ? 'Active' : 'Inactive'}
+                {item.isActive ? t('active') : t('inactive')}
               </Badge>
             ),
           },
@@ -252,13 +251,13 @@ export default function LanguagesPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent data-testid="modal-language-form">
           <DialogHeader>
-            <DialogTitle>Add Language</DialogTitle>
+            <DialogTitle>{t('add_language')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4" data-testid="form-language-create">
               <FormField control={form.control} name="code" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Language Code</FormLabel>
+                  <FormLabel>{t('language_code')}</FormLabel>
                   <FormControl><Input {...field} placeholder="e.g., en, es, fr" data-testid="input-language-code" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -266,14 +265,14 @@ export default function LanguagesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name (English)</FormLabel>
+                    <FormLabel>{t('name')} ({t('english')})</FormLabel>
                     <FormControl><Input {...field} placeholder="e.g., Spanish" data-testid="input-language-name" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="nativeName" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Native Name</FormLabel>
+                    <FormLabel>{t('native_name')}</FormLabel>
                     <FormControl><Input {...field} placeholder="e.g., Español" data-testid="input-language-native" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -281,31 +280,31 @@ export default function LanguagesPage() {
               </div>
               <FormField control={form.control} name="flagImage" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Flag Image</FormLabel>
+                  <FormLabel>{t('flag_image')}</FormLabel>
                   <FormControl>
                     <ImageUpload
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Upload flag or enter URL"
+                      placeholder={t('upload_flag')}
                       testId="input-language-flag"
                     />
                   </FormControl>
-                  <FormDescription>Country flag for language selection</FormDescription>
+                  <FormDescription>{t('flag_desc')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="direction" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Text Direction</FormLabel>
+                  <FormLabel>{t('text_direction')}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-language-direction">
-                        <SelectValue placeholder="Select direction" />
+                        <SelectValue placeholder={t('select_direction')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ltr">Left to Right (LTR)</SelectItem>
-                      <SelectItem value="rtl">Right to Left (RTL)</SelectItem>
+                      <SelectItem value="ltr">{t('ltr')}</SelectItem>
+                      <SelectItem value="rtl">{t('rtl')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -314,7 +313,7 @@ export default function LanguagesPage() {
               <div className="flex gap-6">
                 <FormField control={form.control} name="isActive" render={({ field }) => (
                   <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0">Active</FormLabel>
+                    <FormLabel className="mt-0">{t('active')}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-language-active" />
                     </FormControl>
@@ -322,7 +321,7 @@ export default function LanguagesPage() {
                 )} />
                 <FormField control={form.control} name="isDefault" render={({ field }) => (
                   <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0">Default</FormLabel>
+                    <FormLabel className="mt-0">{t('default')}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-language-default" />
                     </FormControl>
@@ -330,10 +329,10 @@ export default function LanguagesPage() {
                 )} />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-save-language" disabled={createMutation.isPending}>
                   {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
+                  {t('create')}
                 </Button>
               </div>
             </form>
@@ -344,13 +343,13 @@ export default function LanguagesPage() {
       <Dialog open={!!editingLanguage} onOpenChange={() => setEditingLanguage(null)}>
         <DialogContent data-testid="modal-language-edit">
           <DialogHeader>
-            <DialogTitle>Edit Language</DialogTitle>
+            <DialogTitle>{t('edit_language')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <FormField control={form.control} name="code" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Language Code</FormLabel>
+                  <FormLabel>{t('language_code')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-language-code-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -358,14 +357,14 @@ export default function LanguagesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name (English)</FormLabel>
+                    <FormLabel>{t('name')} ({t('english')})</FormLabel>
                     <FormControl><Input {...field} data-testid="input-language-name-edit" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="nativeName" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Native Name</FormLabel>
+                    <FormLabel>{t('native_name')}</FormLabel>
                     <FormControl><Input {...field} data-testid="input-language-native-edit" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -373,12 +372,12 @@ export default function LanguagesPage() {
               </div>
               <FormField control={form.control} name="flagImage" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Flag Image</FormLabel>
+                  <FormLabel>{t('flag_image')}</FormLabel>
                   <FormControl>
                     <ImageUpload
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Upload flag or enter URL"
+                      placeholder={t('upload_flag')}
                       testId="input-language-flag-edit"
                     />
                   </FormControl>
@@ -387,16 +386,16 @@ export default function LanguagesPage() {
               )} />
               <FormField control={form.control} name="direction" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Text Direction</FormLabel>
+                  <FormLabel>{t('text_direction')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-language-direction-edit">
-                        <SelectValue placeholder="Select direction" />
+                        <SelectValue placeholder={t('select_direction')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ltr">Left to Right (LTR)</SelectItem>
-                      <SelectItem value="rtl">Right to Left (RTL)</SelectItem>
+                      <SelectItem value="ltr">{t('ltr')}</SelectItem>
+                      <SelectItem value="rtl">{t('rtl')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -405,7 +404,7 @@ export default function LanguagesPage() {
               <div className="flex gap-6">
                 <FormField control={form.control} name="isActive" render={({ field }) => (
                   <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0">Active</FormLabel>
+                    <FormLabel className="mt-0">{t('active')}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-language-active-edit" />
                     </FormControl>
@@ -413,7 +412,7 @@ export default function LanguagesPage() {
                 )} />
                 <FormField control={form.control} name="isDefault" render={({ field }) => (
                   <FormItem className="flex items-center gap-3">
-                    <FormLabel className="mt-0">Default</FormLabel>
+                    <FormLabel className="mt-0">{t('default')}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-language-default-edit" />
                     </FormControl>
@@ -421,10 +420,10 @@ export default function LanguagesPage() {
                 )} />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingLanguage(null)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingLanguage(null)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-update-language" disabled={updateMutation.isPending}>
                   {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Update
+                  {t('update')}
                 </Button>
               </div>
             </form>
@@ -435,11 +434,11 @@ export default function LanguagesPage() {
       <Dialog open={textEditorOpen} onOpenChange={setTextEditorOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="modal-text-editor">
           <DialogHeader>
-            <DialogTitle>Edit Texts - {editingTexts?.name}</DialogTitle>
+            <DialogTitle>{t('edit_texts')} - {editingTexts?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Customize the UI text for this language. Leave empty to use the default translation.
+              {t('edit_texts_desc')}
             </p>
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
               {Object.entries(textOverrides).map(([key, value]) => (
@@ -456,8 +455,8 @@ export default function LanguagesPage() {
               ))}
             </div>
             <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="ghost" onClick={() => setTextEditorOpen(false)}>Cancel</Button>
-              <Button onClick={handleSaveTexts} data-testid="button-save-texts">Save Texts</Button>
+              <Button type="button" variant="ghost" onClick={() => setTextEditorOpen(false)}>{t('cancel')}</Button>
+              <Button onClick={handleSaveTexts} data-testid="button-save-texts">{t('save_texts')}</Button>
             </div>
           </div>
         </DialogContent>
@@ -466,14 +465,14 @@ export default function LanguagesPage() {
       <AlertDialog open={!!deleteLanguage} onOpenChange={() => setDeleteLanguage(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Language</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_language')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteLanguage?.name}"? This will remove all translations for this language.
+              {t('confirm_delete_language', `Are you sure you want to delete "${deleteLanguage?.name}"? This will remove all translations for this language.`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-language">Delete</AlertDialogAction>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-language">{t('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

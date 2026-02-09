@@ -68,7 +68,10 @@ interface StorageBranch {
   isActive: boolean;
 }
 
+import { useLanguage } from '@/hooks/use-language';
+
 export default function TablesPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingTable, setEditingTable] = useState<StorageTable | null>(null);
@@ -100,10 +103,10 @@ export default function TablesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'Table Created' });
+      toast({ title: t('table_created', 'Table Created') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to create table', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_table', 'Failed to create table'), variant: 'destructive' });
     },
   });
 
@@ -121,10 +124,10 @@ export default function TablesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
       setEditingTable(null);
       form.reset();
-      toast({ title: 'Table Updated' });
+      toast({ title: t('table_updated', 'Table Updated') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to update table', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_table', 'Failed to update table'), variant: 'destructive' });
     },
   });
 
@@ -135,10 +138,10 @@ export default function TablesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
       setDeleteTable(null);
-      toast({ title: 'Table Deleted' });
+      toast({ title: t('table_deleted', 'Table Deleted') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to delete table', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_table', 'Failed to delete table'), variant: 'destructive' });
     },
   });
 
@@ -170,7 +173,7 @@ export default function TablesPage() {
     deleteMutation.mutate(deleteTable.id);
   };
 
-  const getBranchName = (branchId: string) => branches.find((b) => b.id === branchId)?.name || 'Unknown';
+  const getBranchName = (branchId: string) => branches.find((b) => b.id === branchId)?.name || t('unknown');
 
   if (tablesLoading || branchesLoading) {
     return (
@@ -184,27 +187,27 @@ export default function TablesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Tables</h1>
-          <p className="text-muted-foreground">Manage restaurant tables for QR codes</p>
+          <h1 className="text-2xl font-semibold">{t('tables')}</h1>
+          <p className="text-muted-foreground">{t('tables_desc')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-table" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Table
+          {t('add_table')}
         </Button>
       </div>
 
       <DataTable
         data={tables}
         columns={[
-          { key: 'tableNumber', header: 'Table #' },
-          { key: 'branchId', header: 'Branch', render: (item) => getBranchName(item.branchId) },
-          { key: 'capacity', header: 'Seats' },
+          { key: 'tableNumber', header: t('table_number', 'Table #') },
+          { key: 'branchId', header: t('branch'), render: (item) => getBranchName(item.branchId) },
+          { key: 'capacity', header: t('seats', 'Seats') },
           {
             key: 'isActive',
-            header: 'Status',
+            header: t('status'),
             render: (item) => (
               <Badge variant={item.isActive ? 'default' : 'secondary'} className="no-default-active-elevate">
-                {item.isActive ? 'Active' : 'Inactive'}
+                {item.isActive ? t('active') : t('inactive')}
               </Badge>
             ),
           },
@@ -217,17 +220,17 @@ export default function TablesPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent data-testid="modal-table-form">
           <DialogHeader>
-            <DialogTitle>Add Table</DialogTitle>
+            <DialogTitle>{t('add_table')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="branchId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch</FormLabel>
+                  <FormLabel>{t('branch')}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-table-branch">
-                        <SelectValue placeholder="Select branch" />
+                        <SelectValue placeholder={t('select_branch')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -241,14 +244,14 @@ export default function TablesPage() {
               )} />
               <FormField control={form.control} name="tableNumber" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Table Number/Name</FormLabel>
+                  <FormLabel>{t('table_name', 'Table Number/Name')}</FormLabel>
                   <FormControl><Input {...field} placeholder="e.g., T1 or Patio-3" data-testid="input-table-number" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="capacity" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Number of Seats</FormLabel>
+                  <FormLabel>{t('number_of_seats', 'Number of Seats')}</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-table-seats" />
                   </FormControl>
@@ -257,17 +260,17 @@ export default function TablesPage() {
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Active</FormLabel>
+                  <FormLabel className="mt-0">{t('active')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-table-active" />
                   </FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-save-table" disabled={createMutation.isPending}>
                   {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
+                  {t('create')}
                 </Button>
               </div>
             </form>
@@ -278,17 +281,17 @@ export default function TablesPage() {
       <Dialog open={!!editingTable} onOpenChange={() => setEditingTable(null)}>
         <DialogContent data-testid="modal-table-edit">
           <DialogHeader>
-            <DialogTitle>Edit Table</DialogTitle>
+            <DialogTitle>{t('edit_table')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <FormField control={form.control} name="branchId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch</FormLabel>
+                  <FormLabel>{t('branch')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-table-branch-edit">
-                        <SelectValue placeholder="Select branch" />
+                        <SelectValue placeholder={t('select_branch')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -302,14 +305,14 @@ export default function TablesPage() {
               )} />
               <FormField control={form.control} name="tableNumber" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Table Number/Name</FormLabel>
+                  <FormLabel>{t('table_name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-table-number-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="capacity" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Number of Seats</FormLabel>
+                  <FormLabel>{t('number_of_seats')}</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value) || 1)} data-testid="input-table-seats-edit" />
                   </FormControl>
@@ -318,17 +321,17 @@ export default function TablesPage() {
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Active</FormLabel>
+                  <FormLabel className="mt-0">{t('active')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-table-active-edit" />
                   </FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingTable(null)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingTable(null)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-update-table" disabled={updateMutation.isPending}>
                   {updateMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Update
+                  {t('update')}
                 </Button>
               </div>
             </form>
@@ -339,16 +342,16 @@ export default function TablesPage() {
       <AlertDialog open={!!deleteTable} onOpenChange={() => setDeleteTable(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Table</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_table')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete table "{deleteTable?.tableNumber}"?
+              {t('confirm_delete_table', `Are you sure you want to delete table "${deleteTable?.tableNumber}"?`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-table" disabled={deleteMutation.isPending}>
               {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
