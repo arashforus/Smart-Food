@@ -626,10 +626,6 @@ function FormContent({
         <form onSubmit={form.handleSubmit(handleFormSubmit, onFormError)} className="space-y-4">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="basic">Basic</TabsTrigger>
-              <TabsTrigger value="materials">Materials</TabsTrigger>
-            <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basic">{t('basicTab')}</TabsTrigger>
               <TabsTrigger value="materials">{t('materialsTab')}</TabsTrigger>
               <TabsTrigger value="types">{t('typesTab')}</TabsTrigger>
