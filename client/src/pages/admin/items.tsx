@@ -628,14 +628,18 @@ function FormContent({
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basic">Basic</TabsTrigger>
               <TabsTrigger value="materials">Materials</TabsTrigger>
-              <TabsTrigger value="types">Types</TabsTrigger>
-              <TabsTrigger value="translations">Translations</TabsTrigger>
+            <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="basic">{t('basicTab')}</TabsTrigger>
+              <TabsTrigger value="materials">{t('materialsTab')}</TabsTrigger>
+              <TabsTrigger value="types">{t('typesTab')}</TabsTrigger>
+              <TabsTrigger value="translations">{t('translationsTab')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="basic" className="space-y-4 pt-4">
               <FormField control={form.control} name="generalName" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name (Internal Display)</FormLabel>
+                  <FormLabel>{t('internalNameLabel')}</FormLabel>
                   <FormControl><Input {...field} data-testid={`input-item-general-name${isEdit ? '-edit' : ''}`} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -643,12 +647,12 @@ function FormContent({
               
               <FormField control={form.control} name="image" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Item Image</FormLabel>
+                    <FormLabel>{t('itemImage')}</FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder={categoryImage || "Upload image or enter URL"}
+                        placeholder={categoryImage || t('uploadImagePlaceholder')}
                         testId={`input-item-image${isEdit ? '-edit' : ''}`}
                       />
                     </FormControl>
@@ -658,7 +662,7 @@ function FormContent({
                         name="smokeEffect"
                         render={({ field }) => (
                           <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
-                            <FormLabel className="text-xs font-medium">Smoke</FormLabel>
+                            <FormLabel className="text-xs font-medium">{t('smokeLabel')}</FormLabel>
                             <FormControl>
                               <Switch
                                 checked={field.value}
@@ -674,7 +678,7 @@ function FormContent({
                         name="fireEffect"
                         render={({ field }) => (
                           <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
-                            <FormLabel className="text-xs font-medium">Fire</FormLabel>
+                            <FormLabel className="text-xs font-medium">{t('fireLabel')}</FormLabel>
                             <FormControl>
                               <Switch
                                 checked={field.value}
@@ -690,7 +694,7 @@ function FormContent({
                         name="iceEffect"
                         render={({ field }) => (
                           <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
-                            <FormLabel className="text-xs font-medium">Ice</FormLabel>
+                            <FormLabel className="text-xs font-medium">{t('iceLabel')}</FormLabel>
                             <FormControl>
                               <Switch
                                 checked={field.value}
@@ -709,7 +713,7 @@ function FormContent({
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="price" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price ({currencySymbol})</FormLabel>
+                  <FormLabel>{t('itemPrice')} ({currencySymbol})</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -723,7 +727,7 @@ function FormContent({
               )} />
               <FormField control={form.control} name="discountedPrice" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discounted Price ({currencySymbol})</FormLabel>
+                  <FormLabel>{t('discountedPrice')} ({currencySymbol})</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -731,7 +735,7 @@ function FormContent({
                       {...field} 
                       value={field.value ?? ''}
                       onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
-                      placeholder="Optional"
+                      placeholder={t('cancel')}
                       data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
                     />
                   </FormControl>
@@ -743,11 +747,11 @@ function FormContent({
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="categoryId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>{t('itemCategory')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid={`select-item-category${isEdit ? '-edit' : ''}`}>
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder={t('selectCategoryPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                         <SelectContent>
@@ -775,14 +779,14 @@ function FormContent({
                 )} />
                 <FormField control={form.control} name="maxSelect" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Max Selection</FormLabel>
+                    <FormLabel>{t('maxSelect')}</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
                         {...field} 
                         value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
-                        placeholder="Unlimited"
+                        placeholder={t('unlimitedPlaceholder')}
                         data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`} 
                       />
                     </FormControl>
@@ -794,7 +798,7 @@ function FormContent({
               <div className="flex items-center mt-4 border rounded-md bg-muted/20 divide-x h-12">
                 <FormField control={form.control} name="available" render={({ field }) => (
                   <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
-                    <FormLabel className="text-xs font-medium">Available</FormLabel>
+                    <FormLabel className="text-xs font-medium">{t('available')}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-available${isEdit ? '-edit' : ''}`} />
                     </FormControl>
@@ -804,7 +808,7 @@ function FormContent({
                   <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
                     <FormLabel className="text-xs font-medium flex items-center gap-1">
                       <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
-                      Suggested
+                      {t('suggestedLabel')}
                     </FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-suggested${isEdit ? '-edit' : ''}`} />
@@ -813,7 +817,7 @@ function FormContent({
                 )} />
                 <FormField control={form.control} name="isNew" render={({ field }) => (
                   <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
-                    <FormLabel className="text-xs font-medium">New</FormLabel>
+                    <FormLabel className="text-xs font-medium">{t('newLabel')}</FormLabel>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} data-testid={`switch-item-new${isEdit ? '-edit' : ''}`} />
                     </FormControl>
@@ -824,7 +828,7 @@ function FormContent({
             
             <TabsContent value="materials" className="space-y-4 pt-4">
               <FormItem>
-                <FormLabel>Select Materials / Ingredients</FormLabel>
+                <FormLabel>{t('selectMaterialsLabel')}</FormLabel>
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   {materials.map((material) => (
                     <div
@@ -928,9 +932,6 @@ function FormContent({
               <div className="space-y-6 pb-4">
                 {sortedLanguages.filter(lang => lang.isActive).map((language) => {
                   const langCode = language.code.charAt(0).toUpperCase() + language.code.slice(1).toLowerCase();
-                  const fieldName = `name${langCode}` as any;
-                  const shortDescName = `shortDescription${langCode}` as any;
-                  const longDescName = `longDescription${langCode}` as any;
                   
                   return (
                     <div key={language.id} className="space-y-4 p-4 rounded-lg border bg-muted/30">
@@ -943,7 +944,7 @@ function FormContent({
 
                     <FormField control={form.control} name={`name.${language.code}`} render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name ({language.name})</FormLabel>
+                        <FormLabel>{t('itemName')} ({language.name})</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
@@ -957,12 +958,13 @@ function FormContent({
 
                     <FormField control={form.control} name={`shortDescription.${language.code}`} render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Short Description ({language.name})</FormLabel>
+                        <FormLabel>{t('shortDescription')} ({language.name})</FormLabel>
                         <FormControl>
                           <Textarea 
                             {...field} 
                             value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
                             data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                            placeholder={t('shortDescriptionPlaceholder')}
                           />
                         </FormControl>
                         <FormMessage />
@@ -971,13 +973,14 @@ function FormContent({
 
                     <FormField control={form.control} name={`longDescription.${language.code}`} render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Long Description ({language.name})</FormLabel>
+                        <FormLabel>{t('longDescription')} ({language.name})</FormLabel>
                         <FormControl>
                           <Textarea 
                             {...field} 
                             value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
                             rows={3}
                             data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                            placeholder={t('longDescriptionPlaceholder')}
                           />
                         </FormControl>
                         <FormMessage />
@@ -991,10 +994,10 @@ function FormContent({
           </Tabs>
           
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={onCancel}>{t('cancel')}</Button>
             <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`} disabled={isPending}>
               {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              {isEdit ? 'Update' : 'Create'}
+              {isEdit ? t('update') : t('create')}
             </Button>
           </div>
         </form>
