@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useLanguage } from '@/hooks/use-language';
 
 interface Column<T> {
   key: keyof T | string;
@@ -30,6 +31,8 @@ export default function DataTable<T extends { id: string }>({
   onDelete,
   testIdPrefix,
 }: DataTableProps<T>) {
+  const { t } = useLanguage();
+  
   return (
     <div className="rounded-md border">
       <Table>
@@ -38,7 +41,7 @@ export default function DataTable<T extends { id: string }>({
             {columns.map((col) => (
               <TableHead key={String(col.key)}>{col.header}</TableHead>
             ))}
-            {(onEdit || onDelete) && <TableHead className="text-right">Actions</TableHead>}
+            {(onEdit || onDelete) && <TableHead className="text-end">{t('actions')}</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -57,7 +60,7 @@ export default function DataTable<T extends { id: string }>({
                   </TableCell>
                 ))}
                 {(onEdit || onDelete) && (
-                  <TableCell className="text-right">
+                  <TableCell className="text-end">
                     <div className="flex justify-end gap-1">
                       {onEdit && (
                         <Button

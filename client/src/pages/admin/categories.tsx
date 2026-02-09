@@ -227,8 +227,8 @@ export default function CategoriesPage() {
   const FormContent = useMemo(() => {
     return ({ onSubmit, onCancel, isCreate }: { onSubmit: (data: CategoryFormData) => void; onCancel: () => void; isCreate: boolean }) => (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Tabs defaultValue="info" className="w-full">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" >
+          <Tabs defaultValue="info" className="w-full" dir={adminDir}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="info">{t('info')}</TabsTrigger>
               <TabsTrigger value="translations">{t('translations')}</TabsTrigger>
@@ -336,8 +336,8 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <div className="w-full overflow-x-auto">
-        <div dir={adminDir}>
+      <div className="w-full overflow-x-auto text-start">
+        <div dir={adminDir} className="text-start item-start">
           <DataTable
             data={categories.sort((a, b) => a.order - b.order)}
             columns={[
