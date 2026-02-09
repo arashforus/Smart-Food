@@ -89,11 +89,16 @@ export async function runDatabaseMigrations() {
     for (const migration of pendingMigrations) {
       console.log(`\n🚀 Applying migration: ${migration.version}`);
 
-      try {
-        const sqlPath = join(process.cwd(), "server", "migrations", `${migration.version}.sql`);
-        const sql = readFileSync(sqlPath, "utf-8");
+        try {
+          const sqlPath = join(process.cwd(), "server", "migrations", `${migration.version}.sql`);
+          let sql = readFileSync(sqlPath, "utf-8");
 
-        await pool.query(sql);
+          // Handle IF NOT EXISTS for column additions in migration 028
+          if (migration.version === '028-add-menu-logo-background-settings') {
+            sql = sql.replace(/ADD COLUMN/g, 'ADD COLUMN IF NOT EXISTS');
+          }
+
+          await pool.query(sql);
 
         console.log(`✅ Migration applied successfully: ${migration.version}`);
       } catch (error) {

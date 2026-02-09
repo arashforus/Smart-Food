@@ -4,7 +4,6 @@ import logoLight from "@/assets/images/logo-light.png";
 import LanguageSelector from '@/components/menu/LanguageSelector';
 import { useLanguage } from '@/hooks/use-language';
 import { useTheme } from '@/hooks/use-theme-hook';
-
 import {
   Sidebar,
   SidebarContent,
