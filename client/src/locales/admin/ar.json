@@ -91,5 +91,14 @@
   "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
   "footer_copyright": "جميع الحقوق محفوظة.",
   "footer_made_with": "صنع بـ",
-  "footer_by": "بواسطة"
+  "footer_by": "بواسطة",
+  "info": "معلومات",
+  "translations": "الترجمات",
+  "category_name": "اسم الفئة",
+  "category_name_placeholder": "أدخل اسم الفئة",
+  "upload_category_image": "تحميل صورة الفئة",
+  "display_order": "ترتيب العرض",
+  "languages_count": "لغات",
+  "confirm_delete_category": "هل أنت متأكد أنك تريد حذف هذه الفئة؟ لا يمكن التراجع عن هذا الإجراء.",
+  "inactive": "غير نشط"
 }

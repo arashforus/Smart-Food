@@ -91,5 +91,14 @@
   "confirm_delete": "آیا از حذف این آیتم اطمینان دارید؟ این عملیات غیرقابل بازگشت است.",
   "footer_copyright": "تمامی حقوق محفوظ است.",
   "footer_made_with": "ساخته شده با",
-  "footer_by": "توسط"
+  "footer_by": "توسط",
+  "info": "اطلاعات",
+  "translations": "ترجمه‌ها",
+  "category_name": "نام دسته‌بندی",
+  "category_name_placeholder": "نام دسته‌بندی را وارد کنید",
+  "upload_category_image": "آپلود تصویر دسته‌بندی",
+  "display_order": "ترتیب نمایش",
+  "languages_count": "زبان",
+  "confirm_delete_category": "آیا از حذف این دسته‌بندی اطمینان دارید؟ این عملیات غیرقابل بازگشت است.",
+  "inactive": "غیرفعال"
 }

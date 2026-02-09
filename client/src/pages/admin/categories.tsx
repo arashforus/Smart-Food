@@ -79,7 +79,7 @@ const createCategorySchema = (languages: Language[]) => {
 import { useLanguage } from '@/hooks/use-language';
 
 export default function CategoriesPage() {
-  const { t } = useLanguage();
+  const { t, adminDir } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<StorageCategory | null>(null);
@@ -372,7 +372,7 @@ export default function CategoriesPage() {
       />
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-form">
+        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-form" dir={adminDir}>
           <DialogHeader>
             <DialogTitle>{t('add_category')}</DialogTitle>
           </DialogHeader>
@@ -381,7 +381,7 @@ export default function CategoriesPage() {
       </Dialog>
 
       <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto max-w-md" data-testid="modal-category-edit">
+        <DialogContent className="max-h-[90vh] overflow-y-auto max-w-md" data-testid="modal-category-edit" dir={adminDir}>
           <DialogHeader>
             <DialogTitle>{t('edit_category')}</DialogTitle>
           </DialogHeader>

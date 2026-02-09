@@ -91,5 +91,14 @@
   "confirm_delete": "Are you sure you want to delete this item? This action cannot be undone.",
   "footer_copyright": "All rights reserved.",
   "footer_made_with": "Made with",
-  "footer_by": "by"
+  "footer_by": "by",
+  "info": "Information",
+  "translations": "Translations",
+  "category_name": "Category Name",
+  "category_name_placeholder": "Enter category name",
+  "upload_category_image": "Upload category image",
+  "display_order": "Display Order",
+  "languages_count": "languages",
+  "confirm_delete_category": "Are you sure you want to delete this category? This action cannot be undone.",
+  "inactive": "Inactive"
 }

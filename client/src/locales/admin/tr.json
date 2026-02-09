@@ -91,5 +91,14 @@
   "confirm_delete": "Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
   "footer_copyright": "Tüm hakları saklıdır.",
   "footer_made_with": "ile yapıldı",
-  "footer_by": "tarafından"
+  "footer_by": "tarafından",
+  "info": "Bilgi",
+  "translations": "Çeviriler",
+  "category_name": "Kategori Adı",
+  "category_name_placeholder": "Kategori adını girin",
+  "upload_category_image": "Kategori görseli yükle",
+  "display_order": "Görüntüleme Sırası",
+  "languages_count": "dil",
+  "confirm_delete_category": "Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "inactive": "Pasif"
 }
