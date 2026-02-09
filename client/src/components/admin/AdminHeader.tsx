@@ -21,6 +21,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import ThemeToggle from '@/components/ThemeToggle';
 import type { User as UserType, Branch, Language } from '@/lib/types';
 import { translations, roleLabels } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 
 interface AdminHeaderProps {
   user: UserType;
@@ -73,9 +74,10 @@ export default function AdminHeader({
 }: AdminHeaderProps) {
   const t = translations[language] || translations.en || translations['en'];
   const initials = user.name.split(' ').map((n) => n[0]).join('').toUpperCase();
-
+  const { adminDir } = useLanguage();
+  
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b bg-background px-3 py-2 rtl:flex-row-reverse">
+    <header className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b bg-background px-3 py-2 text-start" >
       <div className="flex items-center gap-2">
         <SidebarTrigger data-testid="button-admin-sidebar-toggle" />
       </div>
@@ -134,30 +136,33 @@ export default function AdminHeader({
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={language === 'ar' || language === 'fa' ? 'start' : 'end'} className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-                <Badge variant="secondary" className="w-fit mt-1 no-default-active-elevate">
-                  {roleLabels[user.role]}
-                </Badge>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onProfileClick} data-testid="menu-item-profile">
-              <User className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
-              {t.profile}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onPasswordClick} data-testid="menu-item-password">
-              <Key className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
-              {t.changePassword}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onSignOut} className="text-destructive" data-testid="menu-item-signout">
-              <LogOut className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
-              {t.signOut}
-            </DropdownMenuItem>
+          <DropdownMenuContent align={language === 'ar' || language === 'fa' ? 'start' : 'end'} className="w-56 " >
+            <div dir={adminDir}>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col gap-1" >
+                  <p className="font-medium">{user.name}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                  <Badge variant="secondary" className="w-fit mt-1 no-default-active-elevate">
+                    {roleLabels[user.role]}
+                  </Badge>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onProfileClick} data-testid="menu-item-profile">
+                <User className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
+                {t.profile}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onPasswordClick} data-testid="menu-item-password">
+                <Key className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
+                {t.changePassword}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onSignOut} className="text-destructive" data-testid="menu-item-signout">
+                <LogOut className="rtl:ml-2 ltr:mr-2 h-4 w-4" />
+                {t.signOut}
+              </DropdownMenuItem>
+            </div>
+            
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
