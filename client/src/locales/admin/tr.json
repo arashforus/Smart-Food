@@ -88,5 +88,8 @@
   "price": "Fiyat",
   "category": "Kategori",
   "description": "Açıklama",
-  "confirm_delete": "Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+  "confirm_delete": "Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+  "footer_copyright": "Tüm hakları saklıdır.",
+  "footer_made_with": "ile yapıldı",
+  "footer_by": "tarafından"
 }
