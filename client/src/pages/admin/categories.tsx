@@ -336,41 +336,44 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <DataTable
-        data={categories.sort((a, b) => a.order - b.order)}
-        dir={adminDir}
-        columns={[
-          {
-            key: 'image',
-            header: t('image'),
-            render: (item) => item.image ? (
-              <img src={item.image} alt={item.name.en} className="w-10 h-10 rounded-md object-cover" />
-            ) : (
-              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
-                <ImageIcon className="w-5 h-5 text-muted-foreground" />
-              </div>
-            ),
-          },
-          { key: 'name', header: t('name'), render: (item) => item.generalName || item.name.en },
-          { key: 'translations', header: t('translations'), render: (item) => {
-            const count = Object.values(item.name).filter(v => v && v.length > 0).length;
-            return `${count} ${t('languages_count')}`;
-          }},
-          { key: 'order', header: t('order') },
-          { key: 'isActive', header: t('status'), render: (item) => (
-            <div data-testid={`status-active-${item.id}`} className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${
-              item.isActive 
-                ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' 
-                : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
-            }`}>
-              {item.isActive ? t('active') : t('inactive')}
-            </div>
-          )},
-        ]}
-        onEdit={openEdit}
-        onDelete={(item) => setDeleteCategory(item)}
-        testIdPrefix="category"
-      />
+      <div className="w-full overflow-x-auto">
+        <div dir={adminDir}>
+          <DataTable
+            data={categories.sort((a, b) => a.order - b.order)}
+            columns={[
+              {
+                key: 'image',
+                header: t('image'),
+                render: (item) => item.image ? (
+                  <img src={item.image} alt={typeof item.name.en === 'string' ? item.name.en : 'Category'} className="w-10 h-10 rounded-md object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
+                    <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                ),
+              },
+              { key: 'name', header: t('name'), render: (item) => item.generalName || (typeof item.name.en === 'string' ? item.name.en : '') },
+              { key: 'translations', header: t('translations'), render: (item) => {
+                const count = Object.values(item.name).filter(v => typeof v === 'string' && v.length > 0).length;
+                return `${count} ${t('languages_count')}`;
+              }},
+              { key: 'order', header: t('order') },
+              { key: 'isActive', header: t('status'), render: (item) => (
+                <div data-testid={`status-active-${item.id}`} className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${
+                  item.isActive 
+                    ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' 
+                    : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
+                }`}>
+                  {item.isActive ? t('active') : t('inactive')}
+                </div>
+              )},
+            ]}
+            onEdit={openEdit}
+            onDelete={(item) => setDeleteCategory(item)}
+            testIdPrefix="category"
+          />
+        </div>
+      </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-form" dir={adminDir}>
