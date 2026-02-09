@@ -129,10 +129,10 @@ export default function CategoriesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('category_created', 'Category Created') });
+      toast({ title: t('category_created') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_category', 'Failed to create category'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_create_category'), variant: 'destructive' });
     },
   });
 
@@ -158,10 +158,10 @@ export default function CategoriesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setEditingCategory(null);
       form.reset();
-      toast({ title: t('category_updated', 'Category Updated') });
+      toast({ title: t('category_updated') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_category', 'Failed to update category'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_update_category'), variant: 'destructive' });
     },
   });
 
@@ -172,10 +172,10 @@ export default function CategoriesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setDeleteCategory(null);
-      toast({ title: t('category_deleted', 'Category Deleted') });
+      toast({ title: t('category_deleted') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_category', 'Failed to delete category'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_delete_category'), variant: 'destructive' });
     },
   });
 
@@ -237,8 +237,8 @@ export default function CategoriesPage() {
             <TabsContent value="info" className="space-y-4 pt-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('name')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('category_name_placeholder', 'Category name')} data-testid={`input-category-name${isCreate ? '' : '-edit'}`} /></FormControl>
+                  <FormLabel>{t('category_name')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('category_name_placeholder')} data-testid={`input-category-name${isCreate ? '' : '-edit'}`} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -251,7 +251,7 @@ export default function CategoriesPage() {
                       <ImageUpload
                         value={field.value || ''}
                         onChange={(url) => field.onChange(url)}
-                        placeholder={t('upload_category_image', 'Upload category image')}
+                        placeholder={t('upload_category_image')}
                         testId="input-category-image"
                       />
                     </div>
@@ -262,7 +262,7 @@ export default function CategoriesPage() {
               
               <FormField control={form.control} name="order" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('display_order', 'Display Order')}</FormLabel>
+                  <FormLabel>{t('display_order')}</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -332,7 +332,7 @@ export default function CategoriesPage() {
         </div>
         <Button onClick={openCreate} data-testid="button-add-category" disabled={createMutation.isPending}>
           <Plus className="h-4 w-4 mr-2" />
-          {t('add_category', 'Add Category')}
+          {t('add_category')}
         </Button>
       </div>
 
@@ -353,16 +353,16 @@ export default function CategoriesPage() {
           { key: 'name', header: t('name'), render: (item) => item.generalName || item.name.en },
           { key: 'translations', header: t('translations'), render: (item) => {
             const count = Object.values(item.name).filter(v => v && v.length > 0).length;
-            return `${count} ${t('languages_count', 'language(s)')}`;
+            return `${count} ${t('languages_count')}`;
           }},
-          { key: 'order', header: t('order', 'Order') },
+          { key: 'order', header: t('order') },
           { key: 'isActive', header: t('status'), render: (item) => (
             <div data-testid={`status-active-${item.id}`} className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${
               item.isActive 
                 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' 
                 : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
             }`}>
-              {item.isActive ? t('active') : t('inactive', 'Inactive')}
+              {item.isActive ? t('active') : t('inactive')}
             </div>
           )},
         ]}
@@ -394,7 +394,7 @@ export default function CategoriesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('delete_category')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('confirm_delete_category', `Are you sure you want to delete "${deleteCategory?.name.en}"? This action cannot be undone.`)}
+              {t('confirm_delete_category')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
