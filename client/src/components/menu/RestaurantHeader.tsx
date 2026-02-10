@@ -1,11 +1,11 @@
-import { MapPin, Phone, Clock, ChevronRight, ChevronDown, ChevronUp, X, Circle } from 'lucide-react';
+import { MapPin, Phone, Clock, ChevronRight, ChevronDown, ChevronUp, Circle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Restaurant, Language, Settings } from '@/lib/types';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 
 interface RestaurantHeaderProps {
   restaurant: Restaurant;
@@ -16,8 +16,8 @@ interface RestaurantHeaderProps {
 export default function RestaurantHeader({ restaurant, language, settings }: RestaurantHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState<boolean | null>(null);
-  const t = translations[language] || translations.en || translations['en'];
-  const isRtl = language === 'fa' || language === 'ar';
+  const { t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -55,7 +55,6 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
         const endTime = new Date(now);
         endTime.setHours(endHours, endMinutes, 0);
 
-        // Handle case where closing time is after midnight (e.g., 02:00)
         if (endTime < startTime) {
           endTime.setDate(endTime.getDate() + 1);
         }
@@ -68,9 +67,9 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
     };
 
     checkOpenStatus();
-    const interval = setInterval(checkOpenStatus, 60000); // Check every minute
+    const interval = setInterval(checkOpenStatus, 60000);
     return () => clearInterval(interval);
-  }, [restaurant.hours]);
+  }, [restaurant.hours, t]);
 
   if (!settings?.menuShowRestaurantName && !settings?.menuShowRestaurantDescription && !settings?.menuShowRestaurantLogo) {
     return null;
@@ -147,7 +146,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               onClick={() => setIsOpen(!isOpen)}
               data-testid="button-toggle-info"
             >
-              {t.aboutUs}
+              {t('aboutUs')}
               {isMobile ? (
                 isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
               ) : (
@@ -169,13 +168,12 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
               <Card className="border-none shadow-none bg-card/40 backdrop-blur-md w-full md:min-w-[400px]">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row gap-6 md:gap-0">
-                    {/* Left Column: Hours */}
                     <div className="flex-1 space-y-3">
                       {settings?.menuShowOperationHours && restaurant.hours && (
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2 mb-0.5">
                             <Clock className={`h-4 w-4 text-primary ${isRtl ? 'scale-x-[-1]' : ''}`} />
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.hours}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t('hours')}</p>
                           </div>
                           <div className="grid grid-cols-1 gap-0.5">
                             {(() => {
@@ -198,18 +196,16 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                       )}
                     </div>
 
-                    {/* Middle Divider - Responsive (Horizontal on mobile, Vertical on desktop) */}
                     <div className="md:px-8 flex items-center justify-center">
                       <div className="w-full h-[1px] md:h-full md:w-[1px] bg-border/50" />
                     </div>
 
-                    {/* Right Column: Address and Phone */}
                     <div className="flex-1 space-y-4">
                       <div className="space-y-3">
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
                             <MapPin className={`h-4 w-4 text-primary ${isRtl ? 'scale-x-[-1]' : ''}`} />
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.address}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t('address')}</p>
                           </div>
                           <div className="flex-1 flex flex-col items-center md:items-start">
                             <p className="text-[12px] font-medium leading-tight text-inherit" data-testid="text-restaurant-address">{restaurant.address}</p>
@@ -235,7 +231,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                         <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
                             <Phone className={`h-4 w-4 text-primary ${isRtl ? 'scale-x-[-1]' : ''}`} />
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.phone}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t('phone')}</p>
                           </div>
                           <div className="flex-1 flex flex-col items-center md:items-start">
                             <p className="text-[12px] font-medium leading-tight text-inherit" data-testid="text-restaurant-phone">{restaurant.phone}</p>
