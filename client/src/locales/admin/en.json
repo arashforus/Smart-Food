@@ -166,5 +166,9 @@
   "no_orders_match": "No orders match your filters",
   "no_orders_yet": "No orders yet",
   "search_orders_placeholder": "Search by order number, table, or notes...",
-  "order_management": "Order Management"
+  "order_management": "Order Management",
+  "categories_desc": "Manage your menu categories",
+  "add_category": "Add Category",
+  "edit_category": "Edit Category",
+  "delete_category": "Delete Category"
 }
