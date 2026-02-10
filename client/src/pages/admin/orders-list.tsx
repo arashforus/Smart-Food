@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Search, ArrowUpDown } from 'lucide-react';
+import { useLanguage } from '@/hooks/use-language';
 
 interface Order {
   id: string;
@@ -38,6 +39,7 @@ type SortField = 'order_number' | 'created_at' | 'total_amount' | 'status';
 type SortOrder = 'asc' | 'desc';
 
 export default function OrdersListPage() {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [sortField, setSortField] = useState<SortField>('created_at');
@@ -105,13 +107,13 @@ export default function OrdersListPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold">Orders</h1>
-        <p className="text-muted-foreground">View and manage all orders</p>
+        <h1 className="text-2xl font-semibold">{t('orders', 'Orders')}</h1>
+        <p className="text-muted-foreground">{t('orders_desc', 'View and manage all orders')}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Order Management</CardTitle>
+          <CardTitle>{t('order_management', 'Order Management')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Filters */}
@@ -120,7 +122,7 @@ export default function OrdersListPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by order number, table, or notes..."
+                placeholder={t('search_orders_placeholder', 'Search by order number, table, or notes...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -131,14 +133,14 @@ export default function OrdersListPage() {
             {/* Status Filter */}
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger data-testid="select-status-filter">
-                <SelectValue placeholder="All Statuses" />
+                <SelectValue placeholder={t('all_statuses', 'All Statuses')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="all">{t('all_statuses', 'All Statuses')}</SelectItem>
+                <SelectItem value="pending">{t('pending', 'Pending')}</SelectItem>
+                <SelectItem value="in-progress">{t('in_progress', 'In Progress')}</SelectItem>
+                <SelectItem value="completed">{t('completed', 'Completed')}</SelectItem>
+                <SelectItem value="cancelled">{t('cancelled', 'Cancelled')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -147,11 +149,11 @@ export default function OrdersListPage() {
           <div className="border rounded-lg overflow-x-auto">
             {isLoading ? (
               <div className="p-8 text-center text-muted-foreground">
-                Loading orders...
+                {t('loading_orders', 'Loading orders...')}
               </div>
             ) : filteredOrders.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                {searchQuery || statusFilter ? 'No orders match your filters' : 'No orders yet'}
+                {searchQuery || statusFilter ? t('no_orders_match', 'No orders match your filters') : t('no_orders_yet', 'No orders yet')}
               </div>
             ) : (
               <Table>
@@ -159,31 +161,31 @@ export default function OrdersListPage() {
                   <TableRow className="bg-muted/50">
                     <TableHead className="cursor-pointer hover:bg-muted/70" onClick={() => handleSort('order_number')} data-testid="header-order-number">
                       <div className="flex items-center gap-2">
-                        Order #
+                        {t('order_number_label', 'Order #')}
                         <ArrowUpDown className="h-3 w-3" />
                       </div>
                     </TableHead>
-                    <TableHead data-testid="header-table">Table</TableHead>
-                    <TableHead data-testid="header-items">Items</TableHead>
+                    <TableHead data-testid="header-table">{t('table', 'Table')}</TableHead>
+                    <TableHead data-testid="header-items">{t('items', 'Items')}</TableHead>
                     <TableHead className="cursor-pointer hover:bg-muted/70" onClick={() => handleSort('total_amount')} data-testid="header-total">
                       <div className="flex items-center gap-2">
-                        Total
+                        {t('total', 'Total')}
                         <ArrowUpDown className="h-3 w-3" />
                       </div>
                     </TableHead>
                     <TableHead className="cursor-pointer hover:bg-muted/70" onClick={() => handleSort('status')} data-testid="header-status">
                       <div className="flex items-center gap-2">
-                        Status
+                        {t('status', 'Status')}
                         <ArrowUpDown className="h-3 w-3" />
                       </div>
                     </TableHead>
                     <TableHead className="cursor-pointer hover:bg-muted/70" onClick={() => handleSort('created_at')} data-testid="header-created">
                       <div className="flex items-center gap-2">
-                        Created
+                        {t('created', 'Created')}
                         <ArrowUpDown className="h-3 w-3" />
                       </div>
                     </TableHead>
-                    <TableHead data-testid="header-notes">Notes</TableHead>
+                    <TableHead data-testid="header-notes">{t('notes', 'Notes')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -193,17 +195,17 @@ export default function OrdersListPage() {
                         {order.order_number}
                       </TableCell>
                       <TableCell data-testid={`text-table-${order.id}`}>
-                        {order.table_number ? `Table ${order.table_number}` : 'Takeaway'}
+                        {order.table_number ? `${t('table', 'Table')} ${order.table_number}` : t('takeaway', 'Takeaway')}
                       </TableCell>
                       <TableCell className="text-sm" data-testid={`text-items-count-${order.id}`}>
-                        {order.items && Array.isArray(order.items) ? `${order.items.length} items` : '0 items'}
+                        {order.items && Array.isArray(order.items) ? `${order.items.length} ${t('items', 'items')}` : `0 ${t('items', 'items')}`}
                       </TableCell>
                       <TableCell className="font-semibold" data-testid={`text-total-${order.id}`}>
                         ${typeof order.total_amount === 'number' ? order.total_amount.toFixed(2) : '0.00'}
                       </TableCell>
                       <TableCell data-testid={`badge-status-${order.id}`}>
                         <Badge className={getStatusColor(order.status)}>
-                          {order.status}
+                          {t(order.status, order.status)}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground" data-testid={`text-created-${order.id}`}>
@@ -223,23 +225,23 @@ export default function OrdersListPage() {
           {filteredOrders.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 pt-4 border-t">
               <div className="text-center">
-                <p className="text-muted-foreground text-sm">Total Orders</p>
+                <p className="text-muted-foreground text-sm">{t('total_orders', 'Total Orders')}</p>
                 <p className="text-2xl font-bold" data-testid="text-total-orders">{filteredOrders.length}</p>
               </div>
               <div className="text-center">
-                <p className="text-muted-foreground text-sm">Total Revenue</p>
+                <p className="text-muted-foreground text-sm">{t('total_revenue', 'Total Revenue')}</p>
                 <p className="text-2xl font-bold" data-testid="text-total-revenue">
                   ${filteredOrders.reduce((sum, o) => sum + (typeof o.total_amount === 'number' ? o.total_amount : 0), 0).toFixed(2)}
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-muted-foreground text-sm">Pending</p>
+                <p className="text-muted-foreground text-sm">{t('pending', 'Pending')}</p>
                 <p className="text-2xl font-bold" data-testid="text-pending-count">
                   {filteredOrders.filter((o) => o.status === 'pending').length}
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-muted-foreground text-sm">Completed</p>
+                <p className="text-muted-foreground text-sm">{t('completed', 'Completed')}</p>
                 <p className="text-2xl font-bold" data-testid="text-completed-count">
                   {filteredOrders.filter((o) => o.status === 'completed').length}
                 </p>

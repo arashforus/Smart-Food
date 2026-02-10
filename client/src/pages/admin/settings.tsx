@@ -35,6 +35,7 @@ import { mockSettings, mockLanguages } from '@/lib/mockData';
 import type { Settings as SettingsType } from '@/lib/types';
 import QRCodeDesigner from '@/components/admin/QRCodeDesigner';
 import { useOrders, type OSSSettings } from '@/lib/orderContext';
+import { useLanguage } from '@/hooks/use-language';
 
 import logoDark from "@/assets/images/logo-dark.png";
 import logoLight from "@/assets/images/logo-light.png";
@@ -114,6 +115,7 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useTheme } from '@/hooks/use-theme-hook';
 
 export default function SettingsPage() {
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const logoImg = theme === 'dark' ? logoLight : logoDark;
   const { toast } = useToast();
@@ -130,22 +132,22 @@ export default function SettingsPage() {
       const res = await apiRequest('PATCH', '/api/settings', data);
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to update settings');
+        throw new Error(errorData.message || t('failed_update_settings', 'Failed to update settings'));
       }
       return res.json();
     },
     onSuccess: () => {
       console.log('Mutation successful');
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
-      toast({ title: 'Success', description: 'All settings have been updated successfully.', variant: 'default' });
+      toast({ title: t('success', 'Success'), description: t('settings_updated_desc', 'All settings have been updated successfully.'), variant: 'default' });
     },
     onError: (error: any) => {
       console.error('Mutation error:', error);
-      let errorMessage = 'Failed to update settings';
+      let errorMessage = t('failed_update_settings', 'Failed to update settings');
       if (error && typeof error === 'object' && error.message) {
         errorMessage = error.message;
       }
-      toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: errorMessage, variant: 'destructive' });
     }
   });
 
@@ -156,7 +158,7 @@ export default function SettingsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
-      toast({ title: 'Settings Reset', description: 'All settings have been restored to their default values.' });
+      toast({ title: t('settings_reset', 'Settings Reset'), description: t('settings_restored_desc', 'All settings have been restored to their default values.') });
       // Invalidate all related queries to ensure UI updates
       queryClient.invalidateQueries();
       // Force a full page reload to reset all local states and local storage fallbacks
@@ -165,7 +167,7 @@ export default function SettingsPage() {
       }, 500);
     },
     onError: (error) => {
-      toast({ title: 'Error', description: 'Failed to reset settings', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: t('failed_reset_settings', 'Failed to reset settings'), variant: 'destructive' });
     }
   });
 

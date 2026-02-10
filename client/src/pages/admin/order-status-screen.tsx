@@ -5,14 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Clock, CheckCircle2, AlertCircle, Flame, Maximize2, Minimize2 } from 'lucide-react';
 import type { Order, OrderStatus } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 
-const getStatusConfig = (status: OrderStatus, bgColor: string) => {
+const getStatusConfig = (status: OrderStatus, bgColor: string, t: any) => {
   const statusLabels: Record<OrderStatus, string> = {
-    pending: 'Pending',
-    preparing: 'Preparing',
-    ready: 'Ready',
-    served: 'Served',
-    cancelled: 'Cancelled',
+    pending: t('pending', 'Pending'),
+    preparing: t('preparing', 'Preparing'),
+    ready: t('ready', 'Ready'),
+    served: t('served', 'Served'),
+    cancelled: t('cancelled', 'Cancelled'),
   };
 
   const statusIcons: Record<OrderStatus, React.ReactNode> = {
@@ -31,6 +32,7 @@ const getStatusConfig = (status: OrderStatus, bgColor: string) => {
 };
 
 export default function OrderStatusScreen() {
+  const { t } = useLanguage();
   const { orders, ossSettings } = useOrders();
   const [displayOrders, setDisplayOrders] = useState<Order[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -109,7 +111,7 @@ export default function OrderStatusScreen() {
           <div className="text-center flex-1">
             <h1 className="text-5xl font-bold mb-2" style={{ color: ossSettings.textColor }}>{ossSettings.headerText}</h1>
             <p className="text-xl" style={{ color: ossSettings.textColor }}>
-              {displayOrders.length} active order{displayOrders.length !== 1 ? 's' : ''}
+              {displayOrders.length} {t('active_orders_label', 'active order(s)')}
             </p>
           </div>
           <Button
@@ -130,15 +132,15 @@ export default function OrderStatusScreen() {
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               <Clock className="w-24 h-24 mx-auto mb-4 opacity-50" style={{ color: ossSettings.textColor }} />
-              <p className="text-3xl" style={{ color: ossSettings.textColor }}>No active orders</p>
-              <p className="text-xl mt-2" style={{ color: ossSettings.textColor }}>Waiting for new orders...</p>
+              <p className="text-3xl" style={{ color: ossSettings.textColor }}>{t('no_active_orders', 'No active orders')}</p>
+              <p className="text-xl mt-2" style={{ color: ossSettings.textColor }}>{t('waiting_for_orders', 'Waiting for new orders...')}</p>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 auto-rows-max flex-1 overflow-auto">
             {displayOrders.map((order) => {
               const { bgColor, textColor } = getBackgroundColorForStatus(order.status);
-              const config = getStatusConfig(order.status, bgColor);
+              const config = getStatusConfig(order.status, bgColor, t);
               return (
                 <Card
                   key={order.id}

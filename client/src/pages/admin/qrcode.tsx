@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, ExternalLink, QrCode, Loader2 } from 'lucide-react';
 import QRCodeDisplay from '@/components/admin/QRCodeDisplay';
+import { useLanguage } from '@/hooks/use-language';
 
 interface StorageTable {
   id: string;
@@ -26,6 +27,7 @@ interface StorageBranch {
 }
 
 export default function QRCodePage() {
+  const { t } = useLanguage();
   const [selectedBranch, setSelectedBranch] = useState<string>('all');
 
   const { data: tables = [], isLoading: tablesLoading } = useQuery<StorageTable[]>({
@@ -49,7 +51,7 @@ export default function QRCodePage() {
     ? tables 
     : tables.filter((t) => t.branchId === selectedBranch);
 
-  const getBranchName = (branchId: string) => branches.find((b) => b.id === branchId)?.name || 'Unknown';
+  const getBranchName = (branchId: string) => branches.find((b) => b.id === branchId)?.name || t('unknown', 'Unknown');
 
   if (tablesLoading || branchesLoading || settingsLoading) {
     return (
@@ -62,14 +64,14 @@ export default function QRCodePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">QR Codes</h1>
-        <p className="text-muted-foreground">Generate QR codes for your digital menu</p>
+        <h1 className="text-2xl font-semibold">{t('qr_codes', 'QR Codes')}</h1>
+        <p className="text-muted-foreground">{t('qr_codes_desc', 'Generate QR codes for your digital menu')}</p>
       </div>
 
       <Tabs defaultValue="main" className="space-y-6 flex flex-col items-center">
         <TabsList>
-          <TabsTrigger value="main" data-testid="tab-main-qr">Main Menu</TabsTrigger>
-          <TabsTrigger value="tables" data-testid="tab-tables-qr">Table QR Codes</TabsTrigger>
+          <TabsTrigger value="main" data-testid="tab-main-qr">{t('main_menu', 'Main Menu')}</TabsTrigger>
+          <TabsTrigger value="tables" data-testid="tab-tables-qr">{t('table_qr_codes', 'Table QR Codes')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="main" className="w-full flex justify-center">
@@ -82,7 +84,7 @@ export default function QRCodePage() {
 
         <TabsContent value="tables" className="space-y-4 w-full flex flex-col items-center">
           <div className="flex items-center gap-2 flex-wrap justify-center">
-            <span className="text-sm text-muted-foreground">Filter by branch:</span>
+            <span className="text-sm text-muted-foreground">{t('filter_by_branch', 'Filter by branch')}:</span>
             <div className="flex gap-2 flex-wrap">
               <Button
                 variant={selectedBranch === 'all' ? 'default' : 'outline'}
@@ -90,7 +92,7 @@ export default function QRCodePage() {
                 onClick={() => setSelectedBranch('all')}
                 data-testid="button-filter-all"
               >
-                All Branches
+                {t('all_branches', 'All Branches')}
               </Button>
               {branches.filter(b => b.isActive).map((branch) => (
                 <Button
@@ -109,7 +111,7 @@ export default function QRCodePage() {
           {filteredTables.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
-                No tables found. Add tables in the Tables section first.
+                {t('no_tables_found_qr', 'No tables found. Add tables in the Tables section first.')}
               </CardContent>
             </Card>
           ) : (
@@ -120,9 +122,9 @@ export default function QRCodePage() {
                   <div className="bg-card rounded-lg border shadow-sm flex flex-col overflow-hidden">
                     <div className="p-4 pb-2">
                       <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-semibold text-base">Table {table.tableNumber}</h3>
+                        <h3 className="font-semibold text-base">{t('table', 'Table')} {table.tableNumber}</h3>
                         <Badge variant="outline" className="no-default-active-elevate text-xs">
-                          {table.capacity} seats
+                          {table.capacity} {t('seats', 'seats')}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground">
