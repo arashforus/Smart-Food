@@ -152,7 +152,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             <span>{getName()}</span>
             {item.isNew && (
               <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-1.5 py-0.5 h-5 shadow-sm shrink-0">
-                {t.new || 'New'}
+                {t('new')}
               </Badge>
             )}
             {item.suggested && (
