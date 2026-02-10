@@ -177,7 +177,7 @@ export default function BranchesPage() {
             header: t('status'),
             render: (item) => (
               <Badge variant={item.isActive ? 'default' : 'secondary'} className="no-default-active-elevate">
-                {item.isActive ? t('active') : t('inactive', 'Inactive')}
+                {item.isActive ? t('active') : t('inactive')}
               </Badge>
             ),
           },
@@ -217,15 +217,15 @@ export default function BranchesPage() {
               )} />
               <FormField control={form.control} name="owner" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('owner', 'Owner')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('owner_placeholder', "Owner name")} data-testid="input-branch-owner" /></FormControl>
+                  <FormLabel>{t('owner')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_placeholder')} data-testid="input-branch-owner" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="ownerPhone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('owner_phone', 'Owner Phone')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('owner_phone_placeholder', "Owner phone number")} data-testid="input-branch-owner-phone" /></FormControl>
+                  <FormLabel>{t('owner_phone')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_phone_placeholder')} data-testid="input-branch-owner-phone" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

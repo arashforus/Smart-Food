@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Clock, CheckCircle, ChefHat, AlertCircle } from 'lucide-react';
 import { useOrders } from '@/lib/orderContext';
+import { useLanguage } from '@/hooks/use-language';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400',
@@ -21,6 +22,7 @@ const itemStatusColors: Record<string, string> = {
 };
 
 export default function KitchenPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const { orders, updateOrderStatus, updateItemStatus, getActiveOrders } = useOrders();
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -54,12 +56,12 @@ export default function KitchenPage() {
       });
     }
     updateOrderStatus(orderId, 'ready');
-    toast({ title: 'Order Ready', description: 'Order marked as ready for serving' });
+    toast({ title: t('order_ready', 'Order Ready'), description: t('order_marked_ready', 'Order marked as ready for serving') });
   };
 
   const markOrderServed = (orderId: string) => {
     updateOrderStatus(orderId, 'served');
-    toast({ title: 'Order Served', description: 'Order has been served' });
+    toast({ title: t('order_served', 'Order Served'), description: t('order_has_been_served', 'Order has been served') });
   };
 
   const startPreparing = (orderId: string) => {
@@ -72,13 +74,13 @@ export default function KitchenPage() {
         <div>
           <h1 className="text-2xl font-semibold flex items-center gap-2">
             <ChefHat className="h-6 w-6" />
-            Kitchen Display
+            {t('kitchen', 'Kitchen Display')}
           </h1>
-          <p className="text-muted-foreground">Active orders for preparation</p>
+          <p className="text-muted-foreground">{t('kitchen_desc', 'Active orders for preparation')}</p>
         </div>
         <div className="flex items-center gap-4">
           <Badge variant="outline" className="text-lg px-4 py-2">
-            {activeOrders.length} Active Orders
+            {activeOrders.length} {t('active_orders_count', 'Active Orders')}
           </Badge>
           <div className="text-2xl font-mono">
             {currentTime.toLocaleTimeString()}
@@ -90,8 +92,8 @@ export default function KitchenPage() {
         <Card className="p-12">
           <div className="text-center text-muted-foreground">
             <CheckCircle className="h-16 w-16 mx-auto mb-4 opacity-50" />
-            <h2 className="text-xl font-semibold mb-2">All Caught Up!</h2>
-            <p>No active orders at the moment</p>
+            <h2 className="text-xl font-semibold mb-2">{t('all_caught_up', 'All Caught Up!')}</h2>
+            <p>{t('no_active_orders', 'No active orders at the moment')}</p>
           </div>
         </Card>
       ) : (
@@ -108,12 +110,12 @@ export default function KitchenPage() {
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-lg">{order.orderNumber}</CardTitle>
                   <Badge className={statusColors[order.status]}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    {t(order.status, order.status.charAt(0).toUpperCase() + order.status.slice(1))}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   {order.tableNumber && (
-                    <span className="font-medium">Table {order.tableNumber}</span>
+                    <span className="font-medium">{t('table', 'Table')} {order.tableNumber}</span>
                   )}
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -151,7 +153,7 @@ export default function KitchenPage() {
 
                 {order.notes && (
                   <div className="p-2 bg-muted rounded-md text-sm">
-                    <strong>Note:</strong> {order.notes}
+                    <strong>{t('notes', 'Note')}:</strong> {order.notes}
                   </div>
                 )}
 
@@ -163,7 +165,7 @@ export default function KitchenPage() {
                       variant="outline"
                       data-testid={`button-start-${order.id}`}
                     >
-                      Start Preparing
+                      {t('start_preparing', 'Start Preparing')}
                     </Button>
                   )}
                   {order.status === 'preparing' && (
@@ -173,7 +175,7 @@ export default function KitchenPage() {
                       data-testid={`button-ready-${order.id}`}
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Mark Ready
+                      {t('mark_ready', 'Mark Ready')}
                     </Button>
                   )}
                 </div>
@@ -184,7 +186,7 @@ export default function KitchenPage() {
       )}
 
       <div className="pt-4 border-t">
-        <h2 className="text-lg font-semibold mb-4">Recently Completed</h2>
+        <h2 className="text-lg font-semibold mb-4">{t('recently_completed', 'Recently Completed')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {orders
             .filter((o) => o.status === 'ready' || o.status === 'served')
@@ -195,11 +197,11 @@ export default function KitchenPage() {
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="font-medium">{order.orderNumber}</span>
                     <Badge className={statusColors[order.status]}>
-                      {order.status}
+                      {t(order.status, order.status)}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {order.items.length} items - ${order.totalAmount.toFixed(2)}
+                    {order.items.length} {t('items', 'items')} - ${order.totalAmount.toFixed(2)}
                   </p>
                   {order.status === 'ready' && (
                     <Button
@@ -209,7 +211,7 @@ export default function KitchenPage() {
                       onClick={() => markOrderServed(order.id)}
                       data-testid={`button-served-${order.id}`}
                     >
-                      Mark Served
+                      {t('mark_served', 'Mark Served')}
                     </Button>
                   )}
                 </CardContent>

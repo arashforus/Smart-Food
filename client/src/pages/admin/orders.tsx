@@ -20,6 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Minus, ShoppingCart, Trash2, Send, Search, Loader2 } from 'lucide-react';
 import { useOrders } from '@/lib/orderContext';
+import { useLanguage } from '@/hooks/use-language';
 
 interface CartOrderItem {
   menuItem: StorageItem;
@@ -65,6 +66,7 @@ interface StorageSettings {
 }
 
 export default function OrdersPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const { addOrder } = useOrders();
   const [cart, setCart] = useState<CartOrderItem[]>([]);
@@ -114,7 +116,7 @@ export default function OrdersPage() {
       }
       return [...prev, { menuItem: item, quantity: 1, notes: '' }];
     });
-    toast({ title: 'Added', description: `${item.name.en} added to order` });
+    toast({ title: t('added', 'Added'), description: `${item.name.en} ${t('added_to_order', 'added to order')}` });
   };
 
   const updateQuantity = (itemId: string, delta: number) => {
@@ -150,7 +152,7 @@ export default function OrdersPage() {
 
   const submitOrder = () => {
     if (cart.length === 0) {
-      toast({ title: 'Empty Order', description: 'Please add items to the order', variant: 'destructive' });
+      toast({ title: t('empty_order', 'Empty Order'), description: t('please_add_items', 'Please add items to the order'), variant: 'destructive' });
       return;
     }
 
@@ -178,7 +180,7 @@ export default function OrdersPage() {
     setOrderType('');
     setOrderNotes('');
     setShowCart(false);
-    toast({ title: 'Order Created', description: `${newOrder.orderNumber} has been sent to kitchen` });
+    toast({ title: t('order_created', 'Order Created'), description: t('order_sent_to_kitchen', '{orderNumber} has been sent to kitchen').replace('{orderNumber}', newOrder.orderNumber) });
   };
 
   if (itemsLoading || categoriesLoading || tablesLoading) {
@@ -193,8 +195,8 @@ export default function OrdersPage() {
     <div className="space-y-4 h-full">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">New Order</h1>
-          <p className="text-muted-foreground">Touch-friendly ordering system</p>
+          <h1 className="text-2xl font-semibold">{t('new_order', 'New Order')}</h1>
+          <p className="text-muted-foreground">{t('new_order_desc', 'Touch-friendly ordering system')}</p>
         </div>
         <Button
           size="lg"
@@ -203,7 +205,7 @@ export default function OrdersPage() {
           data-testid="button-view-cart"
         >
           <ShoppingCart className="h-5 w-5" />
-          <span className="font-semibold">{cartItemCount} items</span>
+          <span className="font-semibold">{t('current_order_count', '{count} items').replace('{count}', cartItemCount.toString())}</span>
           <span>{currencySymbol}{cartTotal.toFixed(2)}</span>
         </Button>
       </div>
@@ -215,7 +217,7 @@ export default function OrdersPage() {
           className="shrink-0 flex-col h-auto py-2"
           data-testid="button-category-all"
         >
-          <span>All</span>
+          <span>{t('all', 'All')}</span>
         </Button>
         {categories.map((cat) => (
           <Button
@@ -236,7 +238,7 @@ export default function OrdersPage() {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search items..."
+          placeholder={t('search_items', 'Search items...')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -281,7 +283,7 @@ export default function OrdersPage() {
       <Dialog open={showCart} onOpenChange={setShowCart}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Current Order</DialogTitle>
+            <DialogTitle>{t('current_order', 'Current Order')}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
@@ -295,7 +297,7 @@ export default function OrdersPage() {
                 className="flex-1"
                 data-testid="button-order-type-table"
               >
-                Table
+                {t('table', 'Table')}
               </Button>
               <Button
                 variant={orderType === 'takeaway' ? 'default' : 'outline'}
@@ -303,19 +305,19 @@ export default function OrdersPage() {
                 className="flex-1"
                 data-testid="button-order-type-takeaway"
               >
-                Takeaway
+                {t('takeaway', 'Takeaway')}
               </Button>
             </div>
 
             {orderType === 'table' && (
               <Select value={selectedTable} onValueChange={setSelectedTable}>
                 <SelectTrigger data-testid="select-table">
-                  <SelectValue placeholder="Select Table" />
+                  <SelectValue placeholder={t('select_table', 'Select Table')} />
                 </SelectTrigger>
                 <SelectContent>
                   {tables.filter((t) => t.isActive).map((table) => (
                     <SelectItem key={table.id} value={table.tableNumber}>
-                      Table {table.tableNumber} ({table.capacity} seats)
+                      {t('table', 'Table')} {table.tableNumber} ({table.capacity} {t('seats', 'seats')})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -325,7 +327,7 @@ export default function OrdersPage() {
             {cart.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <ShoppingCart className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>No items in order</p>
+                <p>{t('no_items_in_order', 'No items in order')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -345,7 +347,7 @@ export default function OrdersPage() {
                         <div className="flex-1">
                           <h4 className="font-medium text-sm">{ci.menuItem.name.en}</h4>
                           <p className="text-sm text-muted-foreground">
-                            {currencySymbol}{(ci.menuItem.discountedPrice || ci.menuItem.price).toFixed(2)} each
+                            {currencySymbol}{(ci.menuItem.discountedPrice || ci.menuItem.price).toFixed(2)} {t('each', 'each')}
                           </p>
                         </div>
                       </div>
@@ -379,7 +381,7 @@ export default function OrdersPage() {
                         </Button>
                       </div>
                       <Input
-                        placeholder="Notes (e.g., no onions)"
+                        placeholder={t('notes_placeholder', 'Notes (e.g., no onions)')}
                         value={ci.notes}
                         onChange={(e) => updateItemNotes(ci.menuItem.id, e.target.value)}
                         className="mt-2 text-sm mb-2"
@@ -395,7 +397,7 @@ export default function OrdersPage() {
             )}
 
             <Textarea
-              placeholder="Order notes (optional)"
+              placeholder={t('order_notes', 'Order notes (optional)')}
               value={orderNotes}
               onChange={(e) => setOrderNotes(e.target.value)}
               className="resize-none"
@@ -403,7 +405,7 @@ export default function OrdersPage() {
             />
 
             <div className="flex items-center justify-between pt-4 border-t">
-              <span className="text-lg font-semibold">Total:</span>
+              <span className="text-lg font-semibold">{t('total', 'Total')}:</span>
               <span className="text-xl font-bold">{currencySymbol}{cartTotal.toFixed(2)}</span>
             </div>
 
@@ -413,7 +415,7 @@ export default function OrdersPage() {
                 onClick={() => setShowCart(false)}
                 className="flex-1"
               >
-                Continue
+                {t('continue', 'Continue')}
               </Button>
               <Button
                 onClick={submitOrder}
@@ -421,8 +423,8 @@ export default function OrdersPage() {
                 disabled={cart.length === 0}
                 data-testid="button-submit-order"
               >
-                <Send className="h-4 w-4" />
-                Send to Kitchen
+                <Plus className="h-4 w-4" />
+                {t('send_to_kitchen', 'Send to Kitchen')}
               </Button>
             </div>
           </div>

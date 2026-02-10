@@ -47,6 +47,7 @@ import { mockUsers } from '@/lib/mockData';
 import { roleLabels, rolePermissions, type Settings } from '@/lib/types';
 import type { User, Role } from '@/lib/types';
 import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useLanguage } from '@/hooks/use-language';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -67,6 +68,7 @@ interface StorageBranch {
 }
 
 export default function RolesPage() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
   const [formOpen, setFormOpen] = useState(false);
@@ -102,10 +104,10 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'User Created' });
+      toast({ title: t('user_created', 'User Created') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to create user', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_user', 'Failed to create user'), variant: 'destructive' });
     },
   });
 
@@ -123,10 +125,10 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setEditingUser(null);
       form.reset();
-      toast({ title: 'User Updated' });
+      toast({ title: t('user_updated', 'User Updated') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to update user', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_user', 'Failed to update user'), variant: 'destructive' });
     },
   });
 
@@ -137,10 +139,10 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setDeleteUser(null);
-      toast({ title: 'User Deleted' });
+      toast({ title: t('user_deleted', 'User Deleted') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to delete user', variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_user', 'Failed to delete user'), variant: 'destructive' });
     },
   });
 
@@ -169,8 +171,8 @@ export default function RolesPage() {
   };
 
   const getBranchName = (branchId?: string) => {
-    if (!branchId) return 'All Branches';
-    return branches.find((b) => b.id === branchId)?.name || 'Unknown';
+    if (!branchId) return t('all_branches', 'All Branches');
+    return branches.find((b) => b.id === branchId)?.name || t('unknown', 'Unknown');
   };
 
   const { data: settings } = useQuery<Settings>({
@@ -206,12 +208,12 @@ export default function RolesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">Roles & Users</h1>
-          <p className="text-muted-foreground">Manage user access and permissions</p>
+          <h1 className="text-2xl font-semibold">{t('roles', 'Roles & Users')}</h1>
+          <p className="text-muted-foreground">{t('roles_desc', 'Manage user access and permissions')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-user">
           <Plus className="h-4 w-4 mr-2" />
-          Add User
+          {t('add_user', 'Add User')}
         </Button>
       </div>
 
@@ -222,12 +224,12 @@ export default function RolesPage() {
             <Card key={role} className="flex flex-col">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">{roleLabels[role]}</CardTitle>
+                  <CardTitle className="text-base">{t(`role_${role}`, roleLabels[role])}</CardTitle>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <span className="font-medium text-foreground">
                       {users.filter((u) => u.role === role).length}
                     </span>
-                    <span>User(s)</span>
+                    <span>{t('users_count', 'User(s)')}</span>
                   </div>
                 </div>
               </CardHeader>
@@ -235,7 +237,7 @@ export default function RolesPage() {
                 <div className="flex flex-wrap gap-1">
                   {permissions[0] === 'all' ? (
                     <Badge variant="default" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 text-[11px] h-5 px-2">
-                      Full Access
+                      {t('full_access', 'Full Access')}
                     </Badge>
                   ) : (
                     permissions.map((p) => (
@@ -258,24 +260,24 @@ export default function RolesPage() {
       <DataTable
         data={users}
         columns={[
-          { key: 'name', header: 'Name' },
-          { key: 'email', header: 'Email' },
+          { key: 'name', header: t('name') },
+          { key: 'email', header: t('email') },
           {
             key: 'role',
-            header: 'Role',
+            header: t('role'),
             render: (item) => (
               <Badge variant="outline" className="no-default-active-elevate">
-                {roleLabels[item.role]}
+                {t(`role_${item.role}`, roleLabels[item.role])}
               </Badge>
             ),
           },
-          { key: 'branchId', header: 'Branch', render: (item) => getBranchName(item.branchId) },
+          { key: 'branchId', header: t('branch'), render: (item) => getBranchName(item.branchId) },
           {
             key: 'isActive',
-            header: 'Status',
+            header: t('status'),
             render: (item) => (
               <Badge variant={item.isActive ? 'default' : 'secondary'} className="no-default-active-elevate">
-                {item.isActive ? 'Active' : 'Inactive'}
+                {item.isActive ? t('active') : t('inactive')}
               </Badge>
             ),
           },
@@ -288,38 +290,38 @@ export default function RolesPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent data-testid="modal-user-form">
           <DialogHeader>
-            <DialogTitle>Add User</DialogTitle>
+            <DialogTitle>{t('add_user', 'Add User')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-user-name" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="email" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('email')}</FormLabel>
                   <FormControl><Input type="email" {...field} data-testid="input-user-email" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="role" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{t('role')}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-role">
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder={t('select_role', "Select role")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="manager">Manager</SelectItem>
-                      <SelectItem value="chef">Chef</SelectItem>
-                      <SelectItem value="accountant">Accountant</SelectItem>
+                      <SelectItem value="admin">{t('role_admin', 'Admin')}</SelectItem>
+                      <SelectItem value="manager">{t('role_manager', 'Manager')}</SelectItem>
+                      <SelectItem value="chef">{t('role_chef', 'Chef')}</SelectItem>
+                      <SelectItem value="accountant">{t('role_accountant', 'Accountant')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -327,15 +329,15 @@ export default function RolesPage() {
               )} />
               <FormField control={form.control} name="branchId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch</FormLabel>
+                  <FormLabel>{t('branch')}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-branch">
-                        <SelectValue placeholder="Select branch" />
+                        <SelectValue placeholder={t('select_branch', "Select branch")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="all">All Branches</SelectItem>
+                      <SelectItem value="all">{t('all_branches', 'All Branches')}</SelectItem>
                       {branches.map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
@@ -346,15 +348,15 @@ export default function RolesPage() {
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Active</FormLabel>
+                  <FormLabel className="mt-0">{t('active')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-user-active" />
                   </FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>Cancel</Button>
-                <Button type="submit" data-testid="button-save-user">Create</Button>
+                <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>{t('cancel')}</Button>
+                <Button type="submit" data-testid="button-save-user">{t('create')}</Button>
               </div>
             </form>
           </Form>
@@ -364,38 +366,38 @@ export default function RolesPage() {
       <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
         <DialogContent data-testid="modal-user-edit">
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>{t('edit_user', 'Edit User')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-user-name-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="email" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('email')}</FormLabel>
                   <FormControl><Input type="email" {...field} data-testid="input-user-email-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="role" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{t('role')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-role-edit">
-                        <SelectValue placeholder="Select role" />
+                        <SelectValue placeholder={t('select_role')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="manager">Manager</SelectItem>
-                      <SelectItem value="chef">Chef</SelectItem>
-                      <SelectItem value="accountant">Accountant</SelectItem>
+                      <SelectItem value="admin">{t('role_admin', 'Admin')}</SelectItem>
+                      <SelectItem value="manager">{t('role_manager', 'Manager')}</SelectItem>
+                      <SelectItem value="chef">{t('role_chef', 'Chef')}</SelectItem>
+                      <SelectItem value="accountant">{t('role_accountant', 'Accountant')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -403,15 +405,15 @@ export default function RolesPage() {
               )} />
               <FormField control={form.control} name="branchId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Branch</FormLabel>
+                  <FormLabel>{t('branch')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-branch-edit">
-                        <SelectValue placeholder="Select branch" />
+                        <SelectValue placeholder={t('select_branch')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="all">All Branches</SelectItem>
+                      <SelectItem value="all">{t('all_branches', 'All Branches')}</SelectItem>
                       {branches.map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
@@ -422,17 +424,17 @@ export default function RolesPage() {
               )} />
               <FormField control={form.control} name="isActive" render={({ field }) => (
                 <FormItem className="flex items-center gap-3">
-                  <FormLabel className="mt-0">Active</FormLabel>
+                  <FormLabel className="mt-0">{t('active')}</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} data-testid="switch-user-active-edit" />
                   </FormControl>
                 </FormItem>
               )} />
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => setEditingUser(null)}>Cancel</Button>
+                <Button type="button" variant="ghost" onClick={() => setEditingUser(null)}>{t('cancel')}</Button>
                 <Button type="submit" data-testid="button-update-user" disabled={updateUserMutation.isPending}>
                   {updateUserMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Update
+                  {t('update')}
                 </Button>
               </div>
             </form>
@@ -443,14 +445,14 @@ export default function RolesPage() {
       <AlertDialog open={!!deleteUser} onOpenChange={() => setDeleteUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_user', 'Delete User')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteUser?.name}"?
+              {t('confirm_delete_user', 'Are you sure you want to delete "{name}"?').replace('{name}', deleteUser?.name || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-user">Delete</AlertDialogAction>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete-user">{t('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

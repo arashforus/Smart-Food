@@ -129,10 +129,10 @@ export default function CategoriesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('category_created') });
+      toast({ title: t('category_created', 'Category Created') });
     },
     onError: (error: any) => {
-      toast({ title: t('error'), description: error.message || t('failed_create_category'), variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_category', 'Failed to create category'), variant: 'destructive' });
     },
   });
 
@@ -158,10 +158,10 @@ export default function CategoriesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setEditingCategory(null);
       form.reset();
-      toast({ title: t('category_updated') });
+      toast({ title: t('category_updated', 'Category Updated') });
     },
     onError: (error: any) => {
-      toast({ title: t('error'), description: error.message || t('failed_update_category'), variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_category', 'Failed to update category'), variant: 'destructive' });
     },
   });
 
@@ -172,10 +172,10 @@ export default function CategoriesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setDeleteCategory(null);
-      toast({ title: t('category_deleted') });
+      toast({ title: t('category_deleted', 'Category Deleted') });
     },
     onError: (error: any) => {
-      toast({ title: t('error'), description: error.message || t('failed_delete_category'), variant: 'destructive' });
+      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_category', 'Failed to delete category'), variant: 'destructive' });
     },
   });
 

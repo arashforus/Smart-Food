@@ -127,7 +127,7 @@ export default function RestaurantPage() {
       });
       setRestaurant({ ...restaurant, ...data });
       toast({
-        title: t('restaurant_updated', 'Restaurant Updated'),
+        title: t('settings_updated', 'Settings Updated'),
         description: t('restaurant_saved_desc', 'Your restaurant information has been saved.'),
       });
     } catch (error) {
@@ -145,8 +145,8 @@ export default function RestaurantPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">{t('restaurant_info', 'Restaurant Info')}</h1>
-        <p className="text-muted-foreground">{t('restaurant_info_desc', 'Manage your restaurant details')}</p>
+        <h1 className="text-2xl font-semibold">{t('restaurant_info', 'Restaurant Information')}</h1>
+        <p className="text-muted-foreground">{t('restaurant_info_desc', 'Manage your restaurant details and branding')}</p>
       </div>
 
       <Form {...form}>
@@ -154,7 +154,7 @@ export default function RestaurantPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>{t('basic_information', 'Basic Information')}</CardTitle>
+                <CardTitle>{t('basic_info', 'Basic Information')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
@@ -223,36 +223,36 @@ export default function RestaurantPage() {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('logo_images', 'Logo & Images')}</CardTitle>
+                  <CardTitle>{t('branding', 'Branding')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField control={form.control} name="logo" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('restaurant_logo', 'Restaurant Logo')}</FormLabel>
+                      <FormLabel>{t('logo', 'Restaurant Logo')}</FormLabel>
                       <FormControl>
                         <ImageUpload
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder={t('upload_logo')}
+                          placeholder={t('upload_logo', 'Upload Logo')}
                           testId="input-restaurant-logo"
                         />
                       </FormControl>
-                      <FormDescription>{t('logo_desc')}</FormDescription>
+                      <FormDescription>{t('logo_desc', 'Upload your restaurant logo')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="backgroundImage" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('background_image')}</FormLabel>
+                      <FormLabel>{t('background_image', 'Background Image')}</FormLabel>
                       <FormControl>
                         <ImageUpload
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder={t('upload_background')}
+                          placeholder={t('upload_background', 'Upload Background')}
                           testId="input-restaurant-background"
                         />
                       </FormControl>
-                      <FormDescription>{t('background_desc')}</FormDescription>
+                      <FormDescription>{t('background_desc', 'Upload a background image for your restaurant')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -270,7 +270,7 @@ export default function RestaurantPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="mapLat" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('latitude')}</FormLabel>
+                        <FormLabel>{t('latitude', 'Latitude')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -287,7 +287,7 @@ export default function RestaurantPage() {
                     )} />
                     <FormField control={form.control} name="mapLng" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('longitude')}</FormLabel>
+                        <FormLabel>{t('longitude', 'Longitude')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -334,7 +334,7 @@ export default function RestaurantPage() {
 
           <div className="flex justify-end gap-2">
             <Button type="submit" disabled={isPending} data-testid="button-save-restaurant">
-              {isPending ? t('saving') : t('save_changes')}
+              {isPending ? t('saving', 'Saving...') : t('save_changes', 'Save Changes')}
             </Button>
           </div>
         </form>

@@ -181,7 +181,7 @@ export default function DashboardPage() {
                       borderColor: 'hsl(var(--border))',
                       borderRadius: '8px'
                     }}
-                    formatter={(value: number) => [`$${value}`, t('sales')]}
+                    formatter={(value: number) => [`$${value}`, t('sales', 'Sales')]}
                   />
                   <Area 
                     type="monotone" 
