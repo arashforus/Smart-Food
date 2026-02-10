@@ -8,7 +8,7 @@ interface LanguageContextType {
   adminLanguage: Language;
   setLanguage: (lang: Language) => Promise<void>;
   setAdminLanguage: (lang: Language) => Promise<void>;
-  t: (key: string) => string;
+  t: (key: string, fallback?: string) => string;
   languages: { code: string; name: string }[];
   dir: 'ltr' | 'rtl';
   adminDir: 'ltr' | 'rtl';
@@ -95,18 +95,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const t = (key: string): string => {
-    if (!translations || Object.keys(translations).length === 0) return key;
+  const t = (key: string, fallback?: string): string => {
+    if (!translations || Object.keys(translations).length === 0) return fallback || key;
     const keys = key.split('.');
     let value: any = translations;
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
-        return key;
+        return fallback || key;
       }
     }
-    return typeof value === 'string' ? value : key;
+    return typeof value === 'string' ? value : (fallback || key);
   };
 
   const activeDbLang = dbLanguages.find(l => l.code === language);
