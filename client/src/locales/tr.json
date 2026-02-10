@@ -52,5 +52,9 @@
   "thursday": "Perşembe",
   "friday": "Cuma",
   "saturday": "Cumartesi",
-  "sunday": "Pazar"
+  "sunday": "Pazar",
+  "open": "Açık",
+  "closed": "Kapalı",
+  "showOnMap": "Haritada Göster",
+  "callNow": "Şimdi Ara"
 }

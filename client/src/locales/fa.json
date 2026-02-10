@@ -52,5 +52,9 @@
   "thursday": "پنج‌شنبه",
   "friday": "جمعه",
   "saturday": "شنبه",
-  "sunday": "یکشنبه"
+  "sunday": "یکشنبه",
+  "open": "باز است",
+  "closed": "بسته است",
+  "showOnMap": "نمایش روی نقشه",
+  "callNow": "تماس بگیرید"
 }

@@ -52,5 +52,9 @@
   "thursday": "Thursday",
   "friday": "Friday",
   "saturday": "Saturday",
-  "sunday": "Sunday"
+  "sunday": "Sunday",
+  "open": "Open",
+  "closed": "Closed",
+  "showOnMap": "Show on Map",
+  "callNow": "Call Now"
 }

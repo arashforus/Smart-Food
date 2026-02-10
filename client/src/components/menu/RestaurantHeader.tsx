@@ -37,8 +37,8 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
 
         const hours = typeof restaurant.hours === 'string' && restaurant.hours.trim() !== '' ? JSON.parse(restaurant.hours) : restaurant.hours;
         const now = new Date();
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const currentDay = days[now.getDay()];
+        const days = [t('sunday'), t('monday'), t('tuesday'), t('wednesday'), t('thursday'), t('friday'), t('saturday')];
+        const currentDay = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
         const dayConfig = hours[currentDay];
 
         if (!dayConfig || dayConfig.closed) {
@@ -128,7 +128,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                   }`}
                 >
                   <Circle className={`h-2 w-2 fill-current ${isRestaurantOpen ? "animate-pulse" : ""}`} />
-                  {isRestaurantOpen ? (language === 'fa' ? 'باز است' : 'OPEN') : (language === 'fa' ? 'بسته است' : 'CLOSED')}
+                  {isRestaurantOpen ? t('open') : t('closed')}
                 </Badge>
               )}
             </div>
@@ -183,9 +183,9 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                                 const hours = typeof restaurant.hours === 'string' && restaurant.hours.trim() !== '' ? JSON.parse(restaurant.hours) : restaurant.hours;
                                 return Object.entries(hours).map(([day, config]: [string, any]) => (
                                   <div key={day} className="flex items-center justify-between py-0">
-                                    <span className="text-[11px] font-medium">{day}</span>
+                                    <span className="text-[11px] font-medium">{t(day.toLowerCase())}</span>
                                     <span className={`text-[11px] ${config.closed ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
-                                      {config.closed ? (language === 'fa' ? 'بسته' : 'Closed') : `${config.start} - ${config.end}`}
+                                      {config.closed ? t('closed') : `${config.start} - ${config.end}`}
                                     </span>
                                   </div>
                                 ));
@@ -223,7 +223,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                                   data-testid="button-show-on-map"
                                 >
                                   <MapPin className={`h-3.5 w-3.5 ${isRtl ? 'scale-x-[-1]' : ''}`} />
-                                  {language === 'fa' ? 'نمایش روی نقشه' : 'Show on Map'}
+                                  {t('showOnMap')}
                                 </Button>
                               </div>
                             )}
@@ -248,7 +248,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
                                 data-testid="button-call-now"
                               >
                                 <Phone className={`h-3.5 w-3.5 ${isRtl ? 'scale-x-[-1]' : ''}`} />
-                                {language === 'fa' ? 'تماس بگیرید' : 'Call Now'}
+                                {t('callNow')}
                               </Button>
                             </div>
                           </div>

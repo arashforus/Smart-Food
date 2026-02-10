@@ -236,7 +236,7 @@ export default function MenuPage() {
       <footer className="py-4 mt-auto border-t bg-background/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 text-center">
           <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1.5 uppercase tracking-widest font-medium">
-            <span>Powered by</span>
+            <span>{t('poweredBy')}</span>
             <a 
               href="https://smartfood.com" 
               target="_blank" 
