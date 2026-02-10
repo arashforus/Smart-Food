@@ -21,6 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerObjectStorageRoutes(app);
 
   app.use("/uploads", express.static("uploads"));
+  app.use("/locales", express.static(path.join(process.cwd(), "dist/locales")));
 
   app.post("/api/upload", upload.single("file"), (req, res) => {
     if (!req.file) {

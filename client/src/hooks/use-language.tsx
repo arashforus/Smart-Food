@@ -29,13 +29,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const loadTranslations = async (lang: string, isAdmin: boolean = false) => {
     try {
-      const path = isAdmin ? `/src/locales/admin/${lang}.json` : `/src/locales/${lang}.json`;
+      const path = isAdmin ? `/locales/admin/${lang}.json` : `/locales/${lang}.json`;
       const response = await fetch(path);
       if (response.ok) {
         const data = await response.json();
         setTranslations(data);
       } else {
-        const fallbackPath = isAdmin ? '/src/locales/admin/en.json' : '/src/locales/en.json';
+        const fallbackPath = isAdmin ? '/locales/admin/en.json' : '/locales/en.json';
         const fallbackResponse = await fetch(fallbackPath);
         if (fallbackResponse.ok) {
           const fallbackData = await fallbackResponse.json();
