@@ -249,7 +249,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             {settings?.menuShowBuyButton && (
               <>
                 <div className={`flex items-center gap-2 ${isRtl ? 'flex-row' : ''}`}>
-                  <span className="text-sm font-medium">{t.quantity}:</span>
+                  <span className="text-sm font-medium">{t('quantity')}:</span>
                   <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
                     <Button
                       size="icon"
@@ -279,11 +279,11 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
                 <div className={isRtl ? 'text-right' : ''}>
                   <label className="text-sm font-medium block mb-2" htmlFor="order-notes">
-                    {t.notes || 'Special requests'}
+                    {t('notes')}
                   </label>
                   <Textarea
                     id="order-notes"
-                    placeholder={t.notesPlaceholder || 'Add any special requests or notes...'}
+                    placeholder={t('notesPlaceholder')}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     className={`resize-none rounded-lg ${isRtl ? 'text-right' : ''}`}
@@ -298,7 +298,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                   data-testid="button-add-to-cart"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  {t.addToCart}
+                  {t('addToCart')}
                 </Button>
               </>
             )}
