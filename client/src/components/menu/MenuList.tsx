@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 import MenuItemCard from './MenuItemCard';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 import type { MenuItem, Category, Language, Settings } from '@/lib/types';
 
 interface MenuListProps {
@@ -57,8 +57,8 @@ export default function MenuList({
     return category.name[language as keyof typeof category.name] || category.name.en || Object.values(category.name)[0] || '';
   };
 
-  const t = translations[language] || translations.en || translations['en'];
-  const isRtl = language === 'fa' || language === 'ar';
+  const { t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
 
   const gridClass = viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4' : 'space-y-3';
 
@@ -72,7 +72,7 @@ export default function MenuList({
               data-testid="text-category-heading-suggested-only"
             >
               <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-              {t.suggested}
+              {t('suggested')}
             </h2>
             <div className={gridClass}>
               {suggestedItems.map((item) => (
@@ -106,7 +106,7 @@ export default function MenuList({
               data-testid="text-category-heading-suggested-filtered"
             >
               <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-              {t.suggested}
+              {t('suggested')}
             </h2>
             <div className={gridClass}>
               {categorySuggestedItems.map((item) => (

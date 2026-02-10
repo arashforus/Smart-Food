@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Star, LayoutGrid, LayoutList, Leaf, Salad, WheatOff, Flame, Heart, Search, X } from 'lucide-react';
 import type { Category, FoodType, Language, Settings } from '@/lib/types';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -48,8 +48,8 @@ export default function CategoryTabs({
   onSearchChange,
   settings,
 }: CategoryTabsProps) {
-  const t = translations[language] || translations.en || translations['en'];
-  const isRtl = language === 'fa' || language === 'ar';
+  const { t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
 
   const getCategoryName = (category: Category) => {
     return category.name[language as keyof typeof category.name] || category.name.en || Object.values(category.name)[0] || '';
@@ -87,7 +87,7 @@ export default function CategoryTabs({
               </div>
             </div>
             <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center break-words ${selectedCategory === null && !showSuggested ? 'text-primary' : 'text-muted-foreground'}`}>
-              {t.all}
+              {t('all')}
             </span>
           </button>
 
@@ -116,7 +116,7 @@ export default function CategoryTabs({
                 </div>
               </div>
               <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center break-words ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}>
-                {language === 'fa' ? 'پیشنهادی' : 'Recommend'}
+                {t('suggested')}
               </span>
             </button>
           )}
@@ -245,12 +245,12 @@ export default function CategoryTabs({
         <div className="px-4 pb-4">
           <div className="relative">
             <Search className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors ${isRtl ? 'right-3 scale-x-[-1]' : 'left-3'}`} />
-            <Input
+            <input
               type="text"
-              placeholder={t.search}
+              placeholder={t('search')}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className={`rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all text-start ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'}`}
+              className={`rounded-full bg-muted/50 border-none focus-visible:ring-primary/20 transition-all text-start w-full h-10 ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'}`}
               data-testid="input-search"
             />
             {searchQuery && (

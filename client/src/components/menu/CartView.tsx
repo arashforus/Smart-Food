@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trash2, ShoppingCart } from 'lucide-react';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 import type { Language, CartItem, Settings } from '@/lib/types';
 
 interface CartViewProps {
@@ -31,8 +31,8 @@ export default function CartView({
   onPlaceOrder,
   settings,
 }: CartViewProps) {
-  const t = translations[language] || translations.en || translations['en'];
-  const isRtl = language === 'fa' || language === 'ar';
+  const { t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
 
   const cartTotal = cartItems.reduce(
     (sum, ci) => sum + (ci.item.discountedPrice || ci.item.price) * ci.quantity,
@@ -50,16 +50,16 @@ export default function CartView({
         <DialogContent className="max-w-md rounded-2xl px-6" dir={isRtl ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle className={isRtl ? 'text-right' : ''}>
-              {t.cart}
+              {t('cart')}
             </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center justify-center py-12 gap-4">
             <ShoppingCart className="h-12 w-12 text-muted-foreground" />
             <p className="text-muted-foreground text-center">
-              {t.emptyCart || 'Your cart is empty'}
+              {t('emptyCart')}
             </p>
             <Button variant="outline" onClick={onClose}>
-              {t.continueMenu || 'Continue Shopping'}
+              {t('continueMenu')}
             </Button>
           </div>
         </DialogContent>
@@ -72,7 +72,7 @@ export default function CartView({
       <DialogContent className="max-w-md rounded-2xl px-6" dir={isRtl ? 'rtl' : 'ltr'}>
         <DialogHeader>
           <DialogTitle className={isRtl ? 'text-right' : ''}>
-            {t.cart}
+            {t('cart')}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 max-h-[60vh] overflow-y-auto">
@@ -98,7 +98,7 @@ export default function CartView({
                     </p>
                     {cartItem.notes && (
                       <p className={`text-xs text-muted-foreground italic mt-2 ${isRtl ? 'text-right' : ''}`}>
-                        {t.notes}: {cartItem.notes}
+                        {t('notes')}: {cartItem.notes}
                       </p>
                     )}
                   </div>
@@ -122,16 +122,16 @@ export default function CartView({
           ))}
 
           <div className={`flex items-center justify-between pt-4 border-t ${isRtl ? 'flex-row-reverse' : ''}`}>
-            <span className="font-medium">{t.total || 'Total'}:</span>
+            <span className="font-medium">{t('total')}:</span>
             <span className="text-lg font-semibold">{settings?.currencySymbol || '$'}{cartTotal.toFixed(settings?.currencyDecimal ?? 2)}</span>
           </div>
 
           <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <Button variant="outline" onClick={onClose} className="flex-1">
-              {t.continueMenu || 'Continue Shopping'}
+              {t('continueMenu')}
             </Button>
             <Button onClick={onPlaceOrder} className="flex-1">
-              {t.placeOrder || 'Place Order'}
+              {t('placeOrder')}
             </Button>
           </div>
         </div>

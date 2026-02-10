@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UtensilsCrossed, Star, Plus, Leaf, Salad, WheatOff, Flame, Heart } from 'lucide-react';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 import { Badge } from '@/components/ui/badge';
 import type { MenuItem, Language, Settings, FoodType } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
@@ -117,8 +117,8 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
     return item.shortDescription[language as keyof typeof item.shortDescription] || item.shortDescription.en || Object.values(item.shortDescription)[0] || '';
   };
 
-  const t = translations[language] || translations.en || translations['en'];
-  const isRtl = language === 'fa' || language === 'ar';
+  const { t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
 
   const price = Number(item.price);
   const discountedPrice = item.discountedPrice ? Number(item.discountedPrice) : null;
@@ -169,7 +169,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </h3>
               {item.isNew && (
                 <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto">
-                  {t.new || 'New'}
+                  {t('new')}
                 </Badge>
               )}
               {(isSuggested || item.suggested) && (
@@ -284,7 +284,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   </h3>
                   {item.isNew && (
                     <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto flex-shrink-0">
-                      {t.new || 'New'}
+                      {t('new')}
                     </Badge>
                   )}
                   {(isSuggested || item.suggested) && (
@@ -355,10 +355,10 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 className={`rounded-full h-8 px-4 flex items-center gap-1 `}
                 onClick={handleAddClick}
                 data-testid={`button-add-to-cart-card-${item.id}`}
-                title={t.addToCart}
+                title={t('addToCart')}
               >
                 <Plus className="h-4 w-4" />
-                {t.add || 'Add'}
+                {t('add')}
               </Button>
             )}
           </div>

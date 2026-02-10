@@ -57,5 +57,7 @@
   "closed": "Closed",
   "showOnMap": "Show on Map",
   "callNow": "Call Now",
-  "specialRequests": "Special Requests"
+  "specialRequests": "Special Requests",
+  "add": "Add",
+  "search": "Search..."
 }

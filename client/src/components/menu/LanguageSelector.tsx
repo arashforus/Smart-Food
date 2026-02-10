@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { Language } from '@/lib/types';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 import { useQuery } from '@tanstack/react-query';
 
 const FLAG_URLS: Record<string, string> = {
@@ -26,7 +26,7 @@ interface LanguageSelectorProps {
 }
 
 export default function LanguageSelector({ language, onLanguageChange }: LanguageSelectorProps) {
-  const t = translations[language] || translations.en || translations['en'];
+  const { t } = useLanguage();
 
   const { data: languages = [] } = useQuery<any[]>({
     queryKey: ['/api/languages'],
