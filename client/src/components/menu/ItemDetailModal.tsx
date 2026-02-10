@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { UtensilsCrossed, Plus, Minus, ShoppingCart, Star } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import type { MenuItem, Language, Settings } from '@/lib/types';
-import { translations } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 import { useQuery } from '@tanstack/react-query';
 
 function SteamEffect() {
@@ -71,6 +71,8 @@ interface ItemDetailModalProps {
 export default function ItemDetailModal({ item, open, onClose, language, onAddToCart, settings }: ItemDetailModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+  const { t, dir } = useLanguage();
+  const isRtl = dir === 'rtl';
 
   const { data: allMaterials = [] } = useQuery<any[]>({
     queryKey: ['/api/materials'],
@@ -112,8 +114,8 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
     }).filter(Boolean);
   };
 
-  const t = translations[language] || translations.en || translations['en'];
-  const isRtl = language === 'fa' || language === 'ar';
+  //const t = translations[language] || translations.en || translations['en'];
+  //const isRtl = language === 'fa' || language === 'ar';
 
   const price = Number(item.price);
   const discountedPrice = item.discountedPrice ? Number(item.discountedPrice) : null;
