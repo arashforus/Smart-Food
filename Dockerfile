@@ -31,7 +31,7 @@ RUN npm install --omit=dev && npm install drizzle-kit
 COPY --from=builder /app/dist ./dist
 
 # Copy locales needed for production (if not bundled)
-COPY --from=builder /app/client/src/locales ./dist/locales
+COPY --from=builder /app/client/src/locales ./dist/src/locales
 
 # Copy migrations and shared folder (needed for schema)
 COPY --from=builder /app/server/migrations ./server/migrations
