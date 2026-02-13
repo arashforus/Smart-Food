@@ -184,7 +184,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
             
             {settings?.menuShowFoodTypes && getTypes().length > 0 && (
-              <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
+              <div className={`flex flex-wrap gap-2 `}>
                 {getTypes().map((type, idx) => (
                   <Badge 
                     key={idx} 
@@ -200,7 +200,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             
             {settings?.menuShowIngredients && getMaterials().length > 0 && (
               <div className={isRtl ? 'text-right' : ''}>
-                <div className={`flex flex-wrap gap-3 ${isRtl ? 'justify-end' : ''}`}>
+                <div className={`flex flex-wrap gap-3 `}>
                   {getMaterials().map((material: any) => (
                     <div key={material.id} className="flex flex-col items-center gap-1">
                       <div 
