@@ -69,9 +69,9 @@ export default function CartView({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md rounded-2xl px-6" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DialogContent className="max-w-md rounded-2xl px-6" >
         <DialogHeader>
-          <DialogTitle className={isRtl ? 'text-right' : ''}>
+          <DialogTitle className='text-start'>
             {t('cart')}
           </DialogTitle>
         </DialogHeader>
@@ -79,7 +79,7 @@ export default function CartView({
           {cartItems.map((cartItem) => (
             <Card key={cartItem.id} className="overflow-hidden">
               <CardContent className="p-3">
-                <div className={`flex gap-3 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex gap-3 `}>
                   {cartItem.item.image && (
                     <div className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0">
                       <img
@@ -90,19 +90,19 @@ export default function CartView({
                     </div>
                   )}
                   <div className="flex-1">
-                    <h4 className={`font-medium text-sm ${isRtl ? 'text-right' : ''}`}>
+                    <h4 className={`font-medium text-sm `}>
                       {getName(cartItem)}
                     </h4>
-                    <p className={`text-xs text-muted-foreground mt-1 ${isRtl ? 'text-right' : ''}`}>
+                    <p className={`text-xs text-muted-foreground mt-1 display-contents`} style={{display: "contents"}}>
                       {settings?.currencySymbol || '$'}{(cartItem.item.discountedPrice || cartItem.item.price).toFixed(settings?.currencyDecimal ?? 2)} x {cartItem.quantity}
                     </p>
                     {cartItem.notes && (
-                      <p className={`text-xs text-muted-foreground italic mt-2 ${isRtl ? 'text-right' : ''}`}>
+                      <p className={`text-xs text-muted-foreground italic mt-2 `}>
                         {t('notes')}: {cartItem.notes}
                       </p>
                     )}
                   </div>
-                  <div className={`flex flex-col items-end gap-2 ${isRtl ? 'items-start' : ''}`}>
+                  <div className={`flex flex-col items-end gap-2 `}>
                     <span className="font-semibold text-sm">
                       {settings?.currencySymbol || '$'}{((cartItem.item.discountedPrice || cartItem.item.price) * cartItem.quantity).toFixed(settings?.currencyDecimal ?? 2)}
                     </span>
@@ -121,12 +121,12 @@ export default function CartView({
             </Card>
           ))}
 
-          <div className={`flex items-center justify-between pt-4 border-t ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <div className={`flex items-center justify-between pt-4 border-t `}>
             <span className="font-medium">{t('total')}:</span>
             <span className="text-lg font-semibold">{settings?.currencySymbol || '$'}{cartTotal.toFixed(settings?.currencyDecimal ?? 2)}</span>
           </div>
 
-          <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+          <div className={`flex gap-2 `}>
             <Button variant="outline" onClick={onClose} className="flex-1">
               {t('continueMenu')}
             </Button>
