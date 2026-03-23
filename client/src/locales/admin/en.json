@@ -240,4 +240,12 @@
   "in_progress": "In Progress",
   "no_tables_found_qr": "No tables found. Add tables in the Tables section first.",
   "order_number_label": "Order #"
+  "basic_tab": "Basic",
+  "translations_tab": "Translations",
+  "materials_tab": "Materials",
+  "types_tab": "Types",
+  "internal_name_Label": "Internal Name",
+  "item_image": "Item Image",
+  
+  
 }

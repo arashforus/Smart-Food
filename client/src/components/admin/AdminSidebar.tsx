@@ -77,7 +77,7 @@ export default function AdminSidebar() {
   return (
     <Sidebar side={adminDir === 'rtl' ? 'right' : 'left'}>
       <SidebarHeader className="p-4 flex flex-row items-center gap-2">
-        <img src={logoImg} alt="Smart Food Logo" className="h-8 w-8 object-contain" />
+        <img src={logoImg} alt="QRdish Logo" className="h-8 w-8 object-contain" />
         <span className="font-qrdish-display font-bold text-2xl tracking-tight text-white">
           QR<span className="text-qrdish-color">dish</span>
         </span>

@@ -638,16 +638,16 @@ function FormContent({
         <form onSubmit={form.handleSubmit(handleFormSubmit, onFormError)} className="space-y-4">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="basic">{t('basicTab')}</TabsTrigger>
-              <TabsTrigger value="materials">{t('materialsTab')}</TabsTrigger>
-              <TabsTrigger value="types">{t('typesTab')}</TabsTrigger>
-              <TabsTrigger value="translations">{t('translationsTab')}</TabsTrigger>
+              <TabsTrigger value="basic">{t('basic_tab')}</TabsTrigger>
+              <TabsTrigger value="materials">{t('materials_tab')}</TabsTrigger>
+              <TabsTrigger value="types">{t('types_tab')}</TabsTrigger>
+              <TabsTrigger value="translations">{t('translations_tab')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="basic" className="space-y-4 pt-4">
               <FormField control={form.control} name="generalName" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('internalNameLabel')}</FormLabel>
+                  <FormLabel>{t('internal_name_Label')}</FormLabel>
                   <FormControl><Input {...field} data-testid={`input-item-general-name${isEdit ? '-edit' : ''}`} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -655,7 +655,7 @@ function FormContent({
               
               <FormField control={form.control} name="image" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('itemImage')}</FormLabel>
+                    <FormLabel>{t('item_image')}</FormLabel>
                     <FormControl>
                       <ImageUpload
                         value={field.value}
