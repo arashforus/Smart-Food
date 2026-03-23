@@ -184,12 +184,12 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
             
             {settings?.menuShowFoodTypes && getTypes().length > 0 && (
-              <div className={`flex flex-wrap gap-2 `}>
+              <div className="flex gap-2 overflow-x-auto no-scrollbar touch-pan-x pb-1">
                 {getTypes().map((type, idx) => (
                   <Badge 
                     key={idx} 
                     variant="secondary" 
-                    className="text-xs"
+                    className="text-xs shrink-0"
                     style={{ backgroundColor: type?.color, color: 'white' }}
                   >
                     {type?.name}
@@ -200,9 +200,9 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             
             {settings?.menuShowIngredients && getMaterials().length > 0 && (
               <div className={isRtl ? 'text-right' : ''}>
-                <div className={`flex flex-wrap gap-3 `}>
+                <div className="flex gap-3 overflow-x-auto no-scrollbar touch-pan-x pb-1">
                   {getMaterials().map((material: any) => (
-                    <div key={material.id} className="flex flex-col items-center gap-1">
+                    <div key={material.id} className="flex flex-col items-center gap-1 shrink-0">
                       <div 
                         className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border bg-background"
                         title={material.name}
