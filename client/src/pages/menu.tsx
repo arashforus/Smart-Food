@@ -235,15 +235,15 @@ export default function MenuPage() {
 
       <footer className="py-4 mt-auto border-t bg-background/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1.5 uppercase tracking-widest font-medium">
+          <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1.5  tracking-widest font-medium">
             <span>{t('poweredBy')}</span>
             <a 
-              href="https://smartfood.com" 
+              href="https://qrdish.app" 
               target="_blank" 
               rel="noopener noreferrer"
               className="font-bold text-primary hover:underline transition-all"
             >
-              Smart Food
+              QRdish
             </a>
           </p>
         </div>
