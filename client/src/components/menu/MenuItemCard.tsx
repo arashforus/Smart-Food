@@ -179,7 +179,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               )}
             </div>
             {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
-              <div className="flex gap-1 mb-1 overflow-x-auto no-scrollbar touch-pan-x">
+              <div className="flex flex-wrap gap-1 mb-1">
                 {item.types.map((typeId) => {
                   const { data: foodTypes = [] } = useQuery<FoodType[]>({
                     queryKey: ['/api/food-types'],
@@ -191,7 +191,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                     <Badge 
                       key={typeId} 
                       variant="outline" 
-                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1 shrink-0"
+                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
                       style={{
                         borderColor: type.color,
                         color: type.color,
@@ -294,7 +294,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   )}
                 </div>
                 {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
-                  <div className="flex gap-1 mt-0.5 overflow-x-auto no-scrollbar touch-pan-x">
+                  <div className={`flex flex-wrap gap-1 mt-0.5`}>
                     {item.types.map((typeId) => {
                       const { data: foodTypes = [] } = useQuery<FoodType[]>({
                         queryKey: ['/api/food-types'],
@@ -306,7 +306,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                         <Badge 
                           key={typeId} 
                           variant="outline" 
-                          className="text-[10px] py-0 px-1.5 h-4 font-medium gap-1 shrink-0"
+                          className={`text-[10px] py-0 px-1.5 h-4 font-medium gap-1 `}
                           style={{
                             borderColor: type.color,
                             color: type.color,

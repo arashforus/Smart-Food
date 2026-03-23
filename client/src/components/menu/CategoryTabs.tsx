@@ -169,32 +169,32 @@ export default function CategoryTabs({
 
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
         {settings?.menuShowFoodType && (
-          <ScrollArea className="flex-1" dir={isRtl ? 'rtl' : 'ltr'}>
-            <div className="flex gap-2 justify-start">
-              {foodTypes.map((type) => {
-                const IconComponent = iconMap[type.icon || ''] || Leaf;
-                const isSelected = selectedTypes.includes(type.id);
-                return (
-                  <Badge
-                    key={type.id}
-                    variant={isSelected ? 'default' : 'outline'}
-                    className="cursor-pointer flex-shrink-0 gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium transition-all"
-                    style={{
-                      backgroundColor: isSelected ? type.color : undefined,
-                      borderColor: type.color,
-                      color: isSelected ? 'white' : type.color,
-                    }}
-                    onClick={() => onSelectType(type.id)}
-                    data-testid={`badge-type-${type.id}`}
-                  >
-                    <IconComponent className="w-3.5 h-3.5" />
-                    {getTypeName(type)}
-                  </Badge>
-                );
-              })}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          <div
+            className="flex-1 flex gap-2 overflow-x-auto no-scrollbar touch-pan-x"
+            dir={isRtl ? 'rtl' : 'ltr'}
+          >
+            {foodTypes.map((type) => {
+              const IconComponent = iconMap[type.icon || ''] || Leaf;
+              const isSelected = selectedTypes.includes(type.id);
+              return (
+                <Badge
+                  key={type.id}
+                  variant={isSelected ? 'default' : 'outline'}
+                  className="cursor-pointer flex-shrink-0 gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium transition-all"
+                  style={{
+                    backgroundColor: isSelected ? type.color : undefined,
+                    borderColor: type.color,
+                    color: isSelected ? 'white' : type.color,
+                  }}
+                  onClick={() => onSelectType(type.id)}
+                  data-testid={`badge-type-${type.id}`}
+                >
+                  <IconComponent className="w-3.5 h-3.5" />
+                  {getTypeName(type)}
+                </Badge>
+              );
+            })}
+          </div>
         )}
 
         {settings?.menuShowViewSwitcher && (
