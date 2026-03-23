@@ -83,7 +83,7 @@ export default function QRLandingPage() {
   const activeLanguages = languages.filter((lang) => lang.isActive);
 
   const handleLanguageSelect = (langCode: string) => {
-    localStorage.setItem('menuLanguage', langCode);
+    localStorage.setItem('language', langCode);
     setLocation('/menu');
   };
 

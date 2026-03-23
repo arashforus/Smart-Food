@@ -36,6 +36,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "026-add-visual-effects", description: "Add smoke_effect, fire_effect, and ice_effect to items table" },
   { version: "027-add-currency-decimal-to-settings", description: "Add currency_decimal column to settings table" },
   { version: "028-add-menu-logo-background-settings", description: "Add columns for restaurant logo background customization on menu page" },
+  { version: "029-add-is-new-to-items", description: "Add is_new column to items table" },
 ];
 
 export async function runDatabaseMigrations() {
