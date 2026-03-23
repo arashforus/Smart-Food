@@ -69,7 +69,7 @@ function AnimatedWelcome({ texts, isVisible }: AnimatedWelcomeProps) {
 export default function QRLandingPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, setLanguage } = useLanguage();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
 
   const { data: settings, isLoading: settingsLoading } = useQuery<Settings>({
@@ -82,8 +82,8 @@ export default function QRLandingPage() {
 
   const activeLanguages = languages.filter((lang) => lang.isActive);
 
-  const handleLanguageSelect = (langCode: string) => {
-    localStorage.setItem('language', langCode);
+  const handleLanguageSelect = async (langCode: string) => {
+    await setLanguage(langCode);
     setLocation('/menu');
   };
 
