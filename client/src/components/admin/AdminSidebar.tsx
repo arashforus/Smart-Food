@@ -156,12 +156,7 @@ export default function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-4 flex flex-col gap-4">
-        <div className="px-2">
-          <LanguageSelector 
-            language={adminLanguage} 
-            onLanguageChange={setAdminLanguage} 
-          />
-        </div>
+        
         <p className="text-xs text-muted-foreground">v1.5.0</p>
       </SidebarFooter>
     </Sidebar>
