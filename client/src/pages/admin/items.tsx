@@ -99,6 +99,7 @@ interface StorageCategory {
   id: string;
   name: Record<string, string>;
   image?: string;
+  order?: string | number;
 }
 
 interface StorageMaterial {
@@ -182,6 +183,17 @@ export default function ItemsPage() {
   const sortedLanguages = useMemo(() => {
     return [...languages].sort((a, b) => a.order - b.order);
   }, [languages]);
+
+  const sortedItems = useMemo(() => {
+    const categoryOrderMap = new Map(
+      categories.map((c) => [c.id, Number(c.order ?? 999)])
+    );
+    return [...items].sort((a, b) => {
+      const orderA = categoryOrderMap.get(a.categoryId) ?? 999;
+      const orderB = categoryOrderMap.get(b.categoryId) ?? 999;
+      return orderA - orderB;
+    });
+  }, [items, categories]);
 
   const createMutation = useMutation({
     mutationFn: async (data: ItemFormData) => {
@@ -395,7 +407,7 @@ export default function ItemsPage() {
       </div>
 
       <DataTable
-        data={items}
+        data={sortedItems}
         columns={[
           { 
             key: 'image', 
