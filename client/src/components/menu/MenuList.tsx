@@ -124,7 +124,7 @@ export default function MenuList({
           </div>
         )}
         <div className={gridClass}>
-          {filteredItems.filter((item) => !item.suggested).map((item) => (
+          {filteredItems.map((item) => (
             <MenuItemCard
               key={item.id}
               item={item}
@@ -170,7 +170,7 @@ export default function MenuList({
       {settings?.menuShowAllMenuItems && categories.map((category) => {
         const categoryItems = filterBySearch(filterByTypes(
           items.filter(
-            (item) => item.categoryId === category.id && item.available && !item.suggested
+            (item) => item.categoryId === category.id && item.available
           )
         ));
         if (categoryItems.length === 0) return null;
