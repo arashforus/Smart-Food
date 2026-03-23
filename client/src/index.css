@@ -649,3 +649,16 @@ html.dark {
   animation-delay: 1.8s;
   animation-duration: 3.3s;
 }
+
+.text-qrdish-color {
+  color : hsl(174 85% 45%);
+  font-family: "DM Sans", sans-serif;
+}
+
+.font-qrdish {
+  font-family: "DM Sans", sans-serif
+}
+
+.font-qrdish-display {
+  font-family: "Outfit", sans-serif
+}

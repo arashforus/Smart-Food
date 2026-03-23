@@ -3055,7 +3055,9 @@ export default function SettingsPage() {
                 <CardContent className="space-y-6 flex flex-col">
                   <div className="flex flex-col items-center justify-center p-6 bg-muted/30 rounded-xl border border-border/50">
                     <img src={logoImg} alt="Smart Food Logo" className="h-20 w-20 object-contain mb-4" />
-                    <h3 className="text-xl font-bold">Smart Food</h3>
+                    <span className="font-qrdish-display font-bold text-2xl tracking-tight text-white">
+                      QR<span className="text-qrdish-color">dish</span>
+                    </span>
                     <p className="text-sm text-muted-foreground mt-1">Professional Foody Places Management System</p>
                     <div className="mt-4 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                       Version 1.5.0
@@ -3071,7 +3073,7 @@ export default function SettingsPage() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-xs text-muted-foreground">Company Name</p>
-                          <p className="text-sm font-medium">Arashforus</p>
+                          <p className="text-sm font-medium">QRdish</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Address</p>
@@ -3079,7 +3081,7 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Support Email</p>
-                          <p className="text-sm font-medium">arashforus@yahoo.com</p>
+                          <p className="text-sm font-medium">support@qrdish.app</p>
                         </div>
                       </div>
                     </div>
@@ -3096,11 +3098,11 @@ export default function SettingsPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Last Updated</p>
-                          <p className="text-sm font-medium">10/01/2026</p>
+                          <p className="text-sm font-medium">23/03/2026</p>
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Website</p>
-                          <p className="text-sm font-medium">https://smartfood.com</p>
+                          <p className="text-sm font-medium">https://qrdish.app</p>
                         </div>
                       </div>
                     </div>
@@ -3108,14 +3110,14 @@ export default function SettingsPage() {
 
                   <div className="pt-6 border-t flex flex-col items-center gap-2">
                     <p className="text-xs text-muted-foreground text-center">
-                      2026 Smart Food. All rights reserved.
+                      2026 QRdish. All rights reserved.
                     </p>
                     <div className="flex gap-4">
                       <Button variant="ghost" className="text-xs h-auto p-0" asChild>
-                        <a href="#" target="_blank">Terms of Service</a>
+                        <a href="https://qrdish.app/terms" target="_blank">Terms of Service</a>
                       </Button>
                       <Button variant="ghost" className="text-xs h-auto p-0" asChild>
-                        <a href="#" target="_blank">Privacy Policy</a>
+                        <a href="https://qrdish.app/privacy" target="_blank">Privacy Policy</a>
                       </Button>
                     </div>
                   </div>
