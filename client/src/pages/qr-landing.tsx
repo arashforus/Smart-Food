@@ -148,12 +148,31 @@ export default function QRLandingPage() {
         {showLogo && (
           <>
             {settings?.restaurantLogo ? (
-              <img 
-                src={settings.restaurantLogo} 
-                alt="Restaurant Logo"
-                className="w-24 h-24 mx-auto mb-6 rounded-full object-cover border-2 border-white/30"
-                data-testid="img-restaurant-logo"
-              />
+              settings?.qrLogoShowBackground ? (
+                <div
+                  className={`w-24 h-24 mx-auto mb-6 flex items-center justify-center shadow-md ${
+                    settings.qrLogoBackgroundType === 'circle' ? 'rounded-full' :
+                    settings.qrLogoBackgroundType === 'square-low' ? 'rounded-xl' :
+                    settings.qrLogoBackgroundType === 'square-high' ? 'rounded-3xl' :
+                    'rounded-none'
+                  }`}
+                  style={{ backgroundColor: settings.qrLogoBackgroundColor || '#ffffff' }}
+                >
+                  <img
+                    src={settings.restaurantLogo}
+                    alt="Restaurant Logo"
+                    className="w-16 h-16 object-contain"
+                    data-testid="img-restaurant-logo"
+                  />
+                </div>
+              ) : (
+                <img 
+                  src={settings.restaurantLogo} 
+                  alt="Restaurant Logo"
+                  className="w-24 h-24 mx-auto mb-6 rounded-full object-cover border-2 border-white/30"
+                  data-testid="img-restaurant-logo"
+                />
+              )
             ) : (
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
                 <span className="text-3xl font-bold text-white">

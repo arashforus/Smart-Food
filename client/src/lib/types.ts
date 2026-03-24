@@ -216,6 +216,9 @@ export interface Settings {
   qrShowCallWaiter?: boolean;
   qrShowAddressPhone?: boolean;
   qrLogo?: string;
+  qrLogoShowBackground?: boolean;
+  qrLogoBackgroundType?: string;
+  qrLogoBackgroundColor?: string;
   qrEyeBorderColor?: string;
   qrEyeDotColor?: string;
   qrEyeBorderShape?: string;
