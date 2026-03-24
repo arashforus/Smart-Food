@@ -114,8 +114,6 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
     }).filter(Boolean);
   };
 
-  //const t = translations[language] || translations.en || translations['en'];
-  //const isRtl = language === 'fa' || language === 'ar';
 
   const price = Number(item.price);
   const discountedPrice = item.discountedPrice ? Number(item.discountedPrice) : null;
@@ -204,7 +202,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                   {getMaterials().map((material: any) => (
                     <div key={material.id} className="flex flex-col items-center gap-1">
                       <div 
-                        className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border bg-background"
+                        className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border bg-background p-1"
                         title={material.name}
                       >
                         {material.icon ? (
