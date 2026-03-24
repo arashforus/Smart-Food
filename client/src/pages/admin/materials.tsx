@@ -90,10 +90,10 @@ export default function MaterialsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('material_added', 'Material Added') });
+      toast({ title: t('material_added') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_add_material', 'Failed to add material'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_add_material'), variant: 'destructive' });
     },
   });
 
@@ -114,10 +114,10 @@ export default function MaterialsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setEditingMaterial(null);
       form.reset();
-      toast({ title: t('material_updated', 'Material Updated') });
+      toast({ title: t('material_updated') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_material', 'Failed to update material'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_update_material'), variant: 'destructive' });
     },
   });
 
@@ -126,10 +126,10 @@ export default function MaterialsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/materials'] });
       setDeleteMaterial(null);
-      toast({ title: t('material_deleted', 'Material Deleted') });
+      toast({ title: t('material_deleted') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_material', 'Failed to delete material'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_delete_material'), variant: 'destructive' });
     },
   });
 
@@ -170,8 +170,8 @@ export default function MaterialsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">{t('materials_ingredients', 'Materials / Ingredients')}</h1>
-          <p className="text-muted-foreground">{t('materials_desc', 'Manage ingredients used in your dishes')}</p>
+          <h1 className="text-2xl font-semibold">{t('materials_ingredients')}</h1>
+          <p className="text-muted-foreground">{t('materials_desc')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-material">
           <Plus className="h-4 w-4 mr-2" />
@@ -359,7 +359,7 @@ export default function MaterialsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('delete_material')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('confirm_delete_material', 'Are you sure you want to delete this material? This action cannot be undone.')}
+              {t('confirm_delete_material').replace('{name}', deleteMaterial?.generalName || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -324,5 +324,21 @@
   "failed_delete_language": "Failed to delete language",
   "text_translations_saved": "Text translations saved",
   "cannot_delete_default_language": "Cannot delete default language",
-  "confirm_delete_language": "Are you sure you want to delete \"{name}\"? This will remove all translations for this language."
+  "confirm_delete_language": "Are you sure you want to delete \"{name}\"? This will remove all translations for this language.",
+  "preview": "Preview",
+  "color": "Color",
+  "translation": "Translation",
+  "optional": "Optional",
+  "upload_image": "Upload image",
+  "background_color": "Background Color",
+  "no_languages_defined": "No languages defined",
+  "material_image_desc": "Upload an image or use an emoji for this ingredient",
+  "materials_ingredients": "Materials / Ingredients",
+  "material_added": "Material Added",
+  "material_updated": "Material Updated",
+  "material_deleted": "Material Deleted",
+  "failed_add_material": "Failed to add material",
+  "failed_update_material": "Failed to update material",
+  "failed_delete_material": "Failed to delete material",
+  "confirm_delete_material": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
 }
