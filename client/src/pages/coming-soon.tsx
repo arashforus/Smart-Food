@@ -1,11 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { SiInstagram, SiWhatsapp, SiTelegram } from "react-icons/si";
-import { MapPin, Phone, ExternalLink, UtensilsCrossed } from "lucide-react";
+import { MapPin, Phone, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { Setting } from "@shared/schema";
+import Lottie from "lottie-react";
+
+// You would typically fetch this from an external URL or have a local JSON
+// For demonstration, I'll use a placeholder URL for a food-related Lottie animation
+const LOTTIE_FOOD_URL = "https://assets9.lottiefiles.com/packages/lf20_tll0j4bb.json";
 
 const comingSoonTexts = [
   { text: "Coming Soon", lang: "English", dir: "ltr" },
@@ -17,6 +22,7 @@ const comingSoonTexts = [
 
 export default function ComingSoonPage() {
   const [index, setIndex] = useState(0);
+  const [lottieData, setLottieData] = useState<any>(null);
   const { data: settings } = useQuery<Setting>({ 
     queryKey: ["/api/settings"],
   });
@@ -26,6 +32,13 @@ export default function ComingSoonPage() {
       setIndex((prev) => (prev + 1) % comingSoonTexts.length);
     }, 3000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    fetch(LOTTIE_FOOD_URL)
+      .then(res => res.json())
+      .then(data => setLottieData(data))
+      .catch(err => console.error("Lottie load error:", err));
   }, []);
 
   return (
@@ -38,13 +51,6 @@ export default function ComingSoonPage() {
         .animate-gradient-xy {
           background-size: 400% 400%;
           animation: gradient-xy 15s ease infinite;
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
         }
       `}} />
 
@@ -82,11 +88,17 @@ export default function ComingSoonPage() {
             </AnimatePresence>
           </div>
 
-          {/* Animated icon */}
-          <div className="w-full max-w-md flex items-center justify-center py-8">
-            <div className="animate-float text-primary opacity-80">
-              <UtensilsCrossed size={120} strokeWidth={1} />
-            </div>
+          {/* Lottie Animation */}
+          <div className="w-full max-w-md aspect-square flex items-center justify-center">
+            {lottieData ? (
+              <Lottie 
+                animationData={lottieData} 
+                loop={true} 
+                style={{ height: '300px' }}
+              />
+            ) : (
+              <div className="animate-pulse text-muted-foreground">Loading Animation...</div>
+            )}
           </div>
 
           <p className="text-2xl text-muted-foreground max-w-2xl">
