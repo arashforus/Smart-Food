@@ -116,7 +116,7 @@ export default function MenuPage() {
     hours: settings?.restaurantHours || '',
   };
 
-  const backgroundStyle = settings?.menuBackgroundType === 'color' 
+  const backgroundStyle = settings?.menuBackgroundType === 'solid' 
     ? { backgroundColor: settings.menuBackgroundColor }
     : settings?.menuBackgroundType === 'gradient'
     ? { background: `linear-gradient(to bottom, ${settings.menuGradientStart}, ${settings.menuGradientEnd})` }
