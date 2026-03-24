@@ -50,8 +50,6 @@ function FireEffect() {
 function IceEffect() {
   return (
     <div className="ice-container">
-      {/* Frosted glass gradients from all edges, heavier at corners — static */}
-      <div className="ice-frost-frame" />
       {/* Breathing glow — corners only */}
       <div className="ice-frost-corners" />
 
