@@ -258,7 +258,7 @@ export default function QRLandingPage() {
       <footer className="py-4 mt-auto relative z-10 border-t border-white/10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 text-center">
           <p className="text-[10px] text-white/40 flex items-center justify-center gap-1.5  tracking-widest font-medium">
-            <span>Powered by</span>
+            <span>{t('poweredBy')}</span>
             <a 
               href="https://qrdish.app" 
               target="_blank" 

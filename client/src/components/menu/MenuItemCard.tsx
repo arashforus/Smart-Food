@@ -1,18 +1,17 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, Star, Plus, Leaf, Salad, WheatOff, Flame, Heart } from 'lucide-react';
+import { UtensilsCrossed, Star, Plus, Leaf } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { useLanguage } from '@/hooks/use-language';
 import { Badge } from '@/components/ui/badge';
 import type { MenuItem, Language, Settings, FoodType } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 
-const iconMap: Record<string, typeof Leaf> = {
-  'leaf': Leaf,
-  'salad': Salad,
-  'wheat-off': WheatOff,
-  'flame': Flame,
-  'heart': Heart,
-};
+function getDynamicIcon(name?: string | null) {
+  if (!name) return Leaf;
+  const Icon = (LucideIcons as any)[name];
+  return Icon || Leaf;
+}
 
 function SteamEffect() {
   return (
@@ -186,7 +185,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   });
                   const type = foodTypes.find(t => t.id === typeId);
                   if (!type) return null;
-                  const IconComponent = iconMap[type.icon || ''] || Leaf;
+                  const IconComponent = getDynamicIcon(type.icon);
                   return (
                     <Badge 
                       key={typeId} 
@@ -301,7 +300,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                       });
                       const type = foodTypes.find(t => t.id === typeId);
                       if (!type) return null;
-                      const IconComponent = iconMap[type.icon || ''] || Leaf;
+                      const IconComponent = getDynamicIcon(type.icon);
                       return (
                         <Badge 
                           key={typeId} 

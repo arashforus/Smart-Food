@@ -3,7 +3,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Star, LayoutGrid, LayoutList, Leaf, Salad, WheatOff, Flame, Heart, Search, X } from 'lucide-react';
+import { Star, LayoutGrid, LayoutList, Leaf, Search, X } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import type { Category, FoodType, Language, Settings } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
 
@@ -24,13 +25,11 @@ interface CategoryTabsProps {
   settings?: Settings;
 }
 
-const iconMap: Record<string, typeof Leaf> = {
-  'leaf': Leaf,
-  'salad': Salad,
-  'wheat-off': WheatOff,
-  'flame': Flame,
-  'heart': Heart,
-};
+function getDynamicIcon(name?: string | null) {
+  if (!name) return Leaf;
+  const Icon = (LucideIcons as any)[name];
+  return Icon || Leaf;
+}
 
 export default function CategoryTabs({
   categories,
@@ -174,7 +173,7 @@ export default function CategoryTabs({
             dir={isRtl ? 'rtl' : 'ltr'}
           >
             {foodTypes.map((type) => {
-              const IconComponent = iconMap[type.icon || ''] || Leaf;
+              const IconComponent = getDynamicIcon(type.icon);
               const isSelected = selectedTypes.includes(type.id);
               return (
                 <Badge
