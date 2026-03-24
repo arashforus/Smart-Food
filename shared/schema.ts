@@ -200,7 +200,10 @@ export const settings = pgTable("settings", {
   qrCenterType: text("qr_center_type").notNull().default("none"), // 'none' | 'logo' | 'text'
   qrCenterText: text("qr_center_text"),
   qrLogo: text("qr_logo"),
-  
+  qrLogoShowBackground: boolean("qr_logo_show_background").notNull().default(false),
+  qrLogoBackgroundType: text("qr_logo_background_type").notNull().default("square"), // 'square' | 'square-low' | 'square-high' | 'circle'
+  qrLogoBackgroundColor: text("qr_logo_background_color").notNull().default("#ffffff"),
+
   // Menu Page
   menuDefaultTheme: text("menu_default_theme").notNull().default("light"),
   menuBackgroundType: text("menu_background_type").notNull().default("default"),

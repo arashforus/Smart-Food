@@ -278,6 +278,9 @@ export default function SettingsPage() {
       if (dbSettings.menuLogoBackgroundType) setMenuLogoBackgroundType(dbSettings.menuLogoBackgroundType);
       if (dbSettings.menuLogoBackgroundColorLight) setMenuLogoBackgroundColorLight(dbSettings.menuLogoBackgroundColorLight);
       if (dbSettings.menuLogoBackgroundColorDark) setMenuLogoBackgroundColorDark(dbSettings.menuLogoBackgroundColorDark);
+      if (dbSettings.qrLogoShowBackground !== undefined) setQrLogoShowBackground(dbSettings.qrLogoShowBackground);
+      if (dbSettings.qrLogoBackgroundType) setQrLogoBackgroundType(dbSettings.qrLogoBackgroundType);
+      if (dbSettings.qrLogoBackgroundColor) setQrLogoBackgroundColor(dbSettings.qrLogoBackgroundColor);
 
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
@@ -384,6 +387,9 @@ export default function SettingsPage() {
   const [menuLogoBackgroundType, setMenuLogoBackgroundType] = useState('square');
   const [menuLogoBackgroundColorLight, setMenuLogoBackgroundColorLight] = useState('#ffffff');
   const [menuLogoBackgroundColorDark, setMenuLogoBackgroundColorDark] = useState('#1a1a1a');
+  const [qrLogoShowBackground, setQrLogoShowBackground] = useState(false);
+  const [qrLogoBackgroundType, setQrLogoBackgroundType] = useState('square');
+  const [qrLogoBackgroundColor, setQrLogoBackgroundColor] = useState('#ffffff');
   const [rolePermissions, setRolePermissions] = useState<{
     admin: string[];
     manager: string[];
@@ -727,6 +733,9 @@ export default function SettingsPage() {
       menuLogoBackgroundType,
       menuLogoBackgroundColorLight,
       menuLogoBackgroundColorDark,
+      qrLogoShowBackground,
+      qrLogoBackgroundType,
+      qrLogoBackgroundColor,
       kdShowTableNumber: data.kdShowTableNumber,
       kdShowOrderTime: data.kdShowOrderTime,
       kdShowClock: data.kdShowClock,
@@ -1799,6 +1808,82 @@ export default function SettingsPage() {
                       <FormDescription>Color for all text on the QR landing page</FormDescription>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* QR Logo Background Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Logo Background Settings</CardTitle>
+                  <CardDescription>Customize the background appearance of your restaurant logo on the QR landing page</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Show Logo Background</FormLabel>
+                      <FormDescription>Enable background behind the restaurant logo</FormDescription>
+                    </div>
+                    <Switch
+                      checked={qrLogoShowBackground}
+                      onCheckedChange={setQrLogoShowBackground}
+                      data-testid="switch-qr-logo-bg"
+                    />
+                  </div>
+
+                  {qrLogoShowBackground && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                      <div className="space-y-3">
+                        <FormLabel>Background Shape</FormLabel>
+                        <Select value={qrLogoBackgroundType} onValueChange={setQrLogoBackgroundType}>
+                          <SelectTrigger data-testid="select-qr-logo-bg-type">
+                            <SelectValue placeholder="Select shape" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="square">Square</SelectItem>
+                            <SelectItem value="square-low">Rounded (Low)</SelectItem>
+                            <SelectItem value="square-high">Rounded (High)</SelectItem>
+                            <SelectItem value="circle">Circle</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-3">
+                        <FormLabel>Background Color</FormLabel>
+                        <div className="flex gap-2">
+                          <Input
+                            type="color"
+                            value={qrLogoBackgroundColor}
+                            onChange={(e) => setQrLogoBackgroundColor(e.target.value)}
+                            className="w-14 h-9 p-1"
+                            data-testid="input-qr-logo-bg-color"
+                          />
+                          <Input
+                            value={qrLogoBackgroundColor}
+                            onChange={(e) => setQrLogoBackgroundColor(e.target.value)}
+                            placeholder="#ffffff"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <FormLabel>Preview</FormLabel>
+                        <div className="flex items-center justify-center p-6 border rounded-lg bg-muted/30">
+                          <div
+                            className={`flex items-center justify-center w-24 h-24 shadow-sm transition-all duration-300 ${
+                              qrLogoBackgroundType === 'circle' ? 'rounded-full' :
+                              qrLogoBackgroundType === 'square-low' ? 'rounded-xl' :
+                              qrLogoBackgroundType === 'square-high' ? 'rounded-3xl' :
+                              'rounded-none'
+                            }`}
+                            style={{ backgroundColor: qrLogoBackgroundColor }}
+                          >
+                            <img src={restaurantLogo || logoImg} alt="Logo" className="w-16 h-16 object-contain" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

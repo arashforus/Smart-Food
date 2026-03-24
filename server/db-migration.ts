@@ -37,6 +37,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "027-add-currency-decimal-to-settings", description: "Add currency_decimal column to settings table" },
   { version: "028-add-menu-logo-background-settings", description: "Add columns for restaurant logo background customization on menu page" },
   { version: "029-add-is-new-to-items", description: "Add is_new column to items table" },
+  { version: "030-add-qr-logo-background-settings", description: "Add QR logo background customization columns to settings table" },
 ];
 
 export async function runDatabaseMigrations() {
