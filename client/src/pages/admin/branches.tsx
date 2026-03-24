@@ -83,10 +83,10 @@ export default function BranchesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('branch_created', 'Branch Created') });
+      toast({ title: t('branch_created') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_branch', 'Failed to create branch'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_create_branch'), variant: 'destructive' });
     },
   });
 
@@ -99,10 +99,10 @@ export default function BranchesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
       setEditingBranch(null);
       form.reset();
-      toast({ title: t('branch_updated', 'Branch Updated') });
+      toast({ title: t('branch_updated') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_branch', 'Failed to update branch'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_update_branch'), variant: 'destructive' });
     },
   });
 
@@ -113,10 +113,10 @@ export default function BranchesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/branches'] });
       setDeleteBranch(null);
-      toast({ title: t('branch_deleted', 'Branch Deleted') });
+      toast({ title: t('branch_deleted') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_branch', 'Failed to delete branch'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_delete_branch'), variant: 'destructive' });
     },
   });
 
@@ -170,8 +170,8 @@ export default function BranchesPage() {
           { key: 'name', header: t('name') },
           { key: 'address', header: t('address') },
           { key: 'phone', header: t('phone') },
-          { key: 'owner', header: t('owner', 'Owner') },
-          { key: 'ownerPhone', header: t('owner_phone', 'Owner Phone') },
+          { key: 'owner', header: t('owner') },
+          { key: 'ownerPhone', header: t('owner_phone') },
           {
             key: 'isActive',
             header: t('status'),
@@ -196,7 +196,7 @@ export default function BranchesPage() {
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('branch_name', 'Branch Name')}</FormLabel>
+                  <FormLabel>{t('branch_name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-name" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -258,7 +258,7 @@ export default function BranchesPage() {
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('branch_name', 'Branch Name')}</FormLabel>
+                  <FormLabel>{t('branch_name')}</FormLabel>
                   <FormControl><Input {...field} data-testid="input-branch-name-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,15 +279,15 @@ export default function BranchesPage() {
               )} />
               <FormField control={form.control} name="owner" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('owner', 'Owner')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('owner_placeholder', "Owner name")} data-testid="input-branch-owner-edit" /></FormControl>
+                  <FormLabel>{t('owner')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_placeholder')} data-testid="input-branch-owner-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="ownerPhone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('owner_phone', 'Owner Phone')}</FormLabel>
-                  <FormControl><Input {...field} placeholder={t('owner_phone_placeholder', "Owner phone number")} data-testid="input-branch-owner-phone-edit" /></FormControl>
+                  <FormLabel>{t('owner_phone')}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t('owner_phone_placeholder')} data-testid="input-branch-owner-phone-edit" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -316,7 +316,7 @@ export default function BranchesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('delete_branch')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('confirm_delete_branch', `Are you sure you want to delete "${deleteBranch?.name}"? This will also remove all tables associated with this branch.`)}
+              {t('confirm_delete_branch').replace('{name}', deleteBranch?.name || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
