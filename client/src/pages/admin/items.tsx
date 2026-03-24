@@ -222,10 +222,10 @@ export default function ItemsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/items'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: 'Menu Item Created' });
+      toast({ title: t('menuItemCreated') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to create item', variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failedCreateItem'), variant: 'destructive' });
     },
   });
 
@@ -257,10 +257,10 @@ export default function ItemsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/items'] });
       setEditingItem(null);
       form.reset();
-      toast({ title: 'Menu Item Updated' });
+      toast({ title: t('menuItemUpdated') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to update item', variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failedUpdateItem'), variant: 'destructive' });
     },
   });
 
@@ -271,10 +271,10 @@ export default function ItemsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/items'] });
       setDeleteItem(null);
-      toast({ title: 'Menu Item Deleted' });
+      toast({ title: t('menuItemDeleted') });
     },
     onError: (error: any) => {
-      toast({ title: 'Error', description: error.message || 'Failed to delete item', variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failedDeleteItem'), variant: 'destructive' });
     },
   });
 
@@ -617,7 +617,7 @@ function FormContent({
     
     if (errorMessages.length > 0) {
       toast({
-        title: "Validation Error",
+        title: t('validationError'),
         description: errorMessages.join(". "),
         variant: "destructive",
       });
@@ -886,7 +886,7 @@ function FormContent({
 
             <TabsContent value="types" className="space-y-4 pt-4">
               <FormItem>
-                <FormLabel>Select Food Types</FormLabel>
+                <FormLabel>{t('selectFoodTypesLabel')}</FormLabel>
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   {foodTypes.map((type) => (
                     <div
