@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Plus, Leaf, Salad, WheatOff, Flame, Heart } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -18,13 +19,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -38,11 +32,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DataTable from '@/components/admin/DataTable';
+import LucideIconPicker from '@/components/admin/LucideIconPicker';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 import { apiRequest } from '@/lib/queryClient';
 import type { FoodType } from '@/lib/types';
 import { useState } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 interface DbLanguage {
   id: string;
@@ -50,14 +46,6 @@ interface DbLanguage {
   name: string;
   isActive: boolean;
 }
-
-const iconOptions = [
-  { value: 'leaf', label: 'Leaf', Icon: Leaf },
-  { value: 'salad', label: 'Salad', Icon: Salad },
-  { value: 'wheat-off', label: 'Gluten Free', Icon: WheatOff },
-  { value: 'flame', label: 'Flame', Icon: Flame },
-  { value: 'heart', label: 'Heart', Icon: Heart },
-];
 
 const typeSchema = z.object({
   generalName: z.string().min(1, 'General name is required'),
@@ -79,7 +67,12 @@ interface DbFoodType {
   order: number;
 }
 
-import { useLanguage } from '@/hooks/use-language';
+function DynamicIcon({ name, className }: { name?: string | null; className?: string }) {
+  if (!name) return null;
+  const Icon = (LucideIcons as any)[name];
+  if (!Icon) return <span className="text-xs opacity-50">{name}</span>;
+  return <Icon className={className} />;
+}
 
 export default function TypesPage() {
   const { t } = useLanguage();
@@ -99,7 +92,7 @@ export default function TypesPage() {
 
   const getTranslationCount = (nameObj: any) => {
     if (!nameObj || typeof nameObj !== 'object') return 0;
-    return Object.values(nameObj).filter(val => typeof val === 'string' && val.trim() !== '').length;
+    return Object.values(nameObj).filter(val => typeof val === 'string' && (val as string).trim() !== '').length;
   };
 
   const { data: languages = [] } = useQuery({
@@ -114,7 +107,6 @@ export default function TypesPage() {
   const createMutation = useMutation({
     mutationFn: (data: TypeFormData) => {
       const nameObj: Record<string, string> = {};
-      // Get all languages to ensure we save all fields, not just active ones
       languages.forEach((lang) => {
         nameObj[lang.code] = data.names[lang.code] || '';
       });
@@ -179,28 +171,11 @@ export default function TypesPage() {
     resolver: zodResolver(typeSchema),
     defaultValues: {
       generalName: '',
-      icon: 'leaf',
+      icon: 'Leaf',
       color: '#4CAF50',
       names: {},
     },
   });
-
-  const getIconComponent = (iconName?: string | null) => {
-    const iconOption = iconOptions.find((i) => i.value === iconName);
-    return iconOption ? <iconOption.Icon className="h-4 w-4" /> : null;
-  };
-
-  const parseName = (nameStr: string | Record<string, string>) => {
-    if (!nameStr) return { en: '' };
-    if (typeof nameStr === 'string') {
-      try {
-        return JSON.parse(nameStr);
-      } catch {
-        return { en: nameStr };
-      }
-    }
-    return nameStr;
-  };
 
   const openCreate = () => {
     setEditingType(null);
@@ -210,7 +185,7 @@ export default function TypesPage() {
     });
     form.reset({
       generalName: '',
-      icon: 'leaf',
+      icon: 'Leaf',
       color: '#4CAF50',
       names: defaultNames,
     });
@@ -225,7 +200,7 @@ export default function TypesPage() {
     });
     form.reset({
       generalName: foodType.generalName || '',
-      icon: foodType.icon || 'leaf',
+      icon: foodType.icon || 'Leaf',
       color: foodType.color,
       names,
     });
@@ -246,16 +221,159 @@ export default function TypesPage() {
     }
   };
 
-  // Convert DB types to FoodType for display
-  const displayTypes: FoodType[] = dbFoodTypes.map((t) => {
-    return {
-      id: t.id,
-      generalName: t.generalName,
-      name: t.name,
-      icon: t.icon || 'leaf',
-      color: t.color,
-    };
-  });
+  const displayTypes: FoodType[] = dbFoodTypes.map((t) => ({
+    id: t.id,
+    generalName: t.generalName,
+    name: t.name,
+    icon: t.icon || 'Leaf',
+    color: t.color,
+  }));
+
+  const IconFormField = ({ name, testId }: { name: string; testId: string }) => (
+    <FormField
+      control={form.control}
+      name="icon"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t('icon')}</FormLabel>
+          <FormControl>
+            <LucideIconPicker
+              value={field.value}
+              onChange={field.onChange}
+              data-testid={testId}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+
+  const TypeForm = ({ onSubmit, isEdit }: { onSubmit: (data: TypeFormData) => void; isEdit: boolean }) => (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Tabs defaultValue="info" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="info">{t('info')}</TabsTrigger>
+            <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="info" className="space-y-4 pt-4">
+            <FormField
+              control={form.control}
+              name="generalName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('name')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="e.g., Vegan"
+                      data-testid={isEdit ? 'input-type-general-name-edit' : 'input-type-general-name'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('icon')}</FormLabel>
+                  <FormControl>
+                    <LucideIconPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('color')}</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        {...field}
+                        className="w-14 h-9 p-1"
+                        data-testid={isEdit ? 'input-type-color-edit' : 'input-type-color'}
+                      />
+                      <Input {...field} placeholder="#4CAF50" className="flex-1" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+
+          <TabsContent value="translation" className="space-y-4 pt-4">
+            {languages.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
+            ) : (
+              languages.map((lang) => (
+                <FormField
+                  key={lang.code}
+                  control={form.control}
+                  name={`names.${lang.code}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{lang.name}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={field.value || ''}
+                          placeholder={`${t('name')} in ${lang.name}`}
+                          data-testid={`input-type-name-${lang.code}${isEdit ? '-edit' : ''}`}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
+
+        <div className="flex justify-end gap-2 mt-6">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              if (isEdit) {
+                setEditingType(null);
+              } else {
+                setFormOpen(false);
+              }
+              form.reset();
+            }}
+          >
+            {t('cancel')}
+          </Button>
+          <Button
+            type="submit"
+            data-testid={isEdit ? 'button-update-type' : 'button-save-type'}
+            disabled={isEdit ? updateMutation.isPending : createMutation.isPending}
+          >
+            {isEdit
+              ? (updateMutation.isPending ? t('updating') : t('update'))
+              : (createMutation.isPending ? t('creating') : t('create'))}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
 
   return (
     <div className="space-y-6">
@@ -273,317 +391,108 @@ export default function TypesPage() {
       {isLoading ? (
         <div className="text-center py-8 text-muted-foreground">{t('loading_food_types')}</div>
       ) : (
-          <DataTable
-            data={displayTypes}
-            columns={[
-              {
-                key: 'preview',
-                header: t('preview'),
-                render: (item: any) => (
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white overflow-hidden"
-                    style={{ backgroundColor: item.color }}
-                  >
-                    {item.icon && (item.icon.includes('/') || item.icon.includes('http') || item.icon.length > 10) ? (
-                      <img src={item.icon} alt={item.generalName} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="scale-75">
-                        {getIconComponent(item.icon)}
-                      </div>
-                    )}
+        <DataTable
+          data={displayTypes}
+          columns={[
+            {
+              key: 'preview',
+              header: t('preview'),
+              render: (item: any) => (
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white overflow-hidden"
+                  style={{ backgroundColor: item.color }}
+                >
+                  <div className="scale-75">
+                    <DynamicIcon name={item.icon} className="h-4 w-4" />
                   </div>
-                ),
-              },
-              { 
-                key: 'generalName', 
-                header: t('name'), 
-                render: (item: any) => item.generalName || item.name?.en || 'N/A' 
-              },
-              {
-                key: 'translations',
-                header: t('translations'),
-                render: (item: any) => {
-                  const dbType = dbFoodTypes.find(t => t.id === item.id);
-                  const count = getTranslationCount(dbType?.name);
-                  return (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary">
-                        <span className="text-[10px] font-bold">🌐</span>
-                      </div>
-                      <span className="text-xs font-medium">{count}</span>
+                </div>
+              ),
+            },
+            {
+              key: 'generalName',
+              header: t('name'),
+              render: (item: any) => item.generalName || item.name?.en || 'N/A',
+            },
+            {
+              key: 'translations',
+              header: t('translations'),
+              render: (item: any) => {
+                const dbType = dbFoodTypes.find((t) => t.id === item.id);
+                const count = getTranslationCount(dbType?.name);
+                return (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary">
+                      <span className="text-[10px] font-bold">🌐</span>
                     </div>
-                  );
-                }
-              },
-              {
-                key: 'icon',
-                header: t('icon'),
-                render: (item: any) => iconOptions.find((i) => i.value === item.icon)?.label || item.icon,
-              },
-              {
-                key: 'color',
-                header: t('color'),
-                render: (item: any) => (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
-                    <span className="text-xs text-muted-foreground">{item.color}</span>
+                    <span className="text-xs font-medium">{count}</span>
                   </div>
-                ),
+                );
               },
-            ]}
-            onEdit={(item: any) => {
-              const dbType = dbFoodTypes.find((t) => t.id === item.id);
-              if (dbType) openEdit(dbType);
-            }}
-            onDelete={(item: any) => {
-              const dbType = dbFoodTypes.find((t) => t.id === item.id);
-              if (dbType) setDeleteType(dbType);
-            }}
-            testIdPrefix="type"
-          />
+            },
+            {
+              key: 'icon',
+              header: t('icon'),
+              render: (item: any) => (
+                <div className="flex items-center gap-1.5">
+                  <DynamicIcon name={item.icon} className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{item.icon}</span>
+                </div>
+              ),
+            },
+            {
+              key: 'color',
+              header: t('color'),
+              render: (item: any) => (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
+                  <span className="text-xs text-muted-foreground">{item.color}</span>
+                </div>
+              ),
+            },
+          ]}
+          onEdit={(item: any) => {
+            const dbType = dbFoodTypes.find((t) => t.id === item.id);
+            if (dbType) openEdit(dbType);
+          }}
+          onDelete={(item: any) => {
+            const dbType = dbFoodTypes.find((t) => t.id === item.id);
+            if (dbType) setDeleteType(dbType);
+          }}
+          testIdPrefix="type"
+        />
       )}
 
-      <Dialog open={formOpen} onOpenChange={(open) => {
-        if (!open) {
-          setFormOpen(false);
-          form.reset();
-        }
-      }}>
+      <Dialog
+        open={formOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setFormOpen(false);
+            form.reset();
+          }
+        }}
+      >
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-form">
           <DialogHeader>
             <DialogTitle>{t('add_type')}</DialogTitle>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
-              <Tabs defaultValue="info" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">{t('info')}</TabsTrigger>
-                  <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="info" className="space-y-4 pt-4">
-                  <FormField
-                    control={form.control}
-                    name="generalName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('name')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="icon"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('icon')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-type-icon">
-                              <SelectValue placeholder={t('select_icon')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {iconOptions.map((icon) => (
-                              <SelectItem key={icon.value} value={icon.value}>
-                                <div className="flex items-center gap-2">
-                                  <icon.Icon className="h-4 w-4" />
-                                  {icon.label}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="color"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('color')}</FormLabel>
-                        <FormControl>
-                          <div className="flex gap-2">
-                            <Input
-                              type="color"
-                              {...field}
-                              className="w-14 h-9 p-1"
-                              data-testid="input-type-color"
-                            />
-                            <Input {...field} placeholder="#4CAF50" className="flex-1" />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
-
-                <TabsContent value="translation" className="space-y-4 pt-4">
-                  {languages.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
-                  ) : (
-                    languages.map((lang) => (
-                      <FormField
-                        key={lang.code}
-                        control={form.control}
-                        name={`names.${lang.code}`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>{lang.name}</FormLabel>
-                            <FormControl>
-                              <Input {...field} value={field.value || ''} placeholder={`${t('name')} in ${lang.name}`} data-testid={`input-type-name-${lang.code}`} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ))
-                  )}
-                </TabsContent>
-              </Tabs>
-
-              <div className="flex justify-end gap-2 mt-6">
-                <Button type="button" variant="ghost" onClick={() => {
-                  setFormOpen(false);
-                  form.reset();
-                }}>
-                  {t('cancel')}
-                </Button>
-                <Button type="submit" data-testid="button-save-type" disabled={createMutation.isPending || !form.formState.isValid}>
-                  {createMutation.isPending ? t('creating') : t('create')}
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <TypeForm onSubmit={handleCreate} isEdit={false} />
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!editingType} onOpenChange={(open) => {
-        if (!open) {
-          setEditingType(null);
-          form.reset();
-        }
-      }}>
+      <Dialog
+        open={!!editingType}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingType(null);
+            form.reset();
+          }
+        }}
+      >
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-edit">
           <DialogHeader>
             <DialogTitle>{t('edit_type')}</DialogTitle>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
-              <Tabs defaultValue="info" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">{t('info')}</TabsTrigger>
-                  <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="info" className="space-y-4 pt-4">
-                  <FormField
-                    control={form.control}
-                    name="generalName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('name')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., Vegan" data-testid="input-type-general-name-edit" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="icon"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('icon')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-type-icon-edit">
-                              <SelectValue placeholder={t('select_icon')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {iconOptions.map((icon) => (
-                              <SelectItem key={icon.value} value={icon.value}>
-                                <div className="flex items-center gap-2">
-                                  <icon.Icon className="h-4 w-4" />
-                                  {icon.label}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="color"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('color')}</FormLabel>
-                        <FormControl>
-                          <div className="flex gap-2">
-                            <Input
-                              type="color"
-                              {...field}
-                              className="w-14 h-9 p-1"
-                              data-testid="input-type-color-edit"
-                            />
-                            <Input {...field} placeholder="#4CAF50" className="flex-1" />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </TabsContent>
-
-                <TabsContent value="translation" className="space-y-4 pt-4">
-                  {languages.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
-                  ) : (
-                    languages.map((lang) => (
-                      <FormField
-                        key={lang.code}
-                        control={form.control}
-                        name={`names.${lang.code}`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>{lang.name}</FormLabel>
-                            <FormControl>
-                              <Input {...field} value={field.value || ''} placeholder={`${t('name')} in ${lang.name}`} data-testid={`input-type-name-${lang.code}-edit`} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ))
-                  )}
-                </TabsContent>
-              </Tabs>
-
-              <div className="flex justify-end gap-2 mt-6">
-                <Button type="button" variant="ghost" onClick={() => {
-                  setEditingType(null);
-                  form.reset();
-                }}>
-                  {t('cancel')}
-                </Button>
-                <Button type="submit" data-testid="button-update-type" disabled={updateMutation.isPending || !form.formState.isValid}>
-                  {updateMutation.isPending ? t('updating') : t('update')}
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <TypeForm onSubmit={handleEdit} isEdit={true} />
         </DialogContent>
       </Dialog>
 
