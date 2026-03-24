@@ -104,10 +104,10 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('user_created', 'User Created') });
+      toast({ title: t('user_created') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_create_user', 'Failed to create user'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_create_user'), variant: 'destructive' });
     },
   });
 
@@ -125,10 +125,10 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setEditingUser(null);
       form.reset();
-      toast({ title: t('user_updated', 'User Updated') });
+      toast({ title: t('user_updated') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_user', 'Failed to update user'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_update_user'), variant: 'destructive' });
     },
   });
 
@@ -139,10 +139,10 @@ export default function RolesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setDeleteUser(null);
-      toast({ title: t('user_deleted', 'User Deleted') });
+      toast({ title: t('user_deleted') });
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_user', 'Failed to delete user'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_delete_user'), variant: 'destructive' });
     },
   });
 
@@ -171,8 +171,8 @@ export default function RolesPage() {
   };
 
   const getBranchName = (branchId?: string) => {
-    if (!branchId) return t('all_branches', 'All Branches');
-    return branches.find((b) => b.id === branchId)?.name || t('unknown', 'Unknown');
+    if (!branchId) return t('all_branches');
+    return branches.find((b) => b.id === branchId)?.name || t('unknown');
   };
 
   const { data: settings } = useQuery<Settings>({
@@ -208,12 +208,12 @@ export default function RolesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">{t('roles', 'Roles & Users')}</h1>
-          <p className="text-muted-foreground">{t('roles_desc', 'Manage user access and permissions')}</p>
+          <h1 className="text-2xl font-semibold">{t('roles')}</h1>
+          <p className="text-muted-foreground">{t('roles_desc')}</p>
         </div>
         <Button onClick={openCreate} data-testid="button-add-user">
           <Plus className="h-4 w-4 mr-2" />
-          {t('add_user', 'Add User')}
+          {t('add_user')}
         </Button>
       </div>
 
@@ -224,12 +224,12 @@ export default function RolesPage() {
             <Card key={role} className="flex flex-col">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">{t(`role_${role}`, roleLabels[role])}</CardTitle>
+                  <CardTitle className="text-base">{t(`role_${role}`)}</CardTitle>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <span className="font-medium text-foreground">
                       {users.filter((u) => u.role === role).length}
                     </span>
-                    <span>{t('users_count', 'User(s)')}</span>
+                    <span>{t('users_count')}</span>
                   </div>
                 </div>
               </CardHeader>
@@ -237,7 +237,7 @@ export default function RolesPage() {
                 <div className="flex flex-wrap gap-1">
                   {permissions[0] === 'all' ? (
                     <Badge variant="default" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 text-[11px] h-5 px-2">
-                      {t('full_access', 'Full Access')}
+                      {t('full_access')}
                     </Badge>
                   ) : (
                     permissions.map((p) => (
@@ -267,7 +267,7 @@ export default function RolesPage() {
             header: t('role'),
             render: (item) => (
               <Badge variant="outline" className="no-default-active-elevate">
-                {t(`role_${item.role}`, roleLabels[item.role])}
+                {t(`role_${item.role}`)}
               </Badge>
             ),
           },
@@ -290,7 +290,7 @@ export default function RolesPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent data-testid="modal-user-form">
           <DialogHeader>
-            <DialogTitle>{t('add_user', 'Add User')}</DialogTitle>
+            <DialogTitle>{t('add_user')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
@@ -314,14 +314,14 @@ export default function RolesPage() {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-role">
-                        <SelectValue placeholder={t('select_role', "Select role")} />
+                        <SelectValue placeholder={t('select_role')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="admin">{t('role_admin', 'Admin')}</SelectItem>
-                      <SelectItem value="manager">{t('role_manager', 'Manager')}</SelectItem>
-                      <SelectItem value="chef">{t('role_chef', 'Chef')}</SelectItem>
-                      <SelectItem value="accountant">{t('role_accountant', 'Accountant')}</SelectItem>
+                      <SelectItem value="admin">{t('role_admin')}</SelectItem>
+                      <SelectItem value="manager">{t('role_manager')}</SelectItem>
+                      <SelectItem value="chef">{t('role_chef')}</SelectItem>
+                      <SelectItem value="accountant">{t('role_accountant')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -333,11 +333,11 @@ export default function RolesPage() {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger data-testid="select-user-branch">
-                        <SelectValue placeholder={t('select_branch', "Select branch")} />
+                        <SelectValue placeholder={t('select_branch')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="all">{t('all_branches', 'All Branches')}</SelectItem>
+                      <SelectItem value="all">{t('all_branches')}</SelectItem>
                       {branches.map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
@@ -366,7 +366,7 @@ export default function RolesPage() {
       <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
         <DialogContent data-testid="modal-user-edit">
           <DialogHeader>
-            <DialogTitle>{t('edit_user', 'Edit User')}</DialogTitle>
+            <DialogTitle>{t('edit_user')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
@@ -394,10 +394,10 @@ export default function RolesPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="admin">{t('role_admin', 'Admin')}</SelectItem>
-                      <SelectItem value="manager">{t('role_manager', 'Manager')}</SelectItem>
-                      <SelectItem value="chef">{t('role_chef', 'Chef')}</SelectItem>
-                      <SelectItem value="accountant">{t('role_accountant', 'Accountant')}</SelectItem>
+                      <SelectItem value="admin">{t('role_admin')}</SelectItem>
+                      <SelectItem value="manager">{t('role_manager')}</SelectItem>
+                      <SelectItem value="chef">{t('role_chef')}</SelectItem>
+                      <SelectItem value="accountant">{t('role_accountant')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -413,7 +413,7 @@ export default function RolesPage() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="all">{t('all_branches', 'All Branches')}</SelectItem>
+                      <SelectItem value="all">{t('all_branches')}</SelectItem>
                       {branches.map((branch) => (
                         <SelectItem key={branch.id} value={branch.id}>{branch.name}</SelectItem>
                       ))}
@@ -445,9 +445,9 @@ export default function RolesPage() {
       <AlertDialog open={!!deleteUser} onOpenChange={() => setDeleteUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('delete_user', 'Delete User')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('delete_user')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('confirm_delete_user', 'Are you sure you want to delete "{name}"?').replace('{name}', deleteUser?.name || '')}
+              {t('confirm_delete_user').replace('{name}', deleteUser?.name || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

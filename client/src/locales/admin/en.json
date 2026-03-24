@@ -281,5 +281,22 @@
   "owner_phone": "Owner Phone",
   "owner_placeholder": "Owner name",
   "owner_phone_placeholder": "Owner phone number",
-  "confirm_delete_branch": "Are you sure you want to delete \"{name}\"? This will also remove all tables associated with this branch."
+  "confirm_delete_branch": "Are you sure you want to delete \"{name}\"? This will also remove all tables associated with this branch.",
+  "role": "Role",
+  "branch": "Branch",
+  "role_admin": "Admin",
+  "role_manager": "Manager",
+  "role_chef": "Chef",
+  "role_accountant": "Accountant",
+  "users_count": "User(s)",
+  "full_access": "Full Access",
+  "select_role": "Select role",
+  "select_branch": "Select branch",
+  "user_created": "User Created",
+  "user_updated": "User Updated",
+  "user_deleted": "User Deleted",
+  "failed_create_user": "Failed to create user",
+  "failed_update_user": "Failed to update user",
+  "failed_delete_user": "Failed to delete user",
+  "confirm_delete_user": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
 }
