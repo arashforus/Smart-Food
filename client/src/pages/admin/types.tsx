@@ -305,7 +305,7 @@ export default function TypesPage() {
                       <Input
                         type="color"
                         {...field}
-                        className="w-14 h-9 p-1"
+                        className="w-14 h-9 p-0 border-rounded-xl"
                         data-testid={isEdit ? 'input-type-color-edit' : 'input-type-color'}
                       />
                       <Input {...field} placeholder="#4CAF50" className="flex-1" />

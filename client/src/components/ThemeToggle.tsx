@@ -2,17 +2,26 @@ import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 
-export default function ThemeToggle() {
+interface ThemeToggleProps {
+  defaultTheme?: 'light' | 'dark';
+}
+
+export default function ThemeToggle({ defaultTheme }: ThemeToggleProps = {}) {
   const [isDark, setIsDark] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const shouldBeDark = stored === 'dark' || (!stored && prefersDark);
+    let shouldBeDark: boolean;
+    if (defaultTheme !== undefined) {
+      shouldBeDark = defaultTheme === 'dark';
+    } else {
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      shouldBeDark = stored === 'dark' || (!stored && prefersDark);
+    }
     setIsDark(shouldBeDark);
     document.documentElement.classList.toggle('dark', shouldBeDark);
-  }, []);
+  }, [defaultTheme]);
 
   const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     const newValue = !isDark;

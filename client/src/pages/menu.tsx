@@ -60,6 +60,13 @@ export default function MenuPage() {
     }
   }, [menuItemsLoading, foodTypesLoading, languagesLoading]);
 
+  useEffect(() => {
+    if (settings?.menuDefaultTheme) {
+      const isDark = settings.menuDefaultTheme === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+    }
+  }, [settings?.menuDefaultTheme]);
+
   const handleSelectType = (typeId: string) => {
     setSelectedTypes((prev) =>
       prev.includes(typeId)
@@ -169,7 +176,7 @@ export default function MenuPage() {
             {settings?.showMenuLanguageSelector && (
               <LanguageSelector language={language} onLanguageChange={setLanguage} />
             )}
-            {settings?.showMenuThemeSwitcher && <ThemeToggle />}
+            {settings?.showMenuThemeSwitcher && <ThemeToggle defaultTheme={settings?.menuDefaultTheme as 'light' | 'dark' | undefined} />}
           </div>
         </div>
       </div>
