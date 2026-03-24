@@ -25,6 +25,8 @@ const ALL_ICON_NAMES: string[] = Object.keys(LucideIcons).filter((key) => {
   const val = (LucideIcons as any)[key];
   if (val === null || val === undefined) return false;
   if (typeof val !== 'function' && typeof val !== 'object') return false;
+  // Only real icon components have a displayName; the base Icon component does not
+  if (!val.displayName) return false;
   return true;
 });
 
