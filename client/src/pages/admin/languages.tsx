@@ -96,13 +96,13 @@ export default function LanguagesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('language_added', 'Language Added') });
+      toast({ title: t('language_added') });
       // Refresh language contexts
       setLanguage(localStorage.getItem('language') || 'en');
       setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_add_language', 'Failed to add language'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_add_language'), variant: 'destructive' });
     },
   });
 
@@ -115,13 +115,13 @@ export default function LanguagesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setEditingLanguage(null);
       form.reset();
-      toast({ title: t('language_updated', 'Language Updated') });
+      toast({ title: t('language_updated') });
       // Refresh language contexts
       setLanguage(localStorage.getItem('language') || 'en');
       setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_update_language', 'Failed to update language'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_update_language'), variant: 'destructive' });
     },
   });
 
@@ -132,13 +132,13 @@ export default function LanguagesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/languages'] });
       setDeleteLanguage(null);
-      toast({ title: t('language_deleted', 'Language Deleted') });
+      toast({ title: t('language_deleted') });
       // Refresh language contexts
       setLanguage(localStorage.getItem('language') || 'en');
       setAdminLanguage(localStorage.getItem('adminLanguage') || 'en');
     },
     onError: (error: any) => {
-      toast({ title: t('error', 'Error'), description: error.message || t('failed_delete_language', 'Failed to delete language'), variant: 'destructive' });
+      toast({ title: t('error'), description: error.message || t('failed_delete_language'), variant: 'destructive' });
     },
   });
 
@@ -178,13 +178,13 @@ export default function LanguagesPage() {
   const handleSaveTexts = () => {
     setTextEditorOpen(false);
     setEditingTexts(null);
-    toast({ title: t('text_translations_saved', 'Text translations saved') });
+    toast({ title: t('text_translations_saved') });
   };
 
   const handleDelete = () => {
     if (!deleteLanguage) return;
     if (deleteLanguage.isDefault) {
-      toast({ title: t('cannot_delete_default_language', 'Cannot delete default language'), variant: 'destructive' });
+      toast({ title: t('cannot_delete_default_language'), variant: 'destructive' });
       setDeleteLanguage(null);
       return;
     }
@@ -217,7 +217,7 @@ export default function LanguagesPage() {
         columns={[
           { 
             key: 'flag', 
-            header: t('flag', 'Flag'), 
+            header: t('flag'), 
             render: (item: any) => item.flagImage ? (
               <img src={item.flagImage} alt={item.name} className="w-8 h-5 object-cover rounded-sm" />
             ) : (
@@ -467,7 +467,7 @@ export default function LanguagesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('delete_language')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('confirm_delete_language', `Are you sure you want to delete "${deleteLanguage?.name}"? This will remove all translations for this language.`)}
+              {t('confirm_delete_language').replace('{name}', deleteLanguage?.name || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
