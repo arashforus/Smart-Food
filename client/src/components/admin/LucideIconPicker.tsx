@@ -16,12 +16,15 @@ const EXCLUDED = new Set([
   'LucideIcon',
   'default',
   'icons',
+  'createElement',
 ]);
 
 const ALL_ICON_NAMES: string[] = Object.keys(LucideIcons).filter((key) => {
   if (EXCLUDED.has(key)) return false;
-  if (key[0] !== key[0].toUpperCase()) return false;
-  if (typeof (LucideIcons as any)[key] !== 'function') return false;
+  if (!/^[A-Z]/.test(key)) return false;
+  const val = (LucideIcons as any)[key];
+  if (val === null || val === undefined) return false;
+  if (typeof val !== 'function' && typeof val !== 'object') return false;
   return true;
 });
 
