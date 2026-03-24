@@ -50,8 +50,10 @@ function FireEffect() {
 function IceEffect() {
   return (
     <div className="ice-container">
-      {/* Frosted glass gradients from all edges, heavier at corners */}
+      {/* Frosted glass gradients from all edges, heavier at corners — static */}
       <div className="ice-frost-frame" />
+      {/* Breathing glow — corners only */}
+      <div className="ice-frost-corners" />
 
       {/* Icicle spikes — top edge dripping down */}
       <svg className="ice-icicles-top" viewBox="0 0 300 32" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -109,8 +111,6 @@ function IceEffect() {
         />
       </svg>
 
-      {/* Animated shimmer sweep across the surface */}
-      <div className="ice-frost-shimmer" />
     </div>
   );
 }

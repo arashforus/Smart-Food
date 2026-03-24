@@ -437,7 +437,7 @@ html.dark {
   overflow: hidden;
 }
 
-/* Frost creeping in from all edges, heavier at corners */
+/* Frost creeping in from all edges — static base layer */
 .ice-frost-frame {
   position: absolute;
   inset: 0;
@@ -452,30 +452,43 @@ html.dark {
     linear-gradient(to top,    rgba(205, 238, 255, 0.6) 0%, transparent 32%),
     linear-gradient(to right,  rgba(205, 238, 255, 0.45) 0%, transparent 22%),
     linear-gradient(to left,   rgba(205, 238, 255, 0.45) 0%, transparent 22%);
-  animation: ice-frost-breathe 5s ease-in-out infinite;
 }
 
-@keyframes ice-frost-breathe {
-  0%, 100% { opacity: 0.8; }
+/* Breathing glow — corners only, fades to transparent toward the center */
+.ice-frost-corners {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left,     rgba(150, 210, 255, 0.8) 0%, transparent 42%),
+    radial-gradient(circle at top right,    rgba(150, 210, 255, 0.8) 0%, transparent 42%),
+    radial-gradient(circle at bottom left,  rgba(150, 210, 255, 0.8) 0%, transparent 42%),
+    radial-gradient(circle at bottom right, rgba(150, 210, 255, 0.8) 0%, transparent 42%);
+  animation: ice-corner-breathe 4s ease-in-out infinite;
+}
+
+@keyframes ice-corner-breathe {
+  0%, 100% { opacity: 0.3; }
   50%       { opacity: 1;   }
 }
 
 /* Icicle SVGs — top and bottom edges */
 .ice-icicles-top {
   position: absolute;
-  top: 0;
+  top: -5%;
   left: 0;
   width: 100%;
-  height: 32px;
+  height: 17px;
   pointer-events: none;
 }
 
 .ice-icicles-bottom {
   position: absolute;
-  bottom: 0;
+  bottom: -5%;
   left: 0;
   width: 100%;
-  height: 32px;
+  height: 17px;
   pointer-events: none;
 }
 
@@ -483,8 +496,8 @@ html.dark {
 .ice-icicles-left {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 32px;
+  left: -7%;
+  width: 17px;
   height: 100%;
   pointer-events: none;
 }
@@ -492,33 +505,10 @@ html.dark {
 .ice-icicles-right {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 32px;
+  right: -7%;
+  width: 17px;
   height: 100%;
   pointer-events: none;
-}
-
-/* Glittering shimmer sweep */
-.ice-frost-shimmer {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.12) 30%,
-    rgba(210, 240, 255, 0.1) 50%,
-    transparent 70%
-  );
-  background-size: 220% 220%;
-  animation: ice-shimmer-sweep 7s ease-in-out infinite;
-}
-
-@keyframes ice-shimmer-sweep {
-  0%   { background-position: 200% 200%; opacity: 0.7; }
-  50%  { background-position: 0%   0%;   opacity: 1;   }
-  100% { background-position: 200% 200%; opacity: 0.7; }
 }
 
 /* Fire Animation */
