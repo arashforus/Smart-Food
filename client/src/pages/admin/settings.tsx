@@ -351,7 +351,6 @@ export default function SettingsPage() {
   const [menuGradientStart, setMenuGradientStart] = useState('#ffffff');
   const [menuGradientEnd, setMenuGradientEnd] = useState('#f0f0f0');
   const [menuBackgroundImage, setMenuBackgroundImage] = useState('');
-  const menuBackgroundImageRef = useRef<HTMLInputElement>(null);
   const [showRestaurantLogo, setShowRestaurantLogo] = useState(true);
   const [showRestaurantName, setShowRestaurantName] = useState(true);
   const [showRestaurantDescription, setShowRestaurantDescription] = useState(true);
@@ -1896,35 +1895,13 @@ export default function SettingsPage() {
 
                   {menuBackgroundType === 'image' && (
                     <div className="space-y-2">
-                      <FormLabel htmlFor="menu-bg-image">Upload Background Image</FormLabel>
-                      <div className="space-y-2">
-                        {menuBackgroundImage && (
-                          <div className="relative w-full h-32 rounded-lg overflow-hidden border">
-                            <img src={menuBackgroundImage} alt="Preview" className="w-full h-full object-cover" />
-                            <Button size="icon" variant="destructive" className="absolute top-2 right-2" onClick={() => setMenuBackgroundImage('')} data-testid="button-remove-menu-bg">
-                              <X className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        )}
-                        <Input
-                          ref={menuBackgroundImageRef}
-                          id="menu-bg-image"
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                const result = event.target?.result as string;
-                                setMenuBackgroundImage(result);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                          data-testid="input-menu-bg-image"
-                        />
-                      </div>
+                      <FormLabel>Background Image</FormLabel>
+                      <ImageUpload
+                        value={menuBackgroundImage}
+                        onChange={setMenuBackgroundImage}
+                        placeholder="Upload or select a background image"
+                        testId="input-menu-bg-image"
+                      />
                     </div>
                   )}
                 </CardContent>
