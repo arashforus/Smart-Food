@@ -340,5 +340,19 @@
   "failed_add_material": "Failed to add material",
   "failed_update_material": "Failed to update material",
   "failed_delete_material": "Failed to delete material",
-  "confirm_delete_material": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+  "confirm_delete_material": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "icon": "Icon",
+  "select_icon": "Select icon",
+  "food_types_tags": "Food Types / Tags",
+  "loading_food_types": "Loading food types...",
+  "food_type_added": "Food Type Added",
+  "food_type_updated": "Food Type Updated",
+  "food_type_deleted": "Food Type Deleted",
+  "failed_create_type": "Failed to create food type",
+  "failed_update_type": "Failed to update food type",
+  "failed_delete_type": "Failed to delete food type",
+  "creating": "Creating...",
+  "updating": "Updating...",
+  "deleting": "Deleting...",
+  "confirm_delete_type": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
 }

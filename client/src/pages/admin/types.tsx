@@ -130,10 +130,10 @@ export default function TypesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setFormOpen(false);
       form.reset();
-      toast({ title: t('food_type_added', 'Food Type Added') });
+      toast({ title: t('food_type_added') });
     },
     onError: () => {
-      toast({ title: t('error', 'Error'), description: t('failed_create_type', 'Failed to create food type'), variant: 'destructive' });
+      toast({ title: t('error'), description: t('failed_create_type'), variant: 'destructive' });
     },
   });
 
@@ -156,10 +156,10 @@ export default function TypesPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setEditingType(null);
       form.reset();
-      toast({ title: t('food_type_updated', 'Food Type Updated') });
+      toast({ title: t('food_type_updated') });
     },
     onError: () => {
-      toast({ title: t('error', 'Error'), description: t('failed_update_type', 'Failed to update food type'), variant: 'destructive' });
+      toast({ title: t('error'), description: t('failed_update_type'), variant: 'destructive' });
     },
   });
 
@@ -168,10 +168,10 @@ export default function TypesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
       setDeleteType(null);
-      toast({ title: t('food_type_deleted', 'Food Type Deleted') });
+      toast({ title: t('food_type_deleted') });
     },
     onError: () => {
-      toast({ title: t('error', 'Error'), description: t('failed_delete_type', 'Failed to delete food type'), variant: 'destructive' });
+      toast({ title: t('error'), description: t('failed_delete_type'), variant: 'destructive' });
     },
   });
 
@@ -261,8 +261,8 @@ export default function TypesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-semibold">{t('food_types_tags', 'Food Types / Tags')}</h1>
-          <p className="text-muted-foreground">{t('food_types_desc', 'Define dietary tags like vegan, spicy, healthy')}</p>
+          <h1 className="text-2xl font-semibold">{t('food_types_tags')}</h1>
+          <p className="text-muted-foreground">{t('food_types_desc')}</p>
         </div>
         <Button onClick={openCreate} disabled={isLoading} data-testid="button-add-type">
           <Plus className="h-4 w-4 mr-2" />
@@ -271,7 +271,7 @@ export default function TypesPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8 text-muted-foreground">{t('loading_food_types', 'Loading food types...')}</div>
+        <div className="text-center py-8 text-muted-foreground">{t('loading_food_types')}</div>
       ) : (
           <DataTable
             data={displayTypes}
@@ -473,7 +473,7 @@ export default function TypesPage() {
       }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-edit">
           <DialogHeader>
-            <DialogTitle>{t('edit_type', 'Edit Food Type')}</DialogTitle>
+            <DialogTitle>{t('edit_type')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEdit)} className="space-y-4">
@@ -592,7 +592,7 @@ export default function TypesPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('delete_type')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('confirm_delete_type', `Are you sure you want to delete "${deleteType && parseName(deleteType.name).en}"?`)}
+              {t('confirm_delete_type').replace('{name}', deleteType?.generalName || '')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
