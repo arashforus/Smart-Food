@@ -13,9 +13,10 @@ function getDynamicIcon(name?: string | null) {
   return Icon || Leaf;
 }
 
-function SteamEffect() {
+function SteamEffect({ viewMode = 'list' }: { viewMode?: 'grid' | 'list' }) {
+  const travel = viewMode === 'grid' ? '-110px' : '-60px';
   return (
-    <div className="steam-container" style={{ '--steam-width': '8px', '--steam-height': '20px', '--steam-blur': '4px', '--steam-travel': '-60px' } as any}>
+    <div className="steam-container" style={{ '--steam-width': '8px', '--steam-height': '20px', '--steam-blur': '4px', '--steam-travel': travel } as any}>
       <div className="steam-wisp" />
       <div className="steam-wisp" />
       <div className="steam-wisp" />
@@ -173,7 +174,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             ) : (
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
-            {item.smokeEffect && <SteamEffect />}
+            {item.smokeEffect && <SteamEffect viewMode="grid" />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
           </div>
@@ -284,7 +285,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             ) : (
               <UtensilsCrossed className="w-5 h-5 text-muted-foreground" />
             )}
-            {item.smokeEffect && <SteamEffect />}
+            {item.smokeEffect && <SteamEffect viewMode="list" />}
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
           </div>
