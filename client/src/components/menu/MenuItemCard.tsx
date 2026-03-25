@@ -14,14 +14,14 @@ function getDynamicIcon(name?: string | null) {
 }
 
 function SteamEffect({ viewMode = 'list' }: { viewMode?: 'grid' | 'list' }) {
-  const isGrid = viewMode === 'grid';
-  return (
-    <div className="steam-container" style={{
-      '--steam-width':  isGrid ? '12px'   : '8px',
-      '--steam-height': isGrid ? '28px'   : '20px',
-      '--steam-blur':   isGrid ? '6px'    : '4px',
-      '--steam-travel': isGrid ? '-110px' : '-60px',
-    } as any}>
+      const isGrid = viewMode === 'grid';
+      return (
+        <div className="steam-container" style={{
+          '--steam-width':  isGrid ? '15px'   : '8px',
+          '--steam-height': isGrid ? '28px'   : '20px',
+          '--steam-blur':   isGrid ? '6px'    : '4px',
+          '--steam-travel': isGrid ? '-60px' : '-40px',
+        } as any}>
       <div className="steam-wisp" />
       <div className="steam-wisp" />
       <div className="steam-wisp" />

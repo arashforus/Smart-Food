@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 
 function SteamEffect() {
   return (
-    <div className="steam-container" style={{ '--steam-width': '16px', '--steam-height': '40px', '--steam-blur': '8px', '--steam-travel': '-160px' } as any}>
+    <div className="steam-container" style={{ '--steam-width': '18px', '--steam-height': '40px', '--steam-blur': '8px', '--steam-travel': '-85px' } as any}>
       <div className="steam-wisp" />
       <div className="steam-wisp" />
       <div className="steam-wisp" />
