@@ -15,7 +15,7 @@ function getDynamicIcon(name?: string | null) {
 
 function SteamEffect() {
   return (
-    <div className="steam-container" style={{ '--steam-width': '8px', '--steam-height': '20px', '--steam-blur': '4px' } as any}>
+    <div className="steam-container" style={{ '--steam-width': '8px', '--steam-height': '20px', '--steam-blur': '4px', '--steam-travel': '-60px' } as any}>
       <div className="steam-wisp" />
       <div className="steam-wisp" />
       <div className="steam-wisp" />

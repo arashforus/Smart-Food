@@ -549,11 +549,11 @@ html.dark {
     opacity: 0.8;
   }
   50% {
-    transform: translateY(-20px) scaleX(1.2);
+    transform: translateY(calc(var(--steam-travel, -60px) * 0.5)) scaleX(1.2);
     opacity: 0.5;
   }
   100% {
-    transform: translateY(-40px) scaleX(0.8);
+    transform: translateY(var(--steam-travel, -60px)) scaleX(0.8);
     opacity: 0;
   }
 }
