@@ -443,38 +443,38 @@ html.dark {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  animation: ice-glow-pulse 3s ease-in-out infinite alternate;
+  animation: ice-glow-pulse 2s ease-in-out infinite alternate;
 }
 
 @keyframes ice-glow-pulse {
   0% {
     box-shadow:
-      inset 0 0 12px 3px rgba(100, 200, 255, 0.3),
-      0 0 8px 1px rgba(150, 225, 255, 0.2);
+      inset 0 0 12px 0vw rgba(100, 200, 255, 0.2),
+      0 0 8px 0vw rgba(150, 225, 255, 0.1);
   }
   100% {
     box-shadow:
-      inset 0 0 28px 8px rgba(80, 185, 255, 0.5),
-      0 0 18px 5px rgba(130, 215, 255, 0.4);
+      inset 0 0 28px 1vw rgba(80, 185, 255, 0.4),
+      0 0 18px 2vw rgba(130, 215, 255, 0.3);
   }
 }
 
 /* Icicle SVGs — top and bottom edges */
 .ice-icicles-top {
   position: absolute;
-  top: 0%;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 11px;
+  height: 6%;
   pointer-events: none;
 }
 
 .ice-icicles-bottom {
   position: absolute;
-  bottom: 0%;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 11px;
+  height: 6%;
   pointer-events: none;
 }
 
@@ -482,8 +482,8 @@ html.dark {
 .ice-icicles-left {
   position: absolute;
   top: 0;
-  left: 0%;
-  width: 11px;
+  left: 0;
+  width: 6%;
   height: 100%;
   pointer-events: none;
 }
@@ -491,8 +491,8 @@ html.dark {
 .ice-icicles-right {
   position: absolute;
   top: 0;
-  right: 0%;
-  width: 11px;
+  right: 0;
+  width: 6%;
   height: 100%;
   pointer-events: none;
 }
@@ -510,7 +510,7 @@ html.dark {
 
 .fire-container {
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   pointer-events: none;
   z-index: 5;
   border-radius: inherit;
@@ -520,7 +520,8 @@ html.dark {
 .fire-glow {
   position: absolute;
   inset: 0;
-  box-shadow: inset 0 0 20px 5px rgba(255, 69, 0, 0.5), 0 0 15px 2px rgba(255, 140, 0, 0.4);
+  box-shadow: inset 0 0 20px 0.2vw rgba(255, 69, 0, 0.5),
+    0 0 15px 0.1vw rgba(255, 140, 0, 0.4);
   border-radius: inherit;
   animation: fire-flicker 0.2s infinite alternate;
 }
