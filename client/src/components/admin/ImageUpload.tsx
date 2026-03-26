@@ -15,6 +15,8 @@ function isVideoUrl(url: string) {
 interface ImageUploadProps {
   value?: string;
   onChange: (url: string) => void;
+  onTypeDetected?: (type: 'image' | 'video') => void;
+  mediaType?: 'image' | 'video';
   accept?: string;
   placeholder?: string;
   testId?: string;
@@ -23,11 +25,15 @@ interface ImageUploadProps {
 export default function ImageUpload({
   value,
   onChange,
+  onTypeDetected,
+  mediaType,
   accept = 'image/*,.ico',
   placeholder = 'Upload an image or enter URL',
   testId = 'input-image-upload',
 }: ImageUploadProps) {
   const { toast } = useToast();
+  const [detectedType, setDetectedType] = useState<'image' | 'video' | null>(null);
+
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response) => {
       onChange(response.objectPath);
@@ -49,6 +55,9 @@ export default function ImageUpload({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const type: 'image' | 'video' = file.type.startsWith('video/') ? 'video' : 'image';
+    setDetectedType(type);
+    onTypeDetected?.(type);
     await uploadFile(file);
   };
 
@@ -60,10 +69,14 @@ export default function ImageUpload({
   const handleClear = () => {
     setUrlInput('');
     onChange('');
+    setDetectedType(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
+
+  const effectiveType: 'image' | 'video' =
+    mediaType ?? detectedType ?? (isVideoUrl(value || '') ? 'video' : 'image');
 
   return (
     <div className="space-y-3">
@@ -119,7 +132,7 @@ export default function ImageUpload({
       
       {value && (
         <div className="relative w-full h-40 rounded-md overflow-hidden bg-muted flex items-center justify-center">
-          {isVideoUrl(value) ? (
+          {effectiveType === 'video' ? (
             <video
               src={value}
               controls
@@ -138,10 +151,10 @@ export default function ImageUpload({
             />
           )}
           <div className="absolute top-2 left-2 bg-black/50 rounded px-1.5 py-0.5 flex items-center gap-1">
-            {isVideoUrl(value)
+            {effectiveType === 'video'
               ? <Video className="h-3 w-3 text-white" />
               : <ImageIcon className="h-3 w-3 text-white" />}
-            <span className="text-white text-[10px]">{isVideoUrl(value) ? 'Video' : 'Image'}</span>
+            <span className="text-white text-[10px]">{effectiveType === 'video' ? 'Video' : 'Image'}</span>
           </div>
         </div>
       )}

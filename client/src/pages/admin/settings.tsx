@@ -1641,11 +1641,9 @@ export default function SettingsPage() {
                       <div className="flex flex-col gap-4">
                           <ImageUpload
                             value={qrMediaUrl || ''}
-                            onChange={(url) => {
-                              setQrMediaUrl(url);
-                              const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)(\?.*)?$/i.test(url);
-                              setQrMediaType(isVideo ? 'video' : 'image');
-                            }}
+                            onChange={(url) => setQrMediaUrl(url)}
+                            onTypeDetected={(type) => setQrMediaType(type)}
+                            mediaType={qrMediaType as 'image' | 'video' | undefined}
                             accept="image/*,video/*"
                             placeholder="Upload photo or video"
                             testId="input-qr-media"
