@@ -249,12 +249,12 @@ export default function MaterialsPage() {
           setEditingMaterial(null);
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col" data-testid="modal-material-form">
+        <DialogContent className="max-w-2xl h-[90vh] overflow-hidden flex flex-col" data-testid="modal-material-form">
           <DialogHeader>
             <DialogTitle>{editingMaterial ? t('edit_material') : t('add_material')}</DialogTitle>
           </DialogHeader>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="info" className="flex items-center gap-2">
                 <Info className="h-4 w-4" />
@@ -267,7 +267,7 @@ export default function MaterialsPage() {
             </TabsList>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 overflow-y-auto py-4 space-y-4 px-1">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 min-h-0 overflow-y-auto py-4 space-y-4 px-1">
                 <TabsContent value="info" className="space-y-4 m-0">
                   <FormField control={form.control} name="generalName" render={({ field }) => (
                     <FormItem>
