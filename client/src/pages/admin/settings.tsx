@@ -1643,10 +1643,11 @@ export default function SettingsPage() {
                             value={qrMediaUrl || ''}
                             onChange={(url) => {
                               setQrMediaUrl(url);
-                              const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
+                              const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)(\?.*)?$/i.test(url);
                               setQrMediaType(isVideo ? 'video' : 'image');
                             }}
-                            placeholder="Upload QR media"
+                            accept="image/*,video/*"
+                            placeholder="Upload photo or video"
                             testId="input-qr-media"
                           />
                       </div>
