@@ -251,14 +251,14 @@ export default function TypesPage() {
 
   const TypeForm = ({ onSubmit, isEdit }: { onSubmit: (data: TypeFormData) => void; isEdit: boolean }) => (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Tabs defaultValue="info" className="w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 gap-4">
+        <Tabs defaultValue="info" className="flex flex-col flex-1 min-h-0 w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="info">{t('info')}</TabsTrigger>
             <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="info" className="space-y-4 pt-4">
+          <TabsContent value="info" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
             <FormField
               control={form.control}
               name="generalName"
@@ -317,7 +317,7 @@ export default function TypesPage() {
             />
           </TabsContent>
 
-          <TabsContent value="translation" className="space-y-4 pt-4">
+          <TabsContent value="translation" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
             {languages.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
             ) : (
@@ -346,7 +346,7 @@ export default function TypesPage() {
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 mt-6">
+        <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
           <Button
             type="button"
             variant="ghost"
@@ -471,7 +471,7 @@ export default function TypesPage() {
           }
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-form">
+        <DialogContent className="h-[90vh] flex flex-col overflow-hidden" data-testid="modal-type-form">
           <DialogHeader>
             <DialogTitle>{t('add_type')}</DialogTitle>
           </DialogHeader>
@@ -488,7 +488,7 @@ export default function TypesPage() {
           }
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-type-edit">
+        <DialogContent className="h-[90vh] flex flex-col overflow-hidden" data-testid="modal-type-edit">
           <DialogHeader>
             <DialogTitle>{t('edit_type')}</DialogTitle>
           </DialogHeader>
