@@ -95,7 +95,10 @@ export async function runDatabaseMigrations() {
           const sqlPath = join(process.cwd(), "server", "migrations", `${migration.version}.sql`);
           let sql = readFileSync(sqlPath, "utf-8");
 
-          sql = sql.replace(/ADD COLUMN(?!\s+IF\s+NOT\s+EXISTS)/g, 'ADD COLUMN IF NOT EXISTS');
+          // Handle IF NOT EXISTS for column additions in migration 028
+          if (migration.version === '028-add-menu-logo-background-settings') {
+            sql = sql.replace(/ADD COLUMN/g, 'ADD COLUMN IF NOT EXISTS');
+          }
 
           await pool.query(sql);
 
