@@ -59,5 +59,9 @@
   "callNow": "Call Now",
   "specialRequests": "Special Requests",
   "add": "Add",
-  "search": "Search..."
+  "search": "Search...",
+  "order": "Order",
+  "enabled": "Enabled",
+  "yes": "Yes",
+  "no": "No"
 }

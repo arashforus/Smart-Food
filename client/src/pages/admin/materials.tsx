@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2, Globe, Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -37,17 +38,18 @@ import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { Material, Language } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 
 const materialSchema = z.object({
   generalName: z.string().min(1, 'General name is required'),
   backgroundColor: z.string().min(1, 'Background color is required'),
   image: z.string().optional(),
+  order: z.coerce.number().min(0, 'Order must be 0 or greater'),
+  isActive: z.boolean(),
   translations: z.record(z.string()).optional(),
 });
 
 type MaterialFormData = z.infer<typeof materialSchema>;
-
-import { useLanguage } from '@/hooks/use-language';
 
 export default function MaterialsPage() {
   const { t } = useLanguage();
@@ -67,6 +69,8 @@ export default function MaterialsPage() {
       generalName: '', 
       backgroundColor: '#FF6B6B', 
       image: '',
+      order: 1,
+      isActive: true,
       translations: {},
     },
   });
@@ -78,12 +82,13 @@ export default function MaterialsPage() {
   const createMutation = useMutation({
     mutationFn: async (data: MaterialFormData) => {
       const name: Record<string, string> = { ...data.translations };
-      
       return apiRequest('POST', '/api/materials', {
         generalName: data.generalName,
         name,
         color: data.backgroundColor,
         icon: data.image,
+        order: data.order,
+        isActive: data.isActive,
       });
     },
     onSuccess: () => {
@@ -100,14 +105,14 @@ export default function MaterialsPage() {
   const updateMutation = useMutation({
     mutationFn: async (data: MaterialFormData) => {
       if (!editingMaterial) throw new Error('No material selected');
-      
       const name: Record<string, string> = { ...data.translations };
-
       return apiRequest('PATCH', `/api/materials/${editingMaterial.id}`, {
         generalName: data.generalName,
         name,
         color: data.backgroundColor,
         icon: data.image,
+        order: data.order,
+        isActive: data.isActive,
       });
     },
     onSuccess: () => {
@@ -134,7 +139,7 @@ export default function MaterialsPage() {
   });
 
   const openCreate = () => {
-    form.reset({ generalName: '', backgroundColor: '#FF6B6B', image: '', translations: {} });
+    form.reset({ generalName: '', backgroundColor: '#FF6B6B', image: '', order: 1, isActive: true, translations: {} });
     setActiveTab('info');
     setFormOpen(true);
   };
@@ -144,6 +149,8 @@ export default function MaterialsPage() {
       generalName: material.generalName || '',
       backgroundColor: material.color || '#FF6B6B',
       image: material.icon || '',
+      order: Number(material.order) || 1,
+      isActive: material.isActive ?? true,
       translations: material.name || {},
     });
     setActiveTab('info');
@@ -179,69 +186,98 @@ export default function MaterialsPage() {
         </Button>
       </div>
 
-          <DataTable
-            data={materials.map((m: any) => ({
-              ...m,
-              id: m.id,
-              generalName: m.generalName,
-              name: m.name,
-              image: m.icon || '',
-              color: m.color || '#FF6B6B',
-              isActive: m.isActive,
-              order: Number(m.order),
-            }))}
-            columns={[
-              {
-                key: 'preview',
-                header: t('preview'),
-                render: (item: any) => (
-                  item.image ? (
-                    <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center">
-                      {item.image.includes('/') || item.image.includes('http') || item.image.length > 10 ? (
-                        <img src={item.image} alt={item.generalName} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-xl">{item.image}</span>
-                      )}
-                    </div>
+      <DataTable
+        data={materials.map((m: any) => ({
+          ...m,
+          id: m.id,
+          generalName: m.generalName,
+          name: m.name,
+          image: m.icon || '',
+          color: m.color || '#FF6B6B',
+          isActive: m.isActive,
+          order: Number(m.order),
+        }))}
+        columns={[
+          {
+            key: 'preview',
+            header: t('preview'),
+            render: (item: any) => (
+              item.image ? (
+                <div className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center">
+                  {item.image.includes('/') || item.image.includes('http') || item.image.length > 10 ? (
+                    <img src={item.image} alt={item.generalName} className="w-full h-full object-cover" />
                   ) : (
-                    <div
-                      className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
-                      style={{ backgroundColor: item.color || '#ccc' }}
-                    >
-                      {item.generalName?.charAt(0).toUpperCase()}
-                    </div>
-                  )
-                ),
-              },
-              { 
-                key: 'generalName', 
-                header: t('name'), 
-                render: (item: any) => item.generalName || (item.name as any)?.en || 'N/A' 
-              },
-              { 
-                key: 'translations', 
-                header: t('translations'), 
-                render: (item: any) => {
-                  const count = Object.values(item.name || {}).filter(v => v && String(v).trim() !== '').length;
-                  return (
-                    <div className="flex items-center gap-1.5">
-                      <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-sm font-medium">{count}</span>
-                    </div>
-                  );
-                }
-              },
-              { key: 'color', header: t('color'), render: (item: any) => (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
-                  <span className="text-xs text-muted-foreground">{item.color}</span>
+                    <span className="text-xl">{item.image}</span>
+                  )}
                 </div>
-              )},
-            ]}
-            onEdit={openEdit}
-            onDelete={(item: any) => setDeleteMaterial(item)}
-            testIdPrefix="material"
-          />
+              ) : (
+                <div
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-medium"
+                  style={{ backgroundColor: item.color || '#ccc' }}
+                >
+                  {item.generalName?.charAt(0).toUpperCase()}
+                </div>
+              )
+            ),
+          },
+          { 
+            key: 'generalName', 
+            header: t('name'), 
+            render: (item: any) => item.generalName || (item.name as any)?.en || 'N/A' 
+          },
+          { 
+            key: 'translations', 
+            header: t('translations'), 
+            render: (item: any) => {
+              const count = Object.values(item.name || {}).filter(v => v && String(v).trim() !== '').length;
+              return (
+                <div className="flex items-center gap-1.5">
+                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-sm font-medium">{count}</span>
+                </div>
+              );
+            }
+          },
+          { 
+            key: 'color', 
+            header: t('color'), 
+            render: (item: any) => (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color || 'transparent' }} />
+                <span className="text-xs text-muted-foreground">{item.color}</span>
+              </div>
+            )
+          },
+          {
+            key: 'order',
+            header: t('order'),
+            render: (item: any) => (
+              <span className="text-sm font-medium" data-testid={`text-material-order-${item.id}`}>
+                {item.order}
+              </span>
+            ),
+          },
+          {
+            key: 'isActive',
+            header: t('enabled'),
+            render: (item: any) => (
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  item.isActive
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                }`}
+                data-testid={`status-material-enabled-${item.id}`}
+              >
+                {item.isActive ? t('yes') : t('no')}
+              </span>
+            ),
+          },
+        ]}
+        onEdit={openEdit}
+        onDelete={(item: any) => setDeleteMaterial(item)}
+        testIdPrefix="material"
+      />
 
       <Dialog open={formOpen || !!editingMaterial} onOpenChange={(open) => {
         if (!open) {
@@ -305,38 +341,69 @@ export default function MaterialsPage() {
                       <FormMessage />
                     </FormItem>
                   )} />
+
+                  <FormField control={form.control} name="order" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('order')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          {...field}
+                          data-testid="input-material-order"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
+                  <FormField control={form.control} name="isActive" render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-3">
+                        <FormLabel className="mb-0">{t('enabled')}</FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            data-testid="switch-material-enabled"
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                 </TabsContent>
 
-                  <TabsContent value="translation" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1 m-0">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {languages.map((lang: any) => (
-                        <FormField 
-                          key={lang.code} 
-                          control={form.control} 
-                          name={`translations.${lang.code}`} 
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{lang.name} {t('translation')}</FormLabel>
-                              <FormControl>
-                                <Input 
-                                  {...field} 
-                                  value={field.value || ''} 
-                                  placeholder={`${t('name')} in ${lang.name}`}
-                                  data-testid={`input-material-translation-${lang.code}`} 
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )} 
-                        />
-                      ))}
-                      {languages.length === 0 && (
-                        <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                          {t('no_languages_defined')}
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
+                <TabsContent value="translation" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1 m-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {languages.map((lang: any) => (
+                      <FormField 
+                        key={lang.code} 
+                        control={form.control} 
+                        name={`translations.${lang.code}`} 
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{lang.name} {t('translation')}</FormLabel>
+                            <FormControl>
+                              <Input 
+                                {...field} 
+                                value={field.value || ''} 
+                                placeholder={`${t('name')} in ${lang.name}`}
+                                data-testid={`input-material-translation-${lang.code}`} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} 
+                      />
+                    ))}
+                    {languages.length === 0 && (
+                      <div className="col-span-2 py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                        {t('no_languages_defined')}
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
 
                 <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
                   <Button type="button" variant="ghost" onClick={() => {

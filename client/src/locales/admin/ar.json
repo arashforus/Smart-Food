@@ -343,5 +343,9 @@
   "creating": "جاري الإنشاء...",
   "updating": "جاري التحديث...",
   "deleting": "جاري الحذف...",
-  "confirm_delete_type": "هل أنت متأكد من حذف الوسم \"{name}\"؟"
+  "confirm_delete_type": "هل أنت متأكد من حذف الوسم \"{name}\"؟",
+  "order": "الترتيب",
+  "enabled": "مفعّل",
+  "yes": "نعم",
+  "no": "لا"
 }

@@ -59,5 +59,9 @@
   "callNow": "اتصل الآن",
   "specialRequests": "طلبات خاصة",
   "add": "إضافة",
-  "search": "بحث..."
+  "search": "بحث...",
+  "order": "الترتيب",
+  "enabled": "مفعّل",
+  "yes": "نعم",
+  "no": "لا"
 }

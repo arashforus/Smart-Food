@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -51,6 +52,8 @@ const typeSchema = z.object({
   generalName: z.string().min(1, 'General name is required'),
   icon: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
+  order: z.coerce.number().min(0, 'Order must be 0 or greater'),
+  isActive: z.boolean(),
   names: z.record(z.string().optional()),
 });
 
@@ -116,6 +119,8 @@ export default function TypesPage() {
         description: {},
         icon: data.icon,
         color: data.color,
+        order: data.order,
+        isActive: data.isActive,
       });
     },
     onSuccess: () => {
@@ -142,6 +147,8 @@ export default function TypesPage() {
         description: {},
         icon: data.icon,
         color: data.color,
+        order: data.order,
+        isActive: data.isActive,
       });
     },
     onSuccess: () => {
@@ -173,6 +180,8 @@ export default function TypesPage() {
       generalName: '',
       icon: 'Leaf',
       color: '#4CAF50',
+      order: 1,
+      isActive: true,
       names: {},
     },
   });
@@ -187,6 +196,8 @@ export default function TypesPage() {
       generalName: '',
       icon: 'Leaf',
       color: '#4CAF50',
+      order: 1,
+      isActive: true,
       names: defaultNames,
     });
     setFormOpen(true);
@@ -202,6 +213,8 @@ export default function TypesPage() {
       generalName: foodType.generalName || '',
       icon: foodType.icon || 'Leaf',
       color: foodType.color,
+      order: Number(foodType.order) || 1,
+      isActive: foodType.isActive ?? true,
       names,
     });
     setEditingType(foodType);
@@ -228,26 +241,6 @@ export default function TypesPage() {
     icon: t.icon || 'Leaf',
     color: t.color,
   }));
-
-  const IconFormField = ({ name, testId }: { name: string; testId: string }) => (
-    <FormField
-      control={form.control}
-      name="icon"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{t('icon')}</FormLabel>
-          <FormControl>
-            <LucideIconPicker
-              value={field.value}
-              onChange={field.onChange}
-              data-testid={testId}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
 
   const TypeForm = ({ onSubmit, isEdit }: { onSubmit: (data: TypeFormData) => void; isEdit: boolean }) => (
     <Form {...form}>
@@ -311,6 +304,45 @@ export default function TypesPage() {
                       <Input {...field} placeholder="#4CAF50" className="flex-1" />
                     </div>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('order')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      {...field}
+                      data-testid={isEdit ? 'input-type-order-edit' : 'input-type-order'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-3">
+                    <FormLabel className="mb-0">{t('enabled')}</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        data-testid={isEdit ? 'switch-type-enabled-edit' : 'switch-type-enabled'}
+                      />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -392,7 +424,10 @@ export default function TypesPage() {
         <div className="text-center py-8 text-muted-foreground">{t('loading_food_types')}</div>
       ) : (
         <DataTable
-          data={displayTypes}
+          data={dbFoodTypes.map((ft) => ({
+            ...ft,
+            icon: ft.icon || 'Leaf',
+          }))}
           columns={[
             {
               key: 'preview',
@@ -417,8 +452,7 @@ export default function TypesPage() {
               key: 'translations',
               header: t('translations'),
               render: (item: any) => {
-                const dbType = dbFoodTypes.find((t) => t.id === item.id);
-                const count = getTranslationCount(dbType?.name);
+                const count = getTranslationCount(item.name);
                 return (
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary">
@@ -447,6 +481,31 @@ export default function TypesPage() {
                   <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
                   <span className="text-xs text-muted-foreground">{item.color}</span>
                 </div>
+              ),
+            },
+            {
+              key: 'order',
+              header: t('order'),
+              render: (item: any) => (
+                <span className="text-sm font-medium" data-testid={`text-type-order-${item.id}`}>
+                  {Number(item.order)}
+                </span>
+              ),
+            },
+            {
+              key: 'isActive',
+              header: t('enabled'),
+              render: (item: any) => (
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                    item.isActive
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                      : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                  }`}
+                  data-testid={`status-type-enabled-${item.id}`}
+                >
+                  {item.isActive ? t('yes') : t('no')}
+                </span>
               ),
             },
           ]}

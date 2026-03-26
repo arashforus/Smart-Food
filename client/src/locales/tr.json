@@ -59,5 +59,9 @@
   "callNow": "Şimdi Ara",
   "specialRequests": "Özel İstekler",
   "add": "Ekle",
-  "search": "Ara..."
+  "search": "Ara...",
+  "order": "Sıra",
+  "enabled": "Etkin",
+  "yes": "Evet",
+  "no": "Hayır"
 }

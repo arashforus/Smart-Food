@@ -343,5 +343,9 @@
   "creating": "Creating...",
   "updating": "Updating...",
   "deleting": "Deleting...",
-  "confirm_delete_type": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+  "confirm_delete_type": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "order": "Order",
+  "enabled": "Enabled",
+  "yes": "Yes",
+  "no": "No"
 }
