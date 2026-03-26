@@ -267,8 +267,8 @@ export default function MaterialsPage() {
             </TabsList>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 min-h-0 overflow-y-auto py-4 space-y-4 px-1">
-                <TabsContent value="info" className="space-y-4 m-0">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 min-h-0 flex flex-col gap-4">
+                <TabsContent value="info" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1 m-0">
                   <FormField control={form.control} name="generalName" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('name')}</FormLabel>
@@ -307,7 +307,7 @@ export default function MaterialsPage() {
                   )} />
                 </TabsContent>
 
-                  <TabsContent value="translation" className="space-y-4 m-0 pt-4">
+                  <TabsContent value="translation" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1 m-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {languages.map((lang: any) => (
                         <FormField 
@@ -338,7 +338,7 @@ export default function MaterialsPage() {
                     </div>
                   </TabsContent>
 
-                <div className="pt-4 flex justify-end gap-2 sticky bottom-0 bg-background pb-2">
+                <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
                   <Button type="button" variant="ghost" onClick={() => {
                     setFormOpen(false);
                     setEditingMaterial(null);
