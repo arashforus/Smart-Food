@@ -508,7 +508,7 @@ export default function ItemsPage() {
       />
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="modal-menu-item-form">
+        <DialogContent className="max-w-lg h-[90vh] flex flex-col overflow-hidden" data-testid="modal-menu-item-form">
           <DialogHeader>
             <DialogTitle>{t('add_item')}</DialogTitle>
           </DialogHeader>
@@ -531,7 +531,7 @@ export default function ItemsPage() {
       </Dialog>
 
       <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="modal-menu-item-edit">
+        <DialogContent className="max-w-lg h-[90vh] flex flex-col overflow-hidden" data-testid="modal-menu-item-edit">
           <DialogHeader>
             <DialogTitle>{t('edit_item')}</DialogTitle>
           </DialogHeader>
@@ -635,8 +635,8 @@ function FormContent({
 
   return (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleFormSubmit, onFormError)} className="space-y-4">
-          <Tabs defaultValue="basic" className="w-full">
+        <form onSubmit={form.handleSubmit(handleFormSubmit, onFormError)} className="flex flex-col flex-1 min-h-0 gap-4">
+          <Tabs defaultValue="basic" className="flex flex-col flex-1 min-h-0 w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="basic">{t('basic_tab')}</TabsTrigger>
               <TabsTrigger value="materials">{t('materials_tab')}</TabsTrigger>
@@ -644,7 +644,7 @@ function FormContent({
               <TabsTrigger value="translations">{t('translations_tab')}</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="basic" className="space-y-4 pt-4">
+            <TabsContent value="basic" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormField control={form.control} name="generalName" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('internal_name_Label')}</FormLabel>
@@ -834,7 +834,7 @@ function FormContent({
               </div>
             </TabsContent>
             
-            <TabsContent value="materials" className="space-y-4 pt-4">
+            <TabsContent value="materials" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormItem>
                 <FormLabel>{t('selectMaterialsLabel')}</FormLabel>
                 <div className="grid grid-cols-2 gap-3 pt-2">
@@ -884,7 +884,7 @@ function FormContent({
               </FormItem>
             </TabsContent>
 
-            <TabsContent value="types" className="space-y-4 pt-4">
+            <TabsContent value="types" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormItem>
                 <FormLabel>{t('selectFoodTypesLabel')}</FormLabel>
                 <div className="grid grid-cols-2 gap-3 pt-2">
@@ -936,7 +936,7 @@ function FormContent({
               </FormItem>
             </TabsContent>
             
-            <TabsContent value="translations" className="space-y-4 pt-4 max-h-[400px] overflow-y-auto">
+            <TabsContent value="translations" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <div className="space-y-6 pb-4">
                 {sortedLanguages.filter(lang => lang.isActive).map((language) => {
                   const langCode = language.code.charAt(0).toUpperCase() + language.code.slice(1).toLowerCase();
@@ -1001,7 +1001,7 @@ function FormContent({
             </TabsContent>
           </Tabs>
           
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
             <Button type="button" variant="ghost" onClick={onCancel}>{t('cancel')}</Button>
             <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`} disabled={isPending}>
               {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
