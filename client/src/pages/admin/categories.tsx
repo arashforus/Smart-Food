@@ -227,14 +227,14 @@ export default function CategoriesPage() {
   const FormContent = useMemo(() => {
     return ({ onSubmit, onCancel, isCreate }: { onSubmit: (data: CategoryFormData) => void; onCancel: () => void; isCreate: boolean }) => (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" >
-          <Tabs defaultValue="info" className="w-full" dir={adminDir}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 gap-4">
+          <Tabs defaultValue="info" className="flex flex-col flex-1 min-h-0 w-full" dir={adminDir}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="info">{t('info')}</TabsTrigger>
               <TabsTrigger value="translations">{t('translations')}</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="info" className="space-y-4 pt-4">
+            <TabsContent value="info" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('category_name')}</FormLabel>
@@ -290,7 +290,7 @@ export default function CategoriesPage() {
               )}
             </TabsContent>
             
-            <TabsContent value="translations" className="space-y-4 pt-4">
+            <TabsContent value="translations" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               {languages.map((lang) => lang.isActive && (
                 <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
                   <FormItem>
@@ -303,7 +303,7 @@ export default function CategoriesPage() {
             </TabsContent>
           </Tabs>
           
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
             <Button type="button" variant="ghost" onClick={onCancel}>{t('cancel')}</Button>
             <Button type="submit" data-testid={`button-${isCreate ? 'save' : 'update'}-category`} disabled={createMutation.isPending || updateMutation.isPending}>
               {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
@@ -376,7 +376,7 @@ export default function CategoriesPage() {
       </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto" data-testid="modal-category-form" dir={adminDir}>
+        <DialogContent className="h-[90vh] flex flex-col overflow-hidden" data-testid="modal-category-form" dir={adminDir}>
           <DialogHeader>
             <DialogTitle>{t('add_category')}</DialogTitle>
           </DialogHeader>
@@ -385,7 +385,7 @@ export default function CategoriesPage() {
       </Dialog>
 
       <Dialog open={!!editingCategory} onOpenChange={() => setEditingCategory(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto max-w-md" data-testid="modal-category-edit" dir={adminDir}>
+        <DialogContent className="h-[90vh] flex flex-col overflow-hidden max-w-md" data-testid="modal-category-edit" dir={adminDir}>
           <DialogHeader>
             <DialogTitle>{t('edit_category')}</DialogTitle>
           </DialogHeader>
