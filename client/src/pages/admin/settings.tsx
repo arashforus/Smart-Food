@@ -231,6 +231,29 @@ export default function SettingsPage() {
       if (dbSettings.rolesChefSettingAccess) setRolesChefSettingAccess(dbSettings.rolesChefSettingAccess);
       if (dbSettings.rolesAccountantPermissions) setRolesAccountantPermissions(dbSettings.rolesAccountantPermissions);
       if (dbSettings.rolesAccountantSettingAccess) setRolesAccountantSettingAccess(dbSettings.rolesAccountantSettingAccess);
+
+      // Parse roles JSON strings into the rolePermissions and settingsAccessLevel state objects
+      try {
+        const parsedPerms: Record<string, string[]> = {};
+        if (dbSettings.rolesAdminPermissions) parsedPerms.admin = JSON.parse(dbSettings.rolesAdminPermissions);
+        if (dbSettings.rolesManagerPermissions) parsedPerms.manager = JSON.parse(dbSettings.rolesManagerPermissions);
+        if (dbSettings.rolesChefPermissions) parsedPerms.chef = JSON.parse(dbSettings.rolesChefPermissions);
+        if (dbSettings.rolesAccountantPermissions) parsedPerms.accountant = JSON.parse(dbSettings.rolesAccountantPermissions);
+        if (Object.keys(parsedPerms).length > 0) {
+          setRolePermissions((prev) => ({ ...prev, ...parsedPerms }));
+        }
+      } catch (e) {
+        console.error("Error parsing role permissions from DB", e);
+      }
+
+      const parsedAccess: Record<string, string> = {};
+      if (dbSettings.rolesAdminSettingAccess) parsedAccess.admin = dbSettings.rolesAdminSettingAccess;
+      if (dbSettings.rolesManagerSettingAccess) parsedAccess.manager = dbSettings.rolesManagerSettingAccess;
+      if (dbSettings.rolesChefSettingAccess) parsedAccess.chef = dbSettings.rolesChefSettingAccess;
+      if (dbSettings.rolesAccountantSettingAccess) parsedAccess.accountant = dbSettings.rolesAccountantSettingAccess;
+      if (Object.keys(parsedAccess).length > 0) {
+        setSettingsAccessLevel((prev) => ({ ...prev, ...parsedAccess }));
+      }
       if (dbSettings.ossPendingColor) setOssPendingColor(dbSettings.ossPendingColor);
       if (dbSettings.ossPreparingColor) setOssPreparingColor(dbSettings.ossPreparingColor);
       if (dbSettings.ossReadyColor) setOssReadyColor(dbSettings.ossReadyColor);
