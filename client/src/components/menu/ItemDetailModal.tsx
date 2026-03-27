@@ -181,6 +181,13 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           <div className="flex-1 space-y-4">
             <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
             
+            {item.calories != null && (
+              <div className={`flex items-center gap-1.5 text-sm text-muted-foreground ${isRtl ? 'justify-end' : ''}`} data-testid="text-item-calories">
+                <span className="font-medium text-foreground">{item.calories}</span>
+                <span>{t('kcal')}</span>
+              </div>
+            )}
+
             {settings?.menuShowFoodTypes && getTypes().length > 0 && (
               <div className={`flex flex-wrap gap-2 `}>
                 {getTypes().map((type, idx) => (

@@ -77,6 +77,7 @@ export interface MenuItem {
   iceEffect?: boolean;
   materials: string[];
   types: string[];
+  calories?: number;
 }
 
 export interface CartItem {
