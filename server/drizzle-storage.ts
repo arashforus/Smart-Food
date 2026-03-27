@@ -1,8 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { sql, eq, desc } from "drizzle-orm";
-import { type StorageUser, type StorageBranch, type StorageCategory, type StorageItem, type StorageOrder, type StorageTable, type StorageLanguage, type StorageFoodType, type StorageMaterial, type WaiterRequest, type IStorage, type DashboardMetrics, type StorageSetting } from "./storage";
-import { analytics as analyticsTable, users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings } from "@shared/schema";
+import { type StorageUser, type StorageBranch, type StorageCategory, type StorageItem, type StorageOrder, type StorageTable, type StorageLanguage, type StorageFoodType, type StorageMaterial, type StorageCustomerClub, type WaiterRequest, type IStorage, type DashboardMetrics, type StorageSetting } from "./storage";
+import { analytics as analyticsTable, users, branches, categories, items, orders, waiterRequests, tables, languages, foodTypes, materials, settings, customersClub } from "@shared/schema";
 import type { Analytics } from "@shared/schema";
 
 let db: ReturnType<typeof drizzle> | null = null;
@@ -590,6 +590,38 @@ export class DrizzleStorage implements IStorage {
   async deleteMaterial(id: string): Promise<boolean> {
     const db = getDb();
     const result = await db.delete(materials).where(eq(materials.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getCustomerClub(id: string): Promise<StorageCustomerClub | undefined> {
+    const db = getDb();
+    const result = await db.select().from(customersClub).where(eq(customersClub.id, id)).limit(1);
+    if (result.length === 0) return undefined;
+    return result[0] as any;
+  }
+
+  async getAllCustomersClub(): Promise<StorageCustomerClub[]> {
+    const db = getDb();
+    return (await db.select().from(customersClub)) as any;
+  }
+
+  async createCustomerClub(data: Omit<StorageCustomerClub, 'id'>): Promise<StorageCustomerClub> {
+    const db = getDb();
+    const result = await db.insert(customersClub).values(data as any).returning();
+    if (result.length === 0) throw new Error("Failed to create customer");
+    return result[0] as any;
+  }
+
+  async updateCustomerClub(id: string, data: Partial<Omit<StorageCustomerClub, 'id'>>): Promise<StorageCustomerClub | undefined> {
+    const db = getDb();
+    const result = await db.update(customersClub).set(data as any).where(eq(customersClub.id, id)).returning();
+    if (result.length === 0) return undefined;
+    return result[0] as any;
+  }
+
+  async deleteCustomerClub(id: string): Promise<boolean> {
+    const db = getDb();
+    const result = await db.delete(customersClub).where(eq(customersClub.id, id)).returning();
     return result.length > 0;
   }
 

@@ -280,6 +280,19 @@ export const insertUserSchema = createInsertSchema(users).pick({
   phone: true,
 });
 
+export const customersClub = pgTable("customers_club", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email"),
+  points: integer("points").notNull().default(0),
+  birthday: text("birthday"),
+  branchId: varchar("branch_id"),
+  notes: text("notes"),
+  isActive: boolean("is_active").notNull().default(true),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
 export const insertAnalyticsSchema = createInsertSchema(analytics).omit({
   id: true,
   timestamp: true,
@@ -290,9 +303,15 @@ export const insertSettingsSchema = createInsertSchema(settings).omit({
   createdAt: true 
 });
 
+export const insertCustomerClubSchema = createInsertSchema(customersClub).omit({
+  id: true,
+  joinedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
 export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
+export type InsertCustomerClub = z.infer<typeof insertCustomerClubSchema>;
 export type Setting = typeof settings.$inferSelect;
 export type Analytics = typeof analytics.$inferSelect;
 export type User = typeof users.$inferSelect;
@@ -306,3 +325,4 @@ export type Language = typeof languages.$inferSelect;
 export type FoodType = typeof foodTypes.$inferSelect;
 export type Material = typeof materials.$inferSelect;
 export type SchemaVersion = typeof schemaVersions.$inferSelect;
+export type CustomerClub = typeof customersClub.$inferSelect;

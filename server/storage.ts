@@ -11,7 +11,8 @@ import {
   languages, type Language,
   foodTypes, type FoodType,
   materials, type Material,
-  analytics, type Analytics, type InsertAnalytics
+  analytics, type Analytics, type InsertAnalytics,
+  customersClub, type CustomerClub
 } from "@shared/schema";
 import { db } from "./db";
 import { sql, eq } from "drizzle-orm";
@@ -143,6 +144,19 @@ export interface StorageMaterial {
   color?: string;
   isActive: boolean;
   order: number;
+}
+
+export interface StorageCustomerClub {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  points: number;
+  birthday?: string;
+  branchId?: string;
+  notes?: string;
+  isActive: boolean;
+  joinedAt?: Date;
 }
 
 export interface DashboardMetrics {
@@ -339,6 +353,11 @@ export interface IStorage {
   createMaterial(data: Omit<StorageMaterial, 'id'>): Promise<StorageMaterial>;
   updateMaterial(id: string, data: Partial<Omit<StorageMaterial, 'id'>>): Promise<StorageMaterial | undefined>;
   deleteMaterial(id: string): Promise<boolean>;
+  getCustomerClub(id: string): Promise<StorageCustomerClub | undefined>;
+  getAllCustomersClub(): Promise<StorageCustomerClub[]>;
+  createCustomerClub(data: Omit<StorageCustomerClub, 'id'>): Promise<StorageCustomerClub>;
+  updateCustomerClub(id: string, data: Partial<Omit<StorageCustomerClub, 'id'>>): Promise<StorageCustomerClub | undefined>;
+  deleteCustomerClub(id: string): Promise<boolean>;
   createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest>;
   recordVisit(visit: Omit<Analytics, 'id' | 'timestamp'>): Promise<Analytics>;
   getDashboardMetrics(): Promise<DashboardMetrics>;
@@ -356,6 +375,7 @@ export class MemStorage implements IStorage {
   private languages: Map<string, StorageLanguage>;
   private foodTypes: Map<string, StorageFoodType>;
   private materials: Map<string, StorageMaterial>;
+  private customersClub: Map<string, StorageCustomerClub>;
   private analytics: Analytics[];
 
   public sessionStore: session.Store;
@@ -374,6 +394,7 @@ export class MemStorage implements IStorage {
     this.languages = new Map();
     this.foodTypes = new Map();
     this.materials = new Map();
+    this.customersClub = new Map();
     this.analytics = [];
     
     const branch1: StorageBranch = { id: '1', name: 'Downtown Branch', address: '123 Main Street', phone: '+1 (555) 123-4567', isActive: true };
@@ -806,6 +827,33 @@ export class MemStorage implements IStorage {
 
   async deleteMaterial(id: string): Promise<boolean> {
     return this.materials.delete(id);
+  }
+
+  async getCustomerClub(id: string): Promise<StorageCustomerClub | undefined> {
+    return this.customersClub.get(id);
+  }
+
+  async getAllCustomersClub(): Promise<StorageCustomerClub[]> {
+    return Array.from(this.customersClub.values());
+  }
+
+  async createCustomerClub(data: Omit<StorageCustomerClub, 'id'>): Promise<StorageCustomerClub> {
+    const id = randomUUID();
+    const customer: StorageCustomerClub = { ...data, id, joinedAt: new Date() };
+    this.customersClub.set(id, customer);
+    return customer;
+  }
+
+  async updateCustomerClub(id: string, data: Partial<Omit<StorageCustomerClub, 'id'>>): Promise<StorageCustomerClub | undefined> {
+    const customer = this.customersClub.get(id);
+    if (!customer) return undefined;
+    const updated = { ...customer, ...data };
+    this.customersClub.set(id, updated);
+    return updated;
+  }
+
+  async deleteCustomerClub(id: string): Promise<boolean> {
+    return this.customersClub.delete(id);
   }
 
   async createWaiterRequest(data: { tableId?: string; branchId?: string }): Promise<WaiterRequest> {

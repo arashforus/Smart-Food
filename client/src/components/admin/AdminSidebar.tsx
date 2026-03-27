@@ -32,7 +32,8 @@ import {
   ShoppingCart,
   ChefHat,
   Monitor,
-  ClipboardList
+  ClipboardList,
+  Crown
 } from 'lucide-react';
 
 export default function AdminSidebar() {
@@ -60,6 +61,7 @@ export default function AdminSidebar() {
     { title: t('branches'), url: '/admin/branches', icon: Building2 },
     { title: t('tables'), url: '/admin/tables', icon: TableProperties },
     { title: t('roles'), url: '/admin/roles', icon: Users },
+    { title: 'Customers Club', url: '/admin/customers-club', icon: Crown },
   ];
 
   const settingsItems = [

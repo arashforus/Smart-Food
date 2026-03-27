@@ -378,6 +378,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customers Club routes
+  app.get("/api/customers-club", async (_req: Request, res: Response) => {
+    try {
+      const customers = await storage.getAllCustomersClub();
+      res.json(customers);
+    } catch (error) {
+      console.error("Get customers club error:", error);
+      res.status(500).json({ message: "Failed to get customers" });
+    }
+  });
+
+  app.post("/api/customers-club", async (req: Request, res: Response) => {
+    try {
+      const customer = await storage.createCustomerClub({
+        ...req.body,
+        points: req.body.points ?? 0,
+        isActive: req.body.isActive ?? true,
+      });
+      res.json(customer);
+    } catch (error) {
+      console.error("Create customer error:", error);
+      res.status(500).json({ message: "Failed to create customer" });
+    }
+  });
+
+  app.patch("/api/customers-club/:id", async (req: Request, res: Response) => {
+    try {
+      const customer = await storage.updateCustomerClub(req.params.id, req.body);
+      if (!customer) return res.status(404).json({ message: "Customer not found" });
+      res.json(customer);
+    } catch (error) {
+      console.error("Update customer error:", error);
+      res.status(500).json({ message: "Failed to update customer" });
+    }
+  });
+
+  app.delete("/api/customers-club/:id", async (req: Request, res: Response) => {
+    try {
+      const success = await storage.deleteCustomerClub(req.params.id);
+      res.json({ message: success ? "Customer deleted" : "Customer not found" });
+    } catch (error) {
+      console.error("Delete customer error:", error);
+      res.status(500).json({ message: "Failed to delete customer" });
+    }
+  });
+
   // Languages routes
   app.get("/api/languages", async (_req: Request, res: Response) => {
     try {

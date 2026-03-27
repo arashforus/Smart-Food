@@ -28,6 +28,7 @@ import OrdersPage from './orders';
 import OrdersListPage from './orders-list';
 import KitchenPage from './kitchen';
 import OrderStatusScreen from './order-status-screen';
+import CustomersClubPage from './customers-club';
 
 export default function AdminLayout() {
   const { logout } = useAuth();
@@ -151,6 +152,7 @@ export default function AdminLayout() {
                 <Route path="/admin/orders-list" component={OrdersListPage} />
                 <Route path="/admin/kitchen" component={KitchenPage} />
                 <Route path="/admin/order-status-screen" component={OrderStatusScreen} />
+                <Route path="/admin/customers-club" component={CustomersClubPage} />
               </Switch>
             </main>
             <AdminFooter />

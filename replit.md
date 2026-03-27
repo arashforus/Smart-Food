@@ -53,6 +53,7 @@ shared/           # Shared code between client/server
 2. **Multi-language Support**: All content stored with language-keyed objects (Record<string, string>), supporting LTR and RTL layouts
 3. **Mock Data Development**: Uses mock data in `client/src/lib/mockData.ts` for UI development before backend integration
 4. **Component Examples**: Example components in `client/src/components/examples/` for development reference
+5. **Customers Club**: Loyalty program module with `customers_club` DB table (name, phone, email, points, birthday, notes, isActive). Admin page at `/admin/customers-club` with full CRUD, point adjustment (+/-), search, and stats.
 
 ## External Dependencies
 
