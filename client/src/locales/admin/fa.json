@@ -347,5 +347,8 @@
   "order": "ترتیب",
   "enabled": "فعال",
   "yes": "بله",
-  "no": "خیر"
+  "no": "خیر",
+  "calories": "کالری",
+  "kcal": "کیلوکالری",
+  "caloriesPlaceholder": "مثلاً ۳۵۰"
 }

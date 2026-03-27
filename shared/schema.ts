@@ -54,6 +54,7 @@ export const items = pgTable("items", {
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   discountedPrice: numeric("discounted_price", { precision: 10, scale: 2 }),
   maxSelect: numeric("max_select"),
+  calories: integer("calories"),
   image: text("image"),
   available: boolean("available").notNull().default(true),
   suggested: boolean("suggested").notNull().default(false),

@@ -347,5 +347,8 @@
   "order": "Sıra",
   "enabled": "Etkin",
   "yes": "Evet",
-  "no": "Hayır"
+  "no": "Hayır",
+  "calories": "Kalori",
+  "kcal": "kcal",
+  "caloriesPlaceholder": "örn. 350"
 }

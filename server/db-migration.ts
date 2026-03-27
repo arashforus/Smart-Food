@@ -38,6 +38,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "028-add-menu-logo-background-settings", description: "Add columns for restaurant logo background customization on menu page" },
   { version: "029-add-is-new-to-items", description: "Add is_new column to items table" },
   { version: "030-add-qr-logo-background-settings", description: "Add QR logo background customization columns to settings table" },
+  { version: "031-add-calories-to-items", description: "Add calories column to items table" },
 ];
 
 export async function runDatabaseMigrations() {
@@ -95,10 +96,7 @@ export async function runDatabaseMigrations() {
           const sqlPath = join(process.cwd(), "server", "migrations", `${migration.version}.sql`);
           let sql = readFileSync(sqlPath, "utf-8");
 
-          // Handle IF NOT EXISTS for column additions in migration 028
-          if (migration.version === '028-add-menu-logo-background-settings') {
-            sql = sql.replace(/ADD COLUMN/g, 'ADD COLUMN IF NOT EXISTS');
-          }
+          sql = sql.replace(/ADD COLUMN(?!\s+IF\s+NOT\s+EXISTS)/g, 'ADD COLUMN IF NOT EXISTS');
 
           await pool.query(sql);
 

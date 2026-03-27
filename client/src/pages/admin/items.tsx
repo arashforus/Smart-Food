@@ -60,6 +60,7 @@ const itemSchema = z.object({
   price: z.number().min(0.01, 'Price must be greater than 0'),
   discountedPrice: z.number().optional(),
   maxSelect: z.number().optional(),
+  calories: z.number().int().min(0).optional(),
   categoryId: z.string().min(1, 'Category is required'),
   image: z.string().optional(),
   available: z.boolean(),
@@ -84,6 +85,7 @@ interface StorageItem {
   price: number;
   discountedPrice?: number;
   maxSelect?: number;
+  calories?: number;
   image?: string;
   available: boolean;
   suggested: boolean;
@@ -206,6 +208,7 @@ export default function ItemsPage() {
         price: parseFloat(String(data.price)),
         discountedPrice: data.discountedPrice ? parseFloat(String(data.discountedPrice)) : undefined,
         maxSelect: data.maxSelect ? parseFloat(String(data.maxSelect)) : undefined,
+        calories: data.calories !== undefined ? parseInt(String(data.calories)) : null,
         image: data.image || null,
         available: data.available,
         suggested: data.suggested,
@@ -241,6 +244,7 @@ export default function ItemsPage() {
         price: parseFloat(String(data.price)),
         discountedPrice: data.discountedPrice ? parseFloat(String(data.discountedPrice)) : undefined,
         maxSelect: data.maxSelect ? parseFloat(String(data.maxSelect)) : undefined,
+        calories: data.calories !== undefined ? parseInt(String(data.calories)) : null,
         image: data.image || null,
         available: data.available,
         suggested: data.suggested,
@@ -292,6 +296,7 @@ export default function ItemsPage() {
       price: 0,
       discountedPrice: undefined,
       maxSelect: undefined,
+      calories: undefined,
       categoryId: categories[0]?.id || '',
       image: '',
       available: true,
@@ -326,6 +331,7 @@ export default function ItemsPage() {
       price: item.price ? Number(item.price) : 0,
       discountedPrice: item.discountedPrice ? Number(item.discountedPrice) : undefined,
       maxSelect: item.maxSelect ? Number(item.maxSelect) : undefined,
+      calories: item.calories ? Number(item.calories) : undefined,
       categoryId: item.categoryId,
       image: item.image || '',
       available: item.available,
@@ -802,6 +808,25 @@ function FormContent({
                   </FormItem>
                 )} />
               </div>
+
+              <FormField control={form.control} name="calories" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('calories')} <span className="text-muted-foreground text-xs font-normal">({t('kcal')}) — {t('optional')}</span></FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      step={1}
+                      {...field}
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                      placeholder={t('caloriesPlaceholder')}
+                      data-testid={`input-item-calories${isEdit ? '-edit' : ''}`}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
               
               <div className="flex items-center mt-4 border rounded-md bg-muted/20 divide-x h-12">
                 <FormField control={form.control} name="available" render={({ field }) => (

@@ -347,5 +347,8 @@
   "order": "Order",
   "enabled": "Enabled",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "calories": "Calories",
+  "kcal": "kcal",
+  "caloriesPlaceholder": "e.g. 350"
 }
