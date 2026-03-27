@@ -169,6 +169,7 @@ export const settings = pgTable("settings", {
   restaurantWhatsapp: text("restaurant_whatsapp"),
   restaurantTelegram: text("restaurant_telegram"),
   restaurantGoogleMapsUrl: text("restaurant_google_maps_url"),
+  restaurantGooglePlaceId: text("restaurant_google_place_id"),
   
   // Login Page
   loginBackgroundImage: text("login_background_image"),

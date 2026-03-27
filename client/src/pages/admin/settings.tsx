@@ -61,6 +61,7 @@ const settingsSchema = z.object({
   restaurantWhatsapp: z.string().optional(),
   restaurantTelegram: z.string().optional(),
   restaurantGoogleMapsUrl: z.string().optional(),
+  restaurantGooglePlaceId: z.string().optional(),
   kdShowTableNumber: z.boolean().default(true),
   kdShowOrderTime: z.boolean().default(true),
   kdShowClock: z.boolean().default(true),
@@ -252,6 +253,7 @@ export default function SettingsPage() {
       if (dbSettings.restaurantWhatsapp) setRestaurantWhatsapp(dbSettings.restaurantWhatsapp);
       if (dbSettings.restaurantTelegram) setRestaurantTelegram(dbSettings.restaurantTelegram);
       if (dbSettings.restaurantGoogleMapsUrl) setRestaurantGoogleMapsUrl(dbSettings.restaurantGoogleMapsUrl);
+      if (dbSettings.restaurantGooglePlaceId) setRestaurantGooglePlaceId(dbSettings.restaurantGooglePlaceId);
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
       if (dbSettings.timezone) setTimezone(dbSettings.timezone);
@@ -314,6 +316,7 @@ export default function SettingsPage() {
           restaurantWhatsapp: dbSettings.restaurantWhatsapp || '',
           restaurantTelegram: dbSettings.restaurantTelegram || '',
           restaurantGoogleMapsUrl: dbSettings.restaurantGoogleMapsUrl || '',
+          restaurantGooglePlaceId: dbSettings.restaurantGooglePlaceId || '',
           menuLogoShowBackground: dbSettings.menuLogoShowBackground ?? false,
           menuLogoBackgroundType: dbSettings.menuLogoBackgroundType || 'square',
           menuLogoBackgroundColorLight: dbSettings.menuLogoBackgroundColorLight || '#ffffff',
@@ -425,6 +428,7 @@ export default function SettingsPage() {
   const [restaurantWhatsapp, setRestaurantWhatsapp] = useState('');
   const [restaurantTelegram, setRestaurantTelegram] = useState('');
   const [restaurantGoogleMapsUrl, setRestaurantGoogleMapsUrl] = useState('');
+  const [restaurantGooglePlaceId, setRestaurantGooglePlaceId] = useState('');
   const defaultOperatingHours = {
     Monday: { start: '09:00', end: '22:00', closed: false },
     Tuesday: { start: '09:00', end: '22:00', closed: false },
@@ -648,6 +652,7 @@ export default function SettingsPage() {
       restaurantWhatsapp,
       restaurantTelegram,
       restaurantGoogleMapsUrl,
+      restaurantGooglePlaceId,
     },
   });
 
@@ -675,6 +680,7 @@ export default function SettingsPage() {
       restaurantWhatsapp: data.restaurantWhatsapp || restaurantWhatsapp,
       restaurantTelegram: data.restaurantTelegram || restaurantTelegram,
       restaurantGoogleMapsUrl: data.restaurantGoogleMapsUrl || restaurantGoogleMapsUrl,
+      restaurantGooglePlaceId: data.restaurantGooglePlaceId || restaurantGooglePlaceId,
       restaurantHours: JSON.stringify(operatingHours),
       loginBackgroundImage,
       showLoginTitle,
@@ -1520,6 +1526,26 @@ export default function SettingsPage() {
                                   />
                                 </FormControl>
                                 <FormDescription>Paste your Google Maps location link</FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )} />
+                          </div>
+                          <div className="space-y-2">
+                            <FormLabel htmlFor="rest-gplace">Google Place ID</FormLabel>
+                            <FormField control={form.control} name="restaurantGooglePlaceId" render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    id="rest-gplace"
+                                    value={restaurantGooglePlaceId}
+                                    onChange={(e) => {
+                                      setRestaurantGooglePlaceId(e.target.value);
+                                    }}
+                                    placeholder="ChIJN1t_tDeuEmsRUsoyG83frY4"
+                                    data-testid="input-restaurant-google-place-id"
+                                  />
+                                </FormControl>
+                                <FormDescription>Your Google Place ID — used to show Google reviews</FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )} />
