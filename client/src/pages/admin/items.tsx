@@ -1,4 +1,4 @@
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -596,7 +596,7 @@ interface FormContentProps {
   t: any;
 }
 
-const FormContent = memo(function FormContent({
+function FormContent({
   form,
   categories,
   materials,
@@ -1036,4 +1036,4 @@ const FormContent = memo(function FormContent({
         </form>
       </Form>
     );
-});
+}
