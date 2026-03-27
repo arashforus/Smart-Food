@@ -68,6 +68,7 @@ export interface StorageItem {
   iceEffect: boolean;
   materials?: string[];
   types?: string[];
+  calories?: number;
 }
 
 export interface StorageOrderItem {

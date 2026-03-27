@@ -172,7 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/items", async (req: Request, res: Response) => {
     try {
-      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, calories, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;
       const item = await storage.createItem({
         generalName: generalName || "",
         name: name || {},
@@ -181,6 +181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         price: Number(price),
         discountedPrice: discountedPrice ? Number(discountedPrice) : undefined,
         maxSelect: maxSelect ? Number(maxSelect) : undefined,
+        calories: calories != null ? Number(calories) : undefined,
         categoryId,
         image: image || null,
         available: available !== undefined ? available : true,
@@ -201,7 +202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/items/:id", async (req: Request, res: Response) => {
     try {
-      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;
+      const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, calories, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;
       const item = await storage.updateItem(req.params.id, {
         generalName: generalName !== undefined ? generalName : undefined,
         name: name !== undefined ? name : undefined,
@@ -210,6 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         price: price !== undefined ? Number(price) : undefined,
         discountedPrice: discountedPrice !== undefined ? (discountedPrice === null ? null : Number(discountedPrice)) : undefined,
         maxSelect: maxSelect !== undefined ? (maxSelect === null ? null : Number(maxSelect)) : undefined,
+        calories: calories !== undefined ? (calories === null ? null : Number(calories)) : undefined,
         categoryId: categoryId !== undefined ? categoryId : undefined,
         image: image !== undefined ? image : undefined,
         available: available !== undefined ? available : undefined,
