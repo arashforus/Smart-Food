@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Bell } from 'lucide-react';
+import { Bell, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/use-language';
 import { apiRequest } from '@/lib/queryClient';
@@ -121,6 +121,7 @@ export default function QRLandingPage() {
   const showAnimatedText = settings?.qrShowAnimatedText !== false;
   const showCallWaiter = settings?.qrShowCallWaiter !== false;
   const showAddressPhone = settings?.qrShowAddressPhone !== false;
+  const googlePlaceId = settings?.restaurantGooglePlaceId;
 
   return (
     <div className="min-h-screen relative flex flex-col">
@@ -230,20 +231,42 @@ export default function QRLandingPage() {
         </div>
       </div>
 
-      {(showCallWaiter || showAddressPhone) && (
+      {(showCallWaiter || showAddressPhone || googlePlaceId) && (
         <div className="relative z-10 w-full max-w-lg mx-auto px-6 pb-8 text-center">
-          {showCallWaiter && (
-            <Button
-              variant="default"
-              size="lg"
-              onClick={handleCallWaiter}
-              disabled={isCallingWaiter}
-              className="gap-2 mb-6"
-              data-testid="button-call-waiter"
-            >
-              <Bell className="h-5 w-5" />
-              {t('callWaiter')}
-            </Button>
+          {(showCallWaiter || googlePlaceId) && (
+            <div className="flex items-center justify-center gap-3 mb-6">
+              {showCallWaiter && (
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={handleCallWaiter}
+                  disabled={isCallingWaiter}
+                  className="gap-2"
+                  data-testid="button-call-waiter"
+                >
+                  <Bell className="h-5 w-5" />
+                  {t('callWaiter')}
+                </Button>
+              )}
+              {googlePlaceId && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  asChild
+                  className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white"
+                  data-testid="button-google-review"
+                >
+                  <a
+                    href={`https://search.google.com/local/writereview?placeid=${googlePlaceId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    Google Review
+                  </a>
+                </Button>
+              )}
+            </div>
           )}
 
           {showAddressPhone && (

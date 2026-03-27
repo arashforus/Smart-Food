@@ -198,6 +198,7 @@ export interface Settings {
   restaurantWhatsapp?: string;
   restaurantTelegram?: string;
   restaurantGoogleMapsUrl?: string;
+  restaurantGooglePlaceId?: string;
   loginBackgroundImage?: string;
   showLoginTitle?: boolean;
   loginTitle?: string;
