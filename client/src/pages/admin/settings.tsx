@@ -909,38 +909,18 @@ export default function SettingsPage() {
           <Tabs defaultValue={location.includes('tab=profile') ? 'profile' : 'general'} className="w-full">
             <Card className="border border-border/50 bg-card/50 backdrop-blur-sm">
               <CardContent className="p-4">
-                <TabsList className="grid w-full grid-cols-6 gap-1 bg-transparent h-auto p-0">
-                  <TabsTrigger value="profile" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <User className="h-5 w-5" />
-                    <span className="text-xs">Profile</span>
-                  </TabsTrigger>
+                <TabsList className="grid w-full grid-cols-7 gap-1 bg-transparent h-auto p-0">
                   <TabsTrigger value="general" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
                     <Sliders className="h-5 w-5" />
                     <span className="text-xs">General</span>
                   </TabsTrigger>
+                  <TabsTrigger value="profile" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <User className="h-5 w-5" />
+                    <span className="text-xs">Profile</span>
+                  </TabsTrigger>
                   <TabsTrigger value="restaurant" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
                     <Building2 className="h-5 w-5" />
                     <span className="text-xs">Restaurant</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="login" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <LogIn className="h-5 w-5" />
-                    <span className="text-xs">Login Page</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="qr" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <QrCode className="h-5 w-5" />
-                    <span className="text-xs">QR Page</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="qrcode" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <Palette className="h-5 w-5" />
-                    <span className="text-xs">QR Design</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="menu" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <Menu className="h-5 w-5" />
-                    <span className="text-xs">Menu Page</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="kd" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <Tv2 className="h-5 w-5" />
-                    <span className="text-xs">KD</span>
                   </TabsTrigger>
                   <TabsTrigger value="currency" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
                     <DollarSign className="h-5 w-5" />
@@ -954,13 +934,33 @@ export default function SettingsPage() {
                     <Users className="h-5 w-5" />
                     <span className="text-xs">Roles</span>
                   </TabsTrigger>
-                  <TabsTrigger value="license" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
-                    <Award className="h-5 w-5" />
-                    <span className="text-xs">License</span>
+                  <TabsTrigger value="qrcode" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Palette className="h-5 w-5" />
+                    <span className="text-xs">QR Design</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="login" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <LogIn className="h-5 w-5" />
+                    <span className="text-xs">Login Page</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="qr" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <QrCode className="h-5 w-5" />
+                    <span className="text-xs">QR Page</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="menu" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Menu className="h-5 w-5" />
+                    <span className="text-xs">Menu Page</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="kd" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Tv2 className="h-5 w-5" />
+                    <span className="text-xs">KD</span>
                   </TabsTrigger>
                   <TabsTrigger value="oss" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
                     <Code className="h-5 w-5" />
                     <span className="text-xs">OSS</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="license" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
+                    <Award className="h-5 w-5" />
+                    <span className="text-xs">License</span>
                   </TabsTrigger>
                   <TabsTrigger value="about" className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg transition-all duration-300 hover:bg-muted/50 data-[state=active]:bg-primary/10">
                     <Sliders className="h-5 w-5" />
