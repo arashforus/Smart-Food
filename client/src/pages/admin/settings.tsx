@@ -257,6 +257,7 @@ export default function SettingsPage() {
       if (dbSettings.qrPageTitle) setQrPageTitle(dbSettings.qrPageTitle);
       if (dbSettings.qrPageDescription) setQrPageDescription(dbSettings.qrPageDescription);
       if (dbSettings.timezone) setTimezone(dbSettings.timezone);
+      if (dbSettings.defaultRedirectPage) setDefaultRedirectPage(dbSettings.defaultRedirectPage);
 
       // Menu Display Settings
       if (dbSettings.menuShowRestaurantLogo !== undefined) setShowRestaurantLogo(dbSettings.menuShowRestaurantLogo);
@@ -477,6 +478,7 @@ export default function SettingsPage() {
 
   // General Settings State
   const [timezone, setTimezone] = useState(() => localStorage.getItem('appTimezone') || 'UTC');
+  const [defaultRedirectPage, setDefaultRedirectPage] = useState(() => localStorage.getItem('defaultRedirectPage') || 'main');
   const [copyrightText, setCopyrightText] = useState(() => localStorage.getItem('copyrightText') || '© 2024 Your Restaurant. All rights reserved.');
   const [favicon, setFavicon] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
   const [faviconPreview, setFaviconPreview] = useState(dbSettings?.favicon || localStorage.getItem('favicon') || '');
@@ -783,6 +785,7 @@ export default function SettingsPage() {
     updateSettingsMutation.mutate({
       ...updatedSettings,
       timezone: timezone,
+      defaultRedirectPage: defaultRedirectPage,
     } as any);
   };
 
@@ -1235,6 +1238,23 @@ export default function SettingsPage() {
                       </SelectContent>
                     </Select>
                     <FormDescription>All times in the panels will be displayed in this timezone</FormDescription>
+                  </div>
+
+                  {/* Default Redirect Page Section */}
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="defaultRedirectPage">Default Redirect Page</FormLabel>
+                    <Select value={defaultRedirectPage} onValueChange={setDefaultRedirectPage}>
+                      <SelectTrigger id="defaultRedirectPage" data-testid="select-default-redirect-page">
+                        <SelectValue placeholder="Select default page" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="main">Main Page</SelectItem>
+                        <SelectItem value="menu">Menu Page</SelectItem>
+                        <SelectItem value="qr">QR Landing Page</SelectItem>
+                        <SelectItem value="coming-soon">Coming Soon Page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>When someone visits the main website address, they will be redirected to this page</FormDescription>
                   </div>
 
                   {/* Primary Color Section */}

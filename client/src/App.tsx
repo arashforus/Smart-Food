@@ -46,9 +46,18 @@ function Router() {
     return () => clearTimeout(timer);
   }, [settings?.primaryColor, settings?.favicon]);
 
+  const redirectMap: Record<string, string> = {
+    main: "/main",
+    menu: "/menu",
+    qr: "/qr",
+    "coming-soon": "/coming-soon",
+  };
+  const redirectTarget = redirectMap[settings?.defaultRedirectPage || "main"] || "/main";
+
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
+      <Route path="/" component={() => <Redirect to={redirectTarget} />} />
+      <Route path="/main" component={LandingPage} />
       <Route path="/coming-soon" component={ComingSoonPage} />
       <Route path="/qr" component={QRLandingPage} />
       <Route path="/menu" component={MenuPage} />
