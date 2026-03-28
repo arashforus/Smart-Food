@@ -1,4 +1,4 @@
-import { Switch, Route, Redirect } from "wouter";
+import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +16,27 @@ import LoginPage from "@/pages/login";
 import AdminLayout from "@/pages/admin/index";
 import LandingPage from "@/pages/landing";
 import ComingSoonPage from "@/pages/coming-soon";
+
+function RootRedirect() {
+  const { data: settings, isLoading } = useQuery<any>({
+    queryKey: ["/api/settings"],
+  });
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    if (isLoading) return;
+    const redirectMap: Record<string, string> = {
+      main: "/main",
+      menu: "/menu",
+      qr: "/qr",
+      "coming-soon": "/coming-soon",
+    };
+    const target = redirectMap[settings?.defaultRedirectPage || "main"] || "/main";
+    navigate(target, { replace: true });
+  }, [isLoading, settings?.defaultRedirectPage]);
+
+  return null;
+}
 
 function Router() {
   useAnalytics();
@@ -46,17 +67,9 @@ function Router() {
     return () => clearTimeout(timer);
   }, [settings?.primaryColor, settings?.favicon]);
 
-  const redirectMap: Record<string, string> = {
-    main: "/main",
-    menu: "/menu",
-    qr: "/qr",
-    "coming-soon": "/coming-soon",
-  };
-  const redirectTarget = redirectMap[settings?.defaultRedirectPage || "main"] || "/main";
-
   return (
     <Switch>
-      <Route path="/" component={() => <Redirect to={redirectTarget} />} />
+      <Route path="/" component={RootRedirect} />
       <Route path="/main" component={LandingPage} />
       <Route path="/coming-soon" component={ComingSoonPage} />
       <Route path="/qr" component={QRLandingPage} />
