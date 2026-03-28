@@ -581,6 +581,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/licenses/validate", async (req: Request, res: Response) => {
+    try {
+      const { key } = req.body;
+      if (!key) return res.status(400).json({ message: "License key is required" });
+      const response = await fetch("https://qrdish.app/api/licenses/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key }),
+      });
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("License validation error:", error);
+      res.status(502).json({ message: "Could not reach the license server" });
+    }
+  });
+
   app.get("/objects/:objectPath(*)", async (req, res) => {
     try {
       const objectStorageService = new ObjectStorageService();

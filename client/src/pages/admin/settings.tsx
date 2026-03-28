@@ -837,7 +837,7 @@ export default function SettingsPage() {
     setLicenseCheckError(null);
     setLicenseValidData(null);
     try {
-      const response = await fetch('https://qrdish.app/api/licenses/validate', {
+      const response = await fetch('/api/licenses/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: licenseKey }),
