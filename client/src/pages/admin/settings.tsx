@@ -288,6 +288,18 @@ export default function SettingsPage() {
       if (dbSettings.qrLogo) setQrLogo(dbSettings.qrLogo);
       if (dbSettings.qrCenterType) setQrCenterType(dbSettings.qrCenterType as 'none' | 'logo' | 'text');
       if (dbSettings.qrCenterText) setQrCenterText(dbSettings.qrCenterText);
+
+      // Restore license info panel if license data exists in DB
+      if (dbSettings.licenseKey && (dbSettings.licenseOwner || dbSettings.licenseExpiry || dbSettings.licenseEmail)) {
+        setLicenseValidData({
+          ownerName: dbSettings.licenseOwner || '',
+          ownerEmail: dbSettings.licenseEmail || '',
+          ownerPhone: dbSettings.licensePhone || '',
+          type: dbSettings.licenseType || '',
+          expiresAt: dbSettings.licenseExpiry || '',
+        });
+      }
+
       // Update form values when DB settings load
       if (dbSettings) {
         form.reset({
