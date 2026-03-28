@@ -193,6 +193,10 @@ export interface StorageSetting {
   licenseKey?: string;
   licenseExpiryDate?: Date;
   licenseOwner?: string;
+  licenseExpiry?: string;
+  licenseEmail?: string;
+  licensePhone?: string;
+  licenseType?: string;
   defaultLanguage: string;
   restaurantName?: string;
   restaurantDescription?: string;

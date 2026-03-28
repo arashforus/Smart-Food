@@ -256,6 +256,14 @@ export const settings = pgTable("settings", {
   currencySelect: text("currency_select").notNull().default("USD"),
   currencyDecimal: integer("currency_decimal").notNull().default(2),
 
+  // License
+  licenseKey: text("license_key"),
+  licenseOwner: text("license_owner"),
+  licenseExpiry: text("license_expiry"),
+  licenseEmail: text("license_email"),
+  licensePhone: text("license_phone"),
+  licenseType: text("license_type"),
+
   // Payment
   paymentMethod: text("payment_method").notNull().default("cash"),
 

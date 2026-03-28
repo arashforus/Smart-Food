@@ -42,6 +42,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "032-add-google-place-id", description: "Add Google Place ID column to settings table" },
   { version: "033-add-customers-club", description: "Add customers club table for loyalty program management" },
   { version: "034-add-default-redirect-page", description: "Add default redirect page setting to control root URL destination" },
+  { version: "035-add-license-details", description: "Add license email, phone, type, and expiry text columns to settings" },
 ];
 
 export async function runDatabaseMigrations() {
