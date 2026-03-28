@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import ImageUpload from "@/components/admin/ImageUpload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code, Tv2, Banknote } from 'lucide-react';
+import { Upload, X, Lock, CreditCard, FileText, Eye, EyeOff, Trash2, Clock, User, Sliders, Building2, LogIn, QrCode, Palette, Menu, DollarSign, Users, Award, Code, Tv2, Banknote, XCircle, CheckCircle2 } from 'lucide-react';
 import { SiInstagram, SiTelegram } from 'react-icons/si';
 import { useLocation } from 'wouter';
 import {
@@ -466,6 +466,14 @@ export default function SettingsPage() {
 
   // License State
   const [isCheckingLicense, setIsCheckingLicense] = useState(false);
+  const [licenseCheckError, setLicenseCheckError] = useState<string | null>(null);
+  const [licenseValidData, setLicenseValidData] = useState<{
+    ownerName: string;
+    ownerEmail: string;
+    ownerPhone: string;
+    type: string;
+    expiresAt: string;
+  } | null>(null);
 
   // Profile State
   const [profileName, setProfileName] = useState('');
@@ -820,23 +828,39 @@ export default function SettingsPage() {
   };
 
   const handleCheckLicense = async () => {
+    const licenseKey = form.watch('licenseKey');
+    if (!licenseKey) {
+      toast({ title: 'Error', description: 'Please enter a license key first', variant: 'destructive' });
+      return;
+    }
     setIsCheckingLicense(true);
+    setLicenseCheckError(null);
+    setLicenseValidData(null);
     try {
-      // Simulate API call to verify license
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // In a real implementation, this would fetch license data from server
-      const licenseKey = form.watch('licenseKey');
-      if (licenseKey) {
-        // Mock data - replace with actual API call
-        form.setValue('licenseOwner', 'Restaurant Management System License');
-        form.setValue('licenseExpiry', new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
-        toast({ title: 'License verified successfully', description: 'License information updated.' });
+      const response = await fetch('https://qrdish.app/api/licenses/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: licenseKey }),
+      });
+      const data = await response.json();
+      if (!data.valid) {
+        setLicenseCheckError('Invalid or expired license key. Please check and try again.');
       } else {
-        toast({ title: 'Error', description: 'Please enter a license key first', variant: 'destructive' });
+        const { license, customer } = data;
+        const validData = {
+          ownerName: customer?.name || '',
+          ownerEmail: customer?.email || '',
+          ownerPhone: customer?.phone || '',
+          type: license?.type || '',
+          expiresAt: license?.expiresAt || '',
+        };
+        setLicenseValidData(validData);
+        form.setValue('licenseOwner', customer?.name || '');
+        form.setValue('licenseExpiry', license?.expiresAt ? license.expiresAt.split('T')[0] : '');
+        toast({ title: 'License verified', description: 'Your license is active and valid.' });
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to verify license', variant: 'destructive' });
+      setLicenseCheckError('Could not reach the license server. Please check your connection and try again.');
     } finally {
       setIsCheckingLicense(false);
     }
@@ -2808,34 +2832,60 @@ export default function SettingsPage() {
                     </FormItem>
                   )} />
 
-                  {form.watch('licenseExpiry') && (
-                    <div className="p-4 bg-card border rounded-lg space-y-3">
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground font-medium">License Owner</p>
-                        <p className="text-sm font-medium" data-testid="text-license-owner">{form.watch('licenseOwner') || 'Not set'}</p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground font-medium">Expiry Date</p>
-                        <p className="text-sm font-medium" data-testid="text-license-expiry">{new Date(form.watch('licenseExpiry')!).toLocaleDateString()}</p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground font-medium">Remaining Days</p>
-                        <p className={`text-sm font-medium ${(calculateRemainingDays(form.watch('licenseExpiry')!) ?? 0) > 30 ? 'text-green-600' : 'text-orange-600'}`} data-testid="text-remaining-days">
-                          {calculateRemainingDays(form.watch('licenseExpiry')!) !== null 
-                            ? `${calculateRemainingDays(form.watch('licenseExpiry')!)} days`
-                            : 'Not set'
-                          }
-                        </p>
-                      </div>
-
+                  {licenseCheckError && (
+                    <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3" data-testid="license-error-panel">
+                      <XCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+                      <p className="text-sm text-destructive font-medium">{licenseCheckError}</p>
                     </div>
                   )}
 
-                  {!form.watch('licenseExpiry') && (
+                  {licenseValidData && (
+                    <div className="p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg space-y-4" data-testid="license-valid-panel">
+                      <div className="flex items-center gap-2 mb-1">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <span className="text-sm font-semibold text-green-700 dark:text-green-400">License Active</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-3">
+                        <div className="space-y-0.5">
+                          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Owner</p>
+                          <p className="text-sm font-medium" data-testid="text-license-owner">{licenseValidData.ownerName || '—'}</p>
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Email</p>
+                          <p className="text-sm font-medium" data-testid="text-license-email">{licenseValidData.ownerEmail || '—'}</p>
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Phone</p>
+                          <p className="text-sm font-medium" data-testid="text-license-phone">{licenseValidData.ownerPhone || '—'}</p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 pt-1 border-t">
+                          <div className="space-y-0.5">
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Type</p>
+                            <p className="text-sm font-semibold capitalize" data-testid="text-license-type">{licenseValidData.type || '—'}</p>
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Expires</p>
+                            <p className="text-sm font-medium" data-testid="text-license-expiry">
+                              {licenseValidData.expiresAt ? new Date(licenseValidData.expiresAt).toLocaleDateString() : '—'}
+                            </p>
+                          </div>
+                          <div className="space-y-0.5">
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Remaining</p>
+                            <p className={`text-sm font-semibold ${(calculateRemainingDays(licenseValidData.expiresAt) ?? 0) > 30 ? 'text-green-600' : 'text-orange-600'}`} data-testid="text-remaining-days">
+                              {licenseValidData.expiresAt && calculateRemainingDays(licenseValidData.expiresAt) !== null
+                                ? `${calculateRemainingDays(licenseValidData.expiresAt)} days`
+                                : '—'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!licenseValidData && !licenseCheckError && (
                     <div className="p-4 bg-muted/50 border border-dashed rounded-lg">
-                      <p className="text-sm text-muted-foreground">License information will appear here after entering a license key and checking it.</p>
+                      <p className="text-sm text-muted-foreground">License information will appear here after entering a license key and clicking Check.</p>
                     </div>
                   )}
                 </CardContent>
