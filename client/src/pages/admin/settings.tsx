@@ -855,8 +855,18 @@ export default function SettingsPage() {
           expiresAt: license?.expiresAt || '',
         };
         setLicenseValidData(validData);
-        form.setValue('licenseOwner', customer?.name || '');
-        form.setValue('licenseExpiry', license?.expiresAt ? license.expiresAt.split('T')[0] : '');
+        const licenseOwner = customer?.name || '';
+        const licenseExpiry = license?.expiresAt ? license.expiresAt.split('T')[0] : '';
+        form.setValue('licenseOwner', licenseOwner);
+        form.setValue('licenseExpiry', licenseExpiry);
+        updateSettingsMutation.mutate({
+          licenseKey,
+          licenseOwner,
+          licenseExpiry,
+          licenseEmail: customer?.email || '',
+          licensePhone: customer?.phone || '',
+          licenseType: license?.type || '',
+        } as any);
         toast({ title: 'License verified', description: 'Your license is active and valid.' });
       }
     } catch (error) {
