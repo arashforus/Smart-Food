@@ -40,6 +40,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "030-add-qr-logo-background-settings", description: "Add QR logo background customization columns to settings table" },
   { version: "031-add-calories-to-items", description: "Add calories column to items table" },
   { version: "032-add-google-place-id", description: "Add Google Place ID column to settings table" },
+  { version: "033-add-customers-club", description: "Add customers club table for loyalty program management" },
 ];
 
 export async function runDatabaseMigrations() {
