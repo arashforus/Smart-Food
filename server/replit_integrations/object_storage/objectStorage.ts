@@ -157,19 +157,36 @@ export class ObjectStorageService {
     return true;
   }
 
-  async listObjects(prefix: string = "uploads/"): Promise<{ key: string; size: number; lastModified: Date; objectPath: string }[]> {
+  async listObjects(prefix: string = "uploads/"): Promise<{ key: string; size: number; lastModified: Date; objectPath: string; contentType: string }[]> {
     const command = new ListObjectsV2Command({
       Bucket: BUCKET_NAME,
       Prefix: prefix,
     });
 
     const response = await s3Client.send(command);
-    
-    return (response.Contents || []).map(obj => ({
-      key: obj.Key || "",
-      size: obj.Size || 0,
-      lastModified: obj.LastModified || new Date(),
-      objectPath: `/objects/${obj.Key}`,
-    }));
+    const objects = response.Contents || [];
+
+    const results = await Promise.all(
+      objects.map(async (obj) => {
+        let contentType = "application/octet-stream";
+        try {
+          const headCommand = new HeadObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: obj.Key || "",
+          });
+          const headResponse = await s3Client.send(headCommand);
+          contentType = headResponse.ContentType || "application/octet-stream";
+        } catch {}
+        return {
+          key: obj.Key || "",
+          size: obj.Size || 0,
+          lastModified: obj.LastModified || new Date(),
+          objectPath: `/objects/${obj.Key}`,
+          contentType,
+        };
+      })
+    );
+
+    return results.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
   }
 }
