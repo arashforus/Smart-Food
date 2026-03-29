@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -71,6 +71,8 @@ export default function QRLandingPage() {
   const { toast } = useToast();
   const { t, setLanguage } = useLanguage();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const { data: settings, isLoading: settingsLoading } = useQuery<Settings>({
     queryKey: ['/api/settings'],
@@ -129,12 +131,20 @@ export default function QRLandingPage() {
     <div className="min-h-screen relative flex flex-col">
       {isVideo ? (
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+          style={{ opacity: videoReady ? 1 : 0 }}
+          onLoadedMetadata={() => {
+            if (videoRef.current) {
+              videoRef.current.currentTime = 0;
+            }
+          }}
+          onLoadedData={() => setVideoReady(true)}
         >
           <source src={settings!.qrMediaUrl} type="video/mp4" />
         </video>
