@@ -71,14 +71,13 @@ export default function QRLandingPage() {
   const { toast } = useToast();
   const { t, setLanguage } = useLanguage();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { data: settings, isLoading: settingsLoading } = useQuery<Settings>({
+  const { data: settings } = useQuery<Settings>({
     queryKey: ['/api/settings'],
   });
 
-  const { data: languages = [], isLoading: languagesLoading } = useQuery<AppLanguage[]>({
+  const { data: languages = [] } = useQuery<AppLanguage[]>({
     queryKey: ['/api/languages'],
   });
 
@@ -107,16 +106,8 @@ export default function QRLandingPage() {
     }
   };
 
-  if (settingsLoading || languagesLoading) {
-    return (
-      <div className="min-h-screen relative flex flex-col items-center justify-center bg-black">
-        <div className="text-white text-lg">Loading...</div>
-      </div>
-    );
-  }
-
   const animatedTexts = settings?.qrAnimatedTexts || ['Welcome'];
-  const backgroundImage = settings?.qrMediaUrl || 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80';
+  const backgroundImage = settings?.qrMediaUrl || '';
   const showLogo = settings?.qrShowLogo !== false;
   const showTitle = settings?.qrShowTitle !== false;
   const showDescription = settings?.qrShowDescription !== false;
@@ -128,7 +119,7 @@ export default function QRLandingPage() {
   const isVideo = settings?.qrMediaType === 'video' && !!settings?.qrMediaUrl;
 
   return (
-    <div className="min-h-screen relative flex flex-col">
+    <div className="min-h-screen relative flex flex-col bg-black">
       {isVideo ? (
         <video
           ref={videoRef}
@@ -137,14 +128,12 @@ export default function QRLandingPage() {
           loop
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
-          style={{ opacity: videoReady ? 1 : 0 }}
+          className="absolute inset-0 w-full h-full object-cover"
           onLoadedMetadata={() => {
             if (videoRef.current) {
               videoRef.current.currentTime = 0;
             }
           }}
-          onLoadedData={() => setVideoReady(true)}
         >
           <source src={settings!.qrMediaUrl} type="video/mp4" />
         </video>
