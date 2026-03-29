@@ -43,6 +43,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "033-add-customers-club", description: "Add customers club table for loyalty program management" },
   { version: "034-add-default-redirect-page", description: "Add default redirect page setting to control root URL destination" },
   { version: "035-add-license-details", description: "Add license email, phone, type, and expiry text columns to settings" },
+  { version: "036-add-license-key-if-not-exists", description: "Ensure license_key and license_owner columns exist in settings table" },
 ];
 
 export async function runDatabaseMigrations() {
