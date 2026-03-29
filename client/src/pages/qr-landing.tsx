@@ -123,27 +123,30 @@ export default function QRLandingPage() {
   const showAddressPhone = settings?.qrShowAddressPhone !== false;
   const googlePlaceId = settings?.restaurantGooglePlaceId;
 
+  const isVideo = settings?.qrMediaType === 'video' && !!settings?.qrMediaUrl;
+
   return (
     <div className="min-h-screen relative flex flex-col">
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-
-      {settings?.qrMediaType === 'video' && settings?.qrMediaUrl && (
+      {isVideo ? (
         <video
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src={settings.qrMediaUrl} type="video/mp4" />
+          <source src={settings!.qrMediaUrl} type="video/mp4" />
         </video>
+      ) : (
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+          }}
+        />
       )}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center w-full max-w-lg mx-auto px-6 py-12 text-center">
         {showLogo && (
