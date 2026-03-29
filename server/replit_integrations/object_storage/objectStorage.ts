@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { randomUUID } from "crypto";
 
 const s3Client = new S3Client({
@@ -60,25 +60,66 @@ export class ObjectStorageService {
     }
   }
 
-  async downloadObject(file: { bucket: string; key: string }, res: Response, cacheTtlSec: number = 3600) {
+  async downloadObject(file: { bucket: string; key: string }, res: Response, cacheTtlSec: number = 3600, req?: Request) {
     try {
-      const command = new GetObjectCommand({
-        Bucket: file.bucket,
-        Key: file.key,
-      });
+      const rangeHeader = req?.headers?.range;
 
-      const response = await s3Client.send(command);
-      
-      res.set({
-        "Content-Type": response.ContentType || "application/octet-stream",
-        "Content-Length": response.ContentLength,
-        "Cache-Control": `public, max-age=${cacheTtlSec}`,
-      });
+      // Always advertise that we support Range requests so browsers can stream video
+      res.set("Accept-Ranges", "bytes");
 
-      if (response.Body) {
-        (response.Body as any).pipe(res);
+      if (rangeHeader) {
+        // HEAD the object first to get total size
+        const head = await s3Client.send(new HeadObjectCommand({
+          Bucket: file.bucket,
+          Key: file.key,
+        }));
+        const totalSize = head.ContentLength ?? 0;
+
+        // Parse "bytes=start-end"
+        const [startStr, endStr] = rangeHeader.replace(/bytes=/, "").split("-");
+        const start = parseInt(startStr, 10);
+        const end = endStr ? parseInt(endStr, 10) : totalSize - 1;
+        const chunkSize = end - start + 1;
+
+        const command = new GetObjectCommand({
+          Bucket: file.bucket,
+          Key: file.key,
+          Range: `bytes=${start}-${end}`,
+        });
+
+        const response = await s3Client.send(command);
+
+        res.status(206).set({
+          "Content-Range": `bytes ${start}-${end}/${totalSize}`,
+          "Content-Length": chunkSize,
+          "Content-Type": head.ContentType || "application/octet-stream",
+          "Cache-Control": `public, max-age=${cacheTtlSec}`,
+        });
+
+        if (response.Body) {
+          (response.Body as any).pipe(res);
+        } else {
+          res.status(500).json({ error: "Empty response body" });
+        }
       } else {
-        res.status(500).json({ error: "Empty response body" });
+        const command = new GetObjectCommand({
+          Bucket: file.bucket,
+          Key: file.key,
+        });
+
+        const response = await s3Client.send(command);
+
+        res.set({
+          "Content-Type": response.ContentType || "application/octet-stream",
+          "Content-Length": response.ContentLength,
+          "Cache-Control": `public, max-age=${cacheTtlSec}`,
+        });
+
+        if (response.Body) {
+          (response.Body as any).pipe(res);
+        } else {
+          res.status(500).json({ error: "Empty response body" });
+        }
       }
     } catch (error) {
       console.error("Error downloading file:", error);
