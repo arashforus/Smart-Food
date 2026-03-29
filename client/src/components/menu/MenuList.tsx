@@ -68,7 +68,7 @@ export default function MenuList({
         <div className={`p-4 space-y-6 ${isRtl ? 'dir-rtl' : ''}`} dir={isRtl ? 'rtl' : 'ltr'}>
           <div>
             <h2
-              className={`text-lg font-semibold mb-3 sticky top-[145px] bg-background py-2 z-30 flex items-center gap-2 ${isRtl ? 'text-right flex-row-reverse' : ''}`}
+              className={`text-lg font-semibold mb-3 sticky top-[145px] py-2 px-2 z-30 flex items-center gap-2 ${isRtl ? 'text-right flex-row-reverse' : ''}`}
               data-testid="text-category-heading-suggested-only"
             >
               <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
@@ -102,7 +102,7 @@ export default function MenuList({
         {categorySuggestedItems.length > 0 && settings?.menuShowRecommendedMenuItems && (
           <div>
             <h2
-              className={`text-lg font-semibold mb-3 sticky top-[145px] bg-background py-2 z-30 flex items-center gap-2 ${isRtl ? 'text-right flex-row-reverse' : ''}`}
+              className={`text-lg font-semibold mb-3 sticky top-[145px] py-2 px-2 z-30 flex items-center gap-2 ${isRtl ? 'text-right flex-row-reverse' : ''}`}
               data-testid="text-category-heading-suggested-filtered"
             >
               <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
@@ -145,7 +145,7 @@ export default function MenuList({
       {suggestedItems.length > 0 && settings?.menuShowRecommendedMenuItems && (
         <div>
           <h2
-            className={`text-lg font-semibold mb-3 sticky top-[145px] bg-background py-2 z-30 flex items-center gap-2 ${isRtl ? ' justify-start' : ''}`}
+            className={`text-lg font-semibold mb-3 sticky top-[145px] py-2 px-2 z-30 flex items-center gap-2 ${isRtl ? ' justify-start' : ''}`}
             data-testid="text-category-heading-suggested"
           >
             <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
@@ -178,7 +178,7 @@ export default function MenuList({
         return (
           <div key={category.id}>
             <h2
-              className={`text-lg font-semibold mb-3 sticky top-[145px] bg-background py-2 z-30 ${isRtl ? 'text-right' : ''}`}
+              className={`text-lg font-semibold mb-3 sticky top-[145px] py-2 px-2 z-30 ${isRtl ? 'text-right' : ''}`}
               data-testid={`text-category-heading-${category.id}`}
             >
               {getCategoryName(category)}
