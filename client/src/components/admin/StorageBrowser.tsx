@@ -112,24 +112,10 @@ export default function StorageBrowser({ onSelect, trigger }: StorageBrowserProp
       </DialogTrigger>
       <DialogContent className="max-w-5xl w-full p-0 gap-0 overflow-hidden" style={{ maxHeight: '85vh' }}>
         <DialogHeader className="px-6 pt-5 pb-4 border-b">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <FolderOpen className="h-5 w-5 text-muted-foreground" />
-              Browse Storage
-            </DialogTitle>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              disabled={isFetching}
-              data-testid="button-storage-refresh"
-              className="gap-1.5"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-          </div>
+          <DialogTitle className="text-lg font-semibold flex items-center gap-2">
+            <FolderOpen className="h-5 w-5 text-muted-foreground" />
+            Browse Storage
+          </DialogTitle>
         </DialogHeader>
 
         {isLoading ? (
@@ -144,33 +130,47 @@ export default function StorageBrowser({ onSelect, trigger }: StorageBrowserProp
           </div>
         ) : (
           <>
-            <div className="px-6 pt-4 pb-3 flex items-center gap-2 border-b bg-muted/30">
-              {(
-                [
-                  { key: 'all', label: 'All Files', count: allFiles.length },
-                  { key: 'images', label: 'Images', count: imageFiles.length, icon: ImageIcon },
-                  { key: 'videos', label: 'Videos', count: videoFiles.length, icon: Film },
-                ] as { key: FilterTab; label: string; count: number; icon?: React.FC<any> }[]
-              ).map(({ key, label, count, icon: Icon }) => (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key)}
-                  data-testid={`tab-storage-${key}`}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === key
-                      ? 'bg-background shadow-sm text-foreground border'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
-                  }`}
-                >
-                  {Icon && <Icon className="h-3.5 w-3.5" />}
-                  {label}
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                    activeTab === key ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                  }`}>
-                    {count}
-                  </span>
-                </button>
-              ))}
+            <div className="px-6 pt-4 pb-3 flex items-center gap-2 border-b bg-muted/30 justify-between">
+              <div className="flex items-center gap-2">
+                {(
+                  [
+                    { key: 'all', label: 'All Files', count: allFiles.length },
+                    { key: 'images', label: 'Images', count: imageFiles.length, icon: ImageIcon },
+                    { key: 'videos', label: 'Videos', count: videoFiles.length, icon: Film },
+                  ] as { key: FilterTab; label: string; count: number; icon?: React.FC<any> }[]
+                ).map(({ key, label, count, icon: Icon }) => (
+                  <button
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    data-testid={`tab-storage-${key}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === key
+                        ? 'bg-background shadow-sm text-foreground border'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/60'
+                    }`}
+                  >
+                    {Icon && <Icon className="h-3.5 w-3.5" />}
+                    {label}
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      activeTab === key ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isFetching}
+                data-testid="button-storage-refresh"
+                className="gap-1.5 shrink-0"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
             </div>
 
             {displayedFiles.length === 0 ? (
