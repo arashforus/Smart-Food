@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FolderOpen, Image as ImageIcon, Film, FileIcon, Loader2, Check } from 'lucide-react';
+import { FolderOpen, Image as ImageIcon, Film, FileIcon, Loader2, Check, RefreshCw } from 'lucide-react';
 
 interface StorageFile {
   key: string;
@@ -71,7 +71,7 @@ export default function StorageBrowser({ onSelect, trigger }: StorageBrowserProp
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
 
-  const { data, isLoading, error } = useQuery<{ files: StorageFile[] }>({
+  const { data, isLoading, error, refetch, isFetching } = useQuery<{ files: StorageFile[] }>({
     queryKey: ['/api/uploads/list'],
     enabled: open,
   });
@@ -112,10 +112,24 @@ export default function StorageBrowser({ onSelect, trigger }: StorageBrowserProp
       </DialogTrigger>
       <DialogContent className="max-w-5xl w-full p-0 gap-0 overflow-hidden" style={{ maxHeight: '85vh' }}>
         <DialogHeader className="px-6 pt-5 pb-4 border-b">
-          <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-            <FolderOpen className="h-5 w-5 text-muted-foreground" />
-            Browse Storage
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
+              <FolderOpen className="h-5 w-5 text-muted-foreground" />
+              Browse Storage
+            </DialogTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              data-testid="button-storage-refresh"
+              className="gap-1.5"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </DialogHeader>
 
         {isLoading ? (
