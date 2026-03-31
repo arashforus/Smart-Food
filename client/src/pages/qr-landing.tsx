@@ -88,6 +88,7 @@ export default function QRLandingPage() {
   const [videoFailed, setVideoFailed] = useState(false);
   const [needsInteraction, setNeedsInteraction] = useState(false);
   const hasTriedPlay = useRef(false);
+  const [videoMimeType, setVideoMimeType] = useState<string>('');
 
   const forcePlay = useCallback(async (video: HTMLVideoElement) => {
     // Force mute via JS — some Samsung/older browsers ignore the muted HTML attribute
@@ -111,6 +112,15 @@ export default function QRLandingPage() {
     hasTriedPlay.current = true;
     await forcePlay(video);
   }, [forcePlay]);
+
+  // When the MIME type resolves (extension guess → confirmed by HEAD),
+  // reload the video so the browser picks up the typed <source> element
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !videoMimeType) return;
+    hasTriedPlay.current = false;
+    video.load();
+  }, [videoMimeType]);
 
   // Attach interaction listeners immediately so the very first touch/click
   // triggers play on restrictive browsers (Samsung, older iOS, etc.)
@@ -138,6 +148,34 @@ export default function QRLandingPage() {
   });
 
   const activeLanguages = languages.filter((lang) => lang.isActive);
+
+  // Detect the real MIME type via HEAD request so we can tell the browser exactly
+  // what format the video is — critical for Samsung Browser to start buffering WebM/MP4
+  useEffect(() => {
+    const url = settings?.qrMediaUrl;
+    if (!url || settings?.qrMediaType !== 'video') return;
+
+    // Set extension-based type immediately as a fast starting point
+    setVideoMimeType(getVideoMimeType(url));
+
+    // Then confirm with a HEAD request — server Content-Type is always authoritative
+    const controller = new AbortController();
+    fetch(url, { method: 'HEAD', signal: controller.signal })
+      .then((res) => {
+        const ct = res.headers.get('content-type');
+        if (ct) {
+          const mime = ct.split(';')[0].trim();
+          if (mime.startsWith('video/')) {
+            setVideoMimeType(mime);
+          }
+        }
+      })
+      .catch(() => {
+        // Network error or CORS block — keep extension-based value
+      });
+
+    return () => controller.abort();
+  }, [settings?.qrMediaUrl, settings?.qrMediaType]);
 
   const handleLanguageSelect = async (langCode: string) => {
     await setLanguage(langCode);
@@ -211,7 +249,9 @@ export default function QRLandingPage() {
               'disableRemotePlayback': true,   // prevent casting overlay interrupting autoplay
             } as any}
           >
-            <source src={settings!.qrMediaUrl} type={getVideoMimeType(settings!.qrMediaUrl)} />
+            {videoMimeType && (
+              <source src={settings!.qrMediaUrl} type={videoMimeType} />
+            )}
           </video>
           {needsInteraction && (
             <div className="absolute inset-0 flex items-end justify-center pb-8 z-20 pointer-events-none">
