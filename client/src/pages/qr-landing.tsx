@@ -74,23 +74,40 @@ export default function QRLandingPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFailed, setVideoFailed] = useState(false);
   const [needsInteraction, setNeedsInteraction] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   const attemptPlay = useCallback(async () => {
-    if (!videoRef.current) return;
+    const video = videoRef.current;
+    if (!video) return;
     try {
-      await videoRef.current.play();
+      // Ensure first frame is visible before play attempt
+      if (video.readyState >= 2) {
+        video.currentTime = 0;
+      }
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+      }
       setNeedsInteraction(false);
-    } catch {
-      setNeedsInteraction(true);
+    } catch (err: any) {
+      // NotAllowedError = autoplay blocked (browser policy), not a real failure
+      // Keep video visible at first frame, prompt user to tap
+      if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
+        setNeedsInteraction(true);
+      } else {
+        // Real error (NotSupportedError, network error, etc.) — fall back
+        setVideoFailed(true);
+      }
     }
   }, []);
 
   useEffect(() => {
     if (!needsInteraction) return;
     const tryPlay = async () => {
-      if (!videoRef.current) return;
+      const video = videoRef.current;
+      if (!video) return;
       try {
-        await videoRef.current.play();
+        await video.play();
         setNeedsInteraction(false);
       } catch {}
     };
@@ -153,26 +170,34 @@ export default function QRLandingPage() {
         <>
           <video
             ref={videoRef}
-            autoPlay
             muted
             loop
             playsInline
             preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
+            style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 0.3s ease' }}
+            onLoadedData={() => {
+              // First frame is now decoded and visible — reveal the video
+              setVideoReady(true);
+              attemptPlay();
+            }}
             onLoadedMetadata={() => {
               if (videoRef.current) {
                 videoRef.current.currentTime = 0;
               }
-              attemptPlay();
             }}
-            onCanPlay={attemptPlay}
-            onError={() => setVideoFailed(true)}
+            onError={(e) => {
+              // Only fall back on actual network/codec errors, not autoplay blocks
+              const target = e.currentTarget;
+              if (target.error && target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
+                setVideoFailed(true);
+              }
+            }}
             {...{ 'webkit-playsinline': 'true', 'x-webkit-airplay': 'allow' } as any}
           >
-            {/* No type= attribute — let Content-Type header determine format */}
             <source src={settings!.qrMediaUrl} />
           </video>
-          {needsInteraction && (
+          {needsInteraction && videoReady && (
             <div className="absolute inset-0 flex items-end justify-center pb-8 z-20 pointer-events-none">
               <div className="bg-black/50 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full flex items-center gap-2 animate-pulse">
                 <span>▶</span>
