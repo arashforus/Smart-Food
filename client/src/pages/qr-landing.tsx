@@ -74,50 +74,48 @@ export default function QRLandingPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFailed, setVideoFailed] = useState(false);
   const [needsInteraction, setNeedsInteraction] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
+  const hasTriedPlay = useRef(false);
 
   const attemptPlay = useCallback(async () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || hasTriedPlay.current) return;
+    hasTriedPlay.current = true;
     try {
-      // Ensure first frame is visible before play attempt
-      if (video.readyState >= 2) {
-        video.currentTime = 0;
-      }
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        await playPromise;
-      }
+      await video.play();
       setNeedsInteraction(false);
     } catch (err: any) {
-      // NotAllowedError = autoplay blocked (browser policy), not a real failure
-      // Keep video visible at first frame, prompt user to tap
+      // NotAllowedError / AbortError = browser blocked autoplay by policy
+      // The video is still loaded and showing its first frame — just prompt the user
       if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
         setNeedsInteraction(true);
       } else {
-        // Real error (NotSupportedError, network error, etc.) — fall back
+        // Real codec/network error — fall back to image background
         setVideoFailed(true);
       }
     }
   }, []);
 
+  // Attach interaction listeners immediately (not only after play fails)
+  // so the very first user touch/click triggers play on restrictive browsers
   useEffect(() => {
-    if (!needsInteraction) return;
-    const tryPlay = async () => {
-      const video = videoRef.current;
-      if (!video) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onInteract = async () => {
+      if (!videoRef.current || !videoRef.current.paused) return;
       try {
-        await video.play();
+        await videoRef.current.play();
         setNeedsInteraction(false);
       } catch {}
     };
-    document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
-    document.addEventListener('click', tryPlay, { once: true });
+
+    document.addEventListener('touchstart', onInteract, { passive: true });
+    document.addEventListener('click', onInteract);
     return () => {
-      document.removeEventListener('touchstart', tryPlay);
-      document.removeEventListener('click', tryPlay);
+      document.removeEventListener('touchstart', onInteract);
+      document.removeEventListener('click', onInteract);
     };
-  }, [needsInteraction]);
+  }, []);
 
   const { data: settings } = useQuery<Settings>({
     queryKey: ['/api/settings'],
@@ -170,21 +168,19 @@ export default function QRLandingPage() {
         <>
           <video
             ref={videoRef}
+            autoPlay
             muted
             loop
             playsInline
             preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ opacity: videoReady ? 1 : 0, transition: 'opacity 0.3s ease' }}
-            onLoadedData={() => {
-              // First frame is now decoded and visible — reveal the video
-              setVideoReady(true);
+            onLoadedMetadata={() => {
+              // Try to play as soon as metadata is ready (earliest possible moment)
               attemptPlay();
             }}
-            onLoadedMetadata={() => {
-              if (videoRef.current) {
-                videoRef.current.currentTime = 0;
-              }
+            onCanPlay={() => {
+              // Second attempt — fires when browser says it can play
+              attemptPlay();
             }}
             onError={(e) => {
               // Only fall back on actual network/codec errors, not autoplay blocks
@@ -197,7 +193,7 @@ export default function QRLandingPage() {
           >
             <source src={settings!.qrMediaUrl} />
           </video>
-          {needsInteraction && videoReady && (
+          {needsInteraction && (
             <div className="absolute inset-0 flex items-end justify-center pb-8 z-20 pointer-events-none">
               <div className="bg-black/50 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full flex items-center gap-2 animate-pulse">
                 <span>▶</span>
