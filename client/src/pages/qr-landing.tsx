@@ -76,37 +76,36 @@ export default function QRLandingPage() {
   const [needsInteraction, setNeedsInteraction] = useState(false);
   const hasTriedPlay = useRef(false);
 
-  const attemptPlay = useCallback(async () => {
-    const video = videoRef.current;
-    if (!video || hasTriedPlay.current) return;
-    hasTriedPlay.current = true;
+  const forcePlay = useCallback(async (video: HTMLVideoElement) => {
+    // Force mute via JS — some Samsung/older browsers ignore the muted HTML attribute
+    video.muted = true;
+    video.volume = 0;
     try {
       await video.play();
       setNeedsInteraction(false);
     } catch (err: any) {
-      // NotAllowedError / AbortError = browser blocked autoplay by policy
-      // The video is still loaded and showing its first frame — just prompt the user
       if (err?.name === 'NotAllowedError' || err?.name === 'AbortError') {
         setNeedsInteraction(true);
       } else {
-        // Real codec/network error — fall back to image background
         setVideoFailed(true);
       }
     }
   }, []);
 
-  // Attach interaction listeners immediately (not only after play fails)
-  // so the very first user touch/click triggers play on restrictive browsers
-  useEffect(() => {
+  const attemptPlay = useCallback(async () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || hasTriedPlay.current) return;
+    hasTriedPlay.current = true;
+    await forcePlay(video);
+  }, [forcePlay]);
 
+  // Attach interaction listeners immediately so the very first touch/click
+  // triggers play on restrictive browsers (Samsung, older iOS, etc.)
+  useEffect(() => {
     const onInteract = async () => {
-      if (!videoRef.current || !videoRef.current.paused) return;
-      try {
-        await videoRef.current.play();
-        setNeedsInteraction(false);
-      } catch {}
+      const video = videoRef.current;
+      if (!video || !video.paused) return;
+      await forcePlay(video);
     };
 
     document.addEventListener('touchstart', onInteract, { passive: true });
@@ -115,7 +114,7 @@ export default function QRLandingPage() {
       document.removeEventListener('touchstart', onInteract);
       document.removeEventListener('click', onInteract);
     };
-  }, []);
+  }, [forcePlay]);
 
   const { data: settings } = useQuery<Settings>({
     queryKey: ['/api/settings'],
@@ -174,12 +173,16 @@ export default function QRLandingPage() {
             playsInline
             preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
-            onLoadedMetadata={() => {
-              // Try to play as soon as metadata is ready (earliest possible moment)
+            onLoadedMetadata={(e) => {
+              const video = e.currentTarget;
+              // Force mute via JS — Samsung Browser and some older browsers
+              // may ignore the `muted` HTML attribute; this ensures silence
+              video.muted = true;
+              video.volume = 0;
               attemptPlay();
             }}
             onCanPlay={() => {
-              // Second attempt — fires when browser says it can play
+              // Second attempt — fires when browser confirms it can play
               attemptPlay();
             }}
             onError={(e) => {
@@ -189,7 +192,11 @@ export default function QRLandingPage() {
                 setVideoFailed(true);
               }
             }}
-            {...{ 'webkit-playsinline': 'true', 'x-webkit-airplay': 'allow' } as any}
+            {...{
+              'webkit-playsinline': 'true',   // older iOS/Samsung WebKit
+              'x-webkit-airplay': 'allow',
+              'disableRemotePlayback': true,   // prevent casting overlay interrupting autoplay
+            } as any}
           >
             <source src={settings!.qrMediaUrl} />
           </video>
