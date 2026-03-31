@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -72,6 +72,35 @@ export default function QRLandingPage() {
   const { t, setLanguage } = useLanguage();
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const [needsInteraction, setNeedsInteraction] = useState(false);
+
+  const attemptPlay = useCallback(async () => {
+    if (!videoRef.current) return;
+    try {
+      await videoRef.current.play();
+      setNeedsInteraction(false);
+    } catch {
+      setNeedsInteraction(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!needsInteraction) return;
+    const tryPlay = async () => {
+      if (!videoRef.current) return;
+      try {
+        await videoRef.current.play();
+        setNeedsInteraction(false);
+      } catch {}
+    };
+    document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+    document.addEventListener('click', tryPlay, { once: true });
+    return () => {
+      document.removeEventListener('touchstart', tryPlay);
+      document.removeEventListener('click', tryPlay);
+    };
+  }, [needsInteraction]);
 
   const { data: settings } = useQuery<Settings>({
     queryKey: ['/api/settings'],
@@ -120,23 +149,38 @@ export default function QRLandingPage() {
 
   return (
     <div className="min-h-screen relative flex flex-col bg-black">
-      {isVideo ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover"
-          onLoadedMetadata={() => {
-            if (videoRef.current) {
-              videoRef.current.currentTime = 0;
-            }
-          }}
-        >
-          <source src={settings!.qrMediaUrl} type="video/mp4" />
-        </video>
+      {isVideo && !videoFailed ? (
+        <>
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover"
+            onLoadedMetadata={() => {
+              if (videoRef.current) {
+                videoRef.current.currentTime = 0;
+              }
+              attemptPlay();
+            }}
+            onCanPlay={attemptPlay}
+            onError={() => setVideoFailed(true)}
+            {...{ 'webkit-playsinline': 'true', 'x-webkit-airplay': 'allow' } as any}
+          >
+            {/* No type= attribute — let Content-Type header determine format */}
+            <source src={settings!.qrMediaUrl} />
+          </video>
+          {needsInteraction && (
+            <div className="absolute inset-0 flex items-end justify-center pb-8 z-20 pointer-events-none">
+              <div className="bg-black/50 backdrop-blur-sm text-white text-sm px-4 py-2 rounded-full flex items-center gap-2 animate-pulse">
+                <span>▶</span>
+                <span>Tap anywhere to play</span>
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
