@@ -66,6 +66,19 @@ function AnimatedWelcome({ texts, isVisible }: AnimatedWelcomeProps) {
   );
 }
 
+function getVideoMimeType(url: string): string {
+  const ext = url.split('?')[0].split('.').pop()?.toLowerCase();
+  const types: Record<string, string> = {
+    webm: 'video/webm',
+    mp4:  'video/mp4',
+    m4v:  'video/mp4',
+    ogg:  'video/ogg',
+    ogv:  'video/ogg',
+    mov:  'video/quicktime',
+  };
+  return types[ext ?? ''] ?? 'video/webm';
+}
+
 export default function QRLandingPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -198,7 +211,7 @@ export default function QRLandingPage() {
               'disableRemotePlayback': true,   // prevent casting overlay interrupting autoplay
             } as any}
           >
-            <source src={settings!.qrMediaUrl} />
+            <source src={settings!.qrMediaUrl} type={getVideoMimeType(settings!.qrMediaUrl)} />
           </video>
           {needsInteraction && (
             <div className="absolute inset-0 flex items-end justify-center pb-8 z-20 pointer-events-none">
