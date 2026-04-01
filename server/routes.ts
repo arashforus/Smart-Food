@@ -126,6 +126,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/categories/reorder", async (req: Request, res: Response) => {
+    try {
+      const items = req.body as { id: string; order: number }[];
+      if (!Array.isArray(items)) {
+        return res.status(400).json({ message: "Expected an array of {id, order} objects" });
+      }
+      await storage.reorderCategories(items);
+      res.json({ message: "Reordered successfully" });
+    } catch (error) {
+      console.error("Reorder categories error:", error);
+      res.status(500).json({ message: "Failed to reorder categories" });
+    }
+  });
+
   app.post("/api/categories", async (req: Request, res: Response) => {
     try {
       const category = await storage.createCategory(req.body);

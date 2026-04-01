@@ -326,6 +326,7 @@ export interface IStorage {
   createCategory(data: Omit<StorageCategory, 'id'>): Promise<StorageCategory>;
   updateCategory(id: string, data: Partial<Omit<StorageCategory, 'id'>>): Promise<StorageCategory | undefined>;
   deleteCategory(id: string): Promise<boolean>;
+  reorderCategories(items: { id: string; order: number }[]): Promise<void>;
   getItem(id: string): Promise<StorageItem | undefined>;
   getAllItems(): Promise<StorageItem[]>;
   getItemsByCategory(categoryId: string): Promise<StorageItem[]>;
@@ -645,6 +646,13 @@ export class MemStorage implements IStorage {
 
   async deleteCategory(id: string): Promise<boolean> {
     return this.categories.delete(id);
+  }
+
+  async reorderCategories(items: { id: string; order: number }[]): Promise<void> {
+    for (const { id, order } of items) {
+      const c = this.categories.get(id);
+      if (c) this.categories.set(id, { ...c, order });
+    }
   }
 
   async getItem(id: string): Promise<StorageItem | undefined> {

@@ -1,7 +1,7 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Plus, Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
+import { Plus, Image as ImageIcon, Loader2, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -34,14 +34,39 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
-import type { Category } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
+
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Language {
   id: string;
@@ -66,17 +91,144 @@ const createCategorySchema = (languages: Language[]) => {
     order: z.number().min(1, 'Order must be at least 1'),
     isActive: z.boolean().default(true),
   };
-
   languages.forEach((lang) => {
-    if (lang.isActive) {
-      schema[`name_${lang.code}`] = z.string().optional();
-    }
+    if (lang.isActive) schema[`name_${lang.code}`] = z.string().optional();
   });
-
   return z.object(schema);
 };
 
-import { useLanguage } from '@/hooks/use-language';
+interface SortableCategoryRowProps {
+  item: StorageCategory;
+  onEdit: (item: StorageCategory) => void;
+  onDelete: (item: StorageCategory) => void;
+  t: (key: string, fallback?: string) => string;
+}
+
+function SortableCategoryRow({ item, onEdit, onDelete, t }: SortableCategoryRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  const translationCount = Object.values(item.name).filter(v => typeof v === 'string' && v.length > 0).length;
+
+  return (
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      className={isDragging ? 'bg-muted/50' : ''}
+      data-testid={`row-category-${item.id}`}
+    >
+      <TableCell className="w-8 px-2">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
+          data-testid={`drag-handle-category-${item.id}`}
+          type="button"
+        >
+          <GripVertical className="h-4 w-4" />
+        </button>
+      </TableCell>
+
+      <TableCell>
+        {item.image ? (
+          <img src={item.image} alt={item.generalName} className="w-10 h-10 rounded-md object-cover" />
+        ) : (
+          <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-muted-foreground" />
+          </div>
+        )}
+      </TableCell>
+
+      <TableCell>
+        <span className="font-medium">{item.generalName || (typeof item.name.en === 'string' ? item.name.en : '')}</span>
+      </TableCell>
+
+      <TableCell>
+        <span className="text-sm text-muted-foreground">{translationCount} {t('languages_count')}</span>
+      </TableCell>
+
+      <TableCell>
+        <span className="text-sm font-medium">{item.order}</span>
+      </TableCell>
+
+      <TableCell>
+        <div
+          data-testid={`status-active-${item.id}`}
+          className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${
+            item.isActive
+              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100'
+              : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
+          }`}
+        >
+          {item.isActive ? t('active') : t('inactive')}
+        </div>
+      </TableCell>
+
+      <TableCell className="text-end">
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(item)}
+            data-testid={`button-edit-category-${item.id}`}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(item)}
+            data-testid={`button-delete-category-${item.id}`}
+          >
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function DragOverlayCategoryRow({ item, t }: { item: StorageCategory; t: (k: string, fb?: string) => string }) {
+  const translationCount = Object.values(item.name).filter(v => typeof v === 'string' && v.length > 0).length;
+  return (
+    <TableRow className="bg-background shadow-lg border rounded-md opacity-95">
+      <TableCell className="w-8 px-2">
+        <div className="text-muted-foreground p-1"><GripVertical className="h-4 w-4" /></div>
+      </TableCell>
+      <TableCell>
+        {item.image ? (
+          <img src={item.image} alt={item.generalName} className="w-10 h-10 rounded-md object-cover" />
+        ) : (
+          <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-muted-foreground" />
+          </div>
+        )}
+      </TableCell>
+      <TableCell><span className="font-medium">{item.generalName}</span></TableCell>
+      <TableCell><span className="text-sm text-muted-foreground">{translationCount} {t('languages_count')}</span></TableCell>
+      <TableCell><span className="text-sm font-medium">{item.order}</span></TableCell>
+      <TableCell>
+        <span className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${item.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {item.isActive ? t('active') : t('inactive')}
+        </span>
+      </TableCell>
+      <TableCell />
+    </TableRow>
+  );
+}
 
 export default function CategoriesPage() {
   const { t, adminDir } = useLanguage();
@@ -84,8 +236,12 @@ export default function CategoriesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<StorageCategory | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<StorageCategory | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const fileInputRefEdit = useRef<HTMLInputElement>(null);
+  const [orderedCategories, setOrderedCategories] = useState<StorageCategory[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   const { data: languages = [], isLoading: languagesLoading } = useQuery<Language[]>({
     queryKey: ['/api/languages'],
@@ -97,25 +253,38 @@ export default function CategoriesPage() {
   const form = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: languages.reduce((acc, lang) => {
-      if (lang.isActive) {
-        acc[`name_${lang.code}`] = '';
-      }
+      if (lang.isActive) acc[`name_${lang.code}`] = '';
       return acc;
     }, { name: '', image: '', order: 1, isActive: true } as any),
   });
 
-  const { data: categories = [], isLoading, refetch } = useQuery<StorageCategory[]>({
+  const { data: categories = [], isLoading } = useQuery<StorageCategory[]>({
     queryKey: ['/api/categories'],
+  });
+
+  useEffect(() => {
+    const sorted = [...categories].sort((a, b) => Number(a.order) - Number(b.order));
+    setOrderedCategories(sorted);
+  }, [categories]);
+
+  const reorderMutation = useMutation({
+    mutationFn: (items: { id: string; order: number }[]) =>
+      apiRequest('POST', '/api/categories/reorder', items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+    },
+    onError: () => {
+      const sorted = [...categories].sort((a, b) => Number(a.order) - Number(b.order));
+      setOrderedCategories(sorted);
+      toast({ title: t('error', 'Error'), description: 'Failed to save order', variant: 'destructive' });
+    },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: CategoryFormData) => {
       const nameObj: Record<string, string> = {};
       languages.forEach((lang) => {
-        if (lang.isActive) {
-          const langName = (data as any)[`name_${lang.code}`];
-          nameObj[lang.code] = langName || '';
-        }
+        if (lang.isActive) nameObj[lang.code] = (data as any)[`name_${lang.code}`] || '';
       });
       return apiRequest('POST', '/api/categories', {
         generalName: (data as any).name || '',
@@ -141,10 +310,7 @@ export default function CategoriesPage() {
       if (!editingCategory) throw new Error('No category selected');
       const nameObj: Record<string, string> = {};
       languages.forEach((lang) => {
-        if (lang.isActive) {
-          const langName = (data as any)[`name_${lang.code}`];
-          nameObj[lang.code] = langName || '';
-        }
+        if (lang.isActive) nameObj[lang.code] = (data as any)[`name_${lang.code}`] || '';
       });
       return apiRequest('PATCH', `/api/categories/${editingCategory.id}`, {
         generalName: (data as any).name || '',
@@ -166,9 +332,7 @@ export default function CategoriesPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return apiRequest('DELETE', `/api/categories/${id}`);
-    },
+    mutationFn: async (id: string) => apiRequest('DELETE', `/api/categories/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       setDeleteCategory(null);
@@ -180,16 +344,14 @@ export default function CategoriesPage() {
   });
 
   const openCreate = () => {
-    const defaultValues: any = { 
+    const defaultValues: any = {
       name: '',
-      image: '', 
-      order: (categories.length || 0) + 1, 
-      isActive: true 
+      image: '',
+      order: (categories.length || 0) + 1,
+      isActive: true,
     };
     languages.forEach((lang) => {
-      if (lang.isActive) {
-        defaultValues[`name_${lang.code}`] = '';
-      }
+      if (lang.isActive) defaultValues[`name_${lang.code}`] = '';
     });
     form.reset(defaultValues);
     setFormOpen(true);
@@ -203,26 +365,30 @@ export default function CategoriesPage() {
       isActive: category.isActive,
     };
     languages.forEach((lang) => {
-      if (lang.isActive) {
-        defaultValues[`name_${lang.code}`] = category.name[lang.code] || '';
-      }
+      if (lang.isActive) defaultValues[`name_${lang.code}`] = category.name[lang.code] || '';
     });
     form.reset(defaultValues);
     setEditingCategory(category);
   };
 
-  const handleCreate = (data: CategoryFormData) => {
-    createMutation.mutate(data);
+  const handleDragStart = (event: DragStartEvent) => setActiveId(event.active.id as string);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+    if (!over || active.id === over.id) return;
+
+    setOrderedCategories((prev) => {
+      const oldIndex = prev.findIndex((c) => c.id === active.id);
+      const newIndex = prev.findIndex((c) => c.id === over.id);
+      const newOrder = arrayMove(prev, oldIndex, newIndex);
+      const updates = newOrder.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      reorderMutation.mutate(updates);
+      return newOrder.map((item, idx) => ({ ...item, order: idx + 1 }));
+    });
   };
 
-  const handleEdit = (data: CategoryFormData) => {
-    updateMutation.mutate(data);
-  };
-
-  const handleDelete = () => {
-    if (!deleteCategory) return;
-    deleteMutation.mutate(deleteCategory.id);
-  };
+  const activeItem = activeId ? orderedCategories.find((c) => c.id === activeId) : null;
 
   const FormContent = useMemo(() => {
     return ({ onSubmit, onCancel, isCreate }: { onSubmit: (data: CategoryFormData) => void; onCancel: () => void; isCreate: boolean }) => (
@@ -233,7 +399,7 @@ export default function CategoriesPage() {
               <TabsTrigger value="info">{t('info')}</TabsTrigger>
               <TabsTrigger value="translations">{t('translations')}</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="info" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
@@ -242,36 +408,34 @@ export default function CategoriesPage() {
                   <FormMessage />
                 </FormItem>
               )} />
-              
+
               <FormField control={form.control} name="image" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('image')}</FormLabel>
                   <FormControl>
-                    <div className="space-y-3">
-                      <ImageUpload
-                        value={field.value || ''}
-                        onChange={(url) => field.onChange(url)}
-                        placeholder={t('upload_category_image')}
-                        testId="input-category-image"
-                      />
-                    </div>
+                    <ImageUpload
+                      value={field.value || ''}
+                      onChange={(url) => field.onChange(url)}
+                      placeholder={t('upload_category_image')}
+                      testId="input-category-image"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              
+
               <FormField control={form.control} name="order" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('display_order')}</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      value={field.value ? String(field.value) : ''} 
+                    <Input
+                      type="number"
+                      value={field.value ? String(field.value) : ''}
                       onChange={(e) => {
                         const val = e.target.value.trim();
                         field.onChange(val ? parseInt(val, 10) : 1);
                       }}
-                      data-testid={`input-category-order${isCreate ? '' : '-edit'}`} 
+                      data-testid={`input-category-order${isCreate ? '' : '-edit'}`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -289,7 +453,7 @@ export default function CategoriesPage() {
                 )} />
               )}
             </TabsContent>
-            
+
             <TabsContent value="translations" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               {languages.map((lang) => lang.isActive && (
                 <FormField key={lang.code} control={form.control} name={`name_${lang.code}`} render={({ field }) => (
@@ -302,7 +466,7 @@ export default function CategoriesPage() {
               ))}
             </TabsContent>
           </Tabs>
-          
+
           <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
             <Button type="button" variant="ghost" onClick={onCancel}>{t('cancel')}</Button>
             <Button type="submit" data-testid={`button-${isCreate ? 'save' : 'update'}-category`} disabled={createMutation.isPending || updateMutation.isPending}>
@@ -313,7 +477,7 @@ export default function CategoriesPage() {
         </form>
       </Form>
     );
-  }, [form, languages, createMutation.isPending, updateMutation.isPending, t]);
+  }, [form, languages, createMutation.isPending, updateMutation.isPending, t, adminDir]);
 
   if (isLoading || languagesLoading) {
     return (
@@ -336,43 +500,60 @@ export default function CategoriesPage() {
         </Button>
       </div>
 
-      <div className="w-full overflow-x-auto text-start">
-        <div dir={adminDir} className="text-start item-start">
-          <DataTable
-            data={categories.sort((a, b) => a.order - b.order)}
-            columns={[
-              {
-                key: 'image',
-                header: t('image'),
-                render: (item) => item.image ? (
-                  <img src={item.image} alt={typeof item.name.en === 'string' ? item.name.en : 'Category'} className="w-10 h-10 rounded-md object-cover" />
-                ) : (
-                  <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
-                    <ImageIcon className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                ),
-              },
-              { key: 'name', header: t('name'), render: (item) => item.generalName || (typeof item.name.en === 'string' ? item.name.en : '') },
-              { key: 'translations', header: t('translations'), render: (item) => {
-                const count = Object.values(item.name).filter(v => typeof v === 'string' && v.length > 0).length;
-                return `${count} ${t('languages_count')}`;
-              }},
-              { key: 'order', header: t('order') },
-              { key: 'isActive', header: t('status'), render: (item) => (
-                <div data-testid={`status-active-${item.id}`} className={`inline-flex items-center px-2 py-1 rounded-md text-sm font-medium ${
-                  item.isActive 
-                    ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' 
-                    : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100'
-                }`}>
-                  {item.isActive ? t('active') : t('inactive')}
-                </div>
-              )},
-            ]}
-            onEdit={openEdit}
-            onDelete={(item) => setDeleteCategory(item)}
-            testIdPrefix="category"
-          />
-        </div>
+      <div className="rounded-md border" dir={adminDir}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-8 px-2" />
+              <TableHead>{t('image')}</TableHead>
+              <TableHead>{t('name')}</TableHead>
+              <TableHead>{t('translations')}</TableHead>
+              <TableHead>{t('order')}</TableHead>
+              <TableHead>{t('status')}</TableHead>
+              <TableHead className="text-end">{t('actions')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orderedCategories.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  No categories found
+                </TableCell>
+              </TableRow>
+            ) : (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={orderedCategories.map((c) => c.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {orderedCategories.map((item) => (
+                    <SortableCategoryRow
+                      key={item.id}
+                      item={item}
+                      onEdit={openEdit}
+                      onDelete={setDeleteCategory}
+                      t={t}
+                    />
+                  ))}
+                </SortableContext>
+                <DragOverlay>
+                  {activeItem ? (
+                    <Table>
+                      <TableBody>
+                        <DragOverlayCategoryRow item={activeItem} t={t} />
+                      </TableBody>
+                    </Table>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
@@ -380,7 +561,7 @@ export default function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>{t('add_category')}</DialogTitle>
           </DialogHeader>
-          <FormContent onSubmit={handleCreate} onCancel={() => setFormOpen(false)} isCreate={true} />
+          <FormContent onSubmit={(data) => createMutation.mutate(data)} onCancel={() => setFormOpen(false)} isCreate={true} />
         </DialogContent>
       </Dialog>
 
@@ -389,7 +570,7 @@ export default function CategoriesPage() {
           <DialogHeader>
             <DialogTitle>{t('edit_category')}</DialogTitle>
           </DialogHeader>
-          <FormContent onSubmit={handleEdit} onCancel={() => setEditingCategory(null)} isCreate={false} />
+          <FormContent onSubmit={(data) => updateMutation.mutate(data)} onCancel={() => setEditingCategory(null)} isCreate={false} />
         </DialogContent>
       </Dialog>
 
@@ -403,7 +584,7 @@ export default function CategoriesPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} data-testid="button-confirm-delete" disabled={deleteMutation.isPending}>
+            <AlertDialogAction onClick={() => deleteCategory && deleteMutation.mutate(deleteCategory.id)} data-testid="button-confirm-delete" disabled={deleteMutation.isPending}>
               {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {t('delete')}
             </AlertDialogAction>
