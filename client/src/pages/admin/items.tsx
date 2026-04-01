@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Star, Loader2, GripVertical } from 'lucide-react';
+import { Plus, Star, Loader2, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -287,20 +287,19 @@ function SortableItemRow({ item, categories, settings, currencySymbol, onEdit, o
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => onEdit(item)}
             data-testid={`button-edit-item-${item.id}`}
           >
-            {t('edit')}
+            <Pencil className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => onDelete(item)}
             data-testid={`button-delete-item-${item.id}`}
-            className="text-destructive hover:text-destructive"
           >
-            {t('delete')}
+            <Trash2 className="h-4 w-4 text-destructive" />
           </Button>
         </div>
       </TableCell>
