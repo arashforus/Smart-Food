@@ -350,5 +350,8 @@
   "no": "Hayır",
   "calories": "Kalori",
   "kcal": "kcal",
-  "caloriesPlaceholder": "örn. 350"
+  "caloriesPlaceholder": "örn. 350",
+  "preparationTime": "Hazırlık Süresi",
+  "minutes": "dk",
+  "preparationTimePlaceholder": "örn. 15"
 }

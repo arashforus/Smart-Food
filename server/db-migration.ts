@@ -44,6 +44,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "034-add-default-redirect-page", description: "Add default redirect page setting to control root URL destination" },
   { version: "035-add-license-details", description: "Add license email, phone, type, and expiry text columns to settings" },
   { version: "036-add-license-key-if-not-exists", description: "Ensure license_key and license_owner columns exist in settings table" },
+  { version: "037-add-preparation-time-to-items", description: "Add preparation_time column to items table" },
 ];
 
 export async function runDatabaseMigrations() {

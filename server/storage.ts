@@ -70,6 +70,7 @@ export interface StorageItem {
   materials?: string[];
   types?: string[];
   calories?: number;
+  preparationTime?: number;
 }
 
 export interface StorageOrderItem {

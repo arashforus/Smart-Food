@@ -350,5 +350,8 @@
   "no": "No",
   "calories": "Calories",
   "kcal": "kcal",
-  "caloriesPlaceholder": "e.g. 350"
+  "caloriesPlaceholder": "e.g. 350",
+  "preparationTime": "Preparation Time",
+  "minutes": "min",
+  "preparationTimePlaceholder": "e.g. 15"
 }

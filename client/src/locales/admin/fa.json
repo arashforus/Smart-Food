@@ -350,5 +350,8 @@
   "no": "خیر",
   "calories": "کالری",
   "kcal": "کیلوکالری",
-  "caloriesPlaceholder": "مثلاً ۳۵۰"
+  "caloriesPlaceholder": "مثلاً ۳۵۰",
+  "preparationTime": "زمان آماده‌سازی",
+  "minutes": "دقیقه",
+  "preparationTimePlaceholder": "مثلاً ۱۵"
 }

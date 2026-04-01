@@ -350,5 +350,8 @@
   "no": "لا",
   "calories": "السعرات الحرارية",
   "kcal": "سعر حراري",
-  "caloriesPlaceholder": "مثال: 350"
+  "caloriesPlaceholder": "مثال: 350",
+  "preparationTime": "وقت التحضير",
+  "minutes": "دقيقة",
+  "preparationTimePlaceholder": "مثال: 15"
 }
