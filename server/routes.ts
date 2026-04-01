@@ -184,6 +184,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/items/reorder", async (req: Request, res: Response) => {
+    try {
+      const { items: itemsOrder } = req.body;
+      if (!Array.isArray(itemsOrder)) return res.status(400).json({ message: "Invalid items array" });
+      await storage.reorderItems(itemsOrder);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Reorder items error:", error);
+      res.status(500).json({ message: "Failed to reorder items" });
+    }
+  });
+
   app.post("/api/items", async (req: Request, res: Response) => {
     try {
       const { generalName, name, shortDescription, longDescription, price, discountedPrice, maxSelect, calories, preparationTime, categoryId, image, available, suggested, isNew, materials, types, smokeEffect, fireEffect, iceEffect } = req.body;

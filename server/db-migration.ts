@@ -45,6 +45,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "035-add-license-details", description: "Add license email, phone, type, and expiry text columns to settings" },
   { version: "036-add-license-key-if-not-exists", description: "Ensure license_key and license_owner columns exist in settings table" },
   { version: "037-add-preparation-time-to-items", description: "Add preparation_time column to items table" },
+  { version: "038-add-order-to-items", description: "Add order column to items table for drag-and-drop reordering" },
 ];
 
 export async function runDatabaseMigrations() {

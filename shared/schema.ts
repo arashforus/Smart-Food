@@ -65,6 +65,7 @@ export const items = pgTable("items", {
   iceEffect: boolean("ice_effect").notNull().default(false),
   materials: text("materials").array(),
   types: text("types").array(),
+  order: integer("order").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -71,6 +71,7 @@ export interface StorageItem {
   types?: string[];
   calories?: number;
   preparationTime?: number;
+  order: number;
 }
 
 export interface StorageOrderItem {
@@ -333,6 +334,7 @@ export interface IStorage {
   createItem(data: Omit<StorageItem, 'id'>): Promise<StorageItem>;
   updateItem(id: string, data: Partial<Omit<StorageItem, 'id'>>): Promise<StorageItem | undefined>;
   deleteItem(id: string): Promise<boolean>;
+  reorderItems(items: { id: string; order: number }[]): Promise<void>;
   getOrder(id: string): Promise<StorageOrder | undefined>;
   getAllOrders(): Promise<StorageOrder[]>;
   getOrdersByBranch(branchId: string): Promise<StorageOrder[]>;
@@ -695,6 +697,13 @@ export class MemStorage implements IStorage {
 
   async deleteItem(id: string): Promise<boolean> {
     return this.items.delete(id);
+  }
+
+  async reorderItems(items: { id: string; order: number }[]): Promise<void> {
+    for (const { id, order } of items) {
+      const item = this.items.get(id);
+      if (item) this.items.set(id, { ...item, order });
+    }
   }
 
   async getOrder(id: string): Promise<StorageOrder | undefined> {

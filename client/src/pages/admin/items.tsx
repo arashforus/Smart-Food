@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Star, Loader2 } from 'lucide-react';
+import { Plus, Star, Loader2, GripVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -44,10 +44,36 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import DataTable from '@/components/admin/DataTable';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
@@ -97,6 +123,7 @@ interface StorageItem {
   iceEffect?: boolean;
   materials?: string[];
   types?: string[];
+  order?: number;
 }
 
 interface StorageCategory {
@@ -143,12 +170,157 @@ const iconOptions = [
 
 import { useLanguage } from '@/hooks/use-language';
 
+interface SortableItemRowProps {
+  item: StorageItem;
+  categories: StorageCategory[];
+  settings?: StorageSettings;
+  currencySymbol: string;
+  onEdit: (item: StorageItem) => void;
+  onDelete: (item: StorageItem) => void;
+  t: any;
+  isDragging?: boolean;
+}
+
+function SortableItemRow({ item, categories, settings, currencySymbol, onEdit, onDelete, t, isDragging }: SortableItemRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isSortableDragging ? 0.4 : 1,
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    const cat = categories.find((c) => c.id === categoryId);
+    if (!cat) return 'Unknown';
+    const nameData = cat.name;
+    if (typeof nameData === 'string') return nameData;
+    if (!nameData) return 'Unnamed';
+    const directName = nameData.en || Object.values(nameData)[0];
+    if (typeof directName === 'string') return directName;
+    if (typeof directName === 'object' && directName !== null) {
+      return (directName as any).en || Object.values(directName)[0] || 'Unnamed';
+    }
+    return 'Unnamed';
+  };
+
+  const getItemName = (nameData: Record<string, string>) => {
+    if (typeof nameData === 'string') return nameData;
+    if (!nameData) return 'Unnamed';
+    const directName = nameData.en || Object.values(nameData)[0];
+    if (typeof directName === 'string') return directName;
+    if (typeof directName === 'object' && directName !== null) {
+      return (directName as any).en || Object.values(directName)[0] || 'Unnamed';
+    }
+    return 'Unnamed';
+  };
+
+  const decimalPlaces = settings?.currencyDecimal ?? 2;
+  const itemName = item.generalName || getItemName(item.name);
+
+  return (
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      data-testid={`row-item-${item.id}`}
+      className={isSortableDragging ? 'bg-muted/50' : undefined}
+    >
+      <TableCell className="w-8 px-2">
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-1"
+          data-testid={`drag-handle-item-${item.id}`}
+        >
+          <GripVertical className="h-4 w-4" />
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="w-10 h-10 rounded bg-muted flex items-center justify-center overflow-hidden">
+          {item.image ? (
+            <img src={item.image} alt={itemName} className="w-full h-full object-cover" />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
+          )}
+        </div>
+      </TableCell>
+      <TableCell className="font-medium">{itemName}</TableCell>
+      <TableCell>{getCategoryName(item.categoryId)}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          {item.discountedPrice ? (
+            <>
+              <span className="text-muted-foreground line-through">{currencySymbol}{Number(item.price).toFixed(decimalPlaces)}</span>
+              <span className="text-green-600 font-medium">{currencySymbol}{Number(item.discountedPrice).toFixed(decimalPlaces)}</span>
+            </>
+          ) : (
+            <span>{currencySymbol}{Number(item.price).toFixed(decimalPlaces)}</span>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant={item.available ? 'default' : 'secondary'} className="no-default-active-elevate">
+            {item.available ? t('available') : t('unavailable')}
+          </Badge>
+          {item.suggested && (
+            <Badge variant="outline" className="no-default-active-elevate text-amber-600 border-amber-500/50">
+              <Star className="h-3 w-3 mr-1 fill-amber-500" />
+              {t('suggestedLabel')}
+            </Badge>
+          )}
+          {item.isNew && (
+            <Badge variant="outline" className="no-default-active-elevate text-blue-600 border-blue-500/50">
+              {t('newLabel')}
+            </Badge>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(item)}
+            data-testid={`button-edit-item-${item.id}`}
+          >
+            {t('edit')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(item)}
+            data-testid={`button-delete-item-${item.id}`}
+            className="text-destructive hover:text-destructive"
+          >
+            {t('delete')}
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
 export default function ItemsPage() {
   const { t, adminLanguage } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<StorageItem | null>(null);
   const [deleteItem, setDeleteItem] = useState<StorageItem | null>(null);
+  const [orderedItems, setOrderedItems] = useState<StorageItem[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
@@ -162,9 +334,8 @@ export default function ItemsPage() {
     queryKey: ['/api/categories'],
   });
 
-  // Watch for category change to update default image
   const selectedCategoryId = form.watch('categoryId');
-  const categoryImage = useMemo(() => 
+  const categoryImage = useMemo(() =>
     categories.find(c => c.id === selectedCategoryId)?.image
   , [selectedCategoryId, categories]);
 
@@ -188,16 +359,35 @@ export default function ItemsPage() {
     return [...languages].sort((a, b) => a.order - b.order);
   }, [languages]);
 
-  const sortedItems = useMemo(() => {
+  const sortedFromServer = useMemo(() => {
     const categoryOrderMap = new Map(
       categories.map((c) => [c.id, Number(c.order ?? 999)])
     );
     return [...items].sort((a, b) => {
-      const orderA = categoryOrderMap.get(a.categoryId) ?? 999;
-      const orderB = categoryOrderMap.get(b.categoryId) ?? 999;
-      return orderA - orderB;
+      const catOrderA = categoryOrderMap.get(a.categoryId) ?? 999;
+      const catOrderB = categoryOrderMap.get(b.categoryId) ?? 999;
+      if (catOrderA !== catOrderB) return catOrderA - catOrderB;
+      return (a.order ?? 1) - (b.order ?? 1);
     });
   }, [items, categories]);
+
+  useEffect(() => {
+    setOrderedItems(sortedFromServer);
+  }, [sortedFromServer]);
+
+  const reorderMutation = useMutation({
+    mutationFn: async (reordered: StorageItem[]) => {
+      const payload = reordered.map((item, index) => ({ id: item.id, order: index + 1 }));
+      return apiRequest('POST', '/api/items/reorder', { items: payload });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/items'] });
+    },
+    onError: () => {
+      setOrderedItems(sortedFromServer);
+      toast({ title: t('error'), description: t('failedReorder') || 'Failed to save order', variant: 'destructive' });
+    },
+  });
 
   const createMutation = useMutation({
     mutationFn: async (data: ItemFormData) => {
@@ -353,7 +543,6 @@ export default function ItemsPage() {
   };
 
   const handleCreate = (data: ItemFormData) => {
-    // Ensure all numeric fields are actual numbers
     const formattedData = {
       ...data,
       price: Number(data.price),
@@ -365,7 +554,6 @@ export default function ItemsPage() {
   };
 
   const handleEdit = (data: ItemFormData) => {
-    // Ensure all numeric fields are actual numbers
     const formattedData = {
       ...data,
       price: Number(data.price),
@@ -381,21 +569,26 @@ export default function ItemsPage() {
     deleteMutation.mutate(deleteItem.id);
   };
 
-  const getCategoryName = (categoryId: string) => {
-    const cat = categories.find((c) => c.id === categoryId);
-    if (!cat) return 'Unknown';
-    const nameData = cat.name;
-    if (typeof nameData === 'string') return nameData;
-    if (!nameData) return 'Unnamed';
-    // Handle potential double nesting from migration or legacy data
-    const directName = nameData.en || Object.values(nameData)[0];
-    if (typeof directName === 'string') return directName;
-    if (typeof directName === 'object' && directName !== null) {
-      return (directName as any).en || Object.values(directName)[0] || 'Unnamed';
-    }
-    return 'Unnamed';
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
   };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setOrderedItems((prev) => {
+      const oldIndex = prev.findIndex((i) => i.id === active.id);
+      const newIndex = prev.findIndex((i) => i.id === over.id);
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+      reorderMutation.mutate(reordered);
+      return reordered;
+    });
+  };
+
   const currencySymbol = settings?.currencySymbol || '$';
+  const activeItem = activeId ? orderedItems.find((i) => i.id === activeId) : null;
 
   if (itemsLoading || categoriesLoading || languagesLoading) {
     return (
@@ -418,113 +611,74 @@ export default function ItemsPage() {
         </Button>
       </div>
 
-      <DataTable
-        data={sortedItems}
-        columns={[
-          { 
-            key: 'image', 
-            header: t('image'), 
-            render: (item) => {
-              const nameData = item.name;
-              let itemName = t('name');
-              if (typeof nameData === 'string') {
-                itemName = nameData;
-              } else if (nameData) {
-                const directName = nameData.en || Object.values(nameData)[0];
-                if (typeof directName === 'string') {
-                  itemName = directName;
-                } else if (typeof directName === 'object' && directName !== null) {
-                  itemName = (directName as any).en || Object.values(directName)[0] || t('name');
-                }
-              }
-              return (
-                <div className="w-10 h-10 rounded bg-muted flex items-center justify-center overflow-hidden">
-                  {item.image ? (
-                    <img 
-                      src={item.image} 
-                      alt={itemName} 
-                      className="w-full h-full object-cover" 
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-8" />
+                <TableHead className="w-14">{t('image')}</TableHead>
+                <TableHead>{t('name')}</TableHead>
+                <TableHead>{t('category')}</TableHead>
+                <TableHead>{t('price')}</TableHead>
+                <TableHead>{t('status')}</TableHead>
+                <TableHead className="text-right">{t('actions') || 'Actions'}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <SortableContext items={orderedItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
+              <TableBody>
+                {orderedItems.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      {t('noItems') || 'No items yet'}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  orderedItems.map((item) => (
+                    <SortableItemRow
+                      key={item.id}
+                      item={item}
+                      categories={categories}
+                      settings={settings}
+                      currencySymbol={currencySymbol}
+                      onEdit={openEdit}
+                      onDelete={(i) => setDeleteItem(i)}
+                      t={t}
                     />
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-image w-5 h-5 text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
-                  )}
-                </div>
-              );
-            }
-          },
-          { 
-            key: 'generalName', 
-            header: t('name'), 
-            render: (item) => {
-              const nameData = item.name;
-              let displayName = 'Unnamed';
-              if (typeof nameData === 'string') {
-                displayName = nameData;
-              } else if (nameData) {
-                const directName = nameData.en || Object.values(nameData)[0];
-                if (typeof directName === 'string') {
-                  displayName = directName;
-                } else if (typeof directName === 'object' && directName !== null) {
-                  displayName = (directName as any).en || Object.values(directName)[0] || 'Unnamed';
-                }
-              }
-              return item.generalName || displayName;
-            }
-          },
-          { key: 'categoryId', header: t('category'), render: (item) => getCategoryName(item.categoryId) },
-          { 
-            key: 'price', 
-            header: t('price'), 
-            render: (item) => {
-              const decimalPlaces = settings?.currencyDecimal ?? 2;
-              return (
-                <div className="flex items-center gap-2">
-                  {item.discountedPrice ? (
-                    <>
-                      <span className="text-muted-foreground line-through">{currencySymbol}{Number(item.price).toFixed(decimalPlaces)}</span>
-                      <span className="text-green-600 font-medium">{currencySymbol}{Number(item.discountedPrice).toFixed(decimalPlaces)}</span>
-                    </>
-                  ) : (
-                    <span>{currencySymbol}{Number(item.price).toFixed(decimalPlaces)}</span>
-                  )}
-                </div>
-              );
-            }
-          },
-          {
-            key: 'available',
-            header: t('status'),
-            render: (item) => (
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant={item.available ? 'default' : 'secondary'} className="no-default-active-elevate">
-                  {item.available ? t('available') : t('unavailable')}
-                </Badge>
-                {item.suggested && (
-                  <Badge variant="outline" className="no-default-active-elevate text-amber-600 border-amber-500/50">
-                    <Star className="h-3 w-3 mr-1 fill-amber-500" />
-                    {t('suggestedLabel')}
-                  </Badge>
+                  ))
                 )}
-                {item.isNew && (
-                  <Badge variant="outline" className="no-default-active-elevate text-blue-600 border-blue-500/50">
-                    {t('newLabel')}
-                  </Badge>
+              </TableBody>
+            </SortableContext>
+          </Table>
+        </div>
+        <DragOverlay>
+          {activeItem ? (
+            <div className="flex items-center gap-3 px-4 py-3 bg-background border rounded-md shadow-xl opacity-95">
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
+              <div className="w-8 h-8 rounded bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                {activeItem.image ? (
+                  <img src={activeItem.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
                 )}
               </div>
-            ),
-          },
-        ]}
-        onEdit={openEdit}
-        onDelete={(item) => setDeleteItem(item)}
-        testIdPrefix="item"
-      />
+              <span className="font-medium text-sm">{activeItem.generalName || activeItem.name?.en || Object.values(activeItem.name || {})[0] || 'Item'}</span>
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="max-w-lg h-[90vh] flex flex-col overflow-hidden" data-testid="modal-menu-item-form">
           <DialogHeader>
             <DialogTitle>{t('add_item')}</DialogTitle>
           </DialogHeader>
-          <FormContent 
+          <FormContent
             form={form}
             categories={categories}
             materials={materials}
@@ -533,8 +687,8 @@ export default function ItemsPage() {
             currencySymbol={currencySymbol}
             settings={settings}
             categoryImage={categoryImage}
-            onSubmit={handleCreate} 
-            onCancel={() => setFormOpen(false)} 
+            onSubmit={handleCreate}
+            onCancel={() => setFormOpen(false)}
             isEdit={false}
             isPending={createMutation.isPending}
             t={t}
@@ -547,7 +701,7 @@ export default function ItemsPage() {
           <DialogHeader>
             <DialogTitle>{t('edit_item')}</DialogTitle>
           </DialogHeader>
-          <FormContent 
+          <FormContent
             form={form}
             categories={categories}
             materials={materials}
@@ -556,8 +710,8 @@ export default function ItemsPage() {
             currencySymbol={currencySymbol}
             settings={settings}
             categoryImage={categoryImage}
-            onSubmit={handleEdit} 
-            onCancel={() => setEditingItem(null)} 
+            onSubmit={handleEdit}
+            onCancel={() => setEditingItem(null)}
             isEdit={true}
             isPending={updateMutation.isPending}
             t={t}
@@ -618,15 +772,14 @@ function FormContent({
   t,
 }: FormContentProps) {
   const { toast } = useToast();
-  // Local state for materials to avoid immediate form update
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>(form.getValues('materials') || []);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(form.getValues('types') || []);
-  
+
   const onFormError = (errors: any) => {
     const errorMessages = Object.values(errors)
       .map((error: any) => error.message)
       .filter(Boolean);
-    
+
     if (errorMessages.length > 0) {
       toast({
         title: t('validationError'),
@@ -637,7 +790,6 @@ function FormContent({
   };
 
   const handleFormSubmit = (data: ItemFormData) => {
-    // Inject local material and type selections into the form data before submission
     onSubmit({ ...data, materials: selectedMaterials, types: selectedTypes });
   };
 
@@ -655,7 +807,7 @@ function FormContent({
               <TabsTrigger value="types">{t('types_tab')}</TabsTrigger>
               <TabsTrigger value="translations">{t('translations_tab')}</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="basic" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormField control={form.control} name="generalName" render={({ field }) => (
                 <FormItem>
@@ -664,7 +816,7 @@ function FormContent({
                   <FormMessage />
                 </FormItem>
               )} />
-              
+
               <FormField control={form.control} name="image" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('item_image')}</FormLabel>
@@ -729,17 +881,17 @@ function FormContent({
                     <FormMessage />
                   </FormItem>
               )} />
-              
+
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="price" render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('itemPrice')} ({currencySymbol})</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
+                    <Input
+                      type="number"
                       step={1 / Math.pow(10, settings?.currencyDecimal ?? 2)}
-                      {...field} 
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} 
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                       data-testid={`input-item-price${isEdit ? '-edit' : ''}`} />
                   </FormControl>
                   <FormMessage />
@@ -749,21 +901,21 @@ function FormContent({
                 <FormItem>
                   <FormLabel>{t('discountedPrice')} ({currencySymbol})</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
+                    <Input
+                      type="number"
                       step={1 / Math.pow(10, settings?.currencyDecimal ?? 2)}
-                      {...field} 
+                      {...field}
                       value={field.value ?? ''}
-                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)} 
+                      onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                       placeholder={t('cancel')}
-                      data-testid={`input-item-discount${isEdit ? '-edit' : ''}`} 
+                      data-testid={`input-item-discount${isEdit ? '-edit' : ''}`}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
             </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="categoryId" render={({ field }) => (
                   <FormItem>
@@ -801,13 +953,13 @@ function FormContent({
                   <FormItem>
                     <FormLabel>{t('maxSelect')}</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        {...field}
                         value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                         placeholder={t('unlimitedPlaceholder')}
-                        data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`} 
+                        data-testid={`input-item-maxselect${isEdit ? '-edit' : ''}`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -854,7 +1006,7 @@ function FormContent({
                   </FormItem>
                 )} />
               </div>
-              
+
               <div className="flex items-center mt-4 border rounded-md bg-muted/20 divide-x h-12">
                 <FormField control={form.control} name="available" render={({ field }) => (
                   <FormItem className="flex-1 flex items-center justify-center gap-2 space-y-0 px-2 h-full">
@@ -885,7 +1037,7 @@ function FormContent({
                 )} />
               </div>
             </TabsContent>
-            
+
             <TabsContent value="materials" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <FormItem>
                 <FormLabel>{t('selectMaterialsLabel')}</FormLabel>
@@ -894,19 +1046,12 @@ function FormContent({
                     <div
                       key={material.id}
                       className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover-elevate transition-colors"
-                      //onClick={() => {
-                      //  setSelectedMaterials(current => 
-                      //    current.includes(material.id)
-                      //      ? current.filter(id => id !== material.id)
-                      //      : [...current, material.id]
-                       // );
-                      //}}
                       data-testid={`checkbox-material-${material.id}${isEdit ? '-edit' : ''}`}
                     >
                       <Checkbox
                         checked={selectedMaterials.includes(material.id)}
                         onCheckedChange={(checked) => {
-                          setSelectedMaterials(current => 
+                          setSelectedMaterials(current =>
                             checked
                               ? [...current, material.id]
                               : current.filter(id => id !== material.id)
@@ -944,19 +1089,12 @@ function FormContent({
                     <div
                       key={type.id}
                       className="flex items-center gap-3 p-3 rounded-md border cursor-pointer hover-elevate transition-colors"
-                      //onClick={() => {
-                      //  setSelectedTypes(current => 
-                      //    current.includes(type.id)
-                      //      ? current.filter(id => id !== type.id)
-                      //      : [...current, type.id]
-                      //  );
-                      //}}
                       data-testid={`checkbox-type-${type.id}${isEdit ? '-edit' : ''}`}
                     >
                       <Checkbox
                         checked={selectedTypes.includes(type.id)}
                         onCheckedChange={(checked) => {
-                          setSelectedTypes(current => 
+                          setSelectedTypes(current =>
                             checked
                               ? [...current, type.id]
                               : current.filter(id => id !== type.id)
@@ -987,12 +1125,12 @@ function FormContent({
                 </div>
               </FormItem>
             </TabsContent>
-            
+
             <TabsContent value="translations" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <div className="space-y-6 pb-4">
                 {sortedLanguages.filter(lang => lang.isActive).map((language) => {
                   const langCode = language.code.charAt(0).toUpperCase() + language.code.slice(1).toLowerCase();
-                  
+
                   return (
                     <div key={language.id} className="space-y-4 p-4 rounded-lg border bg-muted/30">
                       <div className="flex items-center gap-2 border-b pb-2 mb-2">
@@ -1006,10 +1144,10 @@ function FormContent({
                       <FormItem>
                         <FormLabel>{t('itemName')} ({language.name})</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
-                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
-                            data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`} 
+                          <Input
+                            {...field}
+                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')}
+                            data-testid={`input-item-name-${language.code}${isEdit ? '-edit' : ''}`}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1020,10 +1158,10 @@ function FormContent({
                       <FormItem>
                         <FormLabel>{t('shortDescription')} ({language.name})</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            {...field} 
-                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
-                            data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                          <Textarea
+                            {...field}
+                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')}
+                            data-testid={`input-item-short-desc-${language.code}${isEdit ? '-edit' : ''}`}
                             placeholder={t('shortDescriptionPlaceholder')}
                           />
                         </FormControl>
@@ -1035,11 +1173,11 @@ function FormContent({
                       <FormItem>
                         <FormLabel>{t('longDescription')} ({language.name})</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            {...field} 
-                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')} 
+                          <Textarea
+                            {...field}
+                            value={typeof field.value === 'string' ? field.value : (typeof field.value === 'object' && field.value !== null ? ((field.value as any).en || Object.values(field.value)[0] || '') : '')}
                             rows={3}
-                            data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`} 
+                            data-testid={`input-item-long-desc-${language.code}${isEdit ? '-edit' : ''}`}
                             placeholder={t('longDescriptionPlaceholder')}
                           />
                         </FormControl>
@@ -1052,7 +1190,7 @@ function FormContent({
               </div>
             </TabsContent>
           </Tabs>
-          
+
           <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
             <Button type="button" variant="ghost" onClick={onCancel}>{t('cancel')}</Button>
             <Button type="submit" data-testid={`button-${isEdit ? 'update' : 'save'}-item`} disabled={isPending}>
