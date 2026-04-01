@@ -64,5 +64,7 @@
   "enabled": "Enabled",
   "yes": "Yes",
   "no": "No",
-  "kcal": "kcal"
+  "kcal": "kcal",
+  "preparationTime": "Prep time",
+  "minutes": "min"
 }

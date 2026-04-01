@@ -64,5 +64,7 @@
   "enabled": "Etkin",
   "yes": "Evet",
   "no": "Hayır",
-  "kcal": "kcal"
+  "kcal": "kcal",
+  "preparationTime": "Hazırlık süresi",
+  "minutes": "dk"
 }

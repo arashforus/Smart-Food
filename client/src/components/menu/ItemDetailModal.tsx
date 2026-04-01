@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, Plus, Minus, ShoppingCart, Star, Flame } from 'lucide-react';
+import { UtensilsCrossed, Plus, Minus, ShoppingCart, Star, Flame, Clock } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import type { MenuItem, Language, Settings } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
@@ -181,16 +181,28 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           <div className="flex-1 space-y-4">
             <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
             
-            {item.calories != null && (
+            {(item.calories != null || item.preparationTime != null) && (
               <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
-                <Badge
-                  variant="secondary"
-                  className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full"
-                  data-testid="text-item-calories"
-                >
-                  <Flame className="h-3.5 w-3.5 text-orange-500 shrink-0" />
-                  <span>{item.calories} {t('kcal')}</span>
-                </Badge>
+                {item.calories != null && (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full"
+                    data-testid="text-item-calories"
+                  >
+                    <Flame className="h-3.5 w-3.5 text-orange-500 shrink-0" />
+                    <span>{item.calories} {t('kcal')}</span>
+                  </Badge>
+                )}
+                {item.preparationTime != null && (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full"
+                    data-testid="text-item-preparation-time"
+                  >
+                    <Clock className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                    <span>{item.preparationTime} {t('minutes')}</span>
+                  </Badge>
+                )}
               </div>
             )}
 
