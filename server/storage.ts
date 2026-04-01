@@ -353,6 +353,7 @@ export interface IStorage {
   createFoodType(data: Omit<StorageFoodType, 'id'>): Promise<StorageFoodType>;
   updateFoodType(id: string, data: Partial<Omit<StorageFoodType, 'id'>>): Promise<StorageFoodType | undefined>;
   deleteFoodType(id: string): Promise<boolean>;
+  reorderFoodTypes(items: { id: string; order: number }[]): Promise<void>;
   getMaterial(id: string): Promise<StorageMaterial | undefined>;
   getAllMaterials(): Promise<StorageMaterial[]>;
   createMaterial(data: Omit<StorageMaterial, 'id'>): Promise<StorageMaterial>;
@@ -805,6 +806,13 @@ export class MemStorage implements IStorage {
 
   async deleteFoodType(id: string): Promise<boolean> {
     return this.foodTypes.delete(id);
+  }
+
+  async reorderFoodTypes(items: { id: string; order: number }[]): Promise<void> {
+    for (const { id, order } of items) {
+      const ft = this.foodTypes.get(id);
+      if (ft) this.foodTypes.set(id, { ...ft, order });
+    }
   }
 
   async getMaterial(id: string): Promise<StorageMaterial | undefined> {

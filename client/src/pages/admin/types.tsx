@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, GripVertical } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -29,18 +29,43 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import DataTable from '@/components/admin/DataTable';
 import LucideIconPicker from '@/components/admin/LucideIconPicker';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 import { apiRequest } from '@/lib/queryClient';
-import type { FoodType } from '@/lib/types';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useLanguage } from '@/hooks/use-language';
 import type { UseFormReturn } from 'react-hook-form';
+
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface DbLanguage {
   id: string;
@@ -248,12 +273,180 @@ function TypeForm({ form, languages, onSubmit, isEdit, isSubmitting, onCancel, t
   );
 }
 
+interface SortableRowProps {
+  item: DbFoodType;
+  onEdit: (item: DbFoodType) => void;
+  onDelete: (item: DbFoodType) => void;
+  getTranslationCount: (nameObj: any) => number;
+  t: (key: string) => string;
+  isDragging?: boolean;
+}
+
+function SortableRow({ item, onEdit, onDelete, getTranslationCount, t, isDragging }: SortableRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isSortableDragging ? 0.4 : 1,
+    zIndex: isSortableDragging ? 10 : undefined,
+  };
+
+  return (
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      className={`${isSortableDragging ? 'bg-muted/50' : ''}`}
+      data-testid={`row-type-${item.id}`}
+    >
+      <TableCell className="w-8 px-2">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors p-1 rounded"
+          data-testid={`drag-handle-type-${item.id}`}
+          type="button"
+        >
+          <GripVertical className="h-4 w-4" />
+        </button>
+      </TableCell>
+
+      <TableCell>
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-white overflow-hidden"
+          style={{ backgroundColor: item.color }}
+        >
+          <div className="scale-75">
+            <DynamicIcon name={item.icon} className="h-4 w-4" />
+          </div>
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <span className="font-medium">{item.generalName || (item.name as any)?.en || 'N/A'}</span>
+      </TableCell>
+
+      <TableCell>
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary">
+            <span className="text-[10px] font-bold">🌐</span>
+          </div>
+          <span className="text-xs font-medium">{getTranslationCount(item.name)}</span>
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <div className="flex items-center gap-1.5">
+          <DynamicIcon name={item.icon} className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">{item.icon}</span>
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
+          <span className="text-xs text-muted-foreground">{item.color}</span>
+        </div>
+      </TableCell>
+
+      <TableCell>
+        <span className="text-sm font-medium" data-testid={`text-type-order-${item.id}`}>
+          {Number(item.order)}
+        </span>
+      </TableCell>
+
+      <TableCell>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+            item.isActive
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+          }`}
+          data-testid={`status-type-enabled-${item.id}`}
+        >
+          {item.isActive ? t('yes') : t('no')}
+        </span>
+      </TableCell>
+
+      <TableCell className="text-end">
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(item)}
+            data-testid={`button-edit-type-${item.id}`}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(item)}
+            data-testid={`button-delete-type-${item.id}`}
+          >
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function DragOverlayRow({ item, getTranslationCount, t }: { item: DbFoodType; getTranslationCount: (n: any) => number; t: (k: string) => string }) {
+  return (
+    <TableRow className="bg-background shadow-lg border rounded-md opacity-95">
+      <TableCell className="w-8 px-2">
+        <div className="text-muted-foreground p-1">
+          <GripVertical className="h-4 w-4" />
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: item.color }}>
+          <div className="scale-75"><DynamicIcon name={item.icon} className="h-4 w-4" /></div>
+        </div>
+      </TableCell>
+      <TableCell><span className="font-medium">{item.generalName}</span></TableCell>
+      <TableCell>
+        <span className="text-xs text-muted-foreground">{getTranslationCount(item.name)}</span>
+      </TableCell>
+      <TableCell>
+        <span className="text-xs text-muted-foreground">{item.icon}</span>
+      </TableCell>
+      <TableCell>
+        <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
+      </TableCell>
+      <TableCell><span className="text-sm font-medium">{Number(item.order)}</span></TableCell>
+      <TableCell>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${item.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+          {item.isActive ? t('yes') : t('no')}
+        </span>
+      </TableCell>
+      <TableCell />
+    </TableRow>
+  );
+}
+
 export default function TypesPage() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [editingType, setEditingType] = useState<DbFoodType | null>(null);
   const [deleteType, setDeleteType] = useState<DbFoodType | null>(null);
+  const [orderedTypes, setOrderedTypes] = useState<DbFoodType[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    })
+  );
 
   const { data: dbFoodTypes = [], isLoading } = useQuery({
     queryKey: ['/api/food-types'],
@@ -263,6 +456,11 @@ export default function TypesPage() {
       return response.json() as Promise<DbFoodType[]>;
     },
   });
+
+  useEffect(() => {
+    const sorted = [...dbFoodTypes].sort((a, b) => Number(a.order) - Number(b.order));
+    setOrderedTypes(sorted);
+  }, [dbFoodTypes]);
 
   const getTranslationCount = (nameObj: any) => {
     if (!nameObj || typeof nameObj !== 'object') return 0;
@@ -278,12 +476,22 @@ export default function TypesPage() {
     },
   });
 
+  const reorderMutation = useMutation({
+    mutationFn: (items: { id: string; order: number }[]) =>
+      apiRequest('POST', '/api/food-types/reorder', items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/food-types'] });
+    },
+    onError: () => {
+      setOrderedTypes([...dbFoodTypes].sort((a, b) => Number(a.order) - Number(b.order)));
+      toast({ title: t('error'), description: 'Failed to save order', variant: 'destructive' });
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: (data: TypeFormData) => {
       const nameObj: Record<string, string> = {};
-      languages.forEach((lang) => {
-        nameObj[lang.code] = data.names[lang.code] || '';
-      });
+      languages.forEach((lang) => { nameObj[lang.code] = data.names[lang.code] || ''; });
       return apiRequest('POST', '/api/food-types', {
         generalName: data.generalName,
         name: nameObj,
@@ -309,9 +517,7 @@ export default function TypesPage() {
     mutationFn: (data: TypeFormData) => {
       if (!editingType) throw new Error('No type selected');
       const nameObj: Record<string, string> = {};
-      languages.forEach((lang) => {
-        nameObj[lang.code] = data.names[lang.code] || '';
-      });
+      languages.forEach((lang) => { nameObj[lang.code] = data.names[lang.code] || ''; });
       return apiRequest('PATCH', `/api/food-types/${editingType.id}`, {
         generalName: data.generalName,
         name: nameObj,
@@ -360,26 +566,15 @@ export default function TypesPage() {
   const openCreate = () => {
     setEditingType(null);
     const defaultNames: Record<string, string> = {};
-    languages.forEach((lang) => {
-      defaultNames[lang.code] = '';
-    });
-    form.reset({
-      generalName: '',
-      icon: 'Leaf',
-      color: '#4CAF50',
-      order: 1,
-      isActive: true,
-      names: defaultNames,
-    });
+    languages.forEach((lang) => { defaultNames[lang.code] = ''; });
+    form.reset({ generalName: '', icon: 'Leaf', color: '#4CAF50', order: 1, isActive: true, names: defaultNames });
     setFormOpen(true);
   };
 
   const openEdit = (foodType: DbFoodType) => {
     setFormOpen(false);
     const names: Record<string, string> = {};
-    languages.forEach((lang) => {
-      names[lang.code] = foodType.name[lang.code] || '';
-    });
+    languages.forEach((lang) => { names[lang.code] = foodType.name[lang.code] || ''; });
     form.reset({
       generalName: foodType.generalName || '',
       icon: foodType.icon || 'Leaf',
@@ -391,37 +586,36 @@ export default function TypesPage() {
     setEditingType(foodType);
   };
 
-  const handleCreate = (data: TypeFormData) => {
-    createMutation.mutate(data);
+  const handleCreate = (data: TypeFormData) => createMutation.mutate(data);
+  const handleEdit = (data: TypeFormData) => updateMutation.mutate(data);
+  const handleDelete = () => { if (deleteType) deleteMutation.mutate(deleteType.id); };
+
+  const handleCancelCreate = useCallback(() => { setFormOpen(false); form.reset(); }, [form]);
+  const handleCancelEdit = useCallback(() => { setEditingType(null); form.reset(); }, [form]);
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
   };
 
-  const handleEdit = (data: TypeFormData) => {
-    updateMutation.mutate(data);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) return;
+
+    setOrderedTypes((prev) => {
+      const oldIndex = prev.findIndex((t) => t.id === active.id);
+      const newIndex = prev.findIndex((t) => t.id === over.id);
+      const newOrder = arrayMove(prev, oldIndex, newIndex);
+
+      const updates = newOrder.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      reorderMutation.mutate(updates);
+
+      return newOrder.map((item, idx) => ({ ...item, order: idx + 1 }));
+    });
   };
 
-  const handleDelete = () => {
-    if (deleteType) {
-      deleteMutation.mutate(deleteType.id);
-    }
-  };
-
-  const displayTypes: FoodType[] = dbFoodTypes.map((t) => ({
-    id: t.id,
-    generalName: t.generalName,
-    name: t.name,
-    icon: t.icon || 'Leaf',
-    color: t.color,
-  }));
-
-  const handleCancelCreate = useCallback(() => {
-    setFormOpen(false);
-    form.reset();
-  }, [form]);
-
-  const handleCancelEdit = useCallback(() => {
-    setEditingType(null);
-    form.reset();
-  }, [form]);
+  const activeItem = activeId ? orderedTypes.find((t) => t.id === activeId) : null;
 
   return (
     <div className="space-y-6">
@@ -439,112 +633,69 @@ export default function TypesPage() {
       {isLoading ? (
         <div className="text-center py-8 text-muted-foreground">{t('loading_food_types')}</div>
       ) : (
-        <DataTable
-          data={dbFoodTypes.map((ft) => ({
-            ...ft,
-            icon: ft.icon || 'Leaf',
-          }))}
-          columns={[
-            {
-              key: 'preview',
-              header: t('preview'),
-              render: (item: any) => (
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white overflow-hidden"
-                  style={{ backgroundColor: item.color }}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-8 px-2" />
+                <TableHead>{t('preview')}</TableHead>
+                <TableHead>{t('name')}</TableHead>
+                <TableHead>{t('translations')}</TableHead>
+                <TableHead>{t('icon')}</TableHead>
+                <TableHead>{t('color')}</TableHead>
+                <TableHead>{t('order')}</TableHead>
+                <TableHead>{t('enabled')}</TableHead>
+                <TableHead className="text-end">{t('actions')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orderedTypes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                    No food types found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
                 >
-                  <div className="scale-75">
-                    <DynamicIcon name={item.icon} className="h-4 w-4" />
-                  </div>
-                </div>
-              ),
-            },
-            {
-              key: 'generalName',
-              header: t('name'),
-              render: (item: any) => item.generalName || item.name?.en || 'N/A',
-            },
-            {
-              key: 'translations',
-              header: t('translations'),
-              render: (item: any) => {
-                const count = getTranslationCount(item.name);
-                return (
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary">
-                      <span className="text-[10px] font-bold">🌐</span>
-                    </div>
-                    <span className="text-xs font-medium">{count}</span>
-                  </div>
-                );
-              },
-            },
-            {
-              key: 'icon',
-              header: t('icon'),
-              render: (item: any) => (
-                <div className="flex items-center gap-1.5">
-                  <DynamicIcon name={item.icon} className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{item.icon}</span>
-                </div>
-              ),
-            },
-            {
-              key: 'color',
-              header: t('color'),
-              render: (item: any) => (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
-                  <span className="text-xs text-muted-foreground">{item.color}</span>
-                </div>
-              ),
-            },
-            {
-              key: 'order',
-              header: t('order'),
-              render: (item: any) => (
-                <span className="text-sm font-medium" data-testid={`text-type-order-${item.id}`}>
-                  {Number(item.order)}
-                </span>
-              ),
-            },
-            {
-              key: 'isActive',
-              header: t('enabled'),
-              render: (item: any) => (
-                <span
-                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                    item.isActive
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                      : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-                  }`}
-                  data-testid={`status-type-enabled-${item.id}`}
-                >
-                  {item.isActive ? t('yes') : t('no')}
-                </span>
-              ),
-            },
-          ]}
-          onEdit={(item: any) => {
-            const dbType = dbFoodTypes.find((t) => t.id === item.id);
-            if (dbType) openEdit(dbType);
-          }}
-          onDelete={(item: any) => {
-            const dbType = dbFoodTypes.find((t) => t.id === item.id);
-            if (dbType) setDeleteType(dbType);
-          }}
-          testIdPrefix="type"
-        />
+                  <SortableContext
+                    items={orderedTypes.map((t) => t.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {orderedTypes.map((item) => (
+                      <SortableRow
+                        key={item.id}
+                        item={item}
+                        onEdit={openEdit}
+                        onDelete={(ft) => setDeleteType(ft)}
+                        getTranslationCount={getTranslationCount}
+                        t={t}
+                      />
+                    ))}
+                  </SortableContext>
+                  <DragOverlay>
+                    {activeItem ? (
+                      <Table>
+                        <TableBody>
+                          <DragOverlayRow item={activeItem} getTranslationCount={getTranslationCount} t={t} />
+                        </TableBody>
+                      </Table>
+                    ) : null}
+                  </DragOverlay>
+                </DndContext>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog
         open={formOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setFormOpen(false);
-            form.reset();
-          }
-        }}
+        onOpenChange={(open) => { if (!open) { setFormOpen(false); form.reset(); } }}
       >
         <DialogContent className="h-[90vh] flex flex-col overflow-hidden" data-testid="modal-type-form">
           <DialogHeader>
@@ -564,12 +715,7 @@ export default function TypesPage() {
 
       <Dialog
         open={!!editingType}
-        onOpenChange={(open) => {
-          if (!open) {
-            setEditingType(null);
-            form.reset();
-          }
-        }}
+        onOpenChange={(open) => { if (!open) { setEditingType(null); form.reset(); } }}
       >
         <DialogContent className="h-[90vh] flex flex-col overflow-hidden" data-testid="modal-type-edit">
           <DialogHeader>

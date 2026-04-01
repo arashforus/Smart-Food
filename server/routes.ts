@@ -313,6 +313,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/food-types/reorder", async (req: Request, res: Response) => {
+    try {
+      const items = req.body as { id: string; order: number }[];
+      if (!Array.isArray(items)) {
+        return res.status(400).json({ message: "Expected an array of {id, order} objects" });
+      }
+      await storage.reorderFoodTypes(items);
+      res.json({ message: "Reordered successfully" });
+    } catch (error) {
+      console.error("Reorder food types error:", error);
+      res.status(500).json({ message: "Failed to reorder food types" });
+    }
+  });
+
   app.patch("/api/food-types/:id", async (req: Request, res: Response) => {
     try {
       const foodType = await storage.updateFoodType(req.params.id, req.body);

@@ -569,6 +569,13 @@ export class DrizzleStorage implements IStorage {
     return result.length > 0;
   }
 
+  async reorderFoodTypes(items: { id: string; order: number }[]): Promise<void> {
+    const db = getDb();
+    for (const { id, order } of items) {
+      await db.update(foodTypes).set({ order: String(order) } as any).where(eq(foodTypes.id, id));
+    }
+  }
+
   async getMaterial(id: string): Promise<StorageMaterial | undefined> {
     const db = getDb();
     const result = await db.select().from(materials).where(eq(materials.id, id)).limit(1);
