@@ -358,6 +358,7 @@ export interface IStorage {
   getAllMaterials(): Promise<StorageMaterial[]>;
   createMaterial(data: Omit<StorageMaterial, 'id'>): Promise<StorageMaterial>;
   updateMaterial(id: string, data: Partial<Omit<StorageMaterial, 'id'>>): Promise<StorageMaterial | undefined>;
+  reorderMaterials(items: { id: string; order: number }[]): Promise<void>;
   deleteMaterial(id: string): Promise<boolean>;
   getCustomerClub(id: string): Promise<StorageCustomerClub | undefined>;
   getAllCustomersClub(): Promise<StorageCustomerClub[]>;
@@ -840,6 +841,13 @@ export class MemStorage implements IStorage {
 
   async deleteMaterial(id: string): Promise<boolean> {
     return this.materials.delete(id);
+  }
+
+  async reorderMaterials(items: { id: string; order: number }[]): Promise<void> {
+    for (const { id, order } of items) {
+      const m = this.materials.get(id);
+      if (m) this.materials.set(id, { ...m, order });
+    }
   }
 
   async getCustomerClub(id: string): Promise<StorageCustomerClub | undefined> {
