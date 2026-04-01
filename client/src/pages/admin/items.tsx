@@ -818,7 +818,7 @@ function FormContent({
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="calories" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('calories')} <span className="text-muted-foreground text-xs font-normal">({t('kcal')}) — {t('optional')}</span></FormLabel>
+                    <FormLabel>{t('calories')} <span className="text-muted-foreground text-xs font-normal">({t('kcal')})</span></FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -837,7 +837,7 @@ function FormContent({
 
                 <FormField control={form.control} name="preparationTime" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('preparationTime')} <span className="text-muted-foreground text-xs font-normal">({t('minutes')}) — {t('optional')}</span></FormLabel>
+                    <FormLabel>{t('preparationTime')} <span className="text-muted-foreground text-xs font-normal">({t('minutes')})</span></FormLabel>
                     <FormControl>
                       <Input
                         type="number"
