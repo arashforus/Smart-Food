@@ -38,8 +38,9 @@ import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 import { apiRequest } from '@/lib/queryClient';
 import type { FoodType } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useLanguage } from '@/hooks/use-language';
+import type { UseFormReturn } from 'react-hook-form';
 
 interface DbLanguage {
   id: string;
@@ -75,6 +76,176 @@ function DynamicIcon({ name, className }: { name?: string | null; className?: st
   const Icon = (LucideIcons as any)[name];
   if (!Icon) return <span className="text-xs opacity-50">{name}</span>;
   return <Icon className={className} />;
+}
+
+interface TypeFormProps {
+  form: UseFormReturn<TypeFormData>;
+  languages: DbLanguage[];
+  onSubmit: (data: TypeFormData) => void;
+  isEdit: boolean;
+  isSubmitting: boolean;
+  onCancel: () => void;
+  t: (key: string) => string;
+}
+
+function TypeForm({ form, languages, onSubmit, isEdit, isSubmitting, onCancel, t }: TypeFormProps) {
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 gap-4">
+        <Tabs defaultValue="info" className="flex flex-col flex-1 min-h-0 w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="info">{t('info')}</TabsTrigger>
+            <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="info" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
+            <FormField
+              control={form.control}
+              name="generalName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('name')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="e.g., Vegan"
+                      data-testid={isEdit ? 'input-type-general-name-edit' : 'input-type-general-name'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('icon')}</FormLabel>
+                  <FormControl>
+                    <LucideIconPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('color')}</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        {...field}
+                        className="w-14 h-9 p-0 border-rounded-xl"
+                        data-testid={isEdit ? 'input-type-color-edit' : 'input-type-color'}
+                      />
+                      <Input {...field} placeholder="#4CAF50" className="flex-1" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('order')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      {...field}
+                      data-testid={isEdit ? 'input-type-order-edit' : 'input-type-order'}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-3">
+                    <FormLabel className="mb-0">{t('enabled')}</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        data-testid={isEdit ? 'switch-type-enabled-edit' : 'switch-type-enabled'}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </TabsContent>
+
+          <TabsContent value="translation" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
+            {languages.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
+            ) : (
+              languages.map((lang) => (
+                <FormField
+                  key={lang.code}
+                  control={form.control}
+                  name={`names.${lang.code}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{lang.name}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={field.value || ''}
+                          placeholder={`${t('name')} in ${lang.name}`}
+                          data-testid={`input-type-name-${lang.code}${isEdit ? '-edit' : ''}`}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
+
+        <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+          >
+            {t('cancel')}
+          </Button>
+          <Button
+            type="submit"
+            data-testid={isEdit ? 'button-update-type' : 'button-save-type'}
+            disabled={isSubmitting}
+          >
+            {isEdit
+              ? (isSubmitting ? t('updating') : t('update'))
+              : (isSubmitting ? t('creating') : t('create'))}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
 }
 
 export default function TypesPage() {
@@ -242,170 +413,15 @@ export default function TypesPage() {
     color: t.color,
   }));
 
-  const TypeForm = ({ onSubmit, isEdit }: { onSubmit: (data: TypeFormData) => void; isEdit: boolean }) => (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 gap-4">
-        <Tabs defaultValue="info" className="flex flex-col flex-1 min-h-0 w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="info">{t('info')}</TabsTrigger>
-            <TabsTrigger value="translation">{t('translation')}</TabsTrigger>
-          </TabsList>
+  const handleCancelCreate = useCallback(() => {
+    setFormOpen(false);
+    form.reset();
+  }, [form]);
 
-          <TabsContent value="info" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
-            <FormField
-              control={form.control}
-              name="generalName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g., Vegan"
-                      data-testid={isEdit ? 'input-type-general-name-edit' : 'input-type-general-name'}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="icon"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('icon')}</FormLabel>
-                  <FormControl>
-                    <LucideIconPicker
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('color')}</FormLabel>
-                  <FormControl>
-                    <div className="flex gap-2">
-                      <Input
-                        type="color"
-                        {...field}
-                        className="w-14 h-9 p-0 border-rounded-xl"
-                        data-testid={isEdit ? 'input-type-color-edit' : 'input-type-color'}
-                      />
-                      <Input {...field} placeholder="#4CAF50" className="flex-1" />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="order"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('order')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={0}
-                      {...field}
-                      data-testid={isEdit ? 'input-type-order-edit' : 'input-type-order'}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-3">
-                    <FormLabel className="mb-0">{t('enabled')}</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        data-testid={isEdit ? 'switch-type-enabled-edit' : 'switch-type-enabled'}
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </TabsContent>
-
-          <TabsContent value="translation" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
-            {languages.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t('no_languages_defined')}</p>
-            ) : (
-              languages.map((lang) => (
-                <FormField
-                  key={lang.code}
-                  control={form.control}
-                  name={`names.${lang.code}`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{lang.name}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={field.value || ''}
-                          placeholder={`${t('name')} in ${lang.name}`}
-                          data-testid={`input-type-name-${lang.code}${isEdit ? '-edit' : ''}`}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))
-            )}
-          </TabsContent>
-        </Tabs>
-
-        <div className="flex justify-end gap-2 pt-2 flex-shrink-0 border-t">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              if (isEdit) {
-                setEditingType(null);
-              } else {
-                setFormOpen(false);
-              }
-              form.reset();
-            }}
-          >
-            {t('cancel')}
-          </Button>
-          <Button
-            type="submit"
-            data-testid={isEdit ? 'button-update-type' : 'button-save-type'}
-            disabled={isEdit ? updateMutation.isPending : createMutation.isPending}
-          >
-            {isEdit
-              ? (updateMutation.isPending ? t('updating') : t('update'))
-              : (createMutation.isPending ? t('creating') : t('create'))}
-          </Button>
-        </div>
-      </form>
-    </Form>
-  );
+  const handleCancelEdit = useCallback(() => {
+    setEditingType(null);
+    form.reset();
+  }, [form]);
 
   return (
     <div className="space-y-6">
@@ -534,7 +550,15 @@ export default function TypesPage() {
           <DialogHeader>
             <DialogTitle>{t('add_type')}</DialogTitle>
           </DialogHeader>
-          <TypeForm onSubmit={handleCreate} isEdit={false} />
+          <TypeForm
+            form={form}
+            languages={languages}
+            onSubmit={handleCreate}
+            isEdit={false}
+            isSubmitting={createMutation.isPending}
+            onCancel={handleCancelCreate}
+            t={t}
+          />
         </DialogContent>
       </Dialog>
 
@@ -551,7 +575,15 @@ export default function TypesPage() {
           <DialogHeader>
             <DialogTitle>{t('edit_type')}</DialogTitle>
           </DialogHeader>
-          <TypeForm onSubmit={handleEdit} isEdit={true} />
+          <TypeForm
+            form={form}
+            languages={languages}
+            onSubmit={handleEdit}
+            isEdit={true}
+            isSubmitting={updateMutation.isPending}
+            onCancel={handleCancelEdit}
+            t={t}
+          />
         </DialogContent>
       </Dialog>
 
