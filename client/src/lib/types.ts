@@ -57,6 +57,7 @@ export interface FoodType {
   name: Record<string, string>;
   icon?: string;
   color: string;
+  order?: number;
 }
 
 export interface MenuItem {

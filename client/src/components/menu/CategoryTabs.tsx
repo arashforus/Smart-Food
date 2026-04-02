@@ -172,7 +172,7 @@ export default function CategoryTabs({
             className="flex-1 flex gap-2 overflow-x-auto no-scrollbar touch-pan-x"
             dir={isRtl ? 'rtl' : 'ltr'}
           >
-            {foodTypes.map((type) => {
+            {[...foodTypes].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((type) => {
               const IconComponent = getDynamicIcon(type.icon);
               const isSelected = selectedTypes.includes(type.id);
               return (
