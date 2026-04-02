@@ -30,6 +30,9 @@ export default function MenuList({
   searchQuery = '',
   settings,
 }: MenuListProps) {
+  const sortByOrder = (itemList: MenuItem[]) =>
+    [...itemList].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
   const filterByTypes = (itemList: MenuItem[]) => {
     if (selectedTypes.length === 0) return itemList;
     return itemList.filter((item) =>
@@ -47,11 +50,11 @@ export default function MenuList({
     });
   };
 
-  const filteredItems = selectedCategory
+  const filteredItems = sortByOrder(selectedCategory
     ? filterBySearch(filterByTypes(items.filter((item) => item.categoryId === selectedCategory && item.available)))
-    : filterBySearch(filterByTypes(items.filter((item) => item.available)));
+    : filterBySearch(filterByTypes(items.filter((item) => item.available))));
 
-  const suggestedItems = filterBySearch(filterByTypes(items.filter((item) => item.suggested && item.available)));
+  const suggestedItems = sortByOrder(filterBySearch(filterByTypes(items.filter((item) => item.suggested && item.available))));
 
   const getCategoryName = (category: Category) => {
     return category.name[language as keyof typeof category.name] || category.name.en || Object.values(category.name)[0] || '';
@@ -168,11 +171,11 @@ export default function MenuList({
         </div>
       )}
       {settings?.menuShowAllMenuItems && categories.map((category) => {
-        const categoryItems = filterBySearch(filterByTypes(
+        const categoryItems = sortByOrder(filterBySearch(filterByTypes(
           items.filter(
             (item) => item.categoryId === category.id && item.available
           )
-        ));
+        )));
         if (categoryItems.length === 0) return null;
 
         return (

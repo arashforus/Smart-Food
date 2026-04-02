@@ -79,6 +79,7 @@ export interface MenuItem {
   types: string[];
   calories?: number;
   preparationTime?: number;
+  order?: number;
 }
 
 export interface CartItem {
