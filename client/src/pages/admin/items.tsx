@@ -155,6 +155,7 @@ interface StorageLanguage {
   name: string;
   isActive: boolean;
   order: number;
+  flagImage?: string | null;
 }
 
 interface StorageSettings {
@@ -1118,14 +1119,16 @@ function FormContent({
             <TabsContent value="translations" className="flex-1 min-h-0 overflow-y-auto space-y-4 pt-4 pr-1">
               <div className="space-y-6 pb-4">
                 {sortedLanguages.filter(lang => lang.isActive).map((language) => {
-                  const langCode = language.code.charAt(0).toUpperCase() + language.code.slice(1).toLowerCase();
-
                   return (
                     <div key={language.id} className="space-y-4 p-4 rounded-lg border bg-muted/30">
                       <div className="flex items-center gap-2 border-b pb-2 mb-2">
-                        <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-[10px] uppercase font-bold">
-                          {language.code}
-                        </span>
+                        {language.flagImage ? (
+                          <img src={language.flagImage} alt={language.name} className="w-6 h-4 object-cover rounded-sm" />
+                        ) : (
+                          <span className="bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center text-[10px] uppercase font-bold">
+                            {language.code}
+                          </span>
+                        )}
                         <h4 className="font-semibold text-sm">{language.name}</h4>
                       </div>
 
