@@ -399,14 +399,14 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
           </div>
           <div className="flex items-center justify-end mt-1 gap-2">
             {settings?.menuShowPrices && (
-              <div className="flex md:hidden flex-col items-end">
+              <div className="flex md:hidden flex-row items-center gap-1.5">
                 {hasDiscount ? (
                   <>
-                    <span className="text-base font-semibold text-primary" data-testid={`text-item-price-mobile-${item.id}`}>
-                      {formatPrice(discountedPrice!)}
-                    </span>
                     <span className="text-xs text-muted-foreground line-through">
                       {formatPrice(price)}
+                    </span>
+                    <span className="text-base font-semibold text-primary" data-testid={`text-item-price-mobile-${item.id}`}>
+                      {formatPrice(discountedPrice!)}
                     </span>
                   </>
                 ) : (
