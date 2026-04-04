@@ -392,7 +392,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               )}
             </div>
             {settings?.menuShowIngredients && (
-              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 text-start">
+              <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 mt-1 text-start">
                 {getDescription()}
               </p>
             )}
