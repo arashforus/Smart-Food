@@ -420,12 +420,12 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               <Button
                 size="icon"
                 variant="default"
-                className="rounded-full h-8 w-8 flex-shrink-0"
+                className="rounded-full h-6 w-6 md:h-8 md:w-8 flex-shrink-0"
                 onClick={handleAddClick}
                 data-testid={`button-add-to-cart-card-${item.id}`}
                 title={t('addToCart')}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
             )}
           </div>
