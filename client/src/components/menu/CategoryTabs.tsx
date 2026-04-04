@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,29 @@ import { Star, LayoutGrid, LayoutList, Leaf, Search, X } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import type { Category, FoodType, Language, Settings } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
+
+function FitText({ text, className }: { text: string; className: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [fontSize, setFontSize] = useState(10);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let size = 10;
+    el.style.fontSize = `${size}px`;
+    while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && size > 6) {
+      size -= 0.5;
+      el.style.fontSize = `${size}px`;
+    }
+    setFontSize(size);
+  }, [text]);
+
+  return (
+    <span ref={ref} className={className} style={{ fontSize: `${fontSize}px` }}>
+      {text}
+    </span>
+  );
+}
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -85,9 +109,10 @@ export default function CategoryTabs({
                 <LayoutGrid className="w-7 h-7 text-primary" />
               </div>
             </div>
-            <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center break-words ${selectedCategory === null && !showSuggested ? 'text-primary' : 'text-muted-foreground'}`}>
-              {t('all')}
-            </span>
+            <FitText
+              text={t('all')}
+              className={`uppercase tracking-wider font-bold text-center w-16 leading-tight h-6 flex items-center justify-center overflow-hidden break-words ${selectedCategory === null && !showSuggested ? 'text-primary' : 'text-muted-foreground'}`}
+            />
           </button>
 
           {settings?.menuShowRecommendedMenuItems && (
@@ -114,9 +139,10 @@ export default function CategoryTabs({
                   <Star className="w-7 h-7 text-amber-500 fill-amber-500" />
                 </div>
               </div>
-              <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center break-words ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}>
-                {t('suggested')}
-              </span>
+              <FitText
+                text={t('suggested')}
+                className={`uppercase tracking-wider font-bold text-center w-16 leading-tight h-6 flex items-center justify-center overflow-hidden break-words ${showSuggested ? 'text-amber-600' : 'text-muted-foreground'}`}
+              />
             </button>
           )}
 
@@ -157,9 +183,10 @@ export default function CategoryTabs({
                     </div>
                   )}
                 </div>
-                <span className={`text-[10px] uppercase tracking-wider font-bold text-center max-w-16 line-clamp-2 leading-tight h-6 flex items-center justify-center break-words ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}>
-                  {getCategoryName(category)}
-                </span>
+                <FitText
+                  text={getCategoryName(category)}
+                  className={`uppercase tracking-wider font-bold text-center w-16 leading-tight h-6 flex items-center justify-center overflow-hidden break-words ${selectedCategory === category.id ? 'text-primary' : 'text-muted-foreground'}`}
+                />
               </button>
             ))}
         </div>
