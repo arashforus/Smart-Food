@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UtensilsCrossed, Star, Plus, Leaf } from 'lucide-react';
@@ -115,6 +116,33 @@ function IceEffect() {
         />
       </svg>
 
+    </div>
+  );
+}
+
+function MarqueeTags({ children }: { children: React.ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [overflow, setOverflow] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const inner = innerRef.current;
+    if (container && inner) {
+      setOverflow(inner.scrollWidth > container.clientWidth);
+    }
+  }, [children]);
+
+  return (
+    <div ref={containerRef} className="overflow-hidden">
+      <div
+        ref={innerRef}
+        className={`flex gap-1 flex-nowrap ${overflow ? 'marquee-inner' : ''}`}
+        style={overflow ? { width: 'max-content' } : undefined}
+      >
+        {children}
+        {overflow && <span className="flex gap-1 flex-nowrap ps-2">{children}</span>}
+      </div>
     </div>
   );
 }
@@ -315,30 +343,32 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                   )}
                 </div>
                 {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
-                  <div className={`flex flex-wrap gap-1 mt-0.5`}>
-                    {item.types.map((typeId) => {
-                      const { data: foodTypes = [] } = useQuery<FoodType[]>({
-                        queryKey: ['/api/food-types'],
-                      });
-                      const type = foodTypes.find(t => t.id === typeId);
-                      if (!type) return null;
-                      const IconComponent = getDynamicIcon(type.icon);
-                      return (
-                        <Badge 
-                          key={typeId} 
-                          variant="outline" 
-                          className={`text-[10px] py-0 px-1.5 h-4 font-medium gap-1 `}
-                          style={{
-                            borderColor: type.color,
-                            color: type.color,
-                            backgroundColor: 'transparent'
-                          }}
-                        >
-                          <IconComponent className="w-3 h-3" />
-                          {type.name[language as keyof typeof type.name] || type.name.en}
-                        </Badge>
-                      );
-                    })}
+                  <div className="mt-0.5">
+                    <MarqueeTags>
+                      {item.types.map((typeId) => {
+                        const { data: foodTypes = [] } = useQuery<FoodType[]>({
+                          queryKey: ['/api/food-types'],
+                        });
+                        const type = foodTypes.find(t => t.id === typeId);
+                        if (!type) return null;
+                        const IconComponent = getDynamicIcon(type.icon);
+                        return (
+                          <Badge
+                            key={typeId}
+                            variant="outline"
+                            className="text-[10px] py-0 px-1.5 h-4 font-medium gap-1 flex-shrink-0"
+                            style={{
+                              borderColor: type.color,
+                              color: type.color,
+                              backgroundColor: 'transparent'
+                            }}
+                          >
+                            <IconComponent className="w-3 h-3" />
+                            {type.name[language as keyof typeof type.name] || type.name.en}
+                          </Badge>
+                        );
+                      })}
+                    </MarqueeTags>
                   </div>
                 )}
               </div>
@@ -362,7 +392,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               )}
             </div>
             {settings?.menuShowIngredients && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-1 text-start">
+              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 text-start">
                 {getDescription()}
               </p>
             )}
@@ -371,15 +401,14 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             <div className="flex gap-1" />
             {settings?.menuShowBuyButton && (
               <Button
-                size="sm"
+                size="icon"
                 variant="default"
-                className={`rounded-full h-8 px-4 flex items-center gap-1 `}
+                className="rounded-full h-8 w-8 flex-shrink-0"
                 onClick={handleAddClick}
                 data-testid={`button-add-to-cart-card-${item.id}`}
                 title={t('addToCart')}
               >
                 <Plus className="h-4 w-4" />
-                {t('add')}
               </Button>
             )}
           </div>

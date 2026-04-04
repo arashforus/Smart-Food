@@ -653,3 +653,16 @@ html.dark {
 .font-qrdish-display {
   font-family: "Outfit", sans-serif
 }
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-inner {
+  animation: marquee-scroll 12s linear infinite;
+}
+
+.marquee-inner:hover {
+  animation-play-state: paused;
+}
