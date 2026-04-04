@@ -397,27 +397,25 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
               </p>
             )}
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <div>
-              {settings?.menuShowPrices && (
-                <div className="flex md:hidden flex-col">
-                  {hasDiscount ? (
-                    <>
-                      <span className="text-base font-semibold text-primary" data-testid={`text-item-price-mobile-${item.id}`}>
-                        {formatPrice(discountedPrice!)}
-                      </span>
-                      <span className="text-xs text-muted-foreground line-through">
-                        {formatPrice(price)}
-                      </span>
-                    </>
-                  ) : (
+          <div className="flex items-center justify-end mt-1 gap-2">
+            {settings?.menuShowPrices && (
+              <div className="flex md:hidden flex-col items-end">
+                {hasDiscount ? (
+                  <>
                     <span className="text-base font-semibold text-primary" data-testid={`text-item-price-mobile-${item.id}`}>
+                      {formatPrice(discountedPrice!)}
+                    </span>
+                    <span className="text-xs text-muted-foreground line-through">
                       {formatPrice(price)}
                     </span>
-                  )}
-                </div>
-              )}
-            </div>
+                  </>
+                ) : (
+                  <span className="text-base font-semibold text-primary" data-testid={`text-item-price-mobile-${item.id}`}>
+                    {formatPrice(price)}
+                  </span>
+                )}
+              </div>
+            )}
             {settings?.menuShowBuyButton && (
               <Button
                 size="icon"
