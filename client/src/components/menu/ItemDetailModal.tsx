@@ -262,28 +262,31 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             )}
             
             {settings?.menuShowPrices && (
-              <div className={`flex items-center gap-3 ${isRtl ? 'justify-end' : ''}`}>
-                {hasDiscount ? (
-                  <>
-                    <span className="text-lg text-muted-foreground line-through">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('price')}</span>
+                <div className="flex items-center gap-2">
+                  {hasDiscount ? (
+                    <>
+                      <span className="text-lg text-muted-foreground line-through">
+                        {formatPrice(price)}
+                      </span>
+                      <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
+                        {formatPrice(discountedPrice!)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
                       {formatPrice(price)}
                     </span>
-                    <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                      {formatPrice(discountedPrice!)}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-xl font-semibold text-primary" data-testid="text-modal-item-price">
-                    {formatPrice(price)}
-                  </span>
-                )}
+                  )}
+                </div>
               </div>
             )}
             
             {settings?.menuShowBuyButton && (
               <>
-                <div className={`flex items-center gap-2 ${isRtl ? 'flex-row' : ''}`}>
-                  <span className="text-sm font-medium">{t('quantity')}:</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{t('quantity')}</span>
                   <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
                     <Button
                       size="icon"

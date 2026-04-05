@@ -356,7 +356,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                           <Badge
                             key={typeId}
                             variant="outline"
-                            className="text-xs md:text-sm py-0 px-1.5 h-4 md:h-5 font-medium gap-1 flex-shrink-0"
+                            className="text-xs py-0 px-1.5 h-4 font-medium gap-1 flex-shrink-0"
                             style={{
                               borderColor: type.color,
                               color: type.color,
