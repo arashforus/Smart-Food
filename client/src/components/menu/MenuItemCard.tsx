@@ -399,7 +399,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
           </div>
           <div className="flex items-center justify-end mt-1 gap-2">
             {settings?.menuShowPrices && (
-              <div className="flex md:hidden flex-row items-center gap-1.5">
+              <div className="flex md:hidden flex-row items-center gap-1.5 margin-bottom--5">
                 {hasDiscount ? (
                   <>
                     <span className="text-xs text-muted-foreground line-through">

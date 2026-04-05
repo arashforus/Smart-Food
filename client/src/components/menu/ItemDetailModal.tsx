@@ -7,11 +7,18 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, Plus, Minus, ShoppingCart, Star, Flame, Clock } from 'lucide-react';
+import { UtensilsCrossed, Plus, Minus, ShoppingCart, Star, Flame, Clock, Leaf } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import type { MenuItem, Language, Settings } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
 import { useQuery } from '@tanstack/react-query';
+
+function getDynamicIcon(name?: string | null) {
+  if (!name) return Leaf;
+  const Icon = (LucideIcons as any)[name];
+  return Icon || Leaf;
+}
 
 function SteamEffect() {
   return (
@@ -110,7 +117,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
   const getTypes = () => {
     return (item.types || []).map(id => {
       const type = allFoodTypes.find(t => t.id === id);
-      return type ? { name: type.name[language as keyof typeof type.name] || type.name.en, color: type.color } : null;
+      return type ? { name: type.name[language as keyof typeof type.name] || type.name.en, color: type.color, icon: type.icon } : null;
     }).filter(Boolean);
   };
 
@@ -208,16 +215,20 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
 
             {settings?.menuShowFoodTypes && getTypes().length > 0 && (
               <div className={`flex flex-wrap gap-2 `}>
-                {getTypes().map((type, idx) => (
-                  <Badge 
-                    key={idx} 
-                    variant="secondary" 
-                    className="text-xs"
-                    style={{ backgroundColor: type?.color, color: 'white' }}
-                  >
-                    {type?.name}
-                  </Badge>
-                ))}
+                {getTypes().map((type, idx) => {
+                  const Icon = getDynamicIcon(type?.icon);
+                  return (
+                    <Badge
+                      key={idx}
+                      variant="secondary"
+                      className="text-xs gap-1"
+                      style={{ backgroundColor: type?.color, color: 'white' }}
+                    >
+                      <Icon size={12} />
+                      {type?.name}
+                    </Badge>
+                  );
+                })}
               </div>
             )}
             

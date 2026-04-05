@@ -666,3 +666,7 @@ html.dark {
 .marquee-inner:hover {
   animation-play-state: paused;
 }
+
+.margin-bottom--5 {
+  margin-bottom: -5px;
+}
