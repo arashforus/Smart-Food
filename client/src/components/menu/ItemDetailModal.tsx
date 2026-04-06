@@ -219,7 +219,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                     <Badge
                       key={idx}
                       variant="outline"
-                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
+                      className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full"
                       style={{
                         borderColor: type?.color,
                         color: type?.color,
