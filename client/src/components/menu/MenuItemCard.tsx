@@ -261,16 +261,16 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 </p>
               )}
             </div>
-            <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center justify-end gap-2 mt-2">
               {settings?.menuShowPrices && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   {hasDiscount ? (
                     <>
-                      <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
-                        {formatPrice(discountedPrice!)}
-                      </span>
                       <span className="text-xs text-muted-foreground line-through">
                         {formatPrice(price)}
+                      </span>
+                      <span className="text-sm font-semibold text-primary" data-testid={`text-item-price-${item.id}`}>
+                        {formatPrice(discountedPrice!)}
                       </span>
                     </>
                   ) : (
@@ -284,7 +284,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
                 <Button
                   size="icon"
                   variant="default"
-                  className="h-8 w-8 rounded-full"
+                  className="h-8 w-8 rounded-full shrink-0"
                   onClick={handleAddClick}
                   data-testid={`button-add-to-cart-card-${item.id}`}
                   title={t.addToCart}
