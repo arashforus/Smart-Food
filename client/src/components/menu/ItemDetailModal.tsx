@@ -186,8 +186,6 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           </div>
           
           <div className="flex-1 space-y-4">
-            <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
-            
             {(item.calories != null || item.preparationTime != null) && (
               <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
                 {item.calories != null && (
@@ -231,6 +229,8 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                 })}
               </div>
             )}
+
+            <p className={`text-sm text-muted-foreground leading-relaxed ${isRtl ? 'text-right' : ''}`}>{getLongDescription()}</p>
             
             {settings?.menuShowIngredients && getMaterials().length > 0 && (
               <div className={isRtl ? 'text-right' : ''}>
