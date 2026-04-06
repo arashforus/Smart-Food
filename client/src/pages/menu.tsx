@@ -131,7 +131,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background relative" style={isVideoBackground ? {} : backgroundStyle}>
+    <div className={`min-h-screen relative ${isVideoBackground ? '' : 'bg-background'}`} style={isVideoBackground ? {} : backgroundStyle}>
       {isVideoBackground && (
         <video
           key={settings?.menuBackgroundVideo}
@@ -139,8 +139,8 @@ export default function MenuPage() {
           loop
           muted
           playsInline
-          className="fixed inset-0 w-full h-full object-cover -z-10"
-          style={{ pointerEvents: 'none' }}
+          className="fixed inset-0 w-full h-full object-cover"
+          style={{ zIndex: -1, pointerEvents: 'none' }}
         >
           <source src={settings?.menuBackgroundVideo} type="video/mp4" />
           <source src={settings?.menuBackgroundVideo} type="video/webm" />
