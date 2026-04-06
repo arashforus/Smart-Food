@@ -187,7 +187,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
           
           <div className="flex-1 space-y-4">
             {(item.calories != null || item.preparationTime != null) && (
-              <div className={`flex flex-wrap gap-2 ${isRtl ? 'justify-end' : ''}`}>
+              <div className={`flex flex-wrap gap-2`}>
                 {item.calories != null && (
                   <Badge
                     variant="secondary"
