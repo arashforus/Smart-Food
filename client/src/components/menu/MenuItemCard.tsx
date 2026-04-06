@@ -190,11 +190,11 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
   if (viewMode === 'grid') {
     return (
       <Card
-        className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-md bg-card/40 backdrop-blur-sm rounded-2xl ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
+        className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-md bg-card/40 backdrop-blur-sm rounded-2xl h-full ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
         onClick={onClick}
         data-testid={`card-menu-item-${item.id}`}
       >
-        <CardContent className="p-0">
+        <CardContent className="p-0 flex flex-col h-full">
           <div className="aspect-square w-full rounded-t-2xl bg-muted flex items-center justify-center overflow-hidden relative">
             {settings?.menuShowImages && item.image ? (
               <img
@@ -211,54 +211,56 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
             {item.fireEffect && <FireEffect />}
             {item.iceEffect && <IceEffect />}
           </div>
-            <div className="p-3">
-            <div className="flex items-center gap-2 mb-0.5">
-              <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
-                {getName()}
-              </h3>
-              {item.isNew && (
-                <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto">
-                  {t('new')}
-                </Badge>
+          <div className="p-3 flex flex-col flex-1">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-0.5">
+                <h3 className="font-medium text-sm truncate" data-testid={`text-item-name-${item.id}`}>
+                  {getName()}
+                </h3>
+                {item.isNew && (
+                  <Badge className="bg-primary text-primary-foreground font-bold uppercase text-[10px] px-2 py-0.5 h-auto">
+                    {t('new')}
+                  </Badge>
+                )}
+                {(isSuggested || item.suggested) && (
+                  <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-1 h-auto items-center justify-center min-w-[24px]">
+                    <Star className="h-2.5 w-2.5 fill-white" />
+                  </Badge>
+                )}
+              </div>
+              {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-1">
+                  {item.types.map((typeId) => {
+                    const { data: foodTypes = [] } = useQuery<FoodType[]>({
+                      queryKey: ['/api/food-types'],
+                    });
+                    const type = foodTypes.find(t => t.id === typeId);
+                    if (!type) return null;
+                    const IconComponent = getDynamicIcon(type.icon);
+                    return (
+                      <Badge 
+                        key={typeId} 
+                        variant="outline" 
+                        className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
+                        style={{
+                          borderColor: type.color,
+                          color: type.color,
+                          backgroundColor: 'transparent'
+                        }}
+                      >
+                        <IconComponent className="w-2.5 h-2.5" />
+                        {type.name[language as keyof typeof type.name] || type.name.en}
+                      </Badge>
+                    );
+                  })}
+                </div>
               )}
-              {(isSuggested || item.suggested) && (
-                <Badge className="bg-amber-500 text-white font-bold uppercase text-[10px] px-2 py-1 h-auto items-center justify-center min-w-[24px]">
-                  <Star className="h-2.5 w-2.5 fill-white" />
-                </Badge>
+              {settings?.menuShowIngredients && (
+                <p className="text-xs text-muted-foreground line-clamp-2 mt-1 text-start">
+                  {getDescription()}
+                </p>
               )}
             </div>
-            {settings?.menuShowFoodTypes && item.types && item.types.length > 0 && (
-              <div className="flex flex-wrap gap-1 mb-1">
-                {item.types.map((typeId) => {
-                  const { data: foodTypes = [] } = useQuery<FoodType[]>({
-                    queryKey: ['/api/food-types'],
-                  });
-                  const type = foodTypes.find(t => t.id === typeId);
-                  if (!type) return null;
-                  const IconComponent = getDynamicIcon(type.icon);
-                  return (
-                    <Badge 
-                      key={typeId} 
-                      variant="outline" 
-                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
-                      style={{
-                        borderColor: type.color,
-                        color: type.color,
-                        backgroundColor: 'transparent'
-                      }}
-                    >
-                      <IconComponent className="w-2.5 h-2.5" />
-                      {type.name[language as keyof typeof type.name] || type.name.en}
-                    </Badge>
-                  );
-                })}
-              </div>
-            )}
-            {settings?.menuShowIngredients && (
-              <p className="text-xs text-muted-foreground line-clamp-2 mt-1 min-h-[2rem] text-start">
-                {getDescription()}
-              </p>
-            )}
             <div className="flex items-center justify-between mt-2">
               {settings?.menuShowPrices && (
                 <div className="flex items-center gap-2">
