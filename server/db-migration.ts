@@ -46,6 +46,7 @@ const MIGRATIONS: MigrationVersion[] = [
   { version: "036-add-license-key-if-not-exists", description: "Ensure license_key and license_owner columns exist in settings table" },
   { version: "037-add-preparation-time-to-items", description: "Add preparation_time column to items table" },
   { version: "038-add-order-to-items", description: "Add order column to items table for drag-and-drop reordering" },
+  { version: "039-add-menu-background-video", description: "Add menu_background_video column to settings table" },
 ];
 
 export async function runDatabaseMigrations() {

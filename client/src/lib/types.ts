@@ -243,6 +243,7 @@ export interface Settings {
   menuGradientStart?: string;
   menuGradientEnd?: string;
   menuBackgroundImage?: string;
+  menuBackgroundVideo?: string;
   showRestaurantLogo?: boolean;
   showRestaurantName?: boolean;
   showRestaurantDescription?: boolean;

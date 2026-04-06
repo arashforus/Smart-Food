@@ -260,6 +260,8 @@ export default function SettingsPage() {
       if (dbSettings.defaultRedirectPage) setDefaultRedirectPage(dbSettings.defaultRedirectPage);
 
       // Menu Display Settings
+      if (dbSettings.menuBackgroundVideo) setMenuBackgroundVideo(dbSettings.menuBackgroundVideo);
+
       if (dbSettings.menuShowRestaurantLogo !== undefined) setShowRestaurantLogo(dbSettings.menuShowRestaurantLogo);
       if (dbSettings.menuShowRestaurantName !== undefined) setShowRestaurantName(dbSettings.menuShowRestaurantName);
       if (dbSettings.menuShowRestaurantDescription !== undefined) setShowRestaurantDescription(dbSettings.menuShowRestaurantDescription);
@@ -370,6 +372,7 @@ export default function SettingsPage() {
   const [menuGradientStart, setMenuGradientStart] = useState('#ffffff');
   const [menuGradientEnd, setMenuGradientEnd] = useState('#f0f0f0');
   const [menuBackgroundImage, setMenuBackgroundImage] = useState('');
+  const [menuBackgroundVideo, setMenuBackgroundVideo] = useState('');
   const [showRestaurantLogo, setShowRestaurantLogo] = useState(true);
   const [showRestaurantName, setShowRestaurantName] = useState(true);
   const [showRestaurantDescription, setShowRestaurantDescription] = useState(true);
@@ -736,6 +739,7 @@ export default function SettingsPage() {
       menuGradientStart,
       menuGradientEnd,
       menuBackgroundImage,
+      menuBackgroundVideo,
       showMenuInstagram,
       showMenuWhatsapp,
       showMenuTelegram,
@@ -2012,6 +2016,7 @@ export default function SettingsPage() {
                         <SelectItem value="solid">Solid Color</SelectItem>
                         <SelectItem value="gradient">Gradient</SelectItem>
                         <SelectItem value="image">Image</SelectItem>
+                        <SelectItem value="video">Video</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -2078,6 +2083,21 @@ export default function SettingsPage() {
                         placeholder="Upload or select a background image"
                         testId="input-menu-bg-image"
                       />
+                    </div>
+                  )}
+
+                  {menuBackgroundType === 'video' && (
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="menu-bg-video">Background Video URL</FormLabel>
+                      <Input
+                        id="menu-bg-video"
+                        type="url"
+                        value={menuBackgroundVideo}
+                        onChange={(e) => setMenuBackgroundVideo(e.target.value)}
+                        placeholder="https://example.com/video.mp4"
+                        data-testid="input-menu-bg-video"
+                      />
+                      <p className="text-xs text-muted-foreground">Enter a direct URL to an MP4 video file. The video will autoplay muted and loop.</p>
                     </div>
                   )}
                 </CardContent>

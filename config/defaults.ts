@@ -64,6 +64,7 @@ export const DEFAULT_SETTINGS = {
   menuGradientStart: null,
   menuGradientEnd: null,
   menuBackgroundImage: null,
+  menuBackgroundVideo: null,
   showMenuInstagram: true,
   showMenuWhatsapp: true,
   showMenuTelegram: true,

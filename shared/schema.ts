@@ -216,6 +216,7 @@ export const settings = pgTable("settings", {
   menuGradientStart: text("menu_gradient_start"),
   menuGradientEnd: text("menu_gradient_end"),
   menuBackgroundImage: text("menu_background_image"),
+  menuBackgroundVideo: text("menu_background_video"),
   showMenuInstagram: boolean("show_menu_instagram").notNull().default(true),
   showMenuWhatsapp: boolean("show_menu_whatsapp").notNull().default(true),
   showMenuTelegram: boolean("show_menu_telegram").notNull().default(true),

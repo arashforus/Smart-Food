@@ -116,6 +116,8 @@ export default function MenuPage() {
     hours: settings?.restaurantHours || '',
   };
 
+  const isVideoBackground = settings?.menuBackgroundType === 'video' && !!settings?.menuBackgroundVideo;
+
   const backgroundStyle = settings?.menuBackgroundType === 'solid' 
     ? { backgroundColor: settings.menuBackgroundColor }
     : settings?.menuBackgroundType === 'gradient'
@@ -129,7 +131,22 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background" style={backgroundStyle}>
+    <div className="min-h-screen bg-background relative" style={isVideoBackground ? {} : backgroundStyle}>
+      {isVideoBackground && (
+        <video
+          key={settings?.menuBackgroundVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="fixed inset-0 w-full h-full object-cover -z-10"
+          style={{ pointerEvents: 'none' }}
+        >
+          <source src={settings?.menuBackgroundVideo} type="video/mp4" />
+          <source src={settings?.menuBackgroundVideo} type="video/webm" />
+          <source src={settings?.menuBackgroundVideo} type="video/ogg" />
+        </video>
+      )}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b" dir="ltr">
         <div className="flex items-center justify-between gap-2 p-2">
           <div className="flex items-center gap-1">

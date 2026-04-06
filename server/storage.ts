@@ -267,6 +267,7 @@ export interface StorageSetting {
   menuGradientStart?: string;
   menuGradientEnd?: string;
   menuBackgroundImage?: string;
+  menuBackgroundVideo?: string;
   kdShowTableNumber?: boolean;
   kdShowOrderTime?: boolean;
   kdShowClock?: boolean;
