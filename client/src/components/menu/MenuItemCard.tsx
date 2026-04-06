@@ -301,7 +301,7 @@ export default function MenuItemCard({ item, language, onClick, onAddToCart, isS
 
   return (
     <Card
-      className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-md bg-card/40 backdrop-blur-sm rounded-2xl ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
+      className={`hover-elevate active-elevate-2 cursor-pointer border-none shadow-md bg-card/40 backdrop-blur-md rounded-2xl ${isSuggested || item.suggested ? 'ring-2 ring-amber-500/30' : ''}`}
       onClick={onClick}
       data-testid={`card-menu-item-${item.id}`}
       dir={isRtl ? 'rtl' : 'ltr'}

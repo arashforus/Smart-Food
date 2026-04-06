@@ -76,7 +76,7 @@ export default function RestaurantHeader({ restaurant, language, settings }: Res
   }
 
   return (
-    <div className="bg-background/40 py-8 px-4 overflow-hidden">
+    <div className="bg-background/20 py-8 px-4 overflow-hidden">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-center gap-4 transition-all duration-500">
         <motion.div
           key="header-content"
