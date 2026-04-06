@@ -212,7 +212,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             )}
 
             {settings?.menuShowFoodTypes && getTypes().length > 0 && (
-              <div className={`flex flex-wrap gap-1`}>
+              <div className={`flex flex-wrap gap-1 text-start`}>
                 {getTypes().map((type, idx) => {
                   const Icon = getDynamicIcon(type?.icon);
                   return (
