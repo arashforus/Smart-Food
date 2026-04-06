@@ -212,17 +212,21 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
             )}
 
             {settings?.menuShowFoodTypes && getTypes().length > 0 && (
-              <div className={`flex flex-wrap gap-2 `}>
+              <div className={`flex flex-wrap gap-1`}>
                 {getTypes().map((type, idx) => {
                   const Icon = getDynamicIcon(type?.icon);
                   return (
                     <Badge
                       key={idx}
-                      variant="secondary"
-                      className="text-xs gap-1"
-                      style={{ backgroundColor: type?.color, color: 'white' }}
+                      variant="outline"
+                      className="text-[9px] py-0 px-1.5 h-4 font-medium gap-1"
+                      style={{
+                        borderColor: type?.color,
+                        color: type?.color,
+                        backgroundColor: 'transparent'
+                      }}
                     >
-                      <Icon size={12} />
+                      <Icon className="w-2.5 h-2.5" />
                       {type?.name}
                     </Badge>
                   );
