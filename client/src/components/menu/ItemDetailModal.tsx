@@ -327,7 +327,7 @@ export default function ItemDetailModal({ item, open, onClose, language, onAddTo
                     placeholder={t('notesPlaceholder')}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className={`resize-none rounded-lg ${isRtl ? 'text-right' : ''}`}
+                    className={`resize-none rounded-lg text-sm ${isRtl ? 'text-right' : ''}`}
                     data-testid="textarea-order-notes"
                   />
                 </div>
