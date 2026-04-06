@@ -2088,16 +2088,15 @@ export default function SettingsPage() {
 
                   {menuBackgroundType === 'video' && (
                     <div className="space-y-2">
-                      <FormLabel htmlFor="menu-bg-video">Background Video URL</FormLabel>
-                      <Input
-                        id="menu-bg-video"
-                        type="url"
+                      <FormLabel>Background Video</FormLabel>
+                      <ImageUpload
                         value={menuBackgroundVideo}
-                        onChange={(e) => setMenuBackgroundVideo(e.target.value)}
-                        placeholder="https://example.com/video.mp4"
-                        data-testid="input-menu-bg-video"
+                        onChange={setMenuBackgroundVideo}
+                        mediaType="video"
+                        accept="video/*"
+                        placeholder="Upload a background video or enter URL"
+                        testId="input-menu-bg-video"
                       />
-                      <p className="text-xs text-muted-foreground">Enter a direct URL to an MP4 video file. The video will autoplay muted and loop.</p>
                     </div>
                   )}
                 </CardContent>
